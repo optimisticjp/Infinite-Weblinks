@@ -33,9 +33,12 @@ test.describe("listing & hub routes", () => {
     await firstService.click();
     await expect(page).toHaveURL(/\/services\/[a-z0-9-]+$/);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    // Detail pages carry a breadcrumb and the primary CTA.
+    // Detail pages carry a breadcrumb and the primary CTA (scope to main content —
+    // the header mega-menu promo also links to the Growth Plan).
     await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Build My Digital Growth Plan/i })).toBeVisible();
+    await expect(
+      page.getByRole("main").getByRole("link", { name: /Build My Digital Growth Plan/i }).first(),
+    ).toBeVisible();
   });
 });
 

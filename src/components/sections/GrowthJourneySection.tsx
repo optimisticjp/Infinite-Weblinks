@@ -38,7 +38,9 @@ export async function GrowthJourneySection({ anchorId }: { anchorId?: string }) 
 
         <div className={styles.rail} role="presentation">
           <span className={styles.spectrum} aria-hidden="true" />
-          <ol className={styles.stages}>
+          {/* tabIndex + label so the horizontally-scrolling rail is reachable and
+              operable by keyboard (WCAG 2.1.1 / axe scrollable-region-focusable). */}
+          <ol className={styles.stages} tabIndex={0} aria-label="The eight growth stages">
             {stages.map((stage) => (
               <li
                 key={stage.slug}

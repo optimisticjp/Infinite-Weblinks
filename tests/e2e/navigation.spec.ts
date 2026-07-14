@@ -62,7 +62,7 @@ test.describe("Mobile navigation", () => {
 
     // Expand a family accordion.
     await page.getByRole("button", { name: "Services" }).click();
-    await expect(page.getByRole("link", { name: "All Services" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "All Services", exact: true })).toBeVisible();
 
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();

@@ -12,7 +12,10 @@
 }
 .soft {
   background: color-mix(in srgb, var(--badge-color) 16%, transparent);
-  color: color-mix(in srgb, var(--badge-color) 82%, var(--text-heading));
+  /* Text is mixed heavily toward the theme's heading ink so it keeps a hint of the
+     accent hue while always clearing WCAG AA (≥4.5:1) on BOTH the dark surfaces and the
+     light editorial band — accent-as-text alone fails on the cream band (R-A11Y-3). */
+  color: color-mix(in srgb, var(--badge-color) 40%, var(--text-heading));
   border: 1px solid color-mix(in srgb, var(--badge-color) 34%, transparent);
 }
 .outline {

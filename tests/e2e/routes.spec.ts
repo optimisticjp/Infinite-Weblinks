@@ -84,4 +84,22 @@ test.describe("accessibility of key templates", () => {
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await noSeriousA11y(page);
   });
+
+  test("services listing has no serious/critical a11y violations", async ({ page }) => {
+    await page.goto("/services");
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await noSeriousA11y(page);
+  });
+
+  test("how-it-works deep page has no serious/critical a11y violations", async ({ page }) => {
+    await page.goto("/how-it-works");
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await noSeriousA11y(page);
+  });
+
+  test("growth plan builder has no serious/critical a11y violations", async ({ page }) => {
+    await page.goto("/growth-plan");
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await noSeriousA11y(page);
+  });
 });

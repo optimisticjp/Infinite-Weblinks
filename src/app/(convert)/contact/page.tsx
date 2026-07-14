@@ -31,6 +31,7 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
     <section className="theme-dark iw-section" aria-labelledby="contact-heading">
       <div className="iw-container">
         <SectionHeader
+          as="h1"
           id="contact-heading"
           eyebrow="Contact"
           title="Ask our team, or send us your goals"

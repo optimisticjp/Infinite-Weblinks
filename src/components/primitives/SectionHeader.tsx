@@ -7,7 +7,7 @@ type SectionHeaderProps = {
   title: ReactNode;
   intro?: string;
   align?: "start" | "center";
-  as?: "h2" | "h3";
+  as?: "h1" | "h2" | "h3";
   id?: string;
   className?: string;
 };

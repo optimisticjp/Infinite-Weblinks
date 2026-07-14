@@ -27,6 +27,7 @@ export default async function GrowthPlanPage() {
     <section className="theme-dark iw-section" aria-labelledby="growth-plan-heading">
       <div className="iw-container">
         <SectionHeader
+          as="h1"
           id="growth-plan-heading"
           eyebrow="Build my digital growth plan"
           title={

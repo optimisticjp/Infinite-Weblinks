@@ -132,7 +132,7 @@ export default async function ServiceDetailPage({
 
               {service.outcome && (
                 <p className={styles.outcome}>
-                  <span className={styles.outcomeLabel}>What it's built to do</span>
+                  <span className={styles.outcomeLabel}>What it&rsquo;s built to do</span>
                   {service.outcome}
                 </p>
               )}
@@ -158,7 +158,7 @@ export default async function ServiceDetailPage({
             <aside className={styles.side}>
               {delivery && (
                 <div className={styles.sideCard}>
-                  <h3 className={styles.sideTitle}>How it's delivered</h3>
+                  <h3 className={styles.sideTitle}>How it&rsquo;s delivered</h3>
                   <Badge color={DELIVERY_COLOR[delivery.key]}>{delivery.name}</Badge>
                   <p className={styles.sideBody}>{delivery.description}</p>
                 </div>

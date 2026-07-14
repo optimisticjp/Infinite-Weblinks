@@ -107,7 +107,7 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
   return (
     <header className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
       <div className={`iw-container--wide ${styles.bar}`}>
-        <Logo href="/" size={30} className={styles.logo} />
+        <Logo href="/" size={28} className={styles.logo} />
 
         <nav
           className={styles.desktopNav}
@@ -164,17 +164,19 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
         </nav>
 
         <div className={styles.actions}>
-          {nav.ctas.map((cta) => (
-            <Button
-              key={cta.label}
-              href={cta.route}
-              variant={cta.style === "primary" ? "primary" : "secondary"}
-              size="sm"
-              className={cta.style === "secondary" ? styles.secondaryCta : undefined}
-            >
-              {cta.label}
-            </Button>
-          ))}
+          <div className={styles.ctaGroup}>
+            {nav.ctas.map((cta) => (
+              <Button
+                key={cta.label}
+                href={cta.route}
+                variant={cta.style === "primary" ? "primary" : "secondary"}
+                size="sm"
+                className={cta.style === "secondary" ? styles.secondaryCta : undefined}
+              >
+                {cta.label}
+              </Button>
+            ))}
+          </div>
           <button
             type="button"
             className={styles.menuButton}

@@ -85,6 +85,12 @@
   gap: var(--space-3);
   flex: none;
 }
+/* CTAs hidden on small screens (the mobile menu carries them); shown at desktop. */
+.ctaGroup {
+  display: none;
+  align-items: center;
+  gap: var(--space-3);
+}
 .secondaryCta {
   display: none;
 }
@@ -203,18 +209,26 @@
   margin: 0 0 var(--space-5);
 }
 
-/* ---- Breakpoints ---- */
-@media (min-width: 1024px) {
+/* ---- Breakpoints ----
+   < 1080px  : compact header (logo + hamburger) — the full-screen mobile nav carries the CTAs.
+   ≥ 1080px  : desktop nav + primary CTA (mega-menus enabled).
+   ≥ 1280px  : the secondary CTA joins as well. */
+@media (min-width: 1080px) {
   .desktopNav {
     display: block;
   }
   .menuButton {
     display: none;
   }
-  .secondaryCta {
-    display: inline-flex;
+  .ctaGroup {
+    display: flex;
   }
   .megaInner {
     grid-template-columns: minmax(0, 1fr) 300px;
+  }
+}
+@media (min-width: 1280px) {
+  .secondaryCta {
+    display: inline-flex;
   }
 }

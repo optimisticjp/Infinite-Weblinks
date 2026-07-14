@@ -32,3 +32,14 @@
   color: currentColor;
   white-space: nowrap;
 }
+
+/* Narrow the wordmark on small phones so the logo + controls never overflow. */
+@media (max-width: 420px) {
+  .logo {
+    gap: calc(var(--logo-h) * 0.34);
+  }
+  .wordmark {
+    font-size: calc(var(--logo-h) * 0.74);
+    letter-spacing: -0.02em;
+  }
+}

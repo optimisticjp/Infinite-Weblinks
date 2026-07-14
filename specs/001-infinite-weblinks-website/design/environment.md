@@ -36,17 +36,17 @@ never come to contain, a real secret value.
 | `SANITY_API_READ_TOKEN` | Server-side read token for fetching **draft/unpublished** content (Presentation tool, preview routes) | Server secret | Runtime only | All three, distinct token per environment recommended | Cloudflare Worker secret (`wrangler secret put`); `.env.local` for local `next dev` | Scope to **Viewer** role, read-only; never the write/admin token |
 | `SANITY_REVALIDATE_SECRET` | Shared secret Sanity's outgoing webhook must present so the on-publish revalidation route trusts the call | Server secret | Runtime only | All three, distinct value per environment recommended | Cloudflare Worker secret; mirrored in Sanity's webhook config (not in this repo) | Reject any revalidation request missing/mismatching this |
 | `SANITY_PREVIEW_SECRET` | Authorizes entering Next.js Draft Mode from a Sanity Presentation preview link | Server secret | Runtime only | All three, distinct value per environment recommended | Cloudflare Worker secret | Checked by the `/api/draft-mode/enable` (or equivalent) route handler before setting the draft cookie |
-| `SANITY_STUDIO_PROJECT_ID` / `SANITY_STUDIO_DATASET` | Mirrors of project ID/dataset, only needed if the team ever runs the standalone Sanity CLI (`sanity dev`/`sanity deploy`) outside the embedded `/studio` route | Public (CLI-local), build-time | Local CLI only | Dev only, optional | Developer's own shell/`.env.local` | Not needed if Studio stays embedded via `next-sanity`'s `<Studio>` component, which reuses the `NEXT_PUBLIC_SANITY_*` vars |
+| `SANITY_STUDIO_PROJECT_ID` / `SANITY_STUDIO_DATASET` | Project ID/dataset for the **separately-deployed** Studio (the `studio/` workspace, built and published with `sanity deploy` to a `*.sanity.studio` URL) | Public (Studio build-time) | Studio build/deploy | Studio deploy (values equal the site's `NEXT_PUBLIC_SANITY_*`) | `studio/.env` (git-ignored) and/or `studio/sanity.config.ts` | Studio is **not** embedded in the Next.js app (owner decision); it has its own config and deploy. The hosted Studio origin (`*.sanity.studio`) plus PR preview URLs must be added to the Sanity project's CORS allowed origins. |
 | `NEXT_PUBLIC_FORMSPREE_GROWTH_PLAN_ID` | Formspree form ID/endpoint for the Growth Plan Builder submission | Public, build-time | Build + runtime | Recommend a separate **test form** for dev/preview vs the live prod form (see §5) | `.env.local`; CI build env var; Worker build env var | Semi-public by nature — a Formspree form endpoint can be seen in any submitted network request; protection is Turnstile + Formspree's own spam filtering, not secrecy of this ID |
 | `NEXT_PUBLIC_FORMSPREE_CONTACT_ID` | Formspree form ID/endpoint for the general contact form | Public, build-time | Build + runtime | Same as above | Same as above | Same as above |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile widget site key rendered in the browser | Public, build-time | Build + runtime | All three, distinct per environment (see §5) | Same as above | Public by design — this is the key embedded in the HTML widget |
 | `TURNSTILE_SECRET_KEY` | Server-side secret used to verify a Turnstile token against Cloudflare's `siteverify` endpoint before accepting a form submission | Server secret | Runtime only | All three, distinct per environment | Cloudflare Worker secret | Never expose in client code or logs; verification call is server → Cloudflare only |
 | `CLOUDFLARE_ACCOUNT_ID` | Identifies the Cloudflare account for `wrangler deploy` / OpenNext build | CI/deploy-time only | Deploy-time only (CI) | Not deployed into the running app | GitHub Actions encrypted secret (or repository variable — account ID is not itself sensitive, but keep alongside the token for simplicity) | Never read by the running Worker at request time |
-| `CLOUDFLARE_API_TOKEN` | Authenticates CI to push the build to Cloudflare Workers and manage KV/R2/secrets | CI/deploy-time secret | Deploy-time only (CI) | Not deployed into the running app | GitHub Actions encrypted secret | Scope least-privilege: Workers Scripts Edit, Workers KV Storage Edit, Cloudflare Pages/Workers deploy — not full account admin |
+| `CLOUDFLARE_API_TOKEN` | Authenticates CI to push the build to Cloudflare Workers and manage R2/D1/secrets | CI/deploy-time secret | Deploy-time only (CI) | Not deployed into the running app | GitHub Actions encrypted secret | Scope least-privilege: Workers Scripts Edit, Workers R2 Storage Edit, D1 Edit, Workers deploy — not full account admin, no KV needed |
 | `NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN` | Cloudflare Web Analytics beacon token, embedded in page HTML | Public, build-time | Build + runtime | All three; recommend prod-only injection so dev/preview traffic doesn't pollute analytics (see §5) | `.env.local`; CI build env var; Worker build env var | Inherently public — it is a client-side beacon token, visible in every page's `<script>` tag |
 | `NEXT_PUBLIC_SITE_URL` | Canonical absolute origin used for metadata, canonical URLs, sitemap, Open Graph, and structured data | Public, build-time | Build + runtime | All three, value differs (see §5) | Same as above | Production value is exactly `https://infiniteweblinks.com` — no trailing slash, no `www` |
 
-Cloudflare **bindings** (KV for incremental cache, R2 for large static assets, the Workers Assets
+Cloudflare **bindings** (R2 for the incremental cache, D1 for the tag cache, the Workers Assets
 binding) are deliberately **not** in this table — see §3.
 
 ## 3. Bindings vs environment variables
@@ -61,17 +61,18 @@ confused:
 - **Bindings** are Cloudflare resource handles wired up in the `wrangler` config file
   (`wrangler.jsonc` or `wrangler.toml`), not `.env` files, and accessed via the Worker's `env`
   object (through OpenNext's `getCloudflareContext()`), not `process.env`. For this project:
-  - **`NEXT_CACHE_WORKERS_KV`** — a KV namespace binding used by OpenNext for the Next.js Incremental
-    Static Regeneration cache (revalidated page/data caching). *(Binding name per `design/deployment.md`.)*
-  - **`NEXT_INC_CACHE_R2_BUCKET`** — an R2 bucket binding used for larger cached assets
-    that exceed practical KV value sizes.
+  - **`NEXT_INC_CACHE_R2_BUCKET`** — an R2 bucket binding used by OpenNext as the **primary
+    incremental cache** (SSG/ISR HTML/RSC output + Next.js `fetch` cache). *(Binding names per
+    `design/deployment.md`; re-verify against current OpenNext docs at implementation start.)*
+  - **`NEXT_TAG_CACHE_D1`** — a D1 database binding used as the **tag cache** so on-demand
+    `revalidateTag`/`revalidatePath` invalidate exactly the right cache entries on publish.
   - **`ASSETS`** — the Workers Static Assets binding that serves the built Next.js static output.
-- Practical consequence: creating or renaming a KV namespace or R2 bucket is a `wrangler.jsonc`
-  change plus a `wrangler kv namespace create` / `wrangler r2 bucket create` command — it is
+  - **Workers KV is deliberately NOT used** as the primary incremental cache (owner decision).
+- Practical consequence: creating or renaming the R2 bucket or D1 database is a `wrangler.jsonc`
+  change plus a `wrangler r2 bucket create` / `wrangler d1 create` command — it is
   **infrastructure-as-config**, reviewed in pull requests like any other code, not a secret to
-  rotate. IDs of KV namespaces/R2 buckets are not secret but also are not meaningful outside the
-  Cloudflare account, so they belong in `wrangler.jsonc`, not in this environment-variable
-  inventory or in `.env.example`.
+  rotate. Their IDs are not secret but are not meaningful outside the Cloudflare account, so they
+  belong in `wrangler.jsonc`, not in this environment-variable inventory or in `.env.example`.
 
 ## 4. Public vs secret — classification summary
 
@@ -80,7 +81,7 @@ confused:
 | **Public / `NEXT_PUBLIC_*`** | Embedded in the client JS bundle at **build time**. Anyone can read it via view-source or devtools. Never put a secret here. | Sanity project ID/dataset/API version, Formspree form IDs, Turnstile *site* key, Cloudflare Analytics beacon token, site URL |
 | **Server-only secret** | Never sent to the browser; read only inside Server Components, Route Handlers, or middleware running in the Worker. Must **not** carry the `NEXT_PUBLIC_` prefix. | Sanity read token, Sanity revalidate/preview secrets, Turnstile *secret* key |
 | **CI/deploy-time secret** | Used only by the GitHub Actions runner to build and deploy; never present inside the deployed Worker's runtime environment. | Cloudflare account ID, Cloudflare API token |
-| **Cloudflare binding (not an env var)** | Configured in `wrangler.jsonc`; accessed via the Worker `env` object, not `process.env`. | `NEXT_CACHE_WORKERS_KV`, `NEXT_INC_CACHE_R2_BUCKET`, `ASSETS` |
+| **Cloudflare binding (not an env var)** | Configured in `wrangler.jsonc`; accessed via the Worker `env` object, not `process.env`. | `NEXT_INC_CACHE_R2_BUCKET`, `NEXT_TAG_CACHE_D1`, `ASSETS` (no KV) |
 
 The single rule that prevents the most damage: **if a value must stay confidential, it must never
 be prefixed `NEXT_PUBLIC_`, and it must never be logged, printed, or committed — set it only via
@@ -116,7 +117,7 @@ prod).
   - `.dev.vars` — read by `wrangler dev`/`wrangler pages dev` (the Workers runtime emulator) for
     anything a developer needs to test through the actual Workers runtime, including bindings
     behavior. Most day-to-day work only needs `.env.local`; `.dev.vars` matters when testing
-    OpenNext/Workers-specific behavior (KV cache, R2, secrets access through `env`).
+    OpenNext/Workers-specific behavior (R2 incremental cache, D1 tag cache, secrets access through `env`).
 - **CI (GitHub Actions)**: `NEXT_PUBLIC_*` values must be present as CI environment variables
   **before the build step**, because Next.js inlines them into the compiled bundle — setting them
   only as a post-deploy Cloudflare dashboard variable does not work, they must exist when
@@ -150,7 +151,8 @@ NEXT_PUBLIC_SANITY_API_VERSION=2025-06-01
 SANITY_API_READ_TOKEN=changeme-viewer-scoped-token
 SANITY_REVALIDATE_SECRET=changeme-webhook-shared-secret
 SANITY_PREVIEW_SECRET=changeme-draft-mode-secret
-# Only needed if running the standalone Sanity CLI locally:
+# Studio is deployed SEPARATELY (studio/ workspace → `sanity deploy` to *.sanity.studio),
+# with its own git-ignored studio/.env (values equal the NEXT_PUBLIC_SANITY_* above):
 # SANITY_STUDIO_PROJECT_ID=your-sanity-project-id
 # SANITY_STUDIO_DATASET=production
 

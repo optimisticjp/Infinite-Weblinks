@@ -85,7 +85,7 @@ The authoritative variable list lives in `design/environment.md`. This plan rest
 
 ### 2.5 Rate limiting at the Worker edge
 
-- The Worker route that proxies to Formspree applies a rate limit keyed on IP + form type (for example, Cloudflare Rate Limiting rules or a lightweight KV-backed counter): a practical starting point is 5 submissions per IP per 10 minutes per form, tunable after real traffic data. Requests over the limit receive a generic 429-style response with a friendly retry message, not a technical error.
+- The Worker route that proxies to Formspree applies a rate limit keyed on IP + form type (for example, Cloudflare's native Rate Limiting rules, or a small counter in a Durable Object / the D1 tag-cache database — **not** Workers KV, which this project does not use): a practical starting point is 5 submissions per IP per 10 minutes per form, tunable after real traffic data. Requests over the limit receive a generic 429-style response with a friendly retry message, not a technical error.
 - This defends against both spam floods and accidental double-submits, and is cheap to implement given the Worker already sits in the request path (needed anyway for Turnstile verification and validation).
 
 ### 2.6 Delivery rules (locked)
@@ -106,7 +106,7 @@ Headers are set at the edge — either in the Cloudflare Worker's response (via 
 
 ### 3.1 Content-Security-Policy (CSP)
 
-The site loads: Sanity Studio (at `/studio`, same-origin Next.js route), Sanity's content/image CDN, Formspree (form POST), Cloudflare Turnstile (script + iframe), Cloudflare Web Analytics (beacon script), and Google Fonts (Sora, Plus Jakarta Sans, JetBrains Mono) unless self-hosted.
+The site loads: Sanity's content/image CDN + content API (reads and Draft Mode preview), Formspree (form POST), Cloudflare Turnstile (script + iframe), Cloudflare Web Analytics (beacon script), and Google Fonts (Sora, Plus Jakarta Sans, JetBrains Mono) unless self-hosted. The Studio itself is **not** hosted here — it runs **separately at `*.sanity.studio`** (owner decision) — but that hosted Studio embeds the site's **preview** routes in an iframe (Sanity Presentation), so preview responses must permit framing by the Studio origin (see `frame-ancestors` below).
 
 A representative starting policy (tightened during implementation once exact Sanity/Turnstile hostnames are confirmed):
 
@@ -118,7 +118,7 @@ font-src 'self' https://fonts.gstatic.com;
 img-src 'self' data: https://cdn.sanity.io;
 connect-src 'self' https://*.sanity.io https://formspree.io https://challenges.cloudflare.com https://cloudflareinsights.com;
 frame-src https://challenges.cloudflare.com;
-frame-ancestors 'none';
+frame-ancestors 'none';   /* public routes; preview/Draft-Mode responses relax to: frame-ancestors 'self' https://*.sanity.studio */
 object-src 'none';
 base-uri 'self';
 form-action 'self' https://formspree.io;
@@ -129,7 +129,7 @@ Notes:
 - `'unsafe-inline'` on `style-src` is a pragmatic allowance for Google Fonts' generated `<link>`/CSS and for any inline critical CSS Next.js emits; if implementation adopts nonce-based or hashed styles instead, tighten this and drop `'unsafe-inline'`.
 - `script-src` intentionally does **not** include `'unsafe-inline'` or `'unsafe-eval'` — GSAP, Motion, and app code all ship as bundled `<script>` files from `'self'`, so no inline script execution should be required. If a third-party snippet later needs inline execution, use a per-request nonce, not a blanket allowance.
 - Self-hosting Google Fonts (downloading the woff2 files into the repo/build and serving from `'self'`) removes the `fonts.googleapis.com`/`fonts.gstatic.com` allowances entirely and is the stronger option from both a CSP and privacy (no third-party font request) standpoint — flag as an implementation-phase decision.
-- `/studio` is same-origin, so no extra CSP allowance is needed for the Studio shell itself; Sanity's Studio does make its own `connect-src` calls to `api.sanity.io` and the CDN, already covered by `https://*.sanity.io`.
+- **Studio is deployed separately** (hosted at `*.sanity.studio`, owner decision), so the site never serves the Studio shell and needs no Studio-specific `script-src`. But Sanity's **Presentation** tool embeds the site's **preview** routes inside the hosted Studio, so those preview/Draft-Mode responses relax `frame-ancestors` to `'self' https://*.sanity.studio` while all public, non-preview routes keep `frame-ancestors 'none'`. `connect-src` already covers Sanity via `https://*.sanity.io`.
 - Consider `report-uri`/`report-to` pointing at a lightweight logging endpoint once the policy is stable, to catch violations without breaking the page (start in `Content-Security-Policy-Report-Only` during QA, promote to enforcing before launch).
 
 ### 3.2 Other headers
@@ -139,13 +139,13 @@ Notes:
 | `Strict-Transport-Security` | `max-age=63072000; includeSubDomains; preload` | Forces HTTPS for two years, including `www` redirect target; safe once the canonical domain is fully HTTPS (it is, via Cloudflare) |
 | `X-Content-Type-Options` | `nosniff` | Stops MIME-sniffing attacks on served assets |
 | `Referrer-Policy` | `strict-origin-when-cross-origin` | Limits referrer leakage to third parties (Formspree, fonts) while keeping same-origin analytics useful |
-| `X-Frame-Options` | `DENY` (redundant with CSP `frame-ancestors 'none'`, kept for older browser support) | Prevents the marketing site being framed/clickjacked |
+| `X-Frame-Options` | `DENY` on public routes; **omitted on preview/Draft-Mode responses** (X-Frame-Options cannot allowlist an external origin, so CSP `frame-ancestors https://*.sanity.studio` is the control there) | Prevents clickjacking on public routes while still letting Sanity Presentation embed preview routes |
 | `Permissions-Policy` | `camera=(), microphone=(), geolocation=(), payment=(), usb=()` (deny-by-default; no feature on this site needs any of these) | Reduces attack surface from embedded/third-party content |
 | `X-XSS-Protection` | Omit or `0` | Deprecated header; modern CSP supersedes it, do not rely on it |
 
 ### 3.3 Where headers are set
 
-- Primary: Worker response headers via the OpenNext Cloudflare adapter's middleware, so headers apply uniformly to every route (including `/studio` and API/Route Handlers), before any Next.js-level header config that might only apply to specific route types.
+- Primary: Worker response headers via the OpenNext Cloudflare adapter's middleware, so headers apply uniformly to every route (including API/Route Handlers), with the `frame-ancestors`/X-Frame-Options relaxation scoped to preview/Draft-Mode responses only, before any Next.js-level header config that might only apply to specific route types.
 - Fallback/duplicate: `next.config.ts` `headers()` function as a second layer for local `next dev`/`next start` parity so headers are visible in local testing too. If both layers are present, the Worker layer is the source of truth for production; keep the two in sync manually and note the duplication in code comments to avoid drift.
 - Preview deployments carry the **same** header set as production — no relaxed CSP "for testing," since that is exactly when a misconfiguration would go unnoticed.
 
@@ -159,11 +159,12 @@ Notes:
 - No third account, service integration, or "viewer" link is granted write access. API tokens used by CI/build (for `next-sanity` fetches or ISR revalidation) are scoped to **read-only** unless a specific server route needs write access (none identified at launch — the Growth Plan Builder writes to Formspree, not Sanity).
 - Any future write-capable token (e.g., a webhook that programmatically updates content) is scoped to the minimum dataset and document types it needs, not project-wide admin rights.
 
-### 4.2 Studio access at `/studio`
+### 4.2 Studio access (separate Sanity-hosted deploy)
 
-- The Studio route is embedded in the Next.js app at `/studio` per the locked brief. Sanity's own authentication (Sanity login, project membership) is the primary gate — only the two invited project members can authenticate into the Studio at all, regardless of whether the route is publicly reachable.
-- As defence in depth, `/studio` is excluded from the sitemap and marked `noindex` (it's an app route, not content), and is not linked from any public navigation.
-- Consider Cloudflare Access (Zero Trust) in front of `/studio` as an optional extra network-layer gate if the team wants a second login step before Sanity's own auth is even reached — flagged as an optional hardening step, not required for launch since Sanity's project-membership auth is already a real control.
+- The Studio is **deployed separately via Sanity hosting** at a `*.sanity.studio` URL (owner decision) — it is **not** a Next.js route in this app, so there is no public `/studio` surface on `infiniteweblinks.com` to protect. Its source lives in the same repo under `studio/` and is published with `sanity deploy`.
+- Access control is Sanity's own authentication and project membership — only the two invited project members can authenticate into the Studio at all; Sanity serves it over HTTPS.
+- Because the Studio is not on the Worker, **Cloudflare Access does not apply** to it; the equivalent gate would be Sanity's own organisation/SSO controls if the team later wants a second step. A custom admin domain (e.g. `admin.infiniteweblinks.com`) is an optional later step.
+- The only Studio-related surfaces on the site are the secret-gated preview/revalidation Route Handlers (`/api/draft-mode/enable|disable`, `/api/revalidate`) — see §4.3.
 
 ### 4.3 Draft/preview protection — no public draft leakage
 
@@ -178,8 +179,8 @@ Notes:
 
 ### 4.5 CORS origins
 
-- Sanity project CORS settings allow only: the production origin (`https://infiniteweblinks.com`), the Cloudflare preview deployment origin(s), and `http://localhost:3000` (or the equivalent local dev port) for local development. No wildcard (`*`) origin is added.
-- The Studio's own origin (same app, `/studio`) is covered by the production/preview entries above since it's embedded, not a separate deployment.
+- Sanity project CORS settings allow only: the production origin (`https://infiniteweblinks.com`), the **hosted Studio origin** (`https://<project>.sanity.studio`), the Cloudflare preview deployment origin(s), and `http://localhost:3000` (or the equivalent local dev port) for local development. No wildcard (`*`) origin is added.
+- Because the Studio is a **separate** Sanity-hosted deployment (not embedded), its `*.sanity.studio` origin is an explicit CORS entry above — it is not covered by the site origins. The site's **preview** routes additionally allow being framed by that Studio origin via CSP `frame-ancestors` (§3.1) so Presentation live-editing works.
 
 ---
 
@@ -295,7 +296,7 @@ Per the locked brief and Constitution Principle IX, this plan does **not** inven
 - [ ] Security headers (CSP, HSTS, X-Content-Type-Options, Referrer-Policy, X-Frame-Options/`frame-ancestors`, Permissions-Policy) present on production **and** preview responses, verified with a live header-inspection check, not just code review
 - [ ] CSP allowlist contains only Sanity, Formspree, Turnstile, Cloudflare Analytics, and (if not self-hosted) Google Fonts — no stray domains from copy-pasted boilerplate
 - [ ] Sanity roles reviewed: each of the two admins has the least-privilege role their actual duties require; no unused service tokens with write access
-- [ ] `/studio` unreachable without a valid Sanity login; excluded from sitemap and `noindex`
+- [ ] Studio (separate `*.sanity.studio` deploy) reachable only after a valid Sanity login; site has **no** public `/studio` route; Sanity CORS allowlist contains only known origins (site, `*.sanity.studio`, previews, localhost); preview routes framable only by `*.sanity.studio`
 - [ ] Draft Mode requires a valid secret token; unauthenticated requests never receive draft/placeholder content; dataset visibility set to private/restricted
 - [ ] Sanity CORS origins limited to production, preview, and local-dev origins — no wildcard
 - [ ] Dependencies pinned, lockfile committed, `npm audit` and Dependency Review passing in CI, GitHub secret scanning + push protection enabled

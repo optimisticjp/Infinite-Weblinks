@@ -61,7 +61,27 @@ All 22 deliverables are present.
 - CTA gradient contrast (R-A11Y-1 / CHK-A12) and section-scoped text colour aliases (R-A11Y-2 /
   CHK-A13) — surfaced by computing contrast on the approved tokens.
 
-**No contradictions found** between spec requirements, plan architecture, and task backlog.
+**Post-review revisions applied (owner-locked, 2026-07-14) — consistent across artifacts**
+- **TypeScript → stable 6.0.x** (native TS7 = future experiment only; `5.9.x` LTS interim if no 6.0 GA):
+  research.md R6, plan.md, tasks.md T001, checklist CHK043.
+- **OpenNext cache → R2 incremental cache + D1 tag cache + Workers Assets, no KV; on-demand revalidation**
+  (no time-based ISR, no Durable-Object queue initially): research.md R2, deployment.md §1/§5,
+  environment.md §3, performance.md §caching, sitemap-and-routes legend, plan.md, tasks.md T004/T025,
+  CHK044/045. Binding names verified across deployment/environment (`NEXT_INC_CACHE_R2_BUCKET`,
+  `NEXT_TAG_CACHE_D1`, `ASSETS`).
+- **Sanity Studio → separate Sanity-hosted deploy (`*.sanity.studio`), not embedded at `/studio`**:
+  research.md R3, deployment.md §6, security-privacy §3.1/§4.2/§4.5, environment.md, sitemap-and-routes,
+  seo.md, plan.md, data-model.md, tasks.md T015/T022/T024, CHK046. CSP now relaxes preview
+  `frame-ancestors` to `https://*.sanity.studio`; Sanity CORS adds that origin.
+- **Progressive CMS**: initial slice at M3; roadmaps → M7; articles/resources/examples/case-studies/
+  testimonials → M8; full model preserved: data-model.md, plan.md milestones, tasks.md, CHK047.
+- **Content seeded as Draft/Placeholder**, owner verifies progressively; previews don't need polished
+  copy: spec.md, data-model.md, tasks.md T027, CHK048.
+- **Mandatory homepage-opening review gate (GATE-1)** after M4: plan.md, tasks.md T035a/T035b,
+  quickstart.md, CHK049.
+
+**No contradictions found** between spec requirements, plan architecture, and task backlog after the
+revisions.
 
 ## 3. Risk register
 
@@ -71,36 +91,39 @@ Severity: 🔴 high · 🟠 medium · 🟡 low. Each risk has an owner action or
 |---|---|---|---|
 | R-A11Y-1 | Primary CTA gradient (white text on pink→orange) fails WCAG AA at the orange end (~2.6:1) | 🟠 | Use dark `--ink-950` text on the CTA gradient; add a validated CTA token. Fix in M2 (T006) before primitives. |
 | R-A11Y-2 | Global body-text token fails on the bright `#F4F1EA` editorial band (~1.6:1) | 🟠 | Introduce section-scoped text aliases (on-dark/on-band/on-statement); re-check all pairs. M2 (T007). |
-| R-TS-1 | TypeScript 7.0.2 (native compiler) may outpace tooling type-support (ESLint TS plugin, Sanity typegen, Vitest) | 🟠 | Throwaway compile at start; pin TS 5.9.x LTS if gaps. Both satisfy the brief. T001. |
-| R-IMG-1 | `next/image` optimisation behaviour under `@opennextjs/cloudflare` 1.20.1 unconfirmed | 🟠 | Validate loader at M2; choose Sanity image pipeline vs Cloudflare Images/loader. `design/performance.md` / `design/deployment.md`. |
-| R-DEPLOY-1 | Cloudflare Workers Builds cannot cleanly separate preview vs production secrets | 🟠 | Recommend **GitHub Actions** (`opennextjs-cloudflare build` + `wrangler deploy`) for per-env secrets + PR previews (`design/deployment.md`). |
+| R-TS-1 | TypeScript owner-locked to stable **6.0.x**, but npm shows **no 6.0.x GA yet** (`6.0.0-beta` only; `latest`=7.0.2) | 🟡 | Pin the 6.0.x GA once published, else **`5.9.x` LTS** interim (both honour the owner's intent + brief strict mode); typecheck the full toolchain at setup. research.md R6 / T001. Native TS7 = experiment only. |
+| R-CACHE-1 | The R2-incremental-cache + D1-tag-cache OpenNext config must match current OpenNext docs (binding/override names, `wrangler.jsonc`) | 🟠 | **Owner-required re-validation at implementation start** (T004); a mismatch silently disables caching. deployment.md §1/§5. |
+| R-STUDIO-1 | Separate hosted Studio needs correct Sanity CORS origins (`*.sanity.studio`, previews) + preview `frame-ancestors` for Presentation; misconfig breaks live editing/preview | 🟡 | Configure CORS + preview framing per security-privacy §3.1/§4.5 and deployment §6; verify Presentation end-to-end on a preview URL. |
+| R-IMG-1 | `next/image` optimisation behaviour under `@opennextjs/cloudflare` 1.20.1 unconfirmed | 🟠 | Decision: serve editor media via Sanity image CDN; validate at M2 (deployment §4). `design/performance.md` / `design/deployment.md`. |
+| R-DEPLOY-1 | Cloudflare Workers Builds cannot cleanly separate preview vs production secrets | 🟠 | Recommend **GitHub Actions** (`opennextjs-cloudflare build` + `wrangler deploy`) for per-env secrets + PR previews; Studio deploys separately via `sanity deploy` (`design/deployment.md`). |
 | R-MW-1 | Node.js middleware (Next 15.2+) is unsupported by the Cloudflare adapter | 🟡 | Do host canonicalisation/redirects at the Cloudflare edge and headers via config/Worker; avoid Node middleware. `research.md` R1. |
-| R-CONTENT-1 | Large taxonomy (~110+ services, ~80+ tools, goals, roadmaps, rules) needs authored + **Verified** copy; heavy content lift | 🔴 | **Owner decision Q1**: who authors/verifies content, and is it in this build's scope? Seed from the Guide; gate everything until Verified. Affects M8/M10 timeline. |
-| R-CMS-1 | Sanity free-tier seat/dataset/bandwidth limits for two editors + preview | 🟡 | Confirm project/plan (Owner Q2); Sanity free tier covers two editors + one dataset; monitor usage. |
+| R-CONTENT-1 | Large taxonomy (~110+ services, ~80+ tools, goals, roadmaps, rules) needs **Verified** copy; content lift | 🟡 | **Resolved (Q1 locked)**: seed structure from the Growth Guide as **Draft/Placeholder**; owner reviews and Verifies **progressively**; previews don't need polished copy. Real effort remains but is no longer a blocker; gating keeps unverified content off the public site. |
+| R-CMS-1 | Sanity free-tier seat/dataset/bandwidth limits for two editors + preview | 🟡 | **Resolved (Q2 locked)**: create a **new free Sanity project** (two editor seats, one `production` dataset). Monitor usage; free tier covers this profile. |
 | R-LGL-1 | GSAP licence forbids building a Webflow **competitor** | 🟡 | Not applicable (marketing site). Watch item only; re-check if scope ever changes. |
-| R-LOGO-1 | Logo needs human vector cleanup (outline live Sora wordmark) + originality/trademark review before final launch | 🟠 | Does not block previews (brief §7). **Owner action**: schedule the human review before production launch. |
+| R-LOGO-1 | Logo needs human vector cleanup (outline live Sora wordmark) + originality/trademark review | 🟡 | **Resolved (Q3 locked)**: current logo is fine for **previews**; cleanup + trademark review are **production-launch gates only**. Owner action: complete both before production. |
 | R-FONT-1 | Real brand webfonts not supplied; current fonts are Google-Fonts substitutions | 🟡 | Build with substitutes via `next/font`; swap real webfonts later with no layout change. |
 | R-PERF-1 | Rich hero/scroll motion could threaten performance budgets on low-end mobile | 🟠 | Static-first hero, dynamic-import GSAP, transforms/opacity only, lazy below-fold, LHCI budget gate (M9). If a validated Three.js prototype is ever proposed, re-budget. |
 | R-VER-1 | Pinned versions may move before implementation begins | 🟡 | Re-verify + pin at start (T001); brief §17. |
 | R-SPAM-1 | Public email-led forms attract spam/abuse | 🟡 | Turnstile (server-verified) + honeypot + timing + edge rate-limit + Formspree filtering (`contracts/forms-and-email.md`). |
-| R-SEC-1 | CSP must allow Sanity Studio, Formspree, Turnstile, Cloudflare Analytics, fonts without over-opening | 🟡 | Explicit allowlist + test; keep third-party surface minimal (`design/security-privacy.md`). |
+| R-SEC-1 | CSP must allow Sanity (API/CDN), Formspree, Turnstile, Cloudflare Analytics, fonts without over-opening; preview routes must be framable by `*.sanity.studio` (Presentation) without opening public routes | 🟡 | Explicit allowlist + test; keep third-party surface minimal; `frame-ancestors 'none'` on public routes, relaxed only on preview/Draft-Mode responses (`design/security-privacy.md`). The external Studio is **not** served by the app, shrinking the app's script surface. |
 
-## 4. Open questions / decisions requested
+## 4. Open questions / decisions — **RESOLVED (owner-locked, 2026-07-14)**
 
-**None block plan approval.** The brief is thorough enough to proceed on grounded defaults. The
-following need an owner answer **before the noted milestone**, not before approval:
+The three previously-open decisions are now **locked** by the owner and reflected across the artifacts:
 
-- **Q1 (before M8/M10) — Content authoring & verification.** The taxonomy is large and everything is
-  gated until **Verified**. Is authoring/verifying the full service/tool/goal/roadmap/rule content in
-  scope for this build, or will the owner supply approved copy? This materially affects the M8/M10
-  timeline. *(Default assumed: seed structure from the Growth Guide; owner reviews/Verifies before any
-  page goes public.)*
-- **Q2 (before M3) — Sanity project.** Use an existing Sanity organisation/project or create a new one?
-  Confirm two editor seats + a production dataset on the free tier are acceptable. *(Default: create a
-  new free project.)*
-- **Q3 (before production launch) — Logo finalisation.** Confirm the human vector cleanup (outline the
-  live Sora wordmark) and originality/trademark review will be completed before production (does not
-  block preview builds). *(Default: previews proceed; production gated on this.)*
+- **Q1 — Content authoring & verification → LOCKED.** Content authoring **is in scope as structured
+  Draft/Placeholder seeding** from the Growth Guide; the owner reviews and marks content **Verified
+  progressively**. Full polished taxonomy copy is **not** required before homepage previews. (spec.md,
+  data-model.md, tasks.md T027; R-CONTENT-1.)
+- **Q2 — Sanity project → LOCKED.** Create a **new free Sanity project** for two editors. (research.md
+  R3, spec.md; R-CMS-1.)
+- **Q3 — Logo → LOCKED.** The current logo may be used in **previews**; human vector cleanup +
+  originality/trademark review are **production-launch gates only**. (spec.md, research.md; R-LOGO-1.)
+
+**No new blocking questions** arise from the architecture revisions (they were owner-directed). The only
+remaining owner **action items** are the risk-register follow-ups: re-validate the OpenNext R2/D1 cache
+config at implementation (R-CACHE-1), confirm the TypeScript 6.0.x GA vs 5.9.x interim at setup (R-TS-1),
+and complete the logo cleanup before production (R-LOGO-1).
 
 **Refinements defaulted (documented, non-blocking; adjust at `plan` review if desired):**
 - Keep `/business-types/[slug]` and `/solutions` as **distinct** routes (better internal linking/SEO)
@@ -114,8 +137,12 @@ following need an owner answer **before the noted milestone**, not before approv
 
 - **Constitution**: PASS, no unjustified violations.
 - **Coverage**: all 22 deliverables present; all brief sections addressed (see `checklist.md`).
-- **Consistency**: no contradictions; source conflicts resolved in favour of the locked brief.
-- **Blockers to approval**: none. Three owner decisions requested before specific downstream milestones.
+- **Consistency**: no contradictions after the owner-locked revisions; TypeScript/caching/Studio/
+  progressive-CMS/review-gate changes reflected consistently across all affected artifacts (§2).
+- **Owner decisions**: Q1–Q3 **locked** and applied; only implementation-time re-validations remain
+  (R-CACHE-1, R-TS-1) plus the pre-launch logo gate (R-LOGO-1).
+- **Blockers to approval**: none.
 
-**Recommended next step**: owner reviews this planning set; on approval, resolve Q1–Q3, then begin
-Milestone M2 via `/speckit-implement`. **Do not start implementation before approval.**
+**Recommended next step**: begin Milestone **M2** via `/speckit-implement` when ready — building to the
+**GATE-1** homepage-opening review stop, at which point a private preview is deployed and work halts for
+owner review before the remaining homepage sections. **Implementation has not started.**

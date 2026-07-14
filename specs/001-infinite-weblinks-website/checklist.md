@@ -39,7 +39,7 @@ implementation (Spec Kit `checklist` stage). Items are written against the artif
 - [x] CHK028 Growth Plan output fields exactly match brief §15 (Start here/Connect next/Add later/…).
 - [x] CHK029 Engagement ranges are the exact 6 neutral options, no currency.
 - [x] CHK030 CTAs limited to the approved set with fixed routes.
-- [ ] CHK031 Any remaining `[NEEDS CLARIFICATION]` resolved — **see open questions in `analysis.md`** (2 non-blocking).
+- [x] CHK031 Owner clarifications resolved and **locked** (analysis.md §4): Q1 content seeded as Draft/Placeholder from the Growth Guide; Q2 new free Sanity project; Q3 logo cleanup/trademark = production-launch gate only.
 
 ## Consistency (spec ↔ plan ↔ design ↔ sources)
 - [x] CHK032 Official names identical across all artifacts (stages, systems, delivery models).
@@ -62,7 +62,27 @@ implementation (Spec Kit `checklist` stage). Items are written against the artif
 - [ ] CHK-A13 Add section-scoped text colour aliases (on-dark / on-band / on-statement); the global
       body-text token fails on the bright `#F4F1EA` band. → risk R-A11Y-2.
 
+## Owner-locked revisions (post-review) — reflected across artifacts
+- [x] CHK043 TypeScript pinned to **latest stable 6.0.x** (native TS7 = future experiment only; `5.9.x`
+      LTS interim if no 6.0 GA at setup) — research.md R6, plan.md, tasks.md T001.
+- [x] CHK044 OpenNext cache = **R2 incremental cache + D1 tag cache + Workers Assets, no KV**, **on-demand
+      revalidation** (no time-based ISR, no Durable-Object queue initially) — research.md R2,
+      design/deployment.md, design/environment.md, design/performance.md, tasks.md T004/T025.
+- [x] CHK045 Config re-validated against current OpenNext docs at implementation (**R-CACHE-1**) recorded.
+- [x] CHK046 Sanity Studio **deployed separately** (`*.sanity.studio`, `studio/` workspace), **not
+      embedded** at `/studio`; CSP/CORS/framing updated — research.md R3, deployment, security-privacy,
+      environment, sitemap-and-routes, plan.md.
+- [x] CHK047 **Progressive CMS**: initial schema slice in M3; roadmaps → M7; articles/resources/examples/
+      case-studies/testimonials → M8; full model preserved — data-model.md, plan.md, tasks.md.
+- [x] CHK048 Content **seeded as Draft/Placeholder** from the Growth Guide; owner verifies progressively;
+      polished copy not required before homepage previews — spec.md, data-model.md, tasks.md T027.
+- [x] CHK049 **Mandatory homepage-opening review gate (GATE-1)** added after tokens/primitives, header,
+      mega-menu foundation, mobile nav, static hero, animated infinity, bright transition, reduced-motion,
+      responsive testing → private preview → owner stop — plan.md, tasks.md T035a/T035b, quickstart.md.
+- [x] CHK050 New free **Sanity project** for two editors; logo usable in previews, cleanup/trademark =
+      production gate — research.md R3, spec.md, analysis.md.
+
 ## Notes
-- Unchecked items (CHK031, CHK-A12, CHK-A13) are **planned resolutions**, not gaps in the plan: two are
-  design-token fixes scheduled for Milestone 2 (before component build); one tracks two non-blocking
-  owner questions in `analysis.md`. None block plan approval.
+- Unchecked items (**CHK-A12, CHK-A13**) are **planned resolutions**, not gaps: both are design-token
+  fixes scheduled for Milestone 2 (before component build). Owner clarifications (CHK031) are resolved
+  and the post-review architecture revisions are applied (CHK043–CHK050). None block plan approval.

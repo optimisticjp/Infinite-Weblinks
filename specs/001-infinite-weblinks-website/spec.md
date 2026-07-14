@@ -133,7 +133,7 @@ breadcrumbed.
 
 ### User Story 3 — Editors manage all content and sections safely (Priority: P2)
 
-Two admins use an embedded, protected **Sanity Studio** to add/edit/remove content, publish/unpublish,
+Two admins use a **separately-hosted, protected Sanity Studio** (`*.sanity.studio`) to add/edit/remove content, publish/unpublish,
 reorder and show/hide sections, switch a section's approved theme/layout, edit navigation and CMS-driven
 mega-menus, edit footer/social links and CTAs, and manage goals, starting points, stages, services,
 tools, roadmaps, examples, case studies, testimonials, articles, FAQs and SEO fields — all through a
@@ -353,8 +353,19 @@ checklist in `checklist.md` are satisfied and the convergence review (`analysis.
 
 - **Goal-based navigation is primary**; the exact grouping of Solutions/Services/Resources may be
   refined during `plan`, but service pages remain available for detail and SEO (brief §12).
-- **Sanity CMS** is used unless planning identifies a materially better free-first option; planning
-  concluded Sanity remains the choice (see `research.md`).
+- **Sanity CMS** (a **new free project** for two editors) is used; planning confirmed it over
+  alternatives (see `research.md`). The **Studio is deployed separately** (Sanity-hosted
+  `*.sanity.studio`), not embedded in the app.
+- **CMS schemas are implemented progressively** (owner decision): the initial slice covers site
+  settings, navigation/mega-menus, footer, pages, homepage sections, goals, growth stages &
+  cross-cutting systems, services, tools, FAQs, and CTA/form settings; roadmaps, articles, resources,
+  examples, case studies and testimonials arrive with their frontend milestones. The full model is
+  designed up front.
+- **Taxonomy content is seeded as Draft/Placeholder** from the Growth Guide (owner decision); the owner
+  reviews and marks it Verified progressively. Full polished copy is **not** required before homepage
+  previews.
+- **The current logo may be used in previews**; human vector cleanup + originality/trademark review are
+  **production-launch gates only** (owner decision).
 - **English-only, single `en` locale at launch**, built hreflang-ready for future markets.
 - **No visitor auto-reply email at launch**; team-only delivery to `support@infiniteweblinks.com`.
 - **Two admin/editor users**; small-team maintainability is a design constraint.

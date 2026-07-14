@@ -36,7 +36,7 @@ description — no template collisions across sibling pages.
 | `/resources`, `/faq`, `/about` | Index | FAQ schema only if accordion is actually rendered (§4); team bios only once Verified |
 | `/privacy`, `/cookies`, `/terms`, `/accessibility` | Index | Low priority in sitemap weighting, not excluded from index |
 | `/growth-plan`, `/contact` (+ `?subject=growth-goals`) | **Noindex, follow** | Personalised/form flows, not search landing targets; query variant canonicals to `/contact` |
-| `/studio` | **Noindex, nofollow**, blocked in `robots.txt`, never linked publicly | CMS admin surface |
+| `/api/*` (Draft-Mode / revalidate handlers) | **Noindex**, blocked in `robots.txt`, secret-gated | Not content routes. The Studio itself is **external** (`*.sanity.studio`), not a route on this domain, so it needs no rule here |
 | Thank-you / form-success states | **Noindex** | Thin-content duplicate, no search value |
 | Filtered/faceted listing URLs (`/services?category=&stage=`) | **Noindex, canonical → clean listing URL** | Prevents duplicate-content explosion from the §16 filter model (category, goal, stage, business type, delivery model, tool) |
 | Sanity Presentation-tool preview URLs | **Noindex, nofollow**, access-gated | Never crawlable in production |
@@ -44,7 +44,7 @@ description — no template collisions across sibling pages.
 
 Mechanics: prefer `generateMetadata` → `robots: { index:false, follow:true }` over
 `robots.txt` disallow wherever link equity should still flow (`/growth-plan`, `/contact`) —
-`robots.txt` disallow is reserved for `/studio` and genuine crawl-budget waste, since a
+`robots.txt` disallow is reserved for the secret-gated `/api/*` handlers and genuine crawl-budget waste (the Studio is external at `*.sanity.studio`, not a route on this domain), since a
 disallowed page's meta robots can't be read and its indexing becomes unpredictable if ever
 linked externally. Faceted URLs are query-string only (never nested static routes) and always
 carry both `noindex` and a canonical pointing at the clean listing page.
@@ -165,13 +165,13 @@ volume warrants it — not needed at launch scale, but keep `sitemap.ts` structu
 ```
 User-agent: *
 Allow: /
-Disallow: /studio
+Disallow: /api/
 Sitemap: https://infiniteweblinks.com/sitemap.xml
 ```
 Start permissive on query strings; tighten only if Search Console crawl-stats evidence shows
-waste (some query variants may be legitimate). `/studio` is blocked here as a third layer
-beneath its own `noindex,nofollow` tag and app-level auth — belt and braces for the CMS admin
-surface.
+waste (some query variants may be legitimate). The `/api/*` route handlers are blocked here as
+a second layer beneath their secret-gating. (Sanity Studio is hosted externally at
+`*.sanity.studio` and is not a route on this domain, so it needs no robots rule.)
 
 **Host canonicalisation**: Cloudflare edge 301 `www` → root (the actual enforcement) +
 `alternates.canonical` always emitting the root host regardless of request host (covers edge
@@ -253,8 +253,9 @@ Brief §15 uses neutral engagement ranges, not prices.
 ## 10. Done checklist
 
 - [ ] Indexation table (§1) implemented; Verified/Ready gating applied to roadmaps, examples,
-      case studies; `/growth-plan`, `/contact`, `/studio`, thank-you states, faceted URLs
-      noindexed/canonicalised as specified.
+      case studies; `/growth-plan`, `/contact`, `/api/*`, thank-you states, faceted URLs
+      noindexed/canonicalised as specified. (Studio is external at `*.sanity.studio` — not a
+      site route.)
 - [ ] `generateMetadata` implemented per route type, CMS-driven, safe non-empty fallbacks;
       title template applied site-wide.
 - [ ] Exactly one canonical per page; `www` → root 301 live at the edge; canonical always
@@ -267,7 +268,7 @@ Brief §15 uses neutral engagement ranges, not prices.
       Service, Article, FAQPage (only where visibly rendered), ItemList on listings. No
       Review/AggregateRating/Testimonial schema anywhere.
 - [ ] `sitemap.xml` dynamic, Verified/Ready-only, excludes noindex routes; `robots.txt` blocks
-      `/studio`; both via Next.js route handlers.
+      `/api/`; both via Next.js route handlers.
 - [ ] Per-page OG images (CMS override → route-type default → site default), no unverified
       stats/quotes baked in; `summary_large_image` cards.
 - [ ] Hero and 8-stage Journey text confirmed server-rendered without JS/animation dependency.

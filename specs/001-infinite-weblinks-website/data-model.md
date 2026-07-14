@@ -17,6 +17,24 @@ Phase 1 design artifact. Defines the **Sanity** content model: document types, s
   by references, enabling filtering (brief §16) and rich internal linking (SEO).
 - **Global English** in all editorial fields; official names locked.
 
+> **Progressive implementation (owner decision):** the **complete model below is designed up front**,
+> but schemas are **built in slices**. The **initial slice (Milestone M3)** covers: `siteSettings`,
+> `navigation`/`megaMenu`, `footer`, `page` + section objects, homepage sections, `goal`,
+> `growthStage`, `crossCuttingSystem`, `service` (+ `serviceCategory`), `tool` (+ `toolCategory`),
+> `faq`, `cta`/`ctaLibrary`/`formSettings`, plus `businessType`/`startingPoint`/`deliveryModel` and the
+> `growthPlanRuleSet` needed by the builder. **`roadmap`** lands with M7 and **`article`/`resource`/
+> `example`/`caseStudy`/`testimonial`** with M8 (their frontend milestones). Later additions are
+> extensions, not rework. All seeded taxonomy starts as **Draft/Placeholder** and is Verified
+> progressively by the owner.
+
+> **Studio hosting (owner decision):** the Studio is a **separate Sanity-hosted deploy**
+> (`*.sanity.studio`), not embedded in the app — see `design/deployment.md` / `design/security-privacy.md`.
+> This does not change the schema/content model, only where the editing UI runs.
+
+**`formSettings`** (config singleton, part of the initial slice): CMS-editable Formspree endpoint IDs
+and per-form copy/success messages for the Growth Plan Builder and Contact form (values referenced by
+`contracts/forms-and-email.md`); no secrets stored here.
+
 ## Shared objects (reusable field groups)
 
 | Object | Fields (intent) |

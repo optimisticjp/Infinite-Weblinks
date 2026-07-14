@@ -23,17 +23,19 @@ follows the approved token system and Signature Crossover logo; the hero is rebu
 
 ## Technical Context
 
-**Language/Version**: TypeScript 7.0.2 (strict) — validate vs 5.9.x LTS fallback (R6). Node LTS for
-tooling.
+**Language/Version**: TypeScript **6.0.x** strict (latest stable 6.0 line; `5.9.x` LTS interim if no
+6.0 GA at setup — R6; native TS7 = future experiment only). Node LTS for tooling.
 **Primary Dependencies**: Next.js 16.2.10, React 19.2.7, Sanity 6.4.0 + next-sanity 13.1.1,
 @opennextjs/cloudflare 1.20.1, wrangler 4.110.0, gsap 3.15.0, motion 12.42.2, lucide-react ~1.x,
 @marsidev/react-turnstile 1.5.3, zod. (Full list + rationale in [`research.md`](./research.md).)
-**Storage / Content**: Sanity (production dataset) as the content source of truth; Cloudflare KV
-(incremental cache) + R2 (assets). No application database; form data flows to email via Formspree.
+**Storage / Content**: Sanity (a **new** free project, production dataset) as the content source of
+truth; **Cloudflare R2 as the OpenNext incremental cache + D1 as the tag cache + Workers Static Assets
+(no KV)**, on-demand revalidation. No application database; form data flows to email via Formspree.
 **Testing**: Vitest (unit/component, esp. the rules engine), Playwright 1.61.1 (E2E, a11y, visual),
 Lighthouse CI, axe-core. (See [`design/testing.md`](./design/testing.md).)
 **Target Platform**: Cloudflare Workers (edge); canonical `https://infiniteweblinks.com`, www→root.
-**Project Type**: Web application (single Next.js app + embedded Sanity Studio) — see Structure below.
+**Project Type**: Web application (Next.js app) + a **separately-hosted Sanity Studio** (`studio/`
+workspace deployed to `*.sanity.studio`, not embedded) — see Structure below.
 **Performance Goals**: Core Web Vitals "good"; Lighthouse mobile ≥90 (target 95+); per-page-type
 budgets in [`design/performance.md`](./design/performance.md).
 **Constraints**: Email-led only (no calendar/phone); services-company positioning (no SaaS/login);
@@ -74,25 +76,33 @@ not a deviation. Complexity Tracking below is therefore empty.
    status-gated content from Sanity and compose **approved modular section types**. Client Components
    are isolated islands: hero motion, Growth Plan Builder, service/tool filters, mega-menu/mobile-nav
    interactivity, forms.
-2. **Content (Sanity)** — a controlled schema (see [`data-model.md`](./data-model.md)) modelling the
-   taxonomy graph (Goal/Service/Tool/Roadmap/Stage/BusinessType/StartingPoint/DeliveryModel), the modular
-   page builder, navigation/footer/CTA/SiteSettings, articles/FAQ/legal, and placeholder-gated proof
-   (case studies/testimonials/stats). Presentation tool for live editing; Draft Mode for preview.
+2. **Content (Sanity — separately-hosted Studio)** — a controlled schema (see
+   [`data-model.md`](./data-model.md)) modelling the taxonomy graph
+   (Goal/Service/Tool/Roadmap/Stage/BusinessType/StartingPoint/DeliveryModel), the modular page builder,
+   navigation/footer/CTA/SiteSettings, articles/FAQ/legal, and placeholder-gated proof
+   (case studies/testimonials/stats). The Studio is **deployed separately to `*.sanity.studio`** (not
+   embedded); its Presentation tool frames the site's preview routes for live editing; Draft Mode
+   (secret-gated Route Handlers in the app) serves protected preview. Schemas are implemented
+   **progressively** (see Milestone Plan).
 3. **Business logic (separated from presentation)** — the **Growth Plan Builder rules engine**: pure,
    testable functions mapping inputs → structured recommendation, driven by a reviewed
    `growthPlanRuleSet` stored in the CMS (see [`contracts/growth-plan-rules.md`](./contracts/growth-plan-rules.md)).
    Zod schemas shared client/server for validation.
 4. **Integrations (edge)** — Formspree (form transport, team-only email), Turnstile (bot defence,
    server-verified), Cloudflare Web Analytics (cookieless RUM), Sanity webhook → `/api/revalidate`.
-5. **Delivery (Cloudflare Workers via OpenNext)** — SSG/ISR pages cached in KV, assets in R2, on-demand
-   revalidation on publish; edge host canonicalisation + security headers; preview per PR.
+5. **Delivery (Cloudflare Workers via OpenNext — small-site cache)** — static files via **Workers
+   Assets**; SSG pages cached in the **R2 incremental cache** with a **D1 tag cache** driving
+   **on-demand** revalidation on publish (no KV, no time-based ISR, no Durable-Object queue initially);
+   edge host canonicalisation + security headers; preview per PR. Manual redeploy/revalidation is the
+   documented fallback.
 
 ### Data flow
 - **Read**: Route (RSC) → Sanity GROQ query (published + status-gated) → render section types → HTML at
-  edge (KV-cached). Publish in Studio → webhook → targeted revalidation.
+  edge (R2-cached). Publish in the hosted Studio → webhook → targeted tag/path revalidation (D1).
 - **Convert**: Builder (client) → Zod validate → Turnstile token → rules engine (local, deterministic)
   → result render → submit to Formspree with Turnstile server-verify → team email → success state.
-- **Preview**: Editor → Draft Mode (secret) → RSC reads drafts → Presentation live edit; never public.
+- **Preview**: Editor in hosted Studio → Presentation frames the site preview → Draft Mode (secret)
+  → RSC reads drafts; never public.
 
 ### Cross-cutting
 Accessibility, SEO/structured-data, performance budgets, security headers/CSP, and motion/reduced-motion
@@ -119,57 +129,71 @@ Infinite-Weblinks/
 │   ├── (convert)/
 │   │   ├── growth-plan/page.tsx     # Growth Plan Builder (client island)
 │   │   └── contact/page.tsx
-│   ├── studio/[[...tool]]/page.tsx   # embedded Sanity Studio (protected)
-│   ├── api/{revalidate,draft,disable-draft}/route.ts
+│   ├── api/{revalidate,draft-mode/enable,draft-mode/disable}/route.ts  # secret-gated (no /studio route)
 │   ├── sitemap.ts · robots.ts · opengraph-image.tsx
 │   └── layout.tsx · not-found.tsx · error.tsx
 ├── src/
 │   ├── components/{primitives,chrome,sections,hero,forms,builder}/
 │   ├── lib/
 │   │   ├── growth-plan/             # rules engine (pure, unit-tested) + types
-│   │   ├── sanity/                  # client, queries (GROQ), image, live/preview
+│   │   ├── sanity/                  # client, queries (GROQ), image, live/preview (Draft Mode)
 │   │   ├── validation/              # zod schemas (forms, builder)
 │   │   ├── seo/                     # metadata + JSON-LD builders
 │   │   └── motion/                  # GSAP registration, reduced-motion guard
 │   └── styles/tokens/               # colours, type, spacing, effects (from handoff, contrast-fixed)
-├── sanity/
-│   ├── schemaTypes/                 # documents + objects (section types, taxonomy)
+├── studio/                          # SEPARATE Sanity Studio workspace — deployed via `sanity deploy`
+│   ├── package.json                 # its own deps (sanity, @sanity/vision); NOT bundled into the app
+│   ├── schemaTypes/                 # documents + objects (section types, taxonomy) — shared types
 │   ├── structure/                   # desk structure, roles guidance
 │   └── sanity.config.ts · sanity.cli.ts
 ├── public/                          # editable SVG logo/hero assets, favicons
 ├── tests/{unit,e2e,visual}/         # Vitest + Playwright
-├── .github/workflows/               # CI: lint, typecheck, test, a11y, LHCI, deploy
-├── open-next.config.ts · wrangler.jsonc · next.config.ts
+├── .github/workflows/               # CI: lint, typecheck, test, a11y, LHCI, app deploy (+ studio deploy on studio/** change)
+├── open-next.config.ts · wrangler.jsonc · next.config.ts   # wrangler: R2 inc-cache + D1 tag cache + Assets (no KV)
 ├── .env.example                     # names + placeholders only (no secrets)
 └── eslint/prettier/tsconfig/vitest/playwright configs
 ```
 
-**Structure Decision**: A **single Next.js App Router application** with an **embedded Sanity Studio**
-(no separate frontend/backend split — content lives in Sanity, form handling is edge/serverless). Route
-groups `(marketing)` / `(convert)` / `studio` separate concerns and layouts. Business logic (rules
-engine, validation, SEO/JSON-LD) lives under `src/lib/` cleanly separated from presentation, satisfying
-brief §17 and constitution IV/X.
+**Structure Decision**: A **Next.js App Router application** plus a **separately-deployed Sanity Studio**
+kept in the **same repository** under `studio/` (shared schema types, one place to review changes) but
+built and published to Sanity hosting (`*.sanity.studio`) independently of the site — the site has **no
+`/studio` route**. Route groups `(marketing)` / `(convert)` separate concerns and layouts (no `studio`
+segment). Business logic (rules engine, validation, SEO/JSON-LD) lives under `src/lib/` cleanly
+separated from presentation, satisfying brief §17 and constitution IV/X.
 
 ## Milestone Plan (brief §25)
 
-Delivery is milestone-based; the **CMS architecture is complete from Milestone 3** even though pages
-ship incrementally. P-priorities from the spec map to milestones.
+Delivery is milestone-based. Per the owner decision, **CMS schemas are implemented progressively** (the
+complete content model is preserved and designed up front, but only the schemas a milestone needs are
+built when that milestone begins). P-priorities from the spec map to milestones. **Milestone M4 ends at
+a mandatory owner review gate** (see below) before M5 proceeds.
 
 | # | Milestone | Delivers | Primary story |
 |---|---|---|---|
 | M1 | Planning & architecture | This spec/plan/design set (this deliverable) | — |
-| M2 | Repository foundation & design tokens | Next.js+TS+Cloudflare/OpenNext scaffold, token layer (contrast-fixed), primitives, lint/format/CI | Foundation |
-| M3 | CMS schemas & preview | Sanity schema (all doc/section types), Studio at `/studio`, roles, Draft Mode/Presentation, revalidation webhook | US3 (P2) |
-| M4 | Header, navigation & homepage opening | Chrome (sticky glass header, CMS mega-menus, mobile nav), hero connected universe (editable SVG, reduced-motion), first homepage sections | US1 (P1) |
-| M5 | Remaining homepage sections | All 19 blocks as modular section types (placeholder blocks hidden) | US1 (P1) |
+| M2 | Repository foundation & design tokens | Next.js+TS(6.0.x)+Cloudflare/OpenNext(R2+D1) scaffold, token layer (contrast-fixed), primitives, lint/format/CI; validate the pinned toolchain typechecks | Foundation |
+| M3 | CMS schemas (initial slice) & preview | **Separately-hosted Studio** + Draft Mode/Presentation + revalidation webhook + roles, with the **initial schema slice**: site settings, navigation & mega-menus, footer, pages, homepage sections, goals, growth stages & cross-cutting systems, services, tools, FAQs, CTA & form settings. **Seed this taxonomy as Draft/Placeholder** from the Growth Guide (owner verifies progressively). | US3 (P2) |
+| M4 | Header, navigation & homepage opening → **REVIEW GATE** | Chrome (sticky glass header, accessible CMS mega-menu foundation, mobile nav), static hero layout, animated infinity universe, bright next-section transition, reduced-motion version, responsive browser testing → **private preview deploy, then STOP for owner review** | US1 (P1) |
+| M5 | Remaining homepage sections | All 19 blocks as modular section types (placeholder blocks hidden) — **only after the M4 gate is approved** | US1 (P1) |
 | M6 | Growth Plan Builder & forms | Rules engine (unit-tested), multi-step builder, structured result, Formspree+Turnstile, contact form | US1 (P1) |
-| M7 | Core templates | Solutions/business-types/starting-points, services+filter, tools+filter, roadmaps, service/tool/roadmap detail | US2 (P2) |
-| M8 | Resources, articles & proof | Learn/articles, resources, FAQ, examples/case-studies templates (Verified-gated) | US4 (P3) |
-| M9 | SEO, a11y, performance & security hardening | Metadata/JSON-LD/sitemap/robots, axe/keyboard pass, LHCI budgets, headers/CSP/consent scaffold | cross-cutting |
+| M7 | Core templates | Solutions/business-types/starting-points, services+filter, tools+filter, **+ roadmaps schema**, service/tool/roadmap detail | US2 (P2) |
+| M8 | Resources, articles & proof | **+ articles/resources/examples/case-studies/testimonials schemas**; Learn/articles, resources, FAQ, examples/case-studies templates (Verified-gated) | US4 (P3) |
+| M9 | SEO, a11y, performance & security hardening | Metadata/JSON-LD/sitemap/robots, axe/keyboard pass, LHCI budgets, headers/CSP (incl. preview `frame-ancestors *.sanity.studio`)/consent scaffold | cross-cutting |
 | M10 | Content QA, preview deploy & launch prep | Content status QA, humanizer pass, preview deployment, structured-data/link validation, launch checklist | Definition of Done |
 
-**MVP line**: M2→M6 (Foundation + homepage + builder) yields the core P1 experience. M7 adds P2 depth;
-M8 adds P3; M9/M10 harden and prepare launch.
+**Progressive CMS note**: M3 builds the **initial schema slice** above; **roadmaps** land with M7 and
+**articles/resources/examples/case-studies/testimonials** with M8 — their frontend milestones. The full
+model in `data-model.md` is designed now so later additions are extensions, not rework.
+
+### 🚦 Mandatory homepage-opening review gate (end of M4)
+Implementation **stops** after all of: design tokens & primitives · desktop header · accessible
+mega-menu foundation · mobile navigation · static hero layout · animated infinity universe · bright
+next-section transition · reduced-motion version · responsive browser testing. At that point, **deploy a
+private preview and stop for owner review** before implementing the remaining homepage sections (M5+).
+Do not proceed past this gate without explicit owner approval.
+
+**MVP line**: M2→M4 (gate) → M5→M6 (Foundation + homepage + builder) yields the core P1 experience.
+M7 adds P2 depth; M8 adds P3; M9/M10 harden and prepare launch.
 
 ## Design Artifacts (Phase 1 outputs)
 - [`data-model.md`](./data-model.md) — CMS content model + modular section model + Growth Plan data.

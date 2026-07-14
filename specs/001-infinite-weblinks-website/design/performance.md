@@ -106,20 +106,21 @@ first visit.
   controller, Growth Plan Builder form, mega-menu, mobile nav, accordions/
   tabs, GSAP/Motion wrappers). This keeps most of the DOM server-rendered
   with zero hydration cost.
-- **Static generation + ISR for CMS-backed content.** All Sanity-sourced
-  routes (`/solutions/[slug]`, `/services/[slug]`, `/tools/[slug]`,
-  `/business-types/[slug]`, `/starting-points/[slug]`, `/roadmaps/[slug]`,
-  `/examples/[slug]`, `/case-studies/[slug]`, `/learn/[slug]`, listing pages,
-  homepage sections) are generated at build time and revalidated on-demand
-  (Sanity webhook → ISR revalidation) with a time-based `revalidate`
-  fallback (e.g. 1 hour) as a safety net. Revalidated pages are served from
-  the OpenNext incremental cache backed by Cloudflare **KV**, so a
-  stale-while-revalidate read never blocks on Sanity's API.
+- **Static generation + on-demand revalidation for CMS-backed content.** All
+  Sanity-sourced routes (`/solutions/[slug]`, `/services/[slug]`,
+  `/tools/[slug]`, `/business-types/[slug]`, `/starting-points/[slug]`,
+  `/roadmaps/[slug]`, `/examples/[slug]`, `/case-studies/[slug]`,
+  `/learn/[slug]`, listing pages, homepage sections) are generated at build
+  time and **revalidated on-demand only** (Sanity publish webhook → tag/path
+  revalidation); **no time-based ISR polling** at launch. Pages are served from
+  the OpenNext incremental cache backed by **Cloudflare R2**, with a **D1 tag
+  cache** driving precise invalidation, so a cache read never blocks on
+  Sanity's API.
 - **Streaming with `loading.tsx` / Suspense boundaries** on listing and
   detail pages so the shell (header, breadcrumb, layout) paints immediately
   while content streams in — relevant mainly to on-demand/preview paths
-  (Sanity Presentation live editing at `/studio`), since public pages are
-  pre-rendered.
+  (Sanity Presentation live editing in the separately-hosted Studio), since
+  public pages are pre-rendered.
 - **Minimal client JS**: interactivity is isolated to leaf Client Components
   (a single accordion item, a single form field group) rather than wrapping
   whole sections in `"use client"`, keeping RSC boundaries as low in the
@@ -250,18 +251,20 @@ first visit.
 | Asset class | Cache location | Policy |
 |---|---|---|
 | Static build assets (JS/CSS chunks, fonts, SVGs, `_next/static/*`) | Cloudflare CDN edge cache | `Cache-Control: public, max-age=31536000, immutable` — content-hashed filenames make this safe indefinitely. |
-| Pre-rendered HTML (SSG/ISR pages) | OpenNext incremental cache → Cloudflare **KV** | Served from KV on cache hit; `stale-while-revalidate` semantics — a stale page is served instantly while regeneration happens in the background, then KV is updated for the next request. Time-based `revalidate` fallback (e.g. 1 hour) plus on-demand revalidation via a Sanity webhook hitting a revalidate route/tag on publish. |
-| Large media (R2-stored originals, uploaded case-study/article assets) | Cloudflare **R2** | Origin store for anything too large or infrequently accessed to belong in KV; fronted by Cloudflare Images or a resizing Worker route, itself cached at the edge with long `max-age` per resized variant URL. |
-| API-like routes (Formspree POST target is external; any internal route handlers, e.g. revalidation webhook) | No cache / `Cache-Control: no-store` | Mutating or trigger endpoints must never be cached. |
-| `/studio` (Sanity Studio, protected) | No cache, no ISR | Always dynamic, authenticated; excluded from the public caching strategy entirely. |
+| Pre-rendered HTML (SSG / on-demand-revalidated pages) | OpenNext incremental cache → Cloudflare **R2** (tags in **D1**) | Served from R2 on cache hit. Invalidated **on-demand** by a Sanity publish webhook that revalidates the affected tags/paths (D1 resolves tags → cache entries); **no short time-based `revalidate` polling** at launch. |
+| Editor-uploaded media (case-study/article/tool imagery) | Sanity asset CDN (`cdn.sanity.io`) | Resized/format-optimised on the fly via the Sanity Image URL builder and edge-cached; no second image pipeline (see `design/deployment.md` §4). |
+| API-like routes (Formspree POST target is external; internal route handlers, e.g. revalidation webhook, Draft-Mode enable/disable) | No cache / `Cache-Control: no-store` | Mutating or trigger endpoints must never be cached. |
+| Sanity Studio | n/a (separate Sanity-hosted deploy at `*.sanity.studio`) | Not part of this site's caching strategy; no `/studio` route on the Worker. |
 | `sitemap.xml`, `robots.txt` | Edge cache with short `max-age` (e.g. 1 hour) + on-demand revalidation on content publish | Keeps crawl signals fresh without regenerating on every request. |
 
-- **KV** is the source of truth for the OpenNext incremental cache (rendered
+- **R2** is the source of truth for the OpenNext incremental cache (rendered
   HTML + fetch cache for CMS data), keeping cold-start regeneration rare and
   TTFB low (cache-hit path never touches Sanity or the Worker's render path).
-- **R2** holds anything KV shouldn't (large binary assets), per brief
-  Section 18's requirement to plan cache strategy and image handling
-  together.
+- **D1** holds the tag cache so publish-driven `revalidateTag`/`revalidatePath`
+  invalidates exactly the affected entries. **Workers KV is not used** (owner
+  decision). Editor-uploaded images come from Sanity's asset CDN; brand/static
+  assets from Workers Assets — per brief Section 18's requirement to plan cache
+  strategy and image handling together.
 - **Stale-while-revalidate** is the default posture across HTML and
   resized-image caching: never make a user wait for a rebuild; serve the
   last good version and refresh in the background.
@@ -324,9 +327,9 @@ first visit.
 - [ ] Image handling path (Cloudflare Images vs. Sanity URL builder vs.
       static variants) finalized against `@opennextjs/cloudflare` 1.20.1
       docs and recorded in `design/deployment.md`.
-- [ ] OpenNext incremental cache (KV) and R2 roles configured; ISR
-      revalidation wired to Sanity publish webhook with a time-based
-      fallback window.
+- [ ] OpenNext incremental cache (**R2**) and **D1** tag cache configured;
+      **on-demand** revalidation wired to the Sanity publish webhook
+      (no time-based ISR polling at launch); no Workers KV.
 - [ ] `prefers-reduced-motion` short-circuits GSAP and the particle layer,
       and skips the GSAP dynamic import entirely for those users.
 - [ ] No autoplay video on mobile anywhere on the site.
@@ -335,5 +338,5 @@ first visit.
 - [ ] CLS sources checked: image dimensions reserved, font swap metrics
       matched, no layout-shifting late-loading banners above the fold.
 - [ ] Budgets reconciled with `design/testing.md` (CI gate wiring) and
-      `design/deployment.md` (cache headers, KV/R2 roles, image handling)
+      `design/deployment.md` (cache headers, R2/D1 roles, image handling)
       before implementation begins.

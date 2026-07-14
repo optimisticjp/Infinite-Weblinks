@@ -16,41 +16,48 @@ one deploy target, matching brief §17/§18 ("Cloudflare Workers via the current
 supported Next.js/OpenNext path"). Cloudflare Pages' own Next.js runtime is a
 different, older integration and is out of scope here.
 
-The Worker needs three bound resources. Names below are fixed by the OpenNext
-Cloudflare adapter's internal conventions, not arbitrary — they must match
-exactly in `wrangler.jsonc`:
+The Worker needs three bound resources. This uses the **current small-site
+OpenNext approach (owner-locked): R2 as the incremental cache, D1 as the tag
+cache, and Workers Static Assets for static files. Workers KV is deliberately
+NOT configured as the primary incremental cache.** Binding names follow the
+OpenNext Cloudflare adapter's conventions — **re-verify them against the current
+OpenNext documentation at implementation start** (the owner requires this
+re-check), then match them exactly in `wrangler.jsonc`:
 
 | Resource | Binding name | Purpose |
 |---|---|---|
-| KV namespace | `NEXT_CACHE_WORKERS_KV` | Default store for the OpenNext **incremental cache** — ISR/SSG page output and the Next.js `fetch` cache, keyed per route/tag. This is what makes `revalidate` and `revalidateTag`/`revalidatePath` work without a filesystem (Workers has none). |
-| R2 bucket | `NEXT_INC_CACHE_R2_BUCKET` | Overflow store for incremental-cache entries too large or too numerous to hold economically in KV (KV has a 25 MB per-value ceiling and is priced per read/write; R2 storage is cheaper and egress-free). Used for larger cached HTML/RSC payloads — e.g. content-rich `/case-studies/[slug]` or `/learn/[slug]` pages. |
-| Workers Assets | `ASSETS` → `.open-next/assets` | Serves compiled static output (`_next/static/*`, fonts, `public/*`) directly from Cloudflare's edge, **without invoking the Worker**. Faster (edge cache, no cold start) and cheaper (no Worker request billed) for anything that never changes per-request. |
+| **R2 bucket (incremental cache)** | `NEXT_INC_CACHE_R2_BUCKET` | **Primary** OpenNext **incremental cache** — stores SSG/ISR HTML/RSC output and the Next.js `fetch` cache. Chosen over KV for a small site: cheaper storage, egress-free, no per-value size cliff, and it is the OpenNext-recommended default cache for this profile. Makes `revalidate`/`revalidateTag`/`revalidatePath` work without a filesystem (Workers has none). |
+| **D1 database (tag cache)** | `NEXT_TAG_CACHE_D1` | Tracks cache **tags** so **on-demand** `revalidateTag`/`revalidatePath` invalidate exactly the right cached entries when Sanity publishes. Enables precise, event-driven revalidation without polling. |
+| Workers Static Assets | `ASSETS` → `.open-next/assets` | Serves compiled static output (`_next/static/*`, fonts, `public/*`) directly from Cloudflare's edge, **without invoking the Worker**. Faster (edge cache, no cold start) and cheaper (no Worker request billed) for anything that never changes per-request. |
 
-Rationale for all three: without KV the app falls back to no incremental cache
-(every ISR page recomputes on every request — slow, expensive); without R2 the
-larger pages either fail to cache or push the KV free-tier limits quickly;
-without Workers Assets every static file request would needlessly round-trip
-through the Worker instead of Cloudflare's CDN edge.
+**Deliberately NOT used initially:**
+- **Workers KV** as the primary incremental cache (owner decision — R2 is the cache store instead).
+- The **Durable Object revalidation queue** — avoided by using **on-demand revalidation** (publish-webhook-driven tag/path revalidation) rather than time-based ISR. The DO queue only earns its keep with high-frequency time-based revalidation, which this editor-driven site does not have. It remains a future option if needed.
+
+Rationale: without an incremental cache every ISR page recomputes on every
+request (slow, expensive); R2 gives durable, cheap cache storage; the D1 tag
+cache makes publish-triggered invalidation exact; Workers Assets keeps static
+files off the Worker and on Cloudflare's CDN edge.
 
 Also required in `wrangler.jsonc`: the `nodejs_compat` compatibility flag (Next.js's
 server runtime expects a subset of Node APIs) and a `compatibility_date` no
-earlier than the OpenNext adapter's documented minimum. A future optional
-addition — not needed for MVP — is a D1-backed tag cache
-(`NEXT_TAG_CACHE_D1`) for stronger multi-instance revalidation consistency;
-KV-based tag tracking is sufficient at this site's traffic scale and editor
-cadence.
+earlier than the OpenNext adapter's documented minimum.
 
 ```jsonc
-// wrangler.jsonc — bindings only, illustrative
+// wrangler.jsonc — bindings only, illustrative; verify names vs current OpenNext docs
 {
   "name": "infinite-weblinks",
   "compatibility_date": "2026-06-01",
   "compatibility_flags": ["nodejs_compat"],
   "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
-  "kv_namespaces": [{ "binding": "NEXT_CACHE_WORKERS_KV", "id": "<kv-id>" }],
-  "r2_buckets": [{ "binding": "NEXT_INC_CACHE_R2_BUCKET", "bucket_name": "<bucket>" }]
+  "r2_buckets": [{ "binding": "NEXT_INC_CACHE_R2_BUCKET", "bucket_name": "<inc-cache-bucket>" }],
+  "d1_databases": [{ "binding": "NEXT_TAG_CACHE_D1", "database_name": "iw-tag-cache", "database_id": "<d1-id>" }]
+  // NOTE: no kv_namespaces — KV is intentionally not the primary incremental cache.
 }
 ```
+
+The matching `open-next.config.ts` selects the R2 incremental-cache override and
+the D1 tag-cache override (exact override names per current OpenNext docs).
 
 ## 2. Domains, TLS, DNS
 
@@ -116,6 +123,12 @@ jobs:
   deploy:         # push to main only, needs: ci — `wrangler versions deploy` (promote) or `wrangler deploy`
 ```
 
+**Sanity Studio deploys separately.** The Studio (`studio/`) is published to
+Sanity hosting with `npx sanity deploy` — a distinct target from the Worker,
+run manually or as its own CI job that triggers only when `studio/**` changes.
+The site Worker and the hosted Studio version independently; a Studio change
+never requires an app redeploy and vice-versa.
+
 ## 4. Image handling on Cloudflare
 
 Next.js's default image loader needs Node's `sharp`, which is unavailable in
@@ -146,22 +159,28 @@ touching the rest of this architecture.
 - **Static assets** (`_next/static/*`, fonts, `public/*`, hashed filenames):
   immutable, far-future `Cache-Control` (`public, max-age=31536000, immutable`),
   served by Workers Assets straight from the edge.
-- **HTML/RSC output** for SSG and ISR routes: held in the incremental cache
-  (KV primary, R2 overflow — §1), fronted by Cloudflare's own edge CDN cache so
-  repeat requests for a warm route don't invoke the Worker at all.
-- **Revalidation model: on-demand first, time-based as a safety net.** Since
-  content changes are editor-driven and infrequent (not high-frequency data),
-  most routes should carry a generous fallback `revalidate` (e.g. 1 hour) but
-  rely on **tag/path-based on-demand revalidation** triggered by publish events
-  for near-immediate freshness, rather than short polling intervals.
+- **HTML/RSC output** for SSG and ISR routes: held in the **R2 incremental
+  cache** with the **D1 tag cache** tracking tags (§1), fronted by Cloudflare's
+  own edge CDN cache so repeat requests for a warm route don't invoke the Worker
+  at all.
+- **Revalidation model: on-demand only (no time-based ISR initially).** Content
+  changes are editor-driven and infrequent, so routes rely on **tag/path-based
+  on-demand revalidation** triggered by Sanity publish events for near-immediate
+  freshness. We deliberately **avoid short `revalidate` polling intervals and the
+  Durable Object revalidation queue** at launch (§1); pages are effectively static
+  until a publish invalidates their tags.
 - **Purge/invalidation on Sanity publish:** a Sanity webhook (configured per
   project, targeting `/api/revalidate`) fires on publish/unpublish/delete,
   verified by a shared secret, and maps the changed document type/slug to the
   relevant cache tag(s) (e.g. `service:${slug}`, `nav`, `sitemap`) before calling
-  `revalidateTag`/`revalidatePath`. This repopulates the KV/R2 incremental cache
-  on the next request — no manual Cloudflare purge needed in normal operation.
-  A manual "Purge Everything" in the Cloudflare dashboard remains the documented
-  emergency fallback (e.g. after a bad deploy changes cached data shapes).
+  `revalidateTag`/`revalidatePath`. The D1 tag cache resolves those tags to the
+  affected R2 cache entries, which repopulate on the next request — no manual
+  Cloudflare purge needed in normal operation.
+- **Fallbacks (documented):** if a webhook is missed or misconfigured, freshness
+  can be restored by (a) re-triggering the webhook / calling `/api/revalidate`
+  for the affected tag, (b) a manual **redeploy** (`wrangler deploy`, which
+  rebuilds the cache), or (c) a manual "Purge Everything" in the Cloudflare
+  dashboard as the last-resort emergency reset.
 - Sitemap and `robots.txt` follow the same on-demand model so newly published
   routes appear promptly rather than waiting on a fixed interval.
 
@@ -181,21 +200,28 @@ touching the rest of this architecture.
   always fresh, never reachable by public traffic. The Presentation tool layers
   click-to-edit live visual editing on top of this when used from within
   Studio.
-- **Studio at `/studio`:** embedded in the same Next.js app and deployed as
-  part of the same Worker — one repo, one deploy, matching the "maintainable
-  for a two-person team" principle, rather than standing up a second
-  application/deploy target just for the Studio. Access control is primarily
-  Sanity's own project-member login (only the two invited admin/editor accounts
-  can authenticate into Studio at all); additionally, exclude `/studio` from
-  indexing (`noindex` + `robots.txt` disallow) and optionally place it behind
-  **Cloudflare Access** (Zero Trust — free for small teams, comfortably covers
-  two users) as defense-in-depth, though not required for correctness.
-- **Preview/Draft Mode wiring:** the Presentation tool's preview link calls a
-  `/api/draft-mode/enable` Route Handler with a shared secret and target path,
-  sets the Next.js draft cookie, and redirects into the page, which then reads
-  the draft perspective. `/api/draft-mode/disable` exits preview. Both routes
-  are ordinary Next.js Route Handlers and run inside the Worker like any other
-  route — no special Cloudflare handling needed.
+- **Studio: separate Sanity-hosted deploy (owner-locked — NOT embedded at
+  `/studio`).** The Studio source lives in the **same repository** under
+  `studio/` (single repo, shared types), but it is **built and deployed
+  separately via Sanity's hosting** (`sanity deploy`) and served from the hosted
+  **`*.sanity.studio`** URL initially (e.g. `infinite-weblinks.sanity.studio`).
+  A custom admin domain (e.g. `admin.infiniteweblinks.com`) is an **optional
+  later** step. The Next.js app therefore has **no `/studio` route** and does not
+  bundle the Studio — smaller app bundle, cleaner CSP, and independent deploy
+  cadence for content-tooling vs. the site. Access control is Sanity's own
+  project-member login (only the two invited admin/editor accounts can
+  authenticate); no Cloudflare Access needed since Studio is not hosted on the
+  Worker. The hosted Studio's origin must be added to the Sanity project's
+  **CORS allowed origins** (see §10 / `design/environment.md`).
+- **Preview/Draft Mode wiring:** the Presentation tool runs inside the hosted
+  Studio and points its preview iframe at the deployed **site preview URL**
+  (production or a PR preview). Its preview link calls the site's
+  `/api/draft-mode/enable` Route Handler (in the Next.js Worker) with a shared
+  secret and target path, which sets the Next.js draft cookie and redirects into
+  the page to read the draft perspective; `/api/draft-mode/disable` exits
+  preview. These Route Handlers stay in the Next.js app (not the Studio); the
+  site must allow the hosted Studio origin to embed it for Presentation
+  (frame-ancestors — see `design/security-privacy.md`).
 - **Publish webhook → revalidation:** one webhook per environment that needs
   fresh content (production always; a persistent staging environment if/when
   added) pointing at that environment's `/api/revalidate`. See §5 for the
@@ -243,7 +269,7 @@ Full variable inventory and per-variable ownership live in
   `wrangler rollback` (or Cloudflare dashboard → Deployments → Rollback)
   repoints 100% of traffic to a previous Version in seconds — no rebuild, no
   redeploy.
-- **Constraint to plan around:** a rollback is unsafe if bound resources (KV/R2
+- **Constraint to plan around:** a rollback is unsafe if bound resources (R2/D1
   names, expected env var shape) changed incompatibly between the target
   Version and the current one. Avoid destructive resource renames without a
   migration note in the PR that changes them.
@@ -265,14 +291,18 @@ Full variable inventory and per-variable ownership live in
 ### Readiness checklist
 
 - [ ] Cloudflare zone for `infiniteweblinks.com`, nameservers delegated
-- [ ] Cloudflare API token scoped to Workers Scripts, Workers KV, Workers R2,
+- [ ] Cloudflare API token scoped to Workers Scripts, Workers R2, D1,
       and Zone edit, stored as a GitHub secret
-- [ ] KV namespace created and bound (`NEXT_CACHE_WORKERS_KV`)
-- [ ] R2 bucket created and bound (`NEXT_INC_CACHE_R2_BUCKET`)
+- [ ] R2 bucket created and bound as the **incremental cache** (`NEXT_INC_CACHE_R2_BUCKET`)
+- [ ] D1 database created and bound as the **tag cache** (`NEXT_TAG_CACHE_D1`)
+- [ ] (No KV namespace — intentionally not the primary incremental cache)
 - [ ] Worker name reserved; Custom Domain `infiniteweblinks.com` attached
 - [ ] `www` → root 301 Redirect Rule created at the zone level
-- [ ] Sanity project created; `production` dataset; CORS origins added for the
-      Worker's domain(s) plus `localhost` for local dev
+- [ ] **New free Sanity project** created (two editor seats); `production` dataset;
+      CORS origins added for the site domain(s), the hosted Studio
+      `*.sanity.studio` origin, PR preview URLs, and `localhost` for local dev
+- [ ] **Studio deployed separately** via `sanity deploy` to `*.sanity.studio`;
+      two editors invited
 - [ ] Sanity webhook configured, pointing at `/api/revalidate`, shared secret set
 - [ ] Formspree form created; Turnstile site + secret keys generated (prod and,
       if available, sandbox)
@@ -291,13 +321,16 @@ Full variable inventory and per-variable ownership live in
 1. Provision the Cloudflare zone and delegate DNS for `infiniteweblinks.com`.
 2. Create a scoped Cloudflare API token; store it as GitHub repo/Environment
    secrets.
-3. Create the Sanity project and `production` dataset; record project ID and
-   dataset name.
+3. Create the **new free Sanity project** and `production` dataset; record
+   project ID and dataset name; invite the two editors; add CORS allowed origins
+   (site domain, `*.sanity.studio`, PR preview URLs, `localhost`). Deploy the
+   Studio separately with `npx sanity deploy` to its `*.sanity.studio` URL.
 4. Create the Formspree form and Turnstile site; record the endpoint and keys.
 5. Populate GitHub Environments `production` and `preview` with their
    respective secret sets (full list in `design/environment.md`).
-6. Scaffold `wrangler.jsonc`: Worker name, KV namespace, R2 bucket, Assets
-   directory, `nodejs_compat` flag, routes/custom domain.
+6. Scaffold `wrangler.jsonc`: Worker name, R2 incremental-cache bucket, D1
+   tag-cache database, Assets directory, `nodejs_compat` flag, routes/custom
+   domain (no KV namespace). Verify binding names against current OpenNext docs.
 7. Add the GitHub Actions workflow: `ci` job on all PRs; `preview-deploy` job
    (`opennextjs-cloudflare build` + `wrangler versions upload`) posting the
    preview URL; `deploy` job on merge to `main` (`wrangler versions deploy` or

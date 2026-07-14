@@ -5,8 +5,9 @@ rendering strategy, plus the information architecture for navigation and CMS-con
 Goal-based navigation is **primary**; service/tool detail pages exist for depth and SEO.
 
 ## Rendering strategy legend
-- **SSG/ISR** — statically generated at build, revalidated on-demand when Sanity publishes (OpenNext
-  incremental cache in Cloudflare KV). Default for all content pages.
+- **SSG/ISR** — statically generated at build, revalidated **on-demand** when Sanity publishes (OpenNext
+  incremental cache in **Cloudflare R2**, tags tracked in **D1**; no KV, no time-based ISR). Default for
+  all content pages.
 - **Dynamic (RSC)** — server-rendered per request (used only where filter state or draft mode needs it;
   canonical unfiltered version is still SSG/ISR).
 - **Client island** — a Client Component embedded in an otherwise server-rendered page (builder,
@@ -48,13 +49,16 @@ Goal-based navigation is **primary**; service/tool detail pages exist for depth 
 
 | Route | Purpose | Notes |
 |---|---|---|
-| `/studio` (+ `/studio/[[...tool]]`) | Embedded Sanity Studio | Protected; `noindex`; excluded from sitemap; CSP/frame rules per `design/security-privacy.md` |
-| `/api/revalidate` | Sanity publish webhook → on-demand ISR revalidation | Secret-verified (`SANITY_REVALIDATE_SECRET`) |
-| `/api/draft` + `/api/disable-draft` | Draft Mode enable/disable for preview | Secret-verified; editor-only |
+| Sanity Studio | Content editing | **Separate Sanity-hosted deploy** at `*.sanity.studio` (owner decision) — **NOT** a route on this domain. Source in-repo under `studio/`; deployed via `sanity deploy`. |
+| `/api/revalidate` | Sanity publish webhook → on-demand tag/path revalidation | Secret-verified (`SANITY_REVALIDATE_SECRET`); D1 tag cache resolves affected R2 entries |
+| `/api/draft-mode/enable` + `/api/draft-mode/disable` | Draft Mode enable/disable for Presentation preview | Secret-verified; called by the hosted Studio's Presentation tool |
 | `/sitemap.xml` | Dynamic sitemap | Verified/Ready + indexable URLs only |
-| `/robots.txt` | Robots | Allows crawl; disallows `/studio`, `/api`, `/growth-plan`, `/contact`, draft params |
+| `/robots.txt` | Robots | Allows crawl; disallows `/api/`; `/growth-plan` & `/contact` use meta `noindex,follow` (not robots-blocked). Studio is external, so no rule needed |
 | `/opengraph-image` (per route) | OG image generation | No unverified stats baked in |
 | `404` / `500` | Error pages | On-brand, static, link back into the journey |
+
+Preview/Draft-Mode responses relax CSP `frame-ancestors` to allow embedding by `https://*.sanity.studio`
+(Presentation) — see `design/security-privacy.md`.
 
 ## Route grouping refinement (allowed per brief §12)
 Goal-based navigation stays primary. Recommended grouping in the App Router:
@@ -62,7 +66,8 @@ Goal-based navigation stays primary. Recommended grouping in the App Router:
   `/starting-points*`, `/services*`, `/tools*`, `/roadmaps*`, `/examples*`, `/case-studies*`, `/learn*`,
   `/resources`, `/faq`, legal — shared header/footer layout, SSG/ISR.
 - **`(convert)`** segment: `/growth-plan`, `/contact` — same shell, `noindex`, client-heavy islands.
-- **`studio`** segment: `/studio` — isolated layout, no marketing chrome.
+- **No `studio` segment** — the Studio is a separate Sanity-hosted app, not part of the Next.js route
+  tree. The only Studio-related surfaces here are the secret-gated `/api/*` handlers above.
 
 Solutions is the goal-first umbrella; Services/Tools/Roadmaps provide depth. `business-types` and
 `starting-points` are alternate entry axes into the same taxonomy (many-to-many via CMS references).
@@ -91,7 +96,7 @@ Pinterest — hidden until valid URL), secondary nav, legal links. **No phone nu
 ## Sitemap generation rules
 - Source: Sanity — include only documents with status **Verified** / **Ready to Publish** and
   `noindex !== true`.
-- Exclude: `/studio`, `/api/*`, `/growth-plan`, `/contact`, thank-you states, draft/preview URLs,
+- Exclude: `/api/*`, `/growth-plan`, `/contact`, thank-you states, draft/preview URLs,
   faceted filter permutations.
 - Include `lastmod` from document `_updatedAt`; sensible `changefreq`/`priority` by route type.
 - Canonical host `https://infiniteweblinks.com`; `www` → root 301 (see `design/deployment.md`).

@@ -1,0 +1,62 @@
+.section {
+  /* theme-band supplies the cream surface + dark ink text tokens. */
+}
+
+.wall {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  list-style: none;
+  margin: clamp(32px, 5vw, 48px) 0 0;
+  padding: 0;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: clamp(24px, 3vw, 32px);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+}
+.quote {
+  margin: 0;
+  font-size: var(--fs-lead);
+  color: var(--text-heading);
+  font-family: var(--font-display);
+  font-weight: var(--fw-medium);
+}
+.foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-top: auto;
+}
+.attribution {
+  font-style: normal;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+.rating {
+  display: inline-flex;
+  gap: 2px;
+}
+.starFilled {
+  color: var(--orange);
+  fill: currentColor;
+}
+.starEmpty {
+  color: var(--hairline-strong);
+}
+
+@media (min-width: 720px) {
+  .wall {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1080px) {
+  .wall {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

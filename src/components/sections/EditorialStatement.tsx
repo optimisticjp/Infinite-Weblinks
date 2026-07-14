@@ -17,7 +17,10 @@ const ICONS: Record<string, LucideIcon> = {
  */
 export function EditorialStatement({ data }: { data: EditorialSection }) {
   return (
-    <section className={`theme-band iw-section ${styles.section}`} aria-labelledby="editorial-heading">
+    <section
+      className={`theme-band iw-section ${styles.section}`}
+      aria-labelledby="editorial-heading"
+    >
       <div className="iw-container">
         <div className={styles.top}>
           <div className={styles.lead}>

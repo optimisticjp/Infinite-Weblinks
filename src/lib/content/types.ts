@@ -1,13 +1,38 @@
 /**
- * Content types for the homepage opening (Milestones M3–M4).
+ * Content types for the Infinite Weblinks site.
  *
- * These mirror the initial CMS slice in data-model.md. Until a Sanity project is
- * provisioned, the app renders from local seed data (see ./seed.ts) that carries the
- * *approved* copy from the locked brief; getters swap to Sanity when configured.
+ * These mirror the CMS model in data-model.md. Until a Sanity project is provisioned,
+ * the app renders from typed local seed data (see ./data/*) that carries the *approved*
+ * taxonomy and plain-English educational copy grounded in the Growth Guide — no invented
+ * metrics, testimonials, client names or partnership claims. Getters apply the same
+ * public status gate in both the seed and (future) Sanity paths.
  */
 
-export type CtaStyle = "primary" | "secondary" | "text";
+/* ------------------------------------------------------------------ status */
 
+export type ContentStatus =
+  | "draft"
+  | "placeholder"
+  | "approvalRequired"
+  | "verified"
+  | "readyToPublish";
+
+/** Only these statuses ever render publicly (brief §14). */
+export const RENDERABLE_STATUSES: ContentStatus[] = ["verified", "readyToPublish"];
+
+export interface Statused {
+  status: ContentStatus;
+  /** When true, excluded from sitemap/indexing even if renderable. */
+  noindex?: boolean;
+}
+
+export function isRenderable(item: Statused): boolean {
+  return RENDERABLE_STATUSES.includes(item.status);
+}
+
+/* ------------------------------------------------------------------ shared */
+
+export type CtaStyle = "primary" | "secondary" | "text";
 export interface Cta {
   label: string;
   route: string;
@@ -20,50 +45,63 @@ export interface NavLink {
   description?: string;
 }
 
-export interface MegaMenuColumn {
-  heading: string;
-  items: NavLink[];
-}
-
-export interface MegaMenuPromo {
-  heading: string;
-  body: string;
-  cta: Cta;
-}
-
-export interface MegaMenu {
-  title: string;
-  columns: MegaMenuColumn[];
-  promo?: MegaMenuPromo;
-}
-
-export interface NavItem {
-  label: string;
-  /** Top-level destination (also the mega-menu's "overview" link). */
-  href: string;
-  megaMenu?: MegaMenu;
-}
-
-export interface SiteNav {
-  primary: NavItem[];
-  ctas: Cta[];
-}
-
-/** A connected area/node in the hero universe. `color` is a CSS custom property. */
-export interface HeroArea {
-  key: string;
-  label: string;
-  color: string;
-  /** Lucide icon name. */
-  icon: string;
-}
-
 export interface Headline {
   pre: string;
   accent: string;
   post: string;
 }
 
+/* ------------------------------------------------------------------ chrome */
+
+export interface MegaMenuColumn {
+  heading: string;
+  items: NavLink[];
+}
+export interface MegaMenuPromo {
+  heading: string;
+  body: string;
+  cta: Cta;
+}
+export interface MegaMenu {
+  title: string;
+  columns: MegaMenuColumn[];
+  promo?: MegaMenuPromo;
+}
+export interface NavItem {
+  label: string;
+  href: string;
+  megaMenu?: MegaMenu;
+}
+export interface SiteNav {
+  primary: NavItem[];
+  ctas: Cta[];
+}
+
+export type SocialPlatform = "Facebook" | "Instagram" | "YouTube" | "Pinterest";
+export interface SocialLink {
+  platform: SocialPlatform;
+  url?: string; // hidden until a valid URL exists (brief §23)
+}
+export interface FooterContent {
+  supportEmail: string;
+  tagline: string;
+  columns: { heading: string; links: NavLink[] }[];
+  legal: NavLink[];
+  social: SocialLink[];
+}
+export interface SiteChrome {
+  nav: SiteNav;
+  footer: FooterContent;
+}
+
+/* ------------------------------------------------------------------ hero */
+
+export interface HeroArea {
+  key: string;
+  label: string;
+  color: string;
+  icon: string;
+}
 export interface HeroContent {
   eyebrow: string;
   slogan: string;
@@ -75,30 +113,225 @@ export interface HeroContent {
   areas: HeroArea[];
 }
 
+/* ------------------------------------------------------------------ taxonomy */
+
+export type DeliveryModelKey = "we-do" | "we-expert" | "we-run" | "you-run";
+export interface DeliveryModel {
+  key: DeliveryModelKey;
+  name: string; // locked exact name
+  tagline: string;
+  description: string;
+}
+
+export interface GrowthStage extends Statused {
+  order: number; // 1..8
+  slug: string;
+  name: string; // locked exact name
+  summary: string;
+  whatHappens: string;
+  outcome: string;
+  color: string;
+  icon: string;
+  serviceSlugs?: string[];
+}
+
+export interface CrossCuttingSystem {
+  key: string;
+  name: string; // locked exact name
+  description: string;
+  color: string;
+  icon: string;
+}
+
+export interface Goal extends Statused {
+  slug: string;
+  title: string;
+  audienceHint?: string;
+  whatYouNeed: string;
+  howWeHelp: string;
+  outcome: string;
+  exampleTools: string[];
+  stageSlugs: string[];
+  serviceSlugs: string[];
+  icon: string;
+  color: string;
+}
+
+export interface BusinessType extends Statused {
+  slug: string;
+  name: string;
+  summary: string;
+  description: string;
+  goalSlugs: string[];
+  roadmapSlug?: string;
+  icon: string;
+  color: string;
+}
+
+export interface StartingPoint extends Statused {
+  slug: string;
+  label: string;
+  situation: string;
+  recommendation: string;
+  recommendedStageSlug: string;
+  cta: Cta;
+  icon: string;
+  color: string;
+}
+
+export interface ServiceCategory extends Statused {
+  slug: string;
+  name: string;
+  intro: string;
+  order: number;
+  icon: string;
+  color: string;
+}
+
+export interface Service extends Statused {
+  slug: string;
+  name: string;
+  categorySlug: string;
+  deliveryModel: DeliveryModelKey;
+  plainDescription: string;
+  whatYouGet: string[];
+  relatedToolSlugs: string[];
+  goalSlugs: string[];
+  stageSlugs: string[];
+  businessTypeSlugs: string[];
+  exampleTools: string[];
+  outcome?: string;
+}
+
+export interface ToolCategory extends Statused {
+  slug: string;
+  name: string;
+  intro: string;
+  order: number;
+  icon: string;
+  color: string;
+}
+
+export interface Tool extends Statused {
+  slug: string;
+  name: string; // the tool category / example area we help with
+  categorySlug: string;
+  whatItDoes: string;
+  whyUseful: string;
+  connectsWith: string[];
+  suitsBusinessTypeSlugs: string[];
+  whenNotNeeded: string;
+  relatedServiceSlugs: string[];
+  stageSlugs: string[];
+  exampleTools: string[]; // named example products (labelled "tools we can connect")
+}
+
+export interface RoadmapPhase {
+  title: string;
+  summary: string;
+  stageSlug: string;
+  serviceSlugs: string[];
+  goalSlugs?: string[];
+}
+export interface Roadmap extends Statused {
+  slug: string;
+  name: string;
+  forBusinessTypeSlug: string;
+  intro: string;
+  phases: RoadmapPhase[];
+}
+
+export interface ProcessStep {
+  order: number;
+  title: string;
+  description: string;
+  icon: string;
+}
+
+export interface ValueProp {
+  title: string;
+  body: string;
+  icon: string;
+  color: string;
+}
+
+export interface Faq extends Statused {
+  slug: string;
+  question: string;
+  answer: string;
+  category?: string;
+}
+
+export interface LearnArticle extends Statused {
+  slug: string;
+  title: string;
+  excerpt: string;
+  body: string[];
+  readMinutes?: number;
+  relatedGoalSlugs?: string[];
+  publishedAt?: string;
+}
+
+/* ------ proof (placeholder-gated — hidden until verified) ------ */
+export interface CaseStudy extends Statused {
+  slug: string;
+  title: string;
+  client?: string;
+  summary: string;
+}
+export interface Testimonial extends Statused {
+  quote: string;
+  attribution?: string;
+  rating?: number;
+}
+export interface Example extends Statused {
+  slug: string;
+  title: string;
+  summary: string;
+}
+
+/* ------ legal ------ */
+export interface LegalBlock {
+  heading?: string;
+  paragraphs: string[];
+}
+export interface LegalPage extends Statused {
+  slug: string;
+  title: string;
+  updated: string;
+  reviewNote?: string;
+  intro: string;
+  blocks: LegalBlock[];
+}
+
+/* ------------------------------------------------------------------ homepage sections */
+
+export type SectionType =
+  | "editorialStatement"
+  | "growthJourney"
+  | "goalExplorer"
+  | "startingPointSelector"
+  | "servicesExplorer"
+  | "toolUniverse"
+  | "deliveryModels"
+  | "processSteps"
+  | "whyInfiniteWeblinks"
+  | "connectedSystem"
+  | "caseStudyShowcase"
+  | "testimonialWall"
+  | "learningResources"
+  | "faqSection"
+  | "finalCtaBanner";
+
+export interface SectionConfig {
+  type: SectionType;
+  enabled: boolean;
+  anchorId?: string;
+}
+
 export interface EditorialSection {
   eyebrow: string;
   heading: Headline;
   body: string[];
   points?: { title: string; body: string; color: string; icon: string }[];
-}
-
-export type SocialPlatform = "Facebook" | "Instagram" | "YouTube" | "Pinterest";
-
-export interface SocialLink {
-  platform: SocialPlatform;
-  /** Hidden until a valid URL exists (brief §23). */
-  url?: string;
-}
-
-export interface FooterContent {
-  supportEmail: string;
-  tagline: string;
-  columns: { heading: string; links: NavLink[] }[];
-  legal: NavLink[];
-  social: SocialLink[];
-}
-
-export interface SiteChrome {
-  nav: SiteNav;
-  footer: FooterContent;
 }

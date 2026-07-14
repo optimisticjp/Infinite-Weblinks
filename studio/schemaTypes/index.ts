@@ -1,0 +1,120 @@
+import type {SchemaTypeDefinition} from 'sanity'
+
+// Shared objects
+import {contentStatus} from './objects/contentStatus'
+import {seo} from './objects/seo'
+import {cta} from './objects/cta'
+import {mediaImage} from './objects/mediaImage'
+import {themeChoice} from './objects/themeChoice'
+import {layoutVariant} from './objects/layoutVariant'
+import {link} from './objects/link'
+import {growthPlanOutcome} from './objects/growthPlanOutcome'
+
+// Singletons & site configuration
+import {siteSettings} from './documents/siteSettings'
+import {navigation} from './documents/navigation'
+import {megaMenu} from './documents/megaMenu'
+import {footer} from './documents/footer'
+import {formSettings} from './documents/formSettings'
+
+// Pages & modular sections
+import {page} from './documents/page'
+import {heroConnectedUniverse} from './sections/heroConnectedUniverse'
+import {editorialStatement} from './sections/editorialStatement'
+import {goalExplorer} from './sections/goalExplorer'
+import {growthJourney} from './sections/growthJourney'
+import {startingPointSelector} from './sections/startingPointSelector'
+import {servicesExplorer} from './sections/servicesExplorer'
+import {toolUniverse} from './sections/toolUniverse'
+import {deliveryModels} from './sections/deliveryModels'
+import {processSteps} from './sections/processSteps'
+import {whyInfiniteWeblinks} from './sections/whyInfiniteWeblinks'
+import {faqSection} from './sections/faqSection'
+import {finalCtaBanner} from './sections/finalCtaBanner'
+import {richText} from './sections/richText'
+import {mediaFeature} from './sections/mediaFeature'
+import {logoStrip} from './sections/logoStrip'
+import {contactPrompt} from './sections/contactPrompt'
+// Deferred sections (M7/M8) — see each file's header comment.
+import {roadmapShowcase} from './sections/roadmapShowcase'
+import {caseStudyShowcase} from './sections/caseStudyShowcase'
+import {testimonialWall} from './sections/testimonialWall'
+
+// Taxonomy (the graph)
+import {goal} from './documents/goal'
+import {growthStage} from './documents/growthStage'
+import {crossCuttingSystem} from './documents/crossCuttingSystem'
+import {deliveryModel} from './documents/deliveryModel'
+import {businessType} from './documents/businessType'
+import {startingPoint} from './documents/startingPoint'
+import {serviceCategory} from './documents/serviceCategory'
+import {service} from './documents/service'
+import {toolCategory} from './documents/toolCategory'
+import {tool} from './documents/tool'
+
+// Content & rules
+import {faq} from './documents/faq'
+import {growthPlanRuleSet} from './documents/growthPlanRuleSet'
+
+/**
+ * The initial schema slice (Milestone M3 — data-model.md "Progressive implementation"). The
+ * complete content model is designed up front; `roadmap`, `article`, `resource`, `example`,
+ * `caseStudy`, `testimonial`, `solution`, `legalPage`, and `ctaLibrary` are NOT yet part of this
+ * slice and are added here only when their milestone (M7/M8+) begins.
+ */
+export const schemaTypes: SchemaTypeDefinition[] = [
+  // Objects
+  contentStatus,
+  seo,
+  cta,
+  mediaImage,
+  themeChoice,
+  layoutVariant,
+  link,
+  growthPlanOutcome,
+
+  // Site configuration (singletons pinned in the desk structure)
+  siteSettings,
+  navigation,
+  megaMenu,
+  footer,
+  formSettings,
+
+  // Pages & sections
+  page,
+  heroConnectedUniverse,
+  editorialStatement,
+  goalExplorer,
+  growthJourney,
+  startingPointSelector,
+  servicesExplorer,
+  toolUniverse,
+  deliveryModels,
+  processSteps,
+  whyInfiniteWeblinks,
+  faqSection,
+  finalCtaBanner,
+  richText,
+  mediaFeature,
+  logoStrip,
+  contactPrompt,
+  roadmapShowcase,
+  caseStudyShowcase,
+  testimonialWall,
+
+  // Taxonomy
+  goal,
+  growthStage,
+  crossCuttingSystem,
+  deliveryModel,
+  businessType,
+  startingPoint,
+  serviceCategory,
+  service,
+  toolCategory,
+  tool,
+
+  // Content & rules
+  faq,
+  growthPlanRuleSet,
+]

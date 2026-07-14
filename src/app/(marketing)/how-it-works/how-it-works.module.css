@@ -1,0 +1,14 @@
+/*
+ * Zero-height anchor band sitting directly above each reused section. Each <span>
+ * carries a stage slug / system key id so the mega-menu deep links resolve. The
+ * scroll-margin-top keeps the anchored section clear of the sticky header (WCAG
+ * 2.4.11), matching the global scroll-padding-top.
+ */
+.anchors {
+  position: relative;
+}
+.anchor {
+  display: block;
+  height: 0;
+  scroll-margin-top: calc(var(--header-h) + var(--space-4));
+}

@@ -1,0 +1,78 @@
+.prose {
+  max-width: 68ch;
+}
+.lead {
+  font-size: var(--fs-lead);
+  line-height: 1.55;
+  color: var(--text-body);
+  margin: 0 0 var(--space-5);
+}
+.body {
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-body);
+  margin: 0;
+}
+
+/* ---- principles ---- */
+.principles {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+  list-style: none;
+  margin: clamp(24px, 3vw, 40px) 0 0;
+  padding: 0;
+}
+.principle {
+  padding: clamp(20px, 2.4vw, 28px);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  border-top: 3px solid var(--accent);
+  border-radius: var(--radius-lg);
+}
+.principleTitle {
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+  margin: var(--space-4) 0 var(--space-2);
+}
+.principleBody {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ---- closing CTA ---- */
+.cta {
+  max-width: 60ch;
+  margin-inline: auto;
+  text-align: center;
+}
+.slogan {
+  font-family: var(--font-display);
+  font-size: var(--fs-lead);
+  font-weight: var(--fw-semibold);
+  color: var(--link);
+  margin: 0 0 var(--space-3);
+}
+.ctaTitle {
+  font-size: var(--fs-h2);
+  color: var(--text-heading);
+  margin: 0 0 var(--space-4);
+}
+.ctaBody {
+  font-size: var(--fs-lead);
+  color: var(--text-body);
+  margin: 0 0 var(--space-6);
+}
+
+@media (min-width: 720px) {
+  .principles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1080px) {
+  .principles {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

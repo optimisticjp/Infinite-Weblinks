@@ -1,0 +1,75 @@
+/* Prominent guide note, shown in the hero aside (on the dark hero surface). */
+.note {
+  max-width: 22rem;
+  margin: 0;
+  padding: var(--space-5) var(--space-6);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-snug);
+  color: var(--text-heading);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline-strong);
+  border-left: 3px solid var(--cyan);
+  border-radius: var(--radius-lg);
+}
+
+.catSection {
+  scroll-margin-top: calc(var(--header-h) + var(--space-4));
+}
+
+.catHead {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin-bottom: clamp(24px, 3vw, 36px);
+  max-width: 62ch;
+}
+.catHeadText {
+  min-width: 0;
+}
+.catName {
+  font-size: var(--fs-h2);
+  color: var(--text-heading);
+  margin: 0 0 var(--space-2);
+}
+.catIntro {
+  font-size: var(--fs-lead);
+  line-height: var(--lh-snug);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cta {
+  max-width: 60ch;
+  margin-inline: auto;
+  text-align: center;
+}
+.ctaTitle {
+  font-size: var(--fs-h2);
+  color: var(--text-heading);
+  margin: 0 0 var(--space-4);
+}
+.ctaBody {
+  font-size: var(--fs-lead);
+  color: var(--text-body);
+  margin: 0 0 var(--space-6);
+}
+
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

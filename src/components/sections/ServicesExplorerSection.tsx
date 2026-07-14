@@ -10,6 +10,9 @@ import type { Service, ServiceCategory } from "@/lib/content/types";
 import styles from "./ServicesExplorerSection.module.css";
 
 const PREVIEW_COUNT = 4;
+/** Homepage is a preview, not the catalogue — cap the secondary category grid and
+ * send the rest to /services (which lists every category in full). */
+const MAX_SECONDARY_CATEGORIES = 8;
 
 /**
  * ServicesExplorerSection — a preview, not a catalogue (theme-dark).
@@ -38,7 +41,9 @@ export async function ServicesExplorerSection({ anchorId }: { anchorId?: string 
 
   if (grouped.length === 0) return null;
 
-  const [featured, ...rest] = grouped;
+  const [featured, ...allRest] = grouped;
+  const rest = allRest.slice(0, MAX_SECONDARY_CATEGORIES);
+  const hiddenCount = allRest.length - rest.length;
 
   return (
     <section
@@ -114,7 +119,7 @@ export async function ServicesExplorerSection({ anchorId }: { anchorId?: string 
 
         <div className={styles.cta}>
           <Button href="/services" variant="secondary">
-            Browse all services
+            {hiddenCount > 0 ? `Browse all services (${hiddenCount} more categories)` : "Browse all services"}
           </Button>
         </div>
       </div>

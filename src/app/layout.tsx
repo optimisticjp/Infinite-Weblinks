@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Sora, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { BrandSprite } from "@/components/brand/BrandSprite";
 import "@/styles/globals.css";
 
 const sora = Sora({
@@ -54,6 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en-GB" className={`${sora.variable} ${jakarta.variable} ${mono.variable}`}>
       <body>
+        <BrandSprite />
         <a className="iw-skip-link" href="#main">
           Skip to main content
         </a>

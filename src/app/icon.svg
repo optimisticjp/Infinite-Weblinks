@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 50" fill="none">
+  <defs>
+    <linearGradient id="fav" x1="4" y1="42" x2="96" y2="8" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#22D3EE"/>
+      <stop offset=".28" stop-color="#3B82F6"/>
+      <stop offset=".55" stop-color="#A855F7"/>
+      <stop offset=".8" stop-color="#F5197E"/>
+      <stop offset="1" stop-color="#FF7A18"/>
+    </linearGradient>
+    <mask id="favcut" maskUnits="userSpaceOnUse" x="0" y="0" width="100" height="50">
+      <rect width="100" height="50" fill="#fff"/>
+      <path d="M55 20 Q50 25 45 30" fill="none" stroke="#000" stroke-width="12" stroke-linecap="butt"/>
+    </mask>
+  </defs>
+  <g mask="url(#favcut)">
+    <path d="M50 25 C62 6 96 6 96 25 C96 44 62 44 50 25 C38 6 4 6 4 25 C4 44 38 44 50 25 Z" fill="none" stroke="url(#fav)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <path d="M59 16 Q50 25 41 34" fill="none" stroke="url(#fav)" stroke-width="8" stroke-linecap="round"/>
+</svg>

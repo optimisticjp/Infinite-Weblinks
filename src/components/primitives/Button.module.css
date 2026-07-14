@@ -1,0 +1,114 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--target-min); /* 44px touch target (WCAG 2.5.8) */
+  padding: 0 var(--space-6);
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-sm);
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    filter var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out);
+}
+.btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+.btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.985);
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Sizes */
+.sm {
+  min-height: 40px;
+  padding-inline: var(--space-5);
+  font-size: var(--fs-xs);
+}
+.md {
+  min-height: var(--target-min);
+}
+.lg {
+  min-height: 54px;
+  padding-inline: var(--space-8);
+  font-size: var(--fs-body);
+}
+
+/* Primary — pink→orange gradient, DARK ink text (contrast fix). */
+.primary {
+  background-image: var(--grad-cta);
+  color: var(--cta-text);
+  box-shadow: var(--glow-cta);
+}
+.primary:hover:not(:disabled) {
+  filter: brightness(1.05);
+  box-shadow:
+    0 14px 40px rgba(245, 25, 126, 0.5),
+    0 8px 22px rgba(255, 122, 24, 0.34);
+}
+
+/* Brand — tri-colour gradient, dark ink text. */
+.brand {
+  background-image: var(--grad-brand);
+  color: var(--cta-text);
+  box-shadow: var(--glow-violet);
+}
+.brand:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+/* Secondary — outlined, follows section text colour. */
+.secondary {
+  background: transparent;
+  color: var(--text-heading);
+  border-color: var(--hairline-strong);
+}
+.secondary:hover:not(:disabled) {
+  border-color: var(--border-glow);
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+/* Ghost — very subtle. */
+.ghost {
+  background: color-mix(in srgb, currentColor 6%, transparent);
+  color: var(--text-heading);
+}
+.ghost:hover:not(:disabled) {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+/* Text — link-like, no lift. */
+.text {
+  background: transparent;
+  color: var(--link);
+  min-height: auto;
+  padding-inline: var(--space-2);
+}
+.text:hover:not(:disabled) {
+  color: var(--link-hover);
+  transform: none;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+}
+.iconRight {
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.btn:hover:not(:disabled) .iconRight {
+  transform: translateX(3px);
+}

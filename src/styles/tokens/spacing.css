@@ -32,4 +32,7 @@
 
   /* Touch target minimum (WCAG 2.2 2.5.8) */
   --target-min: 44px;
+
+  /* Sticky header height (used for scroll-padding so focus is never obscured — WCAG 2.4.11) */
+  --header-h: 72px;
 }

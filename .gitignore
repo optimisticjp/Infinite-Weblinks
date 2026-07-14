@@ -1,0 +1,43 @@
+# dependencies
+node_modules/
+studio/node_modules/
+.pnp
+.pnp.js
+
+# next.js
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# OpenNext / Cloudflare
+.open-next/
+.wrangler/
+.dev.vars
+wrangler.*.local
+
+# env / secrets — NEVER commit real values
+.env
+.env.*
+!.env.example
+studio/.env
+studio/.env.*
+
+# testing / reports
+coverage/
+playwright-report/
+test-results/
+/artifacts/
+lighthouse-*.json
+lighthouse-*.html
+
+# sanity
+studio/dist/
+.sanity/
+
+# misc
+.DS_Store
+*.log
+npm-debug.log*
+.vscode/
+.idea/

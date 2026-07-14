@@ -1,0 +1,157 @@
+/* Colours — Infinite Weblinks
+   A "living connected digital universe": deep navy/near-black lit by electric violet,
+   hot pink, orange, cyan, lime and blue.
+   Rebuilt cleanly from the approved handoff, WITH the two accessibility fixes from the
+   planning review baked in:
+     - R-A11Y-1 (CHK-A12): primary CTA gradient uses DARK ink text, not white.
+     - R-A11Y-2 (CHK-A13): section-scoped text colours (on-dark / on-band / on-statement)
+       instead of one global default that fails on the bright editorial band. */
+
+:root {
+  /* ---- Core neutral scale (navy-black, faintly violet) ---- */
+  --ink-950: #07050f; /* page base, near-black navy */
+  --ink-900: #0a0715; /* app background */
+  --ink-850: #0e0a1c; /* raised background band */
+  --ink-800: #141026; /* card / panel */
+  --ink-700: #1b1633; /* elevated card, input */
+  --ink-600: #262041; /* hover surface */
+  --ink-500: #3a3358; /* subtle divider */
+
+  /* ---- Text on dark ---- */
+  --white: #ffffff;
+  --text-1: #f6f4ff; /* headings, high emphasis (18.6:1 on ink-950) */
+  --text-2: #c4bedc; /* body copy (11.3:1 on ink-950) */
+  --text-3: #928bb0; /* secondary / captions (6.3:1) */
+  --text-4: #635c82; /* muted / disabled ONLY — 3.3:1, never body text */
+
+  /* ---- Bright editorial band ---- */
+  --band: #f4f1ea; /* cream editorial surface */
+  --band-ink: #0a0715; /* text on the cream band (17.9:1) */
+  --band-ink-2: #2b2740; /* secondary text on the band */
+
+  /* ---- Brand accent hues ---- */
+  --violet: #a855f7;
+  --violet-bright: #b571ff;
+  --violet-deep: #6d28d9;
+  --pink: #f5197e;
+  --pink-bright: #ff2e93;
+  --orange: #ff7a18;
+  --orange-bright: #ff9538;
+  --cyan: #22d3ee;
+  --lime: #34d399;
+  --lime-bright: #4ade80;
+  --blue: #3b82f6;
+  --blue-bright: #5b9bff;
+  --yellow: #facc15;
+
+  /* ---- Tinted accent surfaces (icon tiles, glows) ---- */
+  --violet-soft: rgba(168, 85, 247, 0.14);
+  --pink-soft: rgba(245, 25, 126, 0.14);
+  --orange-soft: rgba(255, 122, 24, 0.14);
+  --cyan-soft: rgba(34, 211, 238, 0.14);
+  --lime-soft: rgba(52, 211, 153, 0.14);
+  --blue-soft: rgba(59, 130, 246, 0.14);
+
+  /* ---- Signature gradients ---- */
+  --grad-brand: linear-gradient(120deg, #7c3aed 0%, #f5197e 52%, #ff7a18 100%);
+  --grad-cta: linear-gradient(90deg, #f5197e 0%, #ff7a18 100%);
+  --grad-violet-pink: linear-gradient(120deg, #8b3bff 0%, #f5197e 100%);
+  --grad-cyan-blue: linear-gradient(120deg, #22d3ee 0%, #3b82f6 100%);
+  --grad-lime: linear-gradient(120deg, #34d399 0%, #22d3ee 100%);
+  --grad-banner: linear-gradient(100deg, #6d28d9 0%, #f5197e 55%, #ff7a18 100%);
+  --grad-text: linear-gradient(100deg, #ff2e93 0%, #ff7a18 100%); /* on dark: 5.8–7.8:1 */
+  --grad-spectrum: linear-gradient(90deg, #a855f7, #f5197e, #ff7a18, #facc15, #34d399, #22d3ee, #3b82f6);
+
+  /* ---- Borders & lines ---- */
+  --border-1: rgba(255, 255, 255, 0.08);
+  --border-2: rgba(255, 255, 255, 0.14);
+  --border-glow: rgba(168, 85, 247, 0.55); /* focus / active accent (≥3:1 on dark) */
+
+  /* ---- Semantic status ---- */
+  --success: #34d399;
+  --warning: #ff9538;
+  --danger: #ff4d6d;
+  --info: #5b9bff;
+
+  /* ---- Domain colour-coding (hero nodes / illustrated scenes) ---- */
+  --domain-website: var(--blue); /* Website or Store */
+  --domain-search: var(--violet); /* Search & Advertising */
+  --domain-social: var(--pink); /* Social & Content */
+  --domain-customer: var(--orange); /* Customer Tools */
+  --domain-analytics: var(--cyan); /* Analytics */
+  --domain-automation: var(--violet-bright); /* Automation & AI */
+  --domain-ecom: var(--lime); /* commerce / customer relationships */
+
+  /* ---- Global page defaults (dark) ---- */
+  --bg-page: var(--ink-950);
+
+  /* ---- SECTION-SCOPED SEMANTIC TOKENS (R-A11Y-2 fix) ----
+     Components read these; each section theme below overrides them so text
+     contrast is always correct for its own surface. Default = dark theme. */
+  --surface: var(--ink-950);
+  --surface-raised: var(--ink-800);
+  --surface-input: var(--ink-700);
+  --text-heading: var(--text-1);
+  --text-body: var(--text-2);
+  --text-muted: var(--text-3);
+  --hairline: var(--border-1);
+  --hairline-strong: var(--border-2);
+  --link: var(--violet-bright);
+  --link-hover: var(--pink-bright);
+
+  /* ---- CTA text colour (R-A11Y-1 fix) ----
+     Dark ink on the pink→orange gradient: ink-on-pink 5.1:1, ink-on-orange 7.8:1.
+     (White would fail: 2.6:1 at the orange end.) */
+  --cta-text: var(--ink-950);
+}
+
+/* ============================================================
+   SECTION THEMES — set on a section wrapper; override the
+   semantic tokens so nested components render correct contrast.
+   ============================================================ */
+
+.theme-dark {
+  --surface: var(--ink-950);
+  --surface-raised: var(--ink-800);
+  --text-heading: var(--text-1);
+  --text-body: var(--text-2);
+  --text-muted: var(--text-3);
+  --hairline: var(--border-1);
+  --hairline-strong: var(--border-2);
+  --link: var(--violet-bright);
+  --link-hover: var(--pink-bright);
+  background-color: var(--surface);
+  color: var(--text-body);
+}
+
+/* Bright editorial band — dark text on cream (all pass ≥ 7:1). Accents are for
+   non-text decoration only on this surface. */
+.theme-band {
+  --surface: var(--band);
+  --surface-raised: #ffffff;
+  --text-heading: var(--band-ink);
+  --text-body: var(--band-ink);
+  --text-muted: var(--band-ink-2);
+  --hairline: rgba(10, 7, 21, 0.12);
+  --hairline-strong: rgba(10, 7, 21, 0.24);
+  --link: var(--violet-deep);
+  --link-hover: var(--pink);
+  background-color: var(--surface);
+  color: var(--text-body);
+}
+
+/* Bold full-colour statement — white text on a deep violet→pink field (avoids the
+   bright-orange end for text). Reserved for statement bands; large text preferred. */
+.theme-statement {
+  --surface: var(--violet-deep);
+  --surface-raised: rgba(255, 255, 255, 0.12);
+  --text-heading: #ffffff;
+  --text-body: rgba(255, 255, 255, 0.94);
+  --text-muted: rgba(255, 255, 255, 0.82);
+  --hairline: rgba(255, 255, 255, 0.24);
+  --hairline-strong: rgba(255, 255, 255, 0.4);
+  --link: #ffffff;
+  --link-hover: #ffe9f4;
+  background-image: var(--grad-violet-pink);
+  color: var(--text-body);
+}

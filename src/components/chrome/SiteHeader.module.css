@@ -1,0 +1,234 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  color: var(--text-2);
+  background: color-mix(in srgb, var(--ink-950) 62%, transparent);
+  backdrop-filter: blur(var(--blur-panel)) saturate(1.4);
+  -webkit-backdrop-filter: blur(var(--blur-panel)) saturate(1.4);
+  border-bottom: 1px solid var(--border-1);
+  transition: background-color var(--dur-base) var(--ease-out);
+}
+.scrolled {
+  background: color-mix(in srgb, var(--ink-950) 84%, transparent);
+  border-bottom-color: var(--border-2);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  height: var(--header-h);
+}
+
+.logo {
+  color: var(--text-1);
+  flex: none;
+}
+
+/* ---- Desktop nav ---- */
+.desktopNav {
+  display: none;
+  margin-inline-end: auto;
+}
+.navList {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.navItem {
+  position: static;
+}
+.navLink,
+.navTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 40px;
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.navLink:hover,
+.navTrigger:hover,
+.navTrigger[aria-expanded="true"] {
+  color: var(--text-1);
+  background: rgba(255, 255, 255, 0.06);
+}
+.chevron {
+  width: 15px;
+  height: 15px;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.chevron[data-open="true"] {
+  transform: rotate(180deg);
+}
+
+/* ---- Right-side actions ---- */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: none;
+}
+/* CTAs hidden on small screens (the mobile menu carries them); shown at desktop. */
+.ctaGroup {
+  display: none;
+  align-items: center;
+  gap: var(--space-3);
+}
+.secondaryCta {
+  display: none;
+}
+.menuButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--target-min);
+  height: var(--target-min);
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-1);
+  cursor: pointer;
+}
+.menuButton:hover {
+  background: rgba(255, 255, 255, 0.09);
+}
+.menuButton > svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* ---- Mega-menu panel ---- */
+.megaPanel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: color-mix(in srgb, var(--ink-900) 96%, transparent);
+  backdrop-filter: blur(calc(var(--blur-panel) + 6px));
+  -webkit-backdrop-filter: blur(calc(var(--blur-panel) + 6px));
+  border-top: 1px solid var(--border-1);
+  border-bottom: 1px solid var(--border-2);
+  box-shadow: var(--shadow-lg);
+  animation: megaIn var(--dur-base) var(--ease-out);
+}
+@keyframes megaIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.megaInner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-10);
+  padding-block: var(--space-10);
+}
+.megaColumns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-8);
+}
+.megaColumn {
+  min-width: 0;
+}
+.megaHeading {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin: 0 0 var(--space-4);
+}
+.megaLinks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+.megaLink {
+  display: block;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--text-1);
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+.megaLink:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-1);
+}
+.megaLinkLabel {
+  display: block;
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-sm);
+}
+.megaLinkDesc {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+  margin-top: 2px;
+}
+.megaPromo {
+  align-self: start;
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.16), rgba(245, 25, 126, 0.12));
+  border: 1px solid var(--border-2);
+}
+.megaPromoHeading {
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-h4);
+  color: var(--text-1);
+  margin: 0 0 var(--space-2);
+}
+.megaPromoBody {
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  margin: 0 0 var(--space-5);
+}
+
+/* ---- Breakpoints ----
+   < 1080px  : compact header (logo + hamburger) — the full-screen mobile nav carries the CTAs.
+   ≥ 1080px  : desktop nav + primary CTA (mega-menus enabled).
+   ≥ 1280px  : the secondary CTA joins as well. */
+@media (min-width: 1080px) {
+  .desktopNav {
+    display: block;
+  }
+  .menuButton {
+    display: none;
+  }
+  .ctaGroup {
+    display: flex;
+  }
+  .megaInner {
+    grid-template-columns: minmax(0, 1fr) 300px;
+  }
+}
+@media (min-width: 1280px) {
+  .secondaryCta {
+    display: inline-flex;
+  }
+}

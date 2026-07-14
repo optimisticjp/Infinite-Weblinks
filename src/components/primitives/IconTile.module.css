@@ -1,0 +1,35 @@
+.tile {
+  --tile-size: 48px;
+  --tile-color: var(--violet);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tile-size);
+  height: var(--tile-size);
+  border-radius: calc(var(--tile-size) * 0.32);
+  flex: none;
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+.tile > :global(svg) {
+  width: 52%;
+  height: 52%;
+}
+
+.outline {
+  background: color-mix(in srgb, var(--tile-color) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tile-color) 45%, transparent);
+  color: var(--tile-color);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--tile-color) 32%, transparent);
+}
+
+.filled {
+  background: var(--tile-color);
+  color: var(--ink-950); /* dark glyph on the bright accent fill */
+  box-shadow: 0 0 28px color-mix(in srgb, var(--tile-color) 55%, transparent);
+}
+
+.tile:hover {
+  transform: translateY(-2px) scale(1.04);
+}

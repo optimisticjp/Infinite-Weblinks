@@ -1,0 +1,125 @@
+.footer {
+  background: var(--ink-900);
+  border-top: 1px solid var(--border-1);
+  color: var(--text-2);
+}
+.inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-12);
+  padding-block: var(--section-y) var(--space-12);
+}
+.brand {
+  max-width: 30rem;
+}
+.logo {
+  color: var(--text-1);
+}
+.tagline {
+  margin: var(--space-5) 0 var(--space-8);
+  font-size: var(--fs-lead);
+  color: var(--text-2);
+}
+.contactLabel {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin: 0 0 var(--space-2);
+}
+.email {
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-semibold);
+  color: var(--text-1);
+}
+.email:hover {
+  color: var(--pink-bright);
+}
+
+.cols {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-8);
+}
+.colHeading {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin: 0 0 var(--space-4);
+}
+.colLinks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.link {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+}
+.link:hover {
+  color: var(--text-1);
+}
+
+.bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4) var(--space-6);
+  padding-block: var(--space-6);
+  border-top: 1px solid var(--border-1);
+}
+.copy {
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+  margin: 0;
+}
+.legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  margin-inline-start: auto;
+}
+.legalLink {
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+.legalLink:hover {
+  color: var(--text-1);
+}
+.social {
+  display: flex;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.socialLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--target-min);
+  height: var(--target-min);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-2);
+  color: var(--text-2);
+}
+
+@media (min-width: 720px) {
+  .inner {
+    grid-template-columns: 1.4fr 1fr;
+  }
+  .cols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

@@ -40,5 +40,10 @@ export const crossCuttingSystem = defineType({
     }),
     defineField({name: 'contentStatus', title: 'Content status', type: 'contentStatus', validation: (Rule) => Rule.required()}),
   ],
-  preview: {select: {title: 'name'}},
+  preview: {
+    select: {title: 'name', status: 'contentStatus.status'},
+    prepare({title, status}) {
+      return {title, subtitle: status}
+    },
+  },
 })

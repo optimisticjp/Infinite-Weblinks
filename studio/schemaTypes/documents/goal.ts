@@ -37,13 +37,22 @@ export const goal = defineType({
       type: 'array',
       of: [defineArrayMember({type: 'reference', to: [{type: 'service'}]})],
     }),
+    defineField({
+      name: 'order',
+      title: 'Order',
+      description: 'Manual display order where this goal appears in curated lists (e.g. Goal Explorer).',
+      type: 'number',
+      validation: (Rule) => Rule.integer(),
+    }),
     defineField({name: 'seo', title: 'SEO', type: 'seo'}),
     defineField({name: 'contentStatus', title: 'Content status', type: 'contentStatus', validation: (Rule) => Rule.required()}),
   ],
+  orderings: [{title: 'Order', name: 'orderAsc', by: [{field: 'order', direction: 'asc'}]}],
   preview: {
-    select: {title: 'name', status: 'contentStatus.status'},
-    prepare({title, status}) {
-      return {title, subtitle: status}
+    select: {title: 'name', order: 'order', status: 'contentStatus.status'},
+    prepare({title, order, status}) {
+      const subtitle = [order != null ? `#${order}` : undefined, status].filter(Boolean).join(' · ')
+      return {title, subtitle: subtitle || undefined}
     },
   },
 })

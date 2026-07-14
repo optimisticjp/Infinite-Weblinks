@@ -2,9 +2,8 @@ import {defineArrayMember, defineField, defineType} from 'sanity'
 
 /**
  * Audience axis (ecommerce, creator, local/service, B2B, software, established, beginner —
- * data-model.md → taxonomy). `roadmap` reference is intentionally omitted for now: the `roadmap`
- * document type is not part of this initial schema slice (lands with M7 — data-model.md
- * "Progressive implementation"); add a `roadmap` reference field here once that schema exists.
+ * data-model.md → taxonomy). `roadmap` references the single suggested-sequence roadmap for this
+ * business type (Milestone M7 — now part of this schema).
  */
 export const businessType = defineType({
   name: 'businessType',
@@ -25,6 +24,13 @@ export const businessType = defineType({
       title: 'Related goals',
       type: 'array',
       of: [defineArrayMember({type: 'reference', to: [{type: 'goal'}]})],
+    }),
+    defineField({
+      name: 'roadmap',
+      title: 'Roadmap',
+      description: 'The suggested phase sequence for this business type (data-model.md → taxonomy).',
+      type: 'reference',
+      to: [{type: 'roadmap'}],
     }),
     defineField({name: 'seo', title: 'SEO', type: 'seo'}),
     defineField({name: 'contentStatus', title: 'Content status', type: 'contentStatus', validation: (Rule) => Rule.required()}),

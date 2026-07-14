@@ -1,0 +1,5 @@
+.wrap {
+  display: flex;
+  justify-content: flex-start;
+  margin-block: var(--space-2);
+}

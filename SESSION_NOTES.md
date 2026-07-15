@@ -112,3 +112,43 @@ The full marketing site is built on top of the approved GATE-1 opening. The prod
 2. Provide env vars for Turnstile/Formspree (and Sanity when ready).
 3. Commission professional legal review of the four legal pages.
 4. Deploy from the branch when satisfied.
+
+---
+
+## Integration-correction pass (post-review)
+
+A focused correction pass (no redesign) resolved six items:
+
+1. **Sanity runtime claim.** Removed the misleading `usingSanity` export. Added a real,
+   mock-tested read adapter (`src/lib/sanity/fetch.ts` — `sanityFetch` + `fromSanityOrSeed`,
+   never throws, per-getter seed fallback) and wired the cleanly-mappable, status-gated
+   getters (`getFaqs`, `getCaseStudies`, `getTestimonials`, `getExamples`) through it with
+   real GROQ (`src/lib/sanity/queries.ts`). The richer taxonomy types (services/goals/
+   stages/tools/roadmaps/articles/legal) remain **intentionally seed-backed and deferred**:
+   the Studio schema and app types diverge (name↔title, plainSummary↔summary,
+   mainTools↔exampleTools, references↔slugs, text↔string[], portable-text↔blocks[], and
+   app-only icon/color/exampleTools/readMinutes with no Sanity source), so a correct query
+   path needs a schema↔type reconciliation + a live dataset to validate — larger than a
+   correction. `index.ts` documents this precisely.
+2. **Route coverage.** Added hubs `/business-types`, `/starting-points`, `/resources`
+   (the last fixes a previously-dead top-nav link). Added status-gated proof routes
+   `/case-studies(+/[slug])` and `/examples(+/[slug])` — they **404 unless a record is
+   Verified/Ready-to-Publish** (no placeholder proof is ever published). **Canonical
+   decision:** there is deliberately no `/solutions/[slug]`; the canonical detail is
+   `/goals/[slug]` (+ `/business-types/[slug]`, `/starting-points/[slug]`), so `/solutions`
+   stays a pure hub and no two near-identical detail pages compete. Sitemap updated
+   (hubs added; noindex `/growth-plan` removed; proof listed only once verified).
+3. **Conversion-route robots.** `/growth-plan` and `/contact` are now `noindex, follow`
+   (was `noindex, nofollow`) with self-canonicals so `?subject=` variants consolidate.
+4. **CI.** Root cause of the all-red history: the Playwright job ran `next start` with no
+   preceding `next build` (jobs don't share a filesystem with the build job), so the
+   webServer failed on every run. Fixed by adding `npm run build` to the e2e job — CI is
+   not weakened. (The `build` job — lint/typecheck/test/build/cf:build — was already green.)
+5. **Rate-limit readiness.** Added `src/lib/forms/rate-limit-adapter.ts` — `rateLimit(key)`
+   prefers a Cloudflare Rate Limiting binding (`FORM_RATE_LIMITER`, wired via
+   `getCloudflareContext`) and falls back to the in-memory limiter (dev/preview/tests).
+   No Durable Object introduced; the D1 tag-cache DB is not repurposed. To activate in
+   production, add the `ratelimits` binding to `wrangler.jsonc` (snippet in the adapter
+   header). Both form routes now call the adapter.
+6. **Verification** re-run green: lint, typecheck, 89 unit tests, build (145 pages),
+   cf:build, and 43 Playwright/axe e2e — including new proof-404 and hub-route coverage.

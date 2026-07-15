@@ -10,13 +10,15 @@
   background-image: var(--grad-banner);
 }
 
-/* Uniform dark scrim UNDER the gradient's lightest (orange) stop so text contrast
-   never depends on where it falls along the gradient. */
+/* Uniform dark scrim UNDER the text so contrast never depends on where it falls
+   along the gradient. Raised to 0.6 in Phase 1: the headline is now gradient text
+   (pink→orange), which is lower-luminance than the previous white — this keeps the
+   large-text headline ≥ 3:1 even where its stops sit over the same-hue banner stops. */
 .scrim {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: rgba(7, 5, 15, 0.5);
+  background: rgba(7, 5, 15, 0.6);
 }
 
 .glow {

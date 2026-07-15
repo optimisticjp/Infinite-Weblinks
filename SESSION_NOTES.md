@@ -381,3 +381,105 @@ these 15 with a "when to reach for it" column.
   kept 2×/reduced-motion/mega-menu/mobile-nav/1900ms settle, same browser resolution) +
   `npm run screenshots`; `review-artifacts/baseline/` captured (39 shots); `review-artifacts/README.md`
   rewritten.
+
+## Phase 1 — typography, spacing, gradient discipline, three bugs (branch `fix/phase-1-foundation`, from `main`)
+
+Foundation pass. No new dependencies, no section added/removed, Sanity untouched.
+
+**Verified green:** `npm run lint` 0 · `npm run typecheck` 0 · `npm run test` 109 · `npm run build`
+(webpack) · `npm run test:e2e` **92 passed** (TIER 2: built, served on `PORT=3101 npm run start`,
+sandbox Chromium). Screenshots: `review-artifacts/phase-1/` (39 shots).
+
+### 1. What changed, and what moved
+
+- **Type (A):** body `16 → 18px` and now fluid; display tracking tightens on desktop
+  (`--ls-display -0.02 → -0.035em @≥900px`); heading tracking split (`--ls-h1 -0.025`, `--ls-h2 -0.018`,
+  replacing the single `--ls-heading`; h3/h4 now inherit 0 — looser, per the same optics); `--lh-tight
+  → --lh-display 1.04 → 1.06`; body weight `400 → 450`; eyebrow `0.8125 → 0.75rem`; h3/h4/lead rescaled
+  to 24 / 18 / 21 (lead now clearly above h4); new `--measure: 68ch` applied to every `p` and `.iw-lead`
+  at the base layer.
+- **Spacing (B):** added `--section-y-tight` / `--section-y-loose` + `.iw-section--tight/--loose`
+  helpers. Loose → `connectedSystem`, `finalCtaBanner`. Tight → `testimonialWall`, `learningResources`.
+  Every radius-lg section card carrying a heading + body raised to `var(--space-8)` (32px ≥ radius+12):
+  ToolUniverse, DeliveryModels, CaseStudy (grid card), StartingPoint, ServicesExplorer (grid card),
+  Testimonial, Learning, GoalExplorer result, GrowthJourney systems.
+- **Colour (C):** `--band #f4f1ea → #f2eef6` (warm white, violet undertone). Recomputed band contrast
+  after the shift: `band-ink ≈ 17.4:1`, `band-ink-2 ≈ 12.5:1` — both still far above the 7:1 AAA the
+  file targets, so the documented figures hold. Added per-theme `--surface-hover` (G3).
+- **Gradient discipline (D):** gradient text now appears on **exactly two elements site-wide** — the
+  hero H1 accent and the final CTA headline (both `.iw-gradient-text`). Removed it from GrowthJourney
+  ("one connected path"), ConnectedSystem ("not separate silos"), the growth-plan H1, **and the 404
+  numeral** (an independent gradient the prompt didn't mention — see §2). Those headings are now uniform
+  `--text-heading`. Grep proof in the PR.
+- **Header alignment (F):** `SectionHeader` is a two-slot grid (text left, optional `aside` right) so
+  every section heading sits on the same left edge; removed `align="center"` from Testimonial, Why, and
+  GrowthJourney — only `finalCtaBanner` stays centred.
+- **Buttons (G):** lift scoped to md/lg (sm nav pills no longer twitch); primary/brand hover is a
+  gradient-position slide, not `filter: brightness()` (which went chalky and washed the glow);
+  secondary/ghost hover uses the new per-theme `--surface-hover` instead of `currentColor`.
+- **Bug 1 (E) — mega menu:** hover opens; click navigates to the hub; Enter/Space toggles (keyboard can
+  now open it); touch = tap-opens / tap-again-navigates. Modality via `matchMedia('(hover:hover)')`;
+  keyboard-vs-pointer via a `pointerdown` ref; `closeTimer` cleared on unmount. 3 new e2e tests.
+- **Screenshot hygiene (H):** `review-artifacts/screenshots/` gitignored (keeps `.gitkeep`; baseline/
+  and phase-N/ stay tracked); full-page shots now `deviceScaleFactor: 1`, viewport crops stay 2× —
+  phase-1 set is 34 MB vs baseline's 84 MB.
+- **Light-budget audit fixes:** the `light-budget` agent flagged one blocker — a 22px accent glow on
+  the `.marker` nodes of the `theme-band` (cream/daylight) `ProcessStepsSection`. Removed it (marker
+  reads via its solid fill + number). Also removed the dark-surface `--shadow-card` from the band
+  `GoalExplorerFilter .card` (a should-fix in a file I was already in) so it matches the other
+  border-only band cards. Re-audit: **zero blockers.**
+
+**Side-by-side vs `review-artifacts/baseline/`:** the page is ~2.8% taller (home 1× full-page
+22,111 → 22,729 px) — expected from the larger body, the narrower measure, and the two loose sections.
+Headings read tighter and more deliberate; the two gradient headlines (hero, final CTA) now carry all
+the colour emphasis while every other heading is a confident uniform weight; the cream band is a cleaner
+violet-white; cards breathe; section headings share one left edge down the page. (Baseline full-page is
+2×, phase-1 full-page is 1× per H — compare layout/flow, not pixels.)
+
+### 2. Where the prompt and the repo diverged
+
+- **No shared `accent` class.** Part D assumed repointing one shared `accent` class ("one change, not
+  fifteen"). Reality: gradient text was the global `.iw-gradient-text` applied at ~4 explicit call sites,
+  plus `EditorialStatement`'s own solid-violet `.accent` (not a gradient). So `.iw-gradient-text` *is*
+  the gradient class — I kept it, applied it at exactly the two allowed sites, and removed it elsewhere.
+  No repointing/new class was needed.
+- **A third gradient-text instance the prompt missed:** the **404 numeral** (`not-found.module.css .code`)
+  had its own `background-clip: text` + `--grad-text`. To honour "exactly twice site-wide" I made it a
+  solid dimmed `--text-muted`. (`EditorialStatement`'s solid-violet accent on the cream band is NOT
+  gradient text and is the documented, preserved GATE-1 opening — left as-is; see §3.)
+- **Weight-based emphasis doesn't map.** Part D suggested emphasis via `font-weight: var(--fw-bold)`
+  "against the heading's normal weight." Section headings already render at `--fw-black` (800), so a
+  `--fw-bold` (700) accent would read *lighter*, not emphasised. The correct reading of "emphasis from
+  weight, not colour" here is uniform headings — which is what CLAUDE.md's "every other heading is
+  var(--text-1)" already says. Implemented as uniform.
+- **"Keyboard can't open the menu" was already false.** The old `onClick` toggled on Enter too, so
+  keyboard *could* open it (the existing passing e2e proves it). The real live bug was the mouse
+  hover-then-click dead-menu, which is fixed.
+- **Gradient text on the final CTA needed a contrast tweak.** The pink→orange gradient headline over the
+  same-direction banner gradient measured ~2.97:1 (just under 3:1 large-text AA) in its worst case, so I
+  raised the banner's existing dark scrim `0.5 → 0.6` (its documented job is text contrast) → ≥3.6:1.
+- **E2E hydration flake (pre-existing, masked by CI `retries:1`).** Tests that press Enter immediately
+  after `goto` race React hydration; exposed locally at `retries:0`. Added `waitForLoadState("networkidle")`
+  to the keyboard tests. Hover-based tests were unaffected. Also updated `layout.spec.ts` mega-menu tests
+  to `hover()` (they used `click()`, which now navigates).
+
+### 3. For Phase 2 (found, NOT fixed)
+
+- **`EditorialStatement` accent is a solid violet colour** on the cream band (`--violet-deep`, ~6:1).
+  It's documented and is the preserved GATE-1 opening, but strictly CLAUDE.md says "emphasis from weight,
+  never colour." Worth a deliberate decision in Phase 2 (keep as an approved exception, or make it weight).
+- **Radius-xl featured panels** (ServicesExplorer/CaseStudy `.featured`, radius 28px) have desktop
+  padding ~36px < radius+12 (40px). The prompt scoped the padding rule to radius-lg (32px); the xl panels
+  are a separate call.
+- **Pre-existing arbitrary values** not in this phase's scope: `Hero.module.css .areaChip` `padding: 6px`;
+  `GrowthJourneySection.module.css .systemName/.systemDesc` `font-size: 1.05rem / 0.92rem`,
+  `line-height: 1.5`; a couple of `gap: 6px`. Off the 4px / token scale.
+- **`aside` slot is available but unpopulated.** Part F suggested wiring the goal-explorer filter / a
+  count into it; the grid-holds-the-edge fix works without it, so population was deferred to avoid
+  restructuring sections this phase.
+- **`ProcessStepsSection` cycles up to 8 accent hues** on the cream band (`PALETTE`, per-step) — the
+  light-budget agent flagged it "more than two accent colours" (should-fix). It's the "connected
+  spectrum" motif (GrowthJourney's stage rail does the same on dark), so whether it's sanctioned
+  colour-coding or a rainbow to tame on daylight is a deliberate Phase 2 call — not touched here.
+- **`StartingPointSelector`** drives per-row `sp.color` (IconTile + badge + left border) — several hues
+  in one band section; defensible as domain colour-coding, worth a conscious confirm in Phase 2.

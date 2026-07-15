@@ -15,7 +15,7 @@ export async function TestimonialWallSection({ anchorId }: { anchorId?: string }
   return (
     <section
       id={anchorId}
-      className={`theme-band iw-section ${styles.section}`}
+      className={`theme-band iw-section iw-section--tight ${styles.section}`}
       aria-labelledby="testimonials-heading"
     >
       <div className="iw-container">
@@ -23,7 +23,6 @@ export async function TestimonialWallSection({ anchorId }: { anchorId?: string }
           eyebrow="From clients"
           id="testimonials-heading"
           title="What it's like to work with us"
-          align="center"
         />
 
         <ul className={styles.wall}>

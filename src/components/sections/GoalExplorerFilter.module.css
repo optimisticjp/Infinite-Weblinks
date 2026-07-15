@@ -57,11 +57,12 @@
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-3);
-  padding: clamp(24px, 3vw, 32px);
+  padding: var(--space-8); /* ≥ radius-lg + 12px */
   background: var(--surface-raised);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
+  /* Border-only on the cream band, matching the other band cards — the dark
+     elevation shadow (tuned for dark surfaces) reads muddy on daylight. */
 }
 .card:first-child {
   grid-column: 1 / -1;

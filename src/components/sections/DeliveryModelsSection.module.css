@@ -11,7 +11,7 @@
   padding: 0;
 }
 .card {
-  padding: clamp(24px, 3vw, 32px);
+  padding: var(--space-8); /* ≥ radius-lg + 12px */
   background: var(--surface-raised);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-lg);

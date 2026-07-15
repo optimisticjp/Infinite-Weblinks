@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ChevronDown, Menu } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/primitives/Button";
@@ -52,10 +52,16 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
   const [openKey, setOpenKey] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  // Desktop-first default (SSR-safe); corrected on mount by matchMedia below.
+  const [hoverCapable, setHoverCapable] = useState(true);
   const navRef = useRef<HTMLElement | null>(null);
   const triggerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // True when the imminent click came from a pointer (pointerdown fired first);
+  // a keyboard-activated click has no preceding pointerdown. Robust, no UA sniffing.
+  const clickFromPointer = useRef(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   // Close any open menu when the route changes (sync navigation → transient UI).
   useEffect(() => {
@@ -71,6 +77,25 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Detect hover capability (never UA sniffing). Governs whether a trigger opens
+  // on hover and navigates on click, or acts as tap-to-open / tap-again-to-navigate.
+  useEffect(() => {
+    const mq = window.matchMedia("(hover: hover)");
+    const sync = (matches: boolean) => setHoverCapable(matches);
+    sync(mq.matches);
+    const onChange = (e: MediaQueryListEvent) => sync(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  // Clear any pending close timer on unmount.
+  useEffect(
+    () => () => {
+      if (closeTimer.current) clearTimeout(closeTimer.current);
+    },
+    [],
+  );
 
   // Esc closes the open mega-menu and returns focus to its trigger.
   useEffect(() => {
@@ -139,10 +164,16 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
                   <li
                     key={item.label}
                     className={styles.navItem}
-                    onMouseEnter={() => {
-                      clearClose();
-                      setOpenKey(item.label);
-                    }}
+                    // Hover opens only on hover-capable devices; on touch the click
+                    // handler owns open/navigate so a tap doesn't open-then-navigate.
+                    onMouseEnter={
+                      hoverCapable
+                        ? () => {
+                            clearClose();
+                            setOpenKey(item.label);
+                          }
+                        : undefined
+                    }
                   >
                     <button
                       type="button"
@@ -152,7 +183,38 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
                       ref={(el) => {
                         triggerRefs.current[item.label] = el;
                       }}
-                      onClick={() => setOpenKey(isOpen ? null : item.label)}
+                      onKeyDown={(e) => {
+                        // Keyboard (Enter/Space): toggle here, not in onClick — a
+                        // key press doesn't reliably emit a click, and this is the
+                        // only way to open the panel by keyboard.
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setOpenKey(isOpen ? null : item.label);
+                        }
+                      }}
+                      onPointerDown={() => {
+                        clickFromPointer.current = true;
+                      }}
+                      onClick={() => {
+                        // Only genuine pointer clicks act here; a keyboard-activated
+                        // click (no preceding pointerdown) was already handled above.
+                        if (!clickFromPointer.current) return;
+                        clickFromPointer.current = false;
+                        // Pointer on a hover device: hover already opened the panel,
+                        // so the click navigates to the hub — it never toggles closed.
+                        if (hoverCapable) {
+                          clearClose();
+                          setOpenKey(null);
+                          router.push(item.href);
+                          return;
+                        }
+                        // Touch (no hover): first tap opens, second tap navigates.
+                        if (isOpen) {
+                          router.push(item.href);
+                        } else {
+                          setOpenKey(item.label);
+                        }
+                      }}
                     >
                       {item.label}
                       <ChevronDown

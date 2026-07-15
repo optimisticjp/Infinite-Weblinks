@@ -141,7 +141,7 @@
 .system {
   display: flex;
   gap: var(--space-4);
-  padding: var(--space-5);
+  padding: var(--space-8); /* ≥ radius-lg + 12px */
   border-radius: var(--radius-lg);
   background: var(--surface-raised);
   border: 1px solid var(--hairline);

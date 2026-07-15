@@ -26,7 +26,6 @@ export async function WhyInfiniteWeblinksSection({ anchorId }: { anchorId?: stri
           eyebrow="Why Infinite Weblinks"
           title="What actually makes the difference"
           intro="Not a longer feature list — a different way of thinking about the work."
-          align="center"
         />
 
         <ul className={styles.list}>

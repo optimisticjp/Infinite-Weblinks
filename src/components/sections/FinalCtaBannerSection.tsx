@@ -13,7 +13,7 @@ export async function FinalCtaBannerSection({ anchorId }: { anchorId?: string })
   return (
     <section
       id={anchorId}
-      className={`theme-statement iw-section ${styles.section}`}
+      className={`theme-statement iw-section iw-section--loose ${styles.section}`}
       aria-labelledby="final-cta-heading"
     >
       <div className={styles.scrim} aria-hidden="true" />
@@ -24,7 +24,11 @@ export async function FinalCtaBannerSection({ anchorId }: { anchorId?: string })
             align="center"
             eyebrow="Ready when you are"
             id="final-cta-heading"
-            title="Build your digital growth plan, one connected step at a time"
+            title={
+              <span className="iw-gradient-text">
+                Build your digital growth plan, one connected step at a time
+              </span>
+            }
             intro="Answer a few questions about your business and your goal, and we'll map out what to build first, what to connect next, and what can safely wait."
             className={styles.header}
           />

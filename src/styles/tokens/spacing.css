@@ -15,8 +15,11 @@
   --space-24: 96px;
   --space-32: 128px;
 
-  /* Section rhythm & layout */
+  /* Section rhythm & layout — air is how we signal importance, so it is not uniform.
+     tight = rest beats · default = most sections · loose = signature sections only. */
+  --section-y-tight: clamp(48px, 6vw, 80px);
   --section-y: clamp(64px, 9vw, 128px);
+  --section-y-loose: clamp(96px, 13vw, 184px);
   --gutter: clamp(20px, 5vw, 64px);
   --container: 1200px;
   --container-wide: 1320px;

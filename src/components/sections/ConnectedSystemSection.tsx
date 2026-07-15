@@ -33,7 +33,7 @@ export async function ConnectedSystemSection({ anchorId }: { anchorId?: string }
   return (
     <section
       id={anchorId}
-      className={`theme-dark iw-section ${styles.section}`}
+      className={`theme-dark iw-section iw-section--loose ${styles.section}`}
       aria-labelledby="connected-system-heading"
     >
       <div className={styles.glow} aria-hidden="true" />
@@ -41,11 +41,7 @@ export async function ConnectedSystemSection({ anchorId }: { anchorId?: string }
         <SectionHeader
           id="connected-system-heading"
           eyebrow="How it all connects"
-          title={
-            <>
-              One system, <span className="iw-gradient-text">not separate silos</span>
-            </>
-          }
+          title="One system, not separate silos"
           intro="Most sites treat search, the store, analytics, email and support as separate tools that don't talk to each other. We connect them, so a change in one place shows up correctly everywhere else."
         />
 

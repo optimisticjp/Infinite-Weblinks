@@ -11,7 +11,7 @@
 }
 
 .row {
-  padding: clamp(20px, 3vw, 28px);
+  padding: var(--space-8); /* ≥ radius-lg + 12px */
   background: var(--surface-raised);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-lg);

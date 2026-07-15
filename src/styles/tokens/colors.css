@@ -25,9 +25,9 @@
   --text-4: #635c82; /* muted / disabled ONLY — 3.3:1, never body text */
 
   /* ---- Bright editorial band ---- */
-  --band: #f4f1ea; /* cream editorial surface */
-  --band-ink: #0a0715; /* text on the cream band (17.9:1) */
-  --band-ink-2: #2b2740; /* secondary text on the band */
+  --band: #f2eef6; /* warm white, faint violet undertone (ties to our palette, not a default cream) */
+  --band-ink: #0a0715; /* text on the band (17.9:1 — verified after the band shift, unchanged) */
+  --band-ink-2: #2b2740; /* secondary text on the band (~12.5:1) */
 
   /* ---- Brand accent hues ---- */
   --violet: #a855f7;
@@ -91,6 +91,7 @@
   --surface: var(--ink-950);
   --surface-raised: var(--ink-800);
   --surface-input: var(--ink-700);
+  --surface-hover: rgba(255, 255, 255, 0.1); /* subtle-button hover, tuned per surface below */
   --text-heading: var(--text-1);
   --text-body: var(--text-2);
   --text-muted: var(--text-3);
@@ -113,6 +114,7 @@
 .theme-dark {
   --surface: var(--ink-950);
   --surface-raised: var(--ink-800);
+  --surface-hover: rgba(255, 255, 255, 0.1); /* white wash on dark */
   --text-heading: var(--text-1);
   --text-body: var(--text-2);
   --text-muted: var(--text-3);
@@ -129,6 +131,7 @@
 .theme-band {
   --surface: var(--band);
   --surface-raised: #ffffff;
+  --surface-hover: rgba(109, 40, 217, 0.08); /* faint violet-deep tint, not a muddy near-black wash */
   --text-heading: var(--band-ink);
   --text-body: var(--band-ink);
   --text-muted: var(--band-ink-2);
@@ -145,6 +148,7 @@
 .theme-statement {
   --surface: var(--violet-deep);
   --surface-raised: rgba(255, 255, 255, 0.12);
+  --surface-hover: rgba(255, 255, 255, 0.16); /* white wash on the violet banner */
   --text-heading: #ffffff;
   --text-body: rgba(255, 255, 255, 0.94);
   --text-muted: rgba(255, 255, 255, 0.82);

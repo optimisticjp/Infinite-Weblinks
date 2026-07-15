@@ -129,7 +129,8 @@ test.describe("desktop mega-menu inner content is inset and centred", () => {
   for (const label of ["How It Works", "Solutions", "Services", "Resources"]) {
     test(`${label} panel`, async ({ page }) => {
       await page.goto("/");
-      await page.getByRole("button", { name: label }).click();
+      // Hover opens the panel; clicking the trigger now navigates to the hub.
+      await page.getByRole("button", { name: label }).hover();
       await expect(page.getByRole("group", { name: label })).toBeVisible();
 
       const inner = await contentBox(page, '[role="group"] .iw-container--wide');

@@ -27,13 +27,8 @@ export async function GrowthJourneySection({ anchorId }: { anchorId?: string }) 
         <SectionHeader
           id="growth-journey-heading"
           eyebrow="The Online Growth Journey"
-          title={
-            <>
-              Eight stages, <span className="iw-gradient-text">one connected path</span>
-            </>
-          }
+          title="Eight stages, one connected path"
           intro="Every business moves through the same journey — even if a single project only touches one or two stages at a time. Seeing the whole path is what tells you where to start, and what can wait."
-          align="center"
         />
 
         <div className={styles.rail} role="presentation">

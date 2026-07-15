@@ -299,3 +299,85 @@ To make the Sanity PR safe to merge without changing the currently visible site:
 
 **Verified:** lint 0, typecheck 0, 109 unit, build (flag off → fully static; flag on → ISR 30s),
 `cf:build`, `sanity build`, 89 e2e. Not merged to main.
+
+## Phase 0 — project context, review tooling, environment detection (branch `claude/phase-0-setup-2mwcxx`, from `main`)
+
+Setup-only phase. **Zero visual diff** — no component, stylesheet, token, or route touched
+(`git status -- src/` is empty; no render-affecting config changed). No npm dependency added
+(`npm ci` from the existing lockfile only; `package-lock.json` unchanged). Sanity untouched. No
+browser installed or downloaded.
+
+**Verified green:** `npm run lint` 0 · `npm run typecheck` 0 · `npm run test` 109 passed ·
+`npm run build` (webpack) succeeds · `npm run probe:e2e` exits 0.
+
+### 1. E2E tier
+
+**TIER 2 — BROWSER-ONLY.** The sandbox Chromium (`/opt/pw-browsers/chromium`, Chromium
+141.0.7390.37) **launches** headless fine (probe launched it, evaluated `1+1`, closed it). What is
+missing in a fresh session is a running server, not a browser. `playwright.config.ts` will select
+the **sandbox** executable (mirrors its own `existsSync(PW_CHROMIUM ?? default)` logic). CDN
+(`cdn.playwright.dev`) and external net both reachable (HTTP 403 to HEAD/GET, i.e. reachable).
+
+No blocker — **section 7 ran in full**: built (webpack), served on `PORT=3101 npm run start`, and
+captured all 39 baseline shots (0 failed). Remediation for any future TIER-2 session is baked into
+`docs/ENVIRONMENT-CAPABILITIES.md`: `npm run build` → `PORT=3101 npm run start` → capture. The
+committed probe snapshot reflects a **fresh** session (build absent, no server) on purpose — future
+sessions get their own answer via `npm run probe:e2e` (re-runs in ~3s, always exits 0). Nothing was
+skipped.
+
+### 2. Skills — kept 15, archived 306 (of 321)
+
+Kept (mapped to the named categories — frontend/UI-UX, design systems, copy/content, CRO/marketing,
+SEO, web security, testing, context engineering, git/PR):
+
+`ui-ux-pro-max` · `frontend-design` · `design-system` · `copywriting` · `humanizer` · `cro` ·
+`seo` · `seo-technical` · `owasp-security` · `test-driven-development` · `write-tests` ·
+`context-engineering` · `review-local-changes` · `commit` · `create-pr`
+
+Everything else (306 dirs — `scanpy`, `rdkit`, `qiskit`, `wowerpoint`, the whole scientific set, plus
+the marketing/SEO/context long tail) moved to `.claude/skills-archive/`, structure preserved, all as
+tracked git renames (recoverable). The `## Skills` routing table in the new `CLAUDE.md` lists only
+these 15 with a "when to reach for it" column.
+
+### 3. For Phase 1 (found, NOT fixed — this phase changes nothing visual)
+
+- **The tracked baseline was never produced by `scripts/screenshots.mjs`.** The old
+  `review-artifacts/screenshots/` images were captured at `deviceScaleFactor: 1`
+  (old `home-1440.png` = 1440×22111), while the script specifies `2`. Confirms the prompt's "some
+  process that is not in the repo." The new baseline is correctly 2× (`home-1440` = 2880×44222).
+- **Homepage full-page is enormous** — 2880×44222 @2× (~9.5 MB/PNG). Not a bug, but if the page is
+  meant to be that long it dominates artifact weight; Phase 1 may want section-level shots.
+- **Route/viewport coverage narrowed to the prompt's required list.** The old set also covered
+  `solutions`, `tools`, `business-types`, `starting-points`, and the other detail routes, plus 768 and
+  360 widths. The new baseline follows the Phase-0 spec (9 routes × 1440/1280/1024/390 + 3 focused
+  shots). Phase 1 can extend `ROUTES`/`VIEWPORTS` in `scripts/screenshots.mjs` to restore full breadth.
+- **No component audit performed** (out of scope for a zero-diff phase) — so "no bugs found" here
+  means "not looked for," not "verified clean."
+
+### 4. Where the prompt and the repo diverged
+
+- **Accurate:** `.gitignore:31` is `/artifacts/`; `screenshots.mjs` defaulted to port 3100 vs
+  Playwright's 3101; it wrote to gitignored `artifacts/screenshots`, was homepage-only, and wasn't
+  wired to any npm script. All fixed.
+- **Minor:** the "keep `deviceScaleFactor: 2` — already right" note is true of the *script*, but the
+  committed images were 1×, so that behaviour was never actually exercised by whatever generated them.
+- **Decision worth recording (deviation):** the prompt implies both `review-artifacts/baseline/` and
+  `review-artifacts/screenshots/` hold reproducible images. Two identical 84 MB copies of 2× full-page
+  PNGs would bloat git history for no benefit at Phase 0, so I committed the reproducible before-picture
+  to `baseline/` (the required frozen deliverable) and left `screenshots/` as the empty, tracked
+  **default-output** dir (`.gitkeep` + README) that each phase regenerates and diffs against `baseline/`.
+  The legacy 1× set was removed (superseded, un-reproducible; recoverable from git history).
+- Fresh cloud VM had no `node_modules`; installed via `npm ci` (lockfile only, no new deps).
+
+### What shipped this phase
+
+- `scripts/probe-e2e.mjs` + `npm run probe:e2e`; outputs `review-artifacts/e2e-capability.json` and
+  `docs/ENVIRONMENT-CAPABILITIES.md`.
+- New `CLAUDE.md` (project-specific); old template moved to `docs/TEMPLATE-NOTES.md`.
+- `.claude/agents/{light-budget,motion-critic,perf-guard}.md`.
+- `.claude/settings.json` (lint-on-edit; typecheck+test on stop).
+- Skills pruned 321 → 15 kept, 306 archived.
+- `scripts/screenshots.mjs` rewritten (tracked output, port 3101, route+viewport lists, `--out`,
+  kept 2×/reduced-motion/mega-menu/mobile-nav/1900ms settle, same browser resolution) +
+  `npm run screenshots`; `review-artifacts/baseline/` captured (39 shots); `review-artifacts/README.md`
+  rewritten.

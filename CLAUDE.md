@@ -1,155 +1,271 @@
-# Claude Code — Web Builder Template
+# Infinite Weblinks
 
-This repo is a reusable starter template for building websites, web apps, landing pages, dashboards, e-commerce stores, and marketing tools with Claude Code. It comes pre-loaded with 321 skills — 311 from 10 curated third-party sources plus the 10-skill official GitHub Spec Kit workflow — and a project constitution that governs how work is done.
+A **Digital Growth Partner**. We help businesses understand what they need
+online, choose the right tools and services, build what's needed, and connect
+everything around their goals.
 
----
+India-based. Clients in the UK, US, Canada, Australia and Europe. Six years in
+business. Contact: support@infiniteweblinks.com
 
-## What This Repo Is
+- **Slogan:** Digital growth, built around your goals.
+- **Hero:** A smarter way to plan and grow your business online.
+- **Primary CTA:** Build My Digital Growth Plan
+- **The promise:** You focus on what you're great at. We take care of the digital side.
 
-Use this as a foundation whenever a project involves:
-
-- Static or dynamic websites
-- Landing pages and marketing sites
-- Web apps and dashboards
-- E-commerce stores
-- SEO-driven content sites
-- Conversion-optimised tools or calculators
-- Any frontend or full-stack web project
-
-Clone or fork this template, then start building. The skills in `.claude/skills/` are available to all Claude Code sessions run inside this repo.
+We are NOT a SaaS platform. We are NOT a service catalogue. **Never use the word
+"agency" for ourselves.** The old tagline "Everything you need, linked to grow"
+is retired — do not reintroduce it.
 
 ---
 
-## How to Use the Installed Skills
+## THE ONE RULE: light is a budget
 
-321 skills are installed under `.claude/skills/`. **Do not activate all skills blindly.** Read the task first, then invoke only the skills that are directly relevant.
+A universe is almost entirely dark with a few points of extreme light. That
+contrast is the premium signal, not the amount of colour. If everything glows,
+nothing does.
 
-To invoke a skill, type `/skill-name` in the Claude Code chat. For example:
+**Every section gets exactly ONE element that owns the brightest value on
+screen. Everything else in that section runs at 40% of it or less.**
 
-- `/frontend-design` — layout, components, responsive patterns
-- `/ui-ux-pro-max` — full UI/UX orchestration
-- `/seo` — SEO strategy and on-page optimisation
-- `/humanizer` — make copy sound natural and human
-- `/owasp-security` — security review against OWASP Top 10
-- `/write-tests` — generate a test suite
-- `/create-pr` — structured pull request creation
+Consequences, all non-negotiable:
 
-Run `/status` or `/analyse` when you need a broad overview before diving in.
+- Gradient text appears **twice** on the entire site: the hero H1, and the final
+  CTA headline. Every other heading is `var(--text-1)`. Emphasis elsewhere comes
+  from weight, never colour.
+- Maximum two accent colours per section.
+- One signature motion per section. Everything else is ambient, or nothing.
+- One dominant element per viewport.
+
+If a section already has a glow, a gradient, or a signature motion and you are
+about to add another, the answer is no. Turn the surroundings down instead.
+
+## The mark is a link, not a loop
+
+`BrandSprite.tsx` holds the "Signature Crossover" infinity. Read it: there is a
+mask that cuts the centre so **one strand passes under the other**. It is not an
+infinity symbol. It is two strands crossing — a knot, a link.
+
+The company is called Web**links**. The positioning is "we connect the right
+pieces." The mark is structurally a connection.
+
+So the crossover point — where one strand passes under the other — is the most
+on-brand pixel on the site. When light travels the mark, it passes through the
+place where two things become connected. **That is where the light lives.** This
+governs every future decision about the hero, the logo, and the loading states.
+
+## Mobile is its own art direction
+
+Not a degraded desktop. Desktop says *everything is connected at once*. Mobile
+says *follow one connected path at a time*. Same thesis, different choreography,
+neither is the lesser version. Never shrink a desktop diagram into a phone.
 
 ---
 
-## Spec Kit Workflow
+## The tokens are law
 
-The official [GitHub Spec Kit](https://github.com/github/spec-kit) is installed as 10 `speckit-*` skills. **Spec Kit is the default workflow** for:
+Every value comes from `src/styles/tokens/`. Read them before writing any CSS.
+Every time.
 
-- new production websites
-- new web apps
-- significant features
-- any work with meaningful ambiguity
+- `colors.css` — the palette. It documents its own contrast ratios. Respect them.
+- `typography.css` — the type scale
+- `spacing.css` — 4px scale, radii, container, section rhythm
+- `effects.css` — shadows, glows, blur, easing, durations
 
-### Default sequence
+**Never write an arbitrary value.** No `padding: 52px`. No `#8B3BFF`. No
+`transition: 300ms`. If the scale does not have it, the design is wrong, not the
+scale. Raise it instead of working around it.
 
-Run the stages in order, each via its `/speckit-<stage>` skill:
+### Section rhythm
+
+- `--section-y-loose` — signature sections ONLY (connectedSystem, finalCtaBanner)
+- `--section-y` — default
+- `--section-y-tight` — rest beats (testimonials, learning resources)
+
+One rhythm on every section is tidy, not designed. Air is how we signal
+importance; spending it everywhere signals nothing.
+
+### Typography
+
+Fonts are **Sora** (display) and **Plus Jakarta Sans** (body). This was decided.
+Do not swap them.
+
+- Body weight is **450**, not 400. Light-on-dark reads optically thinner
+  (irradiation). Deliberate.
+- Every paragraph gets `max-width: var(--measure)`. No exceptions.
+- **Tracking tightens as size grows.** Never apply one `letter-spacing` value
+  across a fluid `clamp()` size range — it cannot be correct at both ends.
+
+---
+
+## Voice
+
+Plain. Calm. Confident. Written for someone smart who is not technical. Must read
+identically in the US, UK, Canada, Australia and Europe.
+
+**Global English throughout:** personalise, prioritise, optimise, fulfilment,
+recognisable, organised.
+
+- Explain the **result**, not the tool. "See which ads actually make you money,"
+  never "conversion tracking."
+- Short sentences. One idea each.
+- **Banned words:** leverage, ecosystem, tech stack, omnichannel, full-funnel,
+  growth hacking, seamless, unlock, supercharge, cutting-edge, revolutionary,
+  game-changing, robust, "solutions" as a noun.
+- **Banned framing:** leak, stuck, failing, bleeding money. Never make the reader
+  feel behind.
+- **Never** promise guaranteed rankings, guaranteed sales, or overnight results.
+  The honest-expectations promise is load-bearing.
+
+## Proof: never fabricate. Ever.
+
+Proof content lives in `src/lib/content/data/proof.ts` and every item is
+status-gated. Read the comment at the top of that file — it is correct and it is
+deliberate. Nothing renders publicly until its status says so.
+
+Real case studies, testimonials and metrics exist (six years of them) and will
+arrive via Sanity later, gated by a "Permission to Publicize" field that maps
+directly onto `status`. Until then:
+
+**Never invent a client name, a quote, a logo, a number, a percentage, or a
+result. Not as a placeholder. Not "for layout testing." Not with a TODO.** If a
+component needs realistic content length to design against, use the existing
+obviously-non-real placeholders, which are non-real by design.
+
+---
+
+## Motion rules
+
+Motion must answer a question the user is already asking: *where am I, what
+connects to what, did that work, what happens next.* Motion that answers no
+question is a gimmick and gets deleted in review.
+
+- Hover 140–240ms. Entrance 480–900ms. Ambient loops 8–130s.
+- `--ease-out` (`cubic-bezier(0.22, 1, 0.36, 1)`) for anything user-triggered.
+- **Transform and opacity only.** Never animate `filter`/`blur` per frame. Never
+  animate width, height, top, or left.
+- Ambient motion belongs in the background, never the foreground. A headline that
+  pulses forever is a bug.
+- **Motion never gates content.** Nobody waits to read.
+- `prefers-reduced-motion` → the complete static end-state, never a broken
+  half-state. `src/lib/motion/motion.ts` already handles this correctly. Use it.
+- Pause anything expensive when it leaves the viewport (IntersectionObserver).
+
+## Performance budget: hard limits
+
+- LCP < 2.5s, and **the LCP element must be the H1 text.** A canvas as LCP is a
+  blocker, not a nit.
+- Initial route JS < 300kb gzip. When `three` arrives it lives in its own lazy
+  chunk and never touches the initial route.
+- CLS < 0.05. Reserve boxes before they load.
+- 60fps on an M1 Air. 30fps floor on mid-range Android.
+- One bloom pass maximum, only around the hero infinity. Fake the rest with
+  sprites and gradients — the difference is invisible and the cost is not.
+- No object allocation inside `useFrame`.
+- Every 3D scene needs: `ssr: false`, a static image fallback, a WebGL-absent
+  path, and a reduced-motion path that skips the canvas entirely.
+
+---
+
+## Stack: do not add to it
+
+Next 16 (App Router) · React 19 · TypeScript · CSS Modules + tokens ·
+`motion` v12 (UI) · GSAP + ScrollTrigger (scroll timelines, lazy) · Sanity
+(gated off) · OpenNext on Cloudflare Workers · Playwright + axe · Vitest
+
+- **`motion` IS Framer Motion** (post-rebrand). Never install `framer-motion`
+  alongside it.
+- **Never add Lenis** or any smooth-scroll library. It hijacks native scroll,
+  breaks `prefers-reduced-motion` in ways the axe suite won't catch, and fights
+  ScrollTrigger.
+- Only approved future addition: `three`, `@react-three/fiber`, `@react-three/drei`.
+- No Tailwind. This project uses CSS Modules and tokens.
+
+## Sanity: do not touch
+
+`NEXT_PUBLIC_SANITY_LIVE_CONTENT_ENABLED` is unset (false) **deliberately**. The
+public site renders reviewed local seed content for launch safety. The Studio and
+dataset are live but unused by the site.
+
+- Never recommend enabling live reads.
+- Never re-import the dataset — `--replace` would overwrite Studio edits.
+- This changes only after a controlled preview test, late in the project.
+
+---
+
+## Anti-patterns: reject on sight
+
+We are in a locked cosmic visual direction. The ceiling of that direction is very
+high and the floor is a 2011 crypto landing page. These are the things that take
+us to the floor:
+
+- Gradient text on more than the two approved headings
+- Any glow on the cream editorial band. It is **daylight**. Its entire job is to
+  make the dark sections read as dark.
+- Space imagery that is space for its own sake — astronauts, floating rocks,
+  shooting stars. The direction is about tools connecting around a centre. Every
+  visual earns its place against that idea or it goes.
+- Uniform section padding
+- Card padding smaller than radius + 12px
+- Paragraphs at full container width
+- More than 5 nodes in the hero
+- More than 3 stats in a stat band
+- Broken grids (7 cards in a 4-column layout)
+- Stock photography
+- Fabricated proof of any kind
+
+---
+
+## Definition of done
 
 ```
-constitution → specify → clarify → plan → checklist → tasks → analyze → implement → converge
+npm run lint          # 0
+npm run typecheck     # 0
+npm run test          # green
+npm run test:e2e      # green (see docs/ENVIRONMENT-CAPABILITIES.md first)
+npm run build         # webpack — Turbopack serves broken CSS chunks here
 ```
 
-| Stage | Skill | Purpose |
-|---|---|---|
-| constitution | `/speckit-constitution` | Establish or amend the governing project principles |
-| specify | `/speckit-specify` | Capture the feature spec: outcome, users, requirements, success criteria |
-| clarify | `/speckit-clarify` | Resolve ambiguity with targeted questions before planning |
-| plan | `/speckit-plan` | Produce the implementation plan and design artifacts |
-| checklist | `/speckit-checklist` | Validate requirement completeness, clarity, and consistency |
-| tasks | `/speckit-tasks` | Generate dependency-ordered, actionable tasks |
-| analyze | `/speckit-analyze` | Cross-artifact consistency check across spec, plan, and tasks |
-| implement | `/speckit-implement` | Execute the tasks |
-| converge | `/speckit-converge` | Assess the build against spec/plan and append any remaining work |
+Plus, for any visual phase:
+- Screenshots per `docs/ENVIRONMENT-CAPABILITIES.md` tier
+- Reduced-motion path verified
+- Keyboard path verified
+- The light budget checked: exactly one bright thing per section
 
-### Rules
+**If the environment cannot run Playwright (TIER 3/4), say the visual result is
+UNVERIFIED. Do not claim it looks correct. You cannot see it.**
 
-- **Very small, low-risk changes may use a leaner workflow** when the requirement is already clear — a full spec-and-plan cycle is not required for a one-line copy fix.
-- **Implementation must not begin before the spec and plan are sufficiently clear.** Never run `/speckit-implement` on an ambiguous or unplanned feature.
-- **Select supporting skills during the relevant Spec Kit stages, not all at once.** For example: design, frontend, and SEO skills during `specify`/`plan`; security, TDD, and testing skills during `plan`/`implement`; context, research, and memory skills throughout. Do not activate all 321 skills blindly.
-- **The constitution at `.specify/memory/constitution.md` is the governing source of project principles.** Every plan must pass its Constitution Check; documented exceptions go in the plan's Complexity Tracking.
+## Working style
+
+- Read `src/styles/tokens/` before writing CSS. Every time.
+- Plan before any change touching more than 2 files.
+- Update `SESSION_NOTES.md` at the end of every session: what shipped, what
+  remains, what surprised you.
+- Screenshot before claiming a visual task is complete.
+- One phase per session. Never two.
 
 ---
 
-## Default Checklist for Any Web Task
+## Skills
 
-For any website, web app, landing page, dashboard, e-commerce build, SEO project, or marketing task, consider each of the following dimensions and apply relevant skills:
+Invoke only what is relevant to the task. Do not activate speculatively. This is
+a routing table, not an inventory — reach for a skill only when the "when" column
+matches what you are actually doing. The full 300+ starter set was pruned to
+these; the rest lives in `.claude/skills-archive/` and is recoverable from git.
 
-| Dimension | Skills to consider |
+| Skill | When to reach for it |
 |---|---|
-| UI/UX design | `ui-ux-pro-max`, `design`, `design-system`, `banner-design`, `slides` |
-| Frontend implementation | `frontend-design`, `ui-styling` |
-| Copy and tone | `humanizer`, `copywriting`, `copy-editing` |
-| SEO | `seo`, `seo-technical`, `seo-content`, `seo-page`, `seo-schema`, `seo-sitemap`, `seo-audit` |
-| Marketing and conversion | `cro`, `marketing-plan`, `product-marketing`, `landing page` flow via `content-strategy` |
-| Accessibility | Apply WCAG 2.1 AA as a baseline; reference `ui-ux-pro-max` |
-| Mobile responsiveness | Validate layouts at 375px, 768px, 1280px breakpoints minimum |
-| Performance | Minimise render-blocking assets; target Core Web Vitals green |
-| Security | `owasp-security` before final delivery |
-| Testing | `test-driven-development`, `write-tests`, `test-coverage` |
-| Context and planning | `make-plan`, `context-engineering`, `plan-task`, `brainstorm` |
-
-You do not need to apply every row to every task. Use judgement. A small copy edit does not need a full security review. A public-facing checkout flow does.
-
----
-
-## Working Style
-
-### Ask essential questions only
-Before starting a large task, ask only the questions you cannot proceed without. Avoid questionnaires. One to three clarifying questions maximum, then begin.
-
-### Plan before large edits
-For any change that touches more than two files or introduces a new feature, produce a brief implementation plan first (file list, approach, order of operations) and confirm before editing.
-
-### Test-driven development when practical
-For logic-heavy code, write failing tests first, then implement. Use `/test-driven-development` or `/write-tests` to scaffold. This is especially important for form validation, API integrations, and data transforms.
-
-### Security and quality checks before delivery
-Before marking any feature complete, run `/owasp-security` on new endpoints or form handlers, and `/review-local-changes` or `/code-review` on the diff. Fix findings before handoff.
-
-### Handoff notes after each session
-At the end of each working session, produce a short summary of: what was built, what remains, known issues, and any environment or configuration steps needed to continue. Keep it in the conversation or write it to a `SESSION_NOTES.md` if the project warrants it.
-
----
-
-## Skill Caveats
-
-Some skills have external dependencies that are not bundled in this template:
-
-- **TDD Guard** (`/tdd-guard`): Requires per-project npm install (`npm install -D tdd-guard-vitest` or equivalent). The skill guides setup but cannot run without the package.
-- **Claude Mem advanced tools** (`/mem-search`, `/knowledge-agent`, `/smart-explore`, `/pathfinder`): Require a running Docker container and MCP server. See [github.com/thedotmack/claude-mem](https://github.com/thedotmack/claude-mem) for setup.
-- **Scientific and data skills**: Skills such as `scanpy`, `rdkit`, `pytorch-lightning`, `qiskit`, and others are only relevant for data-heavy or scientific projects. Do not invoke them for standard web builds.
-- **API-dependent SEO skills** (`seo-dataforseo`, `seo-google`): Require environment variables for external API keys. Configure per-project before use.
-
----
-
-## What Not To Do
-
-- Do not modify files inside `.claude/skills/`. Those are upstream skill definitions and should remain untouched.
-- Do not create website or project files unless explicitly asked to begin building.
-- Do not invoke skills speculatively or as a way to pad responses. Only invoke a skill when it meaningfully contributes to the current task.
-
----
-
-## Installed Skills Reference
-
-321 skills are installed from 10 curated third-party sources plus the official GitHub Spec Kit. Full details are in `INSTALL_REPORT.md`.
-
-| Source | Count | Key skills |
-|---|---|---|
-| UI/UX Pro Max | 7 | `ui-ux-pro-max`, `design`, `design-system`, `brand`, `slides`, `ui-styling`, `banner-design` |
-| Blader Humanizer | 1 | `humanizer` |
-| Frontend Design (Anthropic) | 1 | `frontend-design` |
-| Claude SEO | 25 | `seo`, `seo-audit`, `seo-technical`, `seo-content`, `seo-schema`, `seo-sitemap`, + 19 more |
-| Marketing Skills | 44 | `cro`, `copywriting`, `marketing-plan`, `product-marketing`, `social`, `email`, + 38 more |
-| OWASP Security | 1 | `owasp-security` |
-| TDD Guard | 1 | `tdd-guard` (requires npm setup) |
-| Context Engineering Kit | 67 | `context-engineering`, `make-plan`, `brainstorm`, `create-pr`, `commit`, `write-tests`, + 61 more |
-| Claude Scientific Skills | 147 | Scientific computing, bioinformatics, ML, quantum, data analysis (use only when relevant) |
-| Claude Mem | 17 | `babysit`, `timeline-report`, `make-plan`, `version-bump`, `wowerpoint`, + memory tools |
-| GitHub Spec Kit | 10 | `speckit-constitution`, `speckit-specify`, `speckit-clarify`, `speckit-plan`, `speckit-tasks`, `speckit-implement`, + 4 more |
+| `ui-ux-pro-max` | Designing or reworking a whole section/page — hierarchy, layout, interaction model. Start here for anything visual and non-trivial. |
+| `frontend-design` | Implementing layout, components, and responsive patterns in React + CSS Modules. The build half of a design task. |
+| `design-system` | Working the tokens in `src/styles/tokens/`, or keeping components consistent with the token system. Read the tokens first regardless. |
+| `copywriting` | Writing or rewriting on-page copy — headings, body, CTAs. Apply the Voice rules above; they override generic copy advice. |
+| `humanizer` | Copy reads robotic, generic, or AI-flat. Makes it natural. Pair with the banned-words list. |
+| `cro` | Conversion work on the growth-plan and contact flows, or any CTA-bearing section. Respects the light budget — persuasion, not glow. |
+| `seo` | On-page SEO strategy: titles, headings, internal linking, content structure across the marketing routes. |
+| `seo-technical` | Technical SEO: metadata, sitemaps, canonical/robots, structured-data plumbing in the Next.js app. |
+| `owasp-security` | Before shipping ANY form handler or API route (`/api/forms/*`, contact, growth-plan). Required for those, not optional. |
+| `test-driven-development` | Logic-heavy work — form validation, data transforms, API integrations. Write the failing test first. |
+| `write-tests` | Scaffolding a test suite for existing code that lacks coverage. |
+| `context-engineering` | Before a large or ambiguous task: planning, scoping, and structuring context. Pairs with the Spec Kit stages when they apply. |
+| `review-local-changes` | Reviewing the working-tree diff before a commit or PR. Run it on visual phases against the light budget and anti-patterns. |
+| `commit` | Crafting a well-structured, conventional commit message. |
+| `create-pr` | Opening a structured pull request. |

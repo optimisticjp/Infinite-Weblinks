@@ -1,0 +1,110 @@
+{
+  "generatedAt": "2026-07-15T16:57:23.771Z",
+  "tier": 2,
+  "tierName": "BROWSER-ONLY",
+  "tierMeaning": "launch OK, no build/server — run `npm run build`, then retry",
+  "facts": {
+    "playwrightResolvable": true,
+    "playwrightVersion": "1.61.1",
+    "sandboxPath": "/opt/pw-browsers/chromium",
+    "sandboxExists": true,
+    "managedPath": "/opt/pw-browsers/chromium-1228/chrome-linux64/chrome",
+    "configSelected": "/opt/pw-browsers/chromium",
+    "configSelectionKind": "sandbox",
+    "launchOK": true,
+    "cdn": "reachable",
+    "buildPresent": false,
+    "localhostReachable": false,
+    "localhostPort": null,
+    "externalReachable": true
+  },
+  "checks": [
+    {
+      "id": "playwright-pkg",
+      "name": "@playwright/test resolvable",
+      "status": "PASS",
+      "reason": "version 1.61.1",
+      "detail": {
+        "version": "1.61.1"
+      }
+    },
+    {
+      "id": "sandbox-chromium",
+      "name": "Sandbox Chromium present",
+      "status": "PASS",
+      "reason": "/opt/pw-browsers/chromium — Chromium 141.0.7390.37",
+      "detail": {
+        "path": "/opt/pw-browsers/chromium",
+        "version": "Chromium 141.0.7390.37"
+      }
+    },
+    {
+      "id": "managed-browser",
+      "name": "Playwright-managed browser resolvable",
+      "status": "SKIP",
+      "reason": "resolves to /opt/pw-browsers/chromium-1228/chrome-linux64/chrome but that binary is not installed (no `playwright install` here — by design)",
+      "detail": {
+        "path": "/opt/pw-browsers/chromium-1228/chrome-linux64/chrome",
+        "exists": false
+      }
+    },
+    {
+      "id": "config-selection",
+      "name": "Executable playwright.config.ts will select",
+      "status": "PASS",
+      "reason": "sandbox: /opt/pw-browsers/chromium",
+      "detail": {
+        "kind": "sandbox",
+        "path": "/opt/pw-browsers/chromium"
+      }
+    },
+    {
+      "id": "launch",
+      "name": "Headless Chromium launches",
+      "status": "PASS",
+      "reason": "launched → about:blank → 1+1=2 → closed",
+      "detail": {
+        "executablePath": "/opt/pw-browsers/chromium"
+      }
+    },
+    {
+      "id": "cdn",
+      "name": "Playwright CDN reachable (HEAD only)",
+      "status": "PASS",
+      "reason": "reachable — HTTP 403",
+      "detail": {
+        "status": 403,
+        "note": "CI-style `playwright install` would be able to fetch here"
+      }
+    },
+    {
+      "id": "build",
+      "name": "Production build present (.next/)",
+      "status": "SKIP",
+      "reason": ".next/ not found — the Playwright webServer runs `npm run start`, which needs a prior `npm run build`",
+      "detail": null
+    },
+    {
+      "id": "localhost",
+      "name": "Local server reachable",
+      "status": "SKIP",
+      "reason": "no server on 3101 (playwright.config) or 3100 (screenshots.mjs) — the probe does not start one",
+      "detail": null
+    },
+    {
+      "id": "external",
+      "name": "External network reachable",
+      "status": "PASS",
+      "reason": "reachable — HTTP 403",
+      "detail": {
+        "status": 403
+      }
+    }
+  ],
+  "remediation": [
+    "Browser launches, but no local server is serving the site, so e2e/screenshots have no target.",
+    "1. `npm run build`   (webpack build — Turbopack serves broken CSS chunks here)",
+    "2. Start it on the Playwright port: `PORT=3101 npm run start` (or let `npm run test:e2e` start it).",
+    "3. Then `npm run test:e2e` and/or `npm run screenshots`."
+  ]
+}

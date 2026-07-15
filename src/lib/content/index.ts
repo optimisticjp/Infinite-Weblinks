@@ -1,14 +1,34 @@
 import { isSanityConfigured } from "@/lib/sanity/client";
 import { fromSanityOrSeed } from "@/lib/sanity/fetch";
 import {
+  businessTypeQuery,
   caseStudyQuery,
   exampleQuery,
   faqQuery,
+  goalQuery,
+  growthStageQuery,
+  learnArticleQuery,
+  mapBusinessTypes,
   mapCaseStudies,
   mapExamples,
   mapFaqs,
+  mapGoals,
+  mapGrowthStages,
+  mapLearnArticles,
+  mapRoadmaps,
+  mapServiceCategories,
+  mapServices,
+  mapStartingPoints,
   mapTestimonials,
+  mapToolCategories,
+  mapTools,
+  roadmapQuery,
+  serviceCategoryQuery,
+  serviceQuery,
+  startingPointQuery,
   testimonialQuery,
+  toolCategoryQuery,
+  toolQuery,
 } from "@/lib/sanity/queries";
 import { seedChrome, seedEditorial, seedHero } from "./seed";
 import * as data from "./data";
@@ -56,23 +76,38 @@ function bySlug<T extends { slug: string }>(items: readonly T[], slug: string): 
 /**
  * Sanity read status. `isSanityConfigured` reports only whether a project id is present.
  *
- * IMPORTANT — accurate as of this build: live status-gated Sanity reads are wired ONLY for
- * the content types whose Studio schema maps cleanly and completely onto the app types —
- * FAQs and proof (case studies / testimonials / examples). Those getters call
- * `fromSanityOrSeed`, preferring live Sanity content and falling back to the (already
- * status-gated) seed array. `sanityWiredTypes` lists them.
+ * Live, status-gated Sanity reads are wired for the full marketing taxonomy and editorial
+ * content — growth stages, service/tool categories, services, tools, goals, business types,
+ * starting points, roadmaps, learn articles, FAQs, and proof (case studies / testimonials /
+ * examples). Each getter calls `fromSanityOrSeed`: it prefers live Sanity content and falls
+ * back to the (already status-gated) seed array whenever Sanity is unconfigured, empty, or
+ * unreachable. The Studio schema was reconciled to the reviewed seed so a document projects
+ * back to the exact app type (see seed-transform.ts + queries.ts; round-trip tested).
  *
- * Every other getter (services, goals, stages, tools, roadmaps, articles, legal, chrome…)
- * STILL RETURNS SEED. This is intentional and deferred, not a bug: the Studio schema and
- * these app types diverge — field renames (name↔title, plainSummary↔summary,
- * mainTools↔exampleTools), reference-vs-slug, text-vs-string[], portable-text-vs-blocks[],
- * and app-only fields with no Sanity source (icon, color, exampleTools, readMinutes). A
- * correct query path requires reconciling the schema and types (and a live dataset to
- * validate), which is a larger change than a focused correction. Seed is the status-gated
- * source of truth in both modes until then.
+ * Deliberately NOT read from Sanity (seed / code is the source of truth):
+ *  - Structural reference data that is not status-gated: cross-cutting systems, delivery
+ *    models, process steps, value props. These are seeded (so they exist as reference
+ *    targets and are visible in Studio) but the site renders them from code.
+ *  - Brand-locked chrome/hero/editorial and the growth-plan rule set.
+ *  - Legal pages — lawyer-reviewed, lowest-churn; rendered from code with a review note.
  */
 export { isSanityConfigured };
-export const sanityWiredTypes = ["faq", "caseStudy", "testimonial", "example"] as const;
+export const sanityWiredTypes = [
+  "growthStage",
+  "serviceCategory",
+  "service",
+  "toolCategory",
+  "tool",
+  "goal",
+  "businessType",
+  "startingPoint",
+  "roadmap",
+  "article",
+  "faq",
+  "caseStudy",
+  "testimonial",
+  "example",
+] as const;
 
 /* ---- chrome / hero / editorial (existing seed) ---- */
 export async function getSiteChrome(): Promise<SiteChrome> {
@@ -91,13 +126,20 @@ export async function getHomepageOpening(): Promise<{
   return { hero: seedHero, editorial: seedEditorial };
 }
 
-/* ---- fixed taxonomy (not status-gated: locked reference data) ---- */
+/* ---- growth stages (Sanity-backed, status-gated; the 8-stage journey) ---- */
 export async function getStages(): Promise<GrowthStage[]> {
-  return [...data.stages].sort((a, b) => a.order - b.order);
+  const stages = await fromSanityOrSeed<GrowthStage, GrowthStage>({
+    query: growthStageQuery,
+    map: mapGrowthStages,
+    seed: renderable(data.stages),
+  });
+  return [...stages].sort((a, b) => a.order - b.order);
 }
 export async function getStage(slug: string): Promise<GrowthStage | undefined> {
-  return bySlug(data.stages, slug);
+  return bySlug(await getStages(), slug);
 }
+
+/* ---- structural reference data (not status-gated: seeded, but rendered from code) ---- */
 export async function getSystems(): Promise<CrossCuttingSystem[]> {
   return [...data.systems];
 }
@@ -111,54 +153,82 @@ export async function getValueProps(): Promise<ValueProp[]> {
   return [...data.valueProps];
 }
 
-/* ---- status-gated content ---- */
+/* ---- status-gated content (Sanity-backed with seed fallback) ---- */
 export async function getGoals(): Promise<Goal[]> {
-  return renderable(data.goals);
+  return fromSanityOrSeed<Goal, Goal>({
+    query: goalQuery,
+    map: mapGoals,
+    seed: renderable(data.goals),
+  });
 }
 export async function getGoal(slug: string): Promise<Goal | undefined> {
-  const g = bySlug(data.goals, slug);
-  return g && isRenderable(g) ? g : undefined;
+  return bySlug(await getGoals(), slug);
 }
 export async function getBusinessTypes(): Promise<BusinessType[]> {
-  return renderable(data.businessTypes);
+  return fromSanityOrSeed<BusinessType, BusinessType>({
+    query: businessTypeQuery,
+    map: mapBusinessTypes,
+    seed: renderable(data.businessTypes),
+  });
 }
 export async function getBusinessType(slug: string): Promise<BusinessType | undefined> {
-  const b = bySlug(data.businessTypes, slug);
-  return b && isRenderable(b) ? b : undefined;
+  return bySlug(await getBusinessTypes(), slug);
 }
 export async function getStartingPoints(): Promise<StartingPoint[]> {
-  return renderable(data.startingPoints);
+  return fromSanityOrSeed<StartingPoint, StartingPoint>({
+    query: startingPointQuery,
+    map: mapStartingPoints,
+    seed: renderable(data.startingPoints),
+  });
 }
 export async function getStartingPoint(slug: string): Promise<StartingPoint | undefined> {
-  const s = bySlug(data.startingPoints, slug);
-  return s && isRenderable(s) ? s : undefined;
+  return bySlug(await getStartingPoints(), slug);
 }
 export async function getServiceCategories(): Promise<ServiceCategory[]> {
-  return renderable(data.serviceCategories).sort((a, b) => a.order - b.order);
+  const cats = await fromSanityOrSeed<ServiceCategory, ServiceCategory>({
+    query: serviceCategoryQuery,
+    map: mapServiceCategories,
+    seed: renderable(data.serviceCategories),
+  });
+  return [...cats].sort((a, b) => a.order - b.order);
 }
 export async function getServices(): Promise<Service[]> {
-  return renderable(data.services);
+  return fromSanityOrSeed<Service, Service>({
+    query: serviceQuery,
+    map: mapServices,
+    seed: renderable(data.services),
+  });
 }
 export async function getService(slug: string): Promise<Service | undefined> {
-  const s = bySlug(data.services, slug);
-  return s && isRenderable(s) ? s : undefined;
+  return bySlug(await getServices(), slug);
 }
 export async function getToolCategories(): Promise<ToolCategory[]> {
-  return renderable(data.toolCategories).sort((a, b) => a.order - b.order);
+  const cats = await fromSanityOrSeed<ToolCategory, ToolCategory>({
+    query: toolCategoryQuery,
+    map: mapToolCategories,
+    seed: renderable(data.toolCategories),
+  });
+  return [...cats].sort((a, b) => a.order - b.order);
 }
 export async function getTools(): Promise<Tool[]> {
-  return renderable(data.tools);
+  return fromSanityOrSeed<Tool, Tool>({
+    query: toolQuery,
+    map: mapTools,
+    seed: renderable(data.tools),
+  });
 }
 export async function getTool(slug: string): Promise<Tool | undefined> {
-  const t = bySlug(data.tools, slug);
-  return t && isRenderable(t) ? t : undefined;
+  return bySlug(await getTools(), slug);
 }
 export async function getRoadmaps(): Promise<Roadmap[]> {
-  return renderable(data.roadmaps);
+  return fromSanityOrSeed<Roadmap, Roadmap>({
+    query: roadmapQuery,
+    map: mapRoadmaps,
+    seed: renderable(data.roadmaps),
+  });
 }
 export async function getRoadmap(slug: string): Promise<Roadmap | undefined> {
-  const r = bySlug(data.roadmaps, slug);
-  return r && isRenderable(r) ? r : undefined;
+  return bySlug(await getRoadmaps(), slug);
 }
 export async function getFaqs(): Promise<Faq[]> {
   return fromSanityOrSeed<Faq, Faq>({
@@ -168,12 +238,16 @@ export async function getFaqs(): Promise<Faq[]> {
   });
 }
 export async function getLearnArticles(): Promise<LearnArticle[]> {
-  return renderable(data.learnArticles);
+  return fromSanityOrSeed<LearnArticle, LearnArticle>({
+    query: learnArticleQuery,
+    map: mapLearnArticles,
+    seed: renderable(data.learnArticles),
+  });
 }
 export async function getLearnArticle(slug: string): Promise<LearnArticle | undefined> {
-  const a = bySlug(data.learnArticles, slug);
-  return a && isRenderable(a) ? a : undefined;
+  return bySlug(await getLearnArticles(), slug);
 }
+/* Legal pages stay code-authoritative (lawyer-reviewed, lowest-churn — not seeded to Sanity). */
 export async function getLegalPage(slug: string): Promise<LegalPage | undefined> {
   const l = bySlug(data.legalPages, slug);
   return l && isRenderable(l) ? l : undefined;

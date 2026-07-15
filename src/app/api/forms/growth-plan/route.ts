@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { growthPlanSchema } from "@/lib/validation/forms";
 import { verifyTurnstile } from "@/lib/forms/turnstile";
 import { forwardToFormspree } from "@/lib/forms/formspree";
-import { checkRateLimit, clientIpFromHeaders } from "@/lib/forms/rate-limit";
+import { clientIpFromHeaders } from "@/lib/forms/rate-limit";
+import { rateLimit } from "@/lib/forms/rate-limit-adapter";
 import { deliveryEnabled, supportEmail } from "@/lib/forms/config";
 import { resolve } from "@/lib/growth-plan/engine";
 import { growthPlanRuleSet } from "@/lib/growth-plan/rules";
@@ -71,7 +72,7 @@ export async function POST(req: Request) {
   }
 
   const ip = clientIpFromHeaders(req.headers);
-  const rate = checkRateLimit(`growth-plan:${ip}`);
+  const rate = await rateLimit(`growth-plan:${ip}`);
   if (!rate.allowed) {
     return NextResponse.json(
       {

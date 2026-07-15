@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { contactSchema } from "@/lib/validation/forms";
 import { verifyTurnstile } from "@/lib/forms/turnstile";
 import { forwardToFormspree } from "@/lib/forms/formspree";
-import { checkRateLimit, clientIpFromHeaders } from "@/lib/forms/rate-limit";
+import { clientIpFromHeaders } from "@/lib/forms/rate-limit";
+import { rateLimit } from "@/lib/forms/rate-limit-adapter";
 import { deliveryEnabled, supportEmail } from "@/lib/forms/config";
 
 /**
@@ -49,7 +50,7 @@ export async function POST(req: Request) {
   }
 
   const ip = clientIpFromHeaders(req.headers);
-  const rate = checkRateLimit(`contact:${ip}`);
+  const rate = await rateLimit(`contact:${ip}`);
   if (!rate.allowed) {
     return NextResponse.json(
       {

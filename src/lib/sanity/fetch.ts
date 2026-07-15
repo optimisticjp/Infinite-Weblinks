@@ -1,17 +1,22 @@
-import { isSanityConfigured, sanityClient } from "./client";
+import {
+  isSanityConfigured,
+  sanityClient,
+  sanityLiveContentEnabled,
+  SANITY_REVALIDATE_SECONDS,
+} from "./client";
 import type { Statused } from "@/lib/content/types";
 import { isRenderable } from "@/lib/content/types";
 
 /**
  * Sanity read adapter. `sanityFetch` runs a GROQ query when a project is configured and
- * NEVER throws — a query failure returns `null` so the caller falls back to seed rather
+ * NEVER throws — a query failure returns `null` so the caller can fall back to seed rather
  * than breaking a page. `fromSanityOrSeed` is the seam the content getters use: it prefers
  * live, status-gated Sanity data and falls back to the (already status-gated) seed array
- * whenever Sanity is unconfigured, empty, or errors.
+ * only when Sanity is unavailable — never when a live query legitimately returns nothing.
  *
- * Only content types whose Studio schema maps cleanly and completely onto the app types
- * are wired through this today (FAQs + proof). The richer taxonomy types await a
- * schema↔type reconciliation (see src/lib/content/index.ts header) and stay seed-backed.
+ * The full status-gated taxonomy plus learn articles, FAQs and proof are wired through this
+ * seam (see src/lib/content/index.ts and queries.ts). Structural reference data, chrome, the
+ * rules engine and legal pages stay code-authoritative.
  */
 
 export async function sanityFetch<T>(
@@ -20,7 +25,11 @@ export async function sanityFetch<T>(
 ): Promise<T | null> {
   if (!sanityClient) return null;
   try {
-    return await sanityClient.fetch<T>(query, params);
+    // `next.revalidate` makes each read an ISR fetch: content routes re-fetch from the live
+    // dataset on this cadence instead of being frozen at build time (so editor changes appear).
+    return await sanityClient.fetch<T>(query, params, {
+      next: { revalidate: SANITY_REVALIDATE_SECONDS },
+    });
   } catch (err) {
     // Never let a Sanity outage take down a page — degrade to seed.
     console.warn("[sanity] query failed; falling back to seed content.", err);
@@ -29,10 +38,23 @@ export async function sanityFetch<T>(
 }
 
 /**
- * Return live Sanity content when available, else the seed fallback. The Sanity result is
- * re-filtered through the public status gate defensively (the GROQ already filters, but a
- * mapper mistake must never leak Draft/Placeholder content). An empty Sanity result falls
- * back to seed so a not-yet-populated dataset doesn't blank the site.
+ * Return live Sanity content, falling back to seed ONLY when Sanity can't answer:
+ *
+ *  - live-content flag off (default)         → seed (NO query is issued — release-safety gate)
+ *  - unconfigured project or no query        → seed
+ *  - request failed (`sanityFetch` → null)   → seed
+ *  - live query returned rows                → map + `isRenderable` gate, returned as-is
+ *  - live query returned `[]` (authoritative)→ `[]`
+ *  - live rows that all fail the gate        → `[]`
+ *
+ * The release-safety gate (`sanityLiveContentEnabled`) keeps the public site on seed content until
+ * live reads are explicitly enabled — when off, Sanity is never queried at all.
+ *
+ * Once enabled, the distinction between failure and emptiness matters: a successful empty result is
+ * the real answer (e.g. every document of a type set to Draft), so seed content must NOT reappear
+ * and re-leak retired content. Only a genuine failure (null) falls back to seed. The `isRenderable`
+ * re-filter is defensive — the GROQ already gates, but a mapper mistake must never surface
+ * Draft/Placeholder content.
  */
 export async function fromSanityOrSeed<TDoc, TOut extends Statused>(opts: {
   query: string | null;
@@ -40,8 +62,8 @@ export async function fromSanityOrSeed<TDoc, TOut extends Statused>(opts: {
   map: (docs: TDoc[]) => TOut[];
   seed: TOut[];
 }): Promise<TOut[]> {
-  if (!isSanityConfigured || !opts.query) return opts.seed;
+  if (!sanityLiveContentEnabled || !isSanityConfigured || !opts.query) return opts.seed;
   const docs = await sanityFetch<TDoc[]>(opts.query, opts.params);
-  if (!docs || docs.length === 0) return opts.seed;
-  return opts.map(docs).filter(isRenderable);
+  if (docs === null) return opts.seed; // request failed / unavailable — fall back
+  return opts.map(docs).filter(isRenderable); // authoritative live result ([] stays [])
 }

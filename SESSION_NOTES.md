@@ -227,3 +227,75 @@ checklist, and a deploy runbook.
 `cf:build` (OpenNext worker), 89 Playwright/axe e2e, `wrangler deploy --dry-run` (bindings
 resolve), local workerd smoke test (real routes 200; hidden proof + unknown 404; OG image PNG).
 Not merged to main.
+
+---
+
+## Sanity CMS integration (branch `integration/sanity-cms`, from `origin/main`)
+
+Real CMS wiring for project `ay705p7x` / dataset `production` (owner-provided, public IDs).
+
+**Audit + reconcile (no second content model):** the Studio schema was normalised/reference-based
+while the app types are denormalised/slug-based, with real divergences (name↔title, references↔
+slug arrays, `text`↔`string[]`, portable-text↔plain, and app-only fields like icon/color/
+exampleTools/outcome). Reconciled the EXISTING schema to hold the reviewed seed exactly, and made
+the GROQ projection its inverse.
+
+**Delivered (all credential-free, validated offline):**
+- **Connect** — app client + Studio config already env-driven; set the public project IDs as the
+  concrete `.env.example` values (and fixed a gitignore bug that left `studio/.env.example`
+  untracked).
+- **Seed pipeline** — `src/lib/sanity/seed-transform.ts` + `npm run seed:export` generate
+  `studio/seed/production.ndjson`: 166 docs, deterministic ids (`<type>.<slug>`), 1039 references,
+  **0 dangling, 0 duplicates**. `--replace` import is idempotent. Reference targets (stages/
+  systems/delivery-models) are seeded so every `_ref` resolves. **Fake placeholder proof is NOT
+  seeded** (guardrail).
+- **Schema reconciliation** — 12 document schemas extended to hold the seed's editorial fields;
+  `startingPoint` reconciled to what the site renders; rich-text fields (`faq.answer`,
+  `article.body`) made plain to match the app's plain rendering. Validated with `sanity build`.
+- **GROQ + adapters** — full status-gated taxonomy + learn + FAQ wired through `fromSanityOrSeed`
+  (was faq + proof only). Each query gates at source and projects to the exact app type; single
+  getters resolve against the gated list (unverified → 404).
+- **Status gating + fallback preserved** — verified/readyToPublish only, re-checked in the adapter;
+  unconfigured/empty/unreachable → seed. Structural reference data, chrome, rules and legal stay
+  code-authoritative.
+- **Round-trip tests** — 15 tests prove seed → document → projection == seed for every wired item,
+  plus dataset integrity (no dupes, refs resolve, no fake proof, valid statuses).
+
+**Verified:** lint 0, typecheck 0, 105 unit (incl. 15 round-trip), `build`, `cf:build`,
+`sanity build`, 89 e2e; workerd smoke — content routes 200 rendering seeded taxonomy, proof 404.
+
+**Environment constraint:** the build sandbox cannot reach `*.api.sanity.io` (proxy egress policy),
+so live seeding, Studio deploy, admin verification and the live read must run from the owner's
+environment (the deployed Cloudflare Worker reaches Sanity fine). Steps are in `LAUNCH-SANITY.md`.
+Not merged to main.
+
+### Sanity go-live — completed by owner + pinned config
+
+- **Seed imported:** 166 documents into `ay705p7x` / `production`.
+- **Studio deployed:** <https://infinite-weblinks.sanity.studio/>; **both admins verified** they can
+  sign in and view/edit content.
+- **Deployment pinned:** app id `xfsjbzgp9jvzu7htnt03qtvf` + host `infinite-weblinks` added to
+  `studio/sanity.cli.ts` (public identifiers, not secrets) so future `sanity deploy` runs don't
+  prompt and can use fine-grained version selection.
+- **styled-components warning:** the declared floor (`^6.1.0`) sat below sanity's peer requirement
+  (`^6.1.15`); raised the declared range to `^6.1.15` (installed version unchanged at 6.4.3). The
+  `sanity build` warning is gone.
+
+### Release-safety flag — public reads seed-backed by default
+
+To make the Sanity PR safe to merge without changing the currently visible site:
+
+- Added build-time flag **`NEXT_PUBLIC_SANITY_LIVE_CONTENT_ENABLED`** (default `false`).
+- **Off (default):** every public content getter returns the reviewed seed content and issues **no**
+  Sanity query (`fromSanityOrSeed` short-circuits on the flag). Content pages build fully static —
+  byte-identical to pre-integration `main`.
+- **On (`"true"`):** the completed live path is active — strict status gating, authoritative
+  empty-result behaviour, ISR (via the Sanity fetch's `next.revalidate`), and outage → seed fallback.
+- Sanity infrastructure is untouched: Studio, schemas, imported 166-doc dataset, `seed:export`, and
+  the GROQ integration all remain in place. Enabling live reads is a future flag flip + controlled
+  preview verification (documented in LAUNCH-SANITY.md).
+- Flag added to both `.env.example` files; adapter tests extended to prove: flag-off → seed with no
+  query; flag-on → live reads; request failure → seed; successful empty → authoritative `[]`.
+
+**Verified:** lint 0, typecheck 0, 109 unit, build (flag off → fully static; flag on → ISR 30s),
+`cf:build`, `sanity build`, 89 e2e. Not merged to main.

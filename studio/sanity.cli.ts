@@ -25,5 +25,14 @@ export default defineCliConfig({
    * or CORS entries pointing at the old one. Set `SANITY_STUDIO_HOST` to pin it non-interactively
    * (e.g. for a CI-driven `sanity deploy` job); leave it unset to be prompted on first deploy.
    */
-  studioHost: process.env.SANITY_STUDIO_HOST,
+  studioHost: process.env.SANITY_STUDIO_HOST ?? 'infinite-weblinks',
+
+  /**
+   * The deployed Studio application id (public identifier, not a secret). Assigned by Sanity on the
+   * first `sanity deploy` and pinned here so subsequent deploys don't prompt for it and can use
+   * fine-grained version selection instead of always auto-updating to `latest`.
+   */
+  deployment: {
+    appId: 'xfsjbzgp9jvzu7htnt03qtvf',
+  },
 })

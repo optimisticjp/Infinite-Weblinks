@@ -20,6 +20,8 @@ export const serviceCategory = defineType({
     }),
     defineField({name: 'order', title: 'Order', type: 'number', validation: (Rule) => Rule.integer()}),
     defineField({name: 'intro', title: 'Intro', type: 'text', rows: 3}),
+    defineField({name: 'icon', title: 'Icon', type: 'string', description: 'Lucide icon key, e.g. "compass".'}),
+    defineField({name: 'color', title: 'Color', type: 'string', description: 'CSS custom-property token, e.g. var(--violet).'}),
     defineField({name: 'contentStatus', title: 'Content status', type: 'contentStatus', validation: (Rule) => Rule.required()}),
   ],
   orderings: [{title: 'Order', name: 'orderAsc', by: [{field: 'order', direction: 'asc'}]}],

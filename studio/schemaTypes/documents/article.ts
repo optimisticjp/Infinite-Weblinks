@@ -29,7 +29,7 @@ export const article = defineType({
       name: 'body',
       title: 'Body',
       type: 'array',
-      of: [defineArrayMember({type: 'block'}), defineArrayMember({type: 'mediaImage'})],
+      of: [defineArrayMember({type: 'string'})],
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -55,6 +55,7 @@ export const article = defineType({
       of: [defineArrayMember({type: 'reference', to: [{type: 'goal'}]})],
     }),
     defineField({name: 'publishedAt', title: 'Published at', type: 'datetime'}),
+    defineField({name: 'readMinutes', title: 'Read minutes', type: 'number', validation: (Rule) => Rule.integer().positive()}),
     defineField({name: 'seo', title: 'SEO', type: 'seo'}),
     defineField({name: 'contentStatus', title: 'Content status', type: 'contentStatus', validation: (Rule) => Rule.required()}),
   ],

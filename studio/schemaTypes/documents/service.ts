@@ -32,12 +32,20 @@ export const service = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({name: 'plainDescription', title: 'Plain description', type: 'text', rows: 4}),
-    defineField({name: 'whatYouGet', title: 'What you get', type: 'text', rows: 4}),
+    defineField({name: 'whatYouGet', title: 'What you get', type: 'array', of: [defineArrayMember({type: 'string'})]}),
+    defineField({name: 'outcome', title: 'Outcome', type: 'text', rows: 2}),
     defineField({
       name: 'relatedTools',
       title: 'Related tools',
       type: 'array',
       of: [defineArrayMember({type: 'reference', to: [{type: 'tool'}]})],
+    }),
+    defineField({
+      name: 'exampleTools',
+      title: 'Example tools',
+      type: 'array',
+      of: [defineArrayMember({type: 'string'})],
+      description: 'Named example products we can connect — labels only, no partnership claim.',
     }),
     defineField({
       name: 'relatedGoals',

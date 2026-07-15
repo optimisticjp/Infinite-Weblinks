@@ -1,14 +1,25 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 /**
- * The adapter reads `sanityClient`/`isSanityConfigured` from the client module, so we mock
- * it to simulate a configured project with a controllable `fetch`. Proves the seam prefers
- * live status-gated data, never throws, and falls back to the seed array on empty/error.
+ * The adapter reads `sanityClient`/`isSanityConfigured` from the client module, so we mock it
+ * to simulate a configured project with a controllable `fetch`. `cfg.configured` is exposed via a
+ * getter so a single test can exercise the unconfigured path. These tests pin the seam's contract
+ * now the dataset is populated: a SUCCESSFUL live result is authoritative (an empty live result
+ * stays empty — seed must not re-leak), and only a genuine failure falls back to seed.
  */
-const { fetchMock } = vi.hoisted(() => ({ fetchMock: vi.fn() }));
+const { fetchMock, cfg } = vi.hoisted(() => ({
+  fetchMock: vi.fn(),
+  cfg: { configured: true, liveEnabled: true },
+}));
 vi.mock("@/lib/sanity/client", () => ({
-  isSanityConfigured: true,
+  get isSanityConfigured() {
+    return cfg.configured;
+  },
+  get sanityLiveContentEnabled() {
+    return cfg.liveEnabled;
+  },
   sanityClient: { fetch: fetchMock },
+  SANITY_REVALIDATE_SECONDS: 30,
   PUBLIC_STATUS_FILTER: 'contentStatus.status in ["verified","readyToPublish"]',
 }));
 
@@ -20,38 +31,72 @@ const identity = (docs: Faq[]) => docs;
 
 beforeEach(() => {
   fetchMock.mockReset();
+  cfg.configured = true;
+  cfg.liveEnabled = true;
   // The adapter logs a warning (with the caught Error) on the fallback path; silence it so
   // the expected, handled error isn't surfaced as noise/failure by the runner.
   vi.spyOn(console, "warn").mockImplementation(() => {});
 });
 
-describe("fromSanityOrSeed", () => {
-  it("returns mapped live data when Sanity has rows", async () => {
+describe("release-safety flag (sanityLiveContentEnabled)", () => {
+  it("flag OFF → uses seed and never queries Sanity (default launch behaviour)", async () => {
+    cfg.liveEnabled = false;
+    fetchMock.mockResolvedValue([{ status: "verified", slug: "live", question: "L?", answer: "L." }]);
+    expect(await fromSanityOrSeed<Faq, Faq>({ query: "q", map: identity, seed })).toEqual(seed);
+    expect(fetchMock, "no Sanity request is made when the flag is off").not.toHaveBeenCalled();
+  });
+
+  it("flag ON → live Sanity reads are enabled", async () => {
+    cfg.liveEnabled = true;
+    const rows: Faq[] = [{ status: "verified", slug: "live", question: "L?", answer: "L." }];
+    fetchMock.mockResolvedValue(rows);
+    expect(await fromSanityOrSeed<Faq, Faq>({ query: "q", map: identity, seed })).toEqual(rows);
+    expect(fetchMock).toHaveBeenCalledOnce();
+  });
+});
+
+describe("fromSanityOrSeed (flag enabled)", () => {
+  it("live rows override seed", async () => {
     const rows: Faq[] = [{ status: "verified", slug: "live", question: "L?", answer: "L." }];
     fetchMock.mockResolvedValue(rows);
     expect(await fromSanityOrSeed<Faq, Faq>({ query: "q", map: identity, seed })).toEqual(rows);
   });
 
-  it("falls back to seed when Sanity returns an empty set", async () => {
+  it("a successful EMPTY result stays empty (does not re-leak seed)", async () => {
     fetchMock.mockResolvedValue([]);
-    expect(await fromSanityOrSeed<Faq, Faq>({ query: "q", map: identity, seed })).toEqual(seed);
+    expect(await fromSanityOrSeed<Faq, Faq>({ query: "q", map: identity, seed })).toEqual([]);
   });
 
-  it("falls back to seed when the query throws", async () => {
+  it("a successful result of only non-renderable rows stays empty", async () => {
+    fetchMock.mockResolvedValue([{ status: "draft", slug: "x", question: "?", answer: "." }]);
+    expect(await fromSanityOrSeed<Faq, Faq>({ query: "q", map: identity, seed })).toEqual([]);
+  });
+
+  it("keeps only renderable rows from a mixed live result", async () => {
+    fetchMock.mockResolvedValue([
+      { status: "verified", slug: "ok", question: "?", answer: "." },
+      { status: "placeholder", slug: "hidden", question: "?", answer: "." },
+    ]);
+    const out = await fromSanityOrSeed<Faq, Faq>({ query: "q", map: identity, seed });
+    expect(out).toEqual([{ status: "verified", slug: "ok", question: "?", answer: "." }]);
+  });
+
+  it("falls back to seed when the request FAILS (sanityFetch returns null)", async () => {
     fetchMock.mockImplementation(async () => {
       throw new Error("network");
     });
     expect(await fromSanityOrSeed<Faq, Faq>({ query: "q", map: identity, seed })).toEqual(seed);
   });
 
-  it("does not query (uses seed) when the query is null", async () => {
+  it("falls back to seed when the query is null (unavailable) — no request made", async () => {
     expect(await fromSanityOrSeed<Faq, Faq>({ query: null, map: identity, seed })).toEqual(seed);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("defensively drops any non-renderable rows a mapper produced", async () => {
-    fetchMock.mockResolvedValue([{ status: "draft", slug: "x", question: "?", answer: "." }]);
-    expect(await fromSanityOrSeed<Faq, Faq>({ query: "q", map: identity, seed })).toEqual([]);
+  it("falls back to seed when Sanity is unconfigured — no request made", async () => {
+    cfg.configured = false;
+    expect(await fromSanityOrSeed<Faq, Faq>({ query: "q", map: identity, seed })).toEqual(seed);
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });
 

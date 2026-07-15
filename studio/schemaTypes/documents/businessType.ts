@@ -19,6 +19,7 @@ export const businessType = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({name: 'summary', title: 'Summary', type: 'text', rows: 4}),
+    defineField({name: 'description', title: 'Description', type: 'text', rows: 4}),
     defineField({
       name: 'relatedGoals',
       title: 'Related goals',
@@ -32,6 +33,8 @@ export const businessType = defineType({
       type: 'reference',
       to: [{type: 'roadmap'}],
     }),
+    defineField({name: 'icon', title: 'Icon', type: 'string', description: 'Lucide icon key, e.g. "compass".'}),
+    defineField({name: 'color', title: 'Color', type: 'string', description: 'CSS custom-property token, e.g. var(--violet).'}),
     defineField({name: 'seo', title: 'SEO', type: 'seo'}),
     defineField({name: 'contentStatus', title: 'Content status', type: 'contentStatus', validation: (Rule) => Rule.required()}),
   ],

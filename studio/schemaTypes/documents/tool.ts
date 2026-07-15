@@ -48,6 +48,18 @@ export const tool = defineType({
       of: [defineArrayMember({type: 'reference', to: [{type: 'service'}]})],
     }),
     defineField({
+      name: 'exampleTools',
+      title: 'Example tools',
+      type: 'array',
+      of: [defineArrayMember({type: 'string'})],
+    }),
+    defineField({
+      name: 'stages',
+      title: 'Stages',
+      type: 'array',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'growthStage'}]})],
+    }),
+    defineField({
       name: 'logo',
       title: 'Logo',
       description: 'Labelled as "platforms and tools we work with" / "examples of tools we can connect" — never formal partnership wording.',

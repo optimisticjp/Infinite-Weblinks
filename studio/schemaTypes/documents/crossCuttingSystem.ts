@@ -38,6 +38,8 @@ export const crossCuttingSystem = defineType({
       type: 'array',
       of: [defineArrayMember({type: 'reference', to: [{type: 'service'}]})],
     }),
+    defineField({name: 'icon', title: 'Icon', type: 'string', description: 'Lucide icon key, e.g. "compass".'}),
+    defineField({name: 'color', title: 'Color', type: 'string', description: 'CSS custom-property token, e.g. var(--violet).'}),
     defineField({name: 'contentStatus', title: 'Content status', type: 'contentStatus', validation: (Rule) => Rule.required()}),
   ],
   preview: {

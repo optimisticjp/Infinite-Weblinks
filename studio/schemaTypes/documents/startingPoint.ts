@@ -8,15 +8,19 @@ export const startingPoint = defineType({
   title: 'Starting Point',
   type: 'document',
   fields: [
-    defineField({name: 'name', title: 'Name', type: 'string', validation: (Rule) => Rule.required()}),
+    defineField({name: 'label', title: 'Label', type: 'string', validation: (Rule) => Rule.required()}),
     defineField({
       name: 'slug',
       title: 'Slug',
       type: 'slug',
-      options: {source: 'name', maxLength: 96},
+      options: {source: 'label', maxLength: 96},
       validation: (Rule) => Rule.required(),
     }),
-    defineField({name: 'description', title: 'Description', type: 'text', rows: 4}),
+    defineField({name: 'situation', title: 'Situation', type: 'text', rows: 3}),
+    defineField({name: 'recommendation', title: 'Recommendation', type: 'text', rows: 3}),
+    defineField({name: 'cta', title: 'CTA', type: 'cta'}),
+    defineField({name: 'icon', title: 'Icon', type: 'string', description: 'Lucide icon key, e.g. "compass".'}),
+    defineField({name: 'color', title: 'Color', type: 'string', description: 'CSS custom-property token, e.g. var(--violet).'}),
     defineField({
       name: 'recommendedStage',
       title: 'Recommended stage',
@@ -33,7 +37,7 @@ export const startingPoint = defineType({
     defineField({name: 'contentStatus', title: 'Content status', type: 'contentStatus', validation: (Rule) => Rule.required()}),
   ],
   preview: {
-    select: {title: 'name', status: 'contentStatus.status'},
+    select: {title: 'label', status: 'contentStatus.status'},
     prepare({title, status}) {
       return {title, subtitle: status}
     },

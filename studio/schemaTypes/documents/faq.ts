@@ -1,4 +1,4 @@
-import {defineArrayMember, defineField, defineType} from 'sanity'
+import {defineField, defineType} from 'sanity'
 
 /**
  * A single FAQ item (data-model.md → content & editorial). Rendered by `faqSection` and the
@@ -12,10 +12,17 @@ export const faq = defineType({
   fields: [
     defineField({name: 'question', title: 'Question', type: 'string', validation: (Rule) => Rule.required()}),
     defineField({
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      options: {source: 'question', maxLength: 96},
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: 'answer',
       title: 'Answer',
-      type: 'array',
-      of: [defineArrayMember({type: 'block'})],
+      type: 'text',
+      rows: 4,
       validation: (Rule) => Rule.required(),
     }),
     defineField({name: 'category', title: 'Category', type: 'string'}),

@@ -39,6 +39,13 @@ export const deliveryModel = defineType({
       options: {source: 'name', maxLength: 96},
       validation: (Rule) => Rule.required(),
     }),
+    defineField({
+      name: 'key',
+      title: 'Key',
+      type: 'string',
+      description: 'Stable key used by the app: we-do | we-expert | we-run | you-run.',
+    }),
+    defineField({name: 'tagline', title: 'Tagline', type: 'string'}),
     defineField({name: 'description', title: 'Description', type: 'text', rows: 4}),
     defineField({
       name: 'ownershipLine',

@@ -16,6 +16,7 @@ export const goal = defineType({
       options: {source: 'name', maxLength: 96},
       validation: (Rule) => Rule.required(),
     }),
+    defineField({name: 'audienceHint', title: 'Audience hint', type: 'string'}),
     defineField({name: 'whatYouNeed', title: 'What you need', type: 'text', rows: 4}),
     defineField({name: 'howWeHelp', title: 'How we help', type: 'text', rows: 4}),
     defineField({
@@ -23,6 +24,12 @@ export const goal = defineType({
       title: 'Main tools',
       type: 'array',
       of: [defineArrayMember({type: 'reference', to: [{type: 'tool'}]})],
+    }),
+    defineField({
+      name: 'exampleTools',
+      title: 'Example tools',
+      type: 'array',
+      of: [defineArrayMember({type: 'string'})],
     }),
     defineField({name: 'outcome', title: 'Outcome', type: 'text', rows: 3}),
     defineField({
@@ -44,6 +51,8 @@ export const goal = defineType({
       type: 'number',
       validation: (Rule) => Rule.integer(),
     }),
+    defineField({name: 'icon', title: 'Icon', type: 'string', description: 'Lucide icon key, e.g. "compass".'}),
+    defineField({name: 'color', title: 'Color', type: 'string', description: 'CSS custom-property token, e.g. var(--violet).'}),
     defineField({name: 'seo', title: 'SEO', type: 'seo'}),
     defineField({name: 'contentStatus', title: 'Content status', type: 'contentStatus', validation: (Rule) => Rule.required()}),
   ],

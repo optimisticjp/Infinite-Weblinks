@@ -190,3 +190,40 @@ mobile-nav coverage (all tolerance-based, not pixel snapshots).
 **Verified:** lint 0, typecheck 0, 90 unit tests, `next build` (webpack) 145 pages,
 `cf:build` (OpenNext worker), 89 Playwright/axe e2e. Screenshots at 1440/1024/768/390/360
 in `review-artifacts/`.
+
+---
+
+## Launch-readiness pass (branch `polish/launch-readiness`, from `origin/main`)
+
+Preparing the accepted build for its next integrations without touching the domain, DNS,
+secrets, or completed systems. Audit-first, grounded fixes only, in focused commits.
+
+**Audit result:** no dangling internal links; content clean (no placeholder/lorem/TODO copy);
+every route declared metadata **except the homepage**, which lacked a self-canonical. All prior
+layout regression guards still green.
+
+**Grounded fixes + now-doable scaffolding (this branch):**
+- **Homepage self-canonical** — the only route missing one; title/description/OG still inherit
+  the approved root-layout defaults.
+- **Open Graph image** — `app/opengraph-image.tsx`, `force-static` so it is a build-time PNG
+  (no runtime image rendering on the Worker). Locked slogan + palette; every route inherits it.
+  Owner can swap in a designed asset with no other change. Verified served as `image/png`
+  1200×630 through the OpenNext worker.
+- **Cloudflare Web Analytics** — env-gated `<Analytics/>` beacon; renders only when
+  `NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN` is set (host already CSP-allowed).
+- **Search Console verification** — env-gated `google-site-verification` meta; renders only when
+  `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` is set. Both features verified in off *and* on states.
+- **Form rate-limit binding** — declared `FORM_RATE_LIMITER` (5/60s) in `wrangler.jsonc` so the
+  production Worker uses a region-consistent counter instead of the per-isolate in-memory
+  fallback. Validated via `wrangler deploy --dry-run`.
+- **`.env.example`** — documents the two new public variables.
+
+**Deliverable:** `LAUNCH.md` — code-complete-and-verified vs owner-required, a full env-var
+inventory, integration-by-integration owner actions (Cloudflare, Sanity/Studio, Formspree,
+Turnstile, Analytics, Search Console, verified content, legal, domain/DNS), a prioritised
+checklist, and a deploy runbook.
+
+**Verified on this branch:** lint 0, typecheck 0, 90 unit, `build` (webpack) 145 routes,
+`cf:build` (OpenNext worker), 89 Playwright/axe e2e, `wrangler deploy --dry-run` (bindings
+resolve), local workerd smoke test (real routes 200; hidden proof + unknown 404; OG image PNG).
+Not merged to main.

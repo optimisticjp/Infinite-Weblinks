@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Sora, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { BrandSprite } from "@/components/brand/BrandSprite";
+import { Analytics } from "@/components/seo/Analytics";
 import "@/styles/globals.css";
 
 const sora = Sora({
@@ -44,6 +45,11 @@ export const metadata: Metadata = {
     url: siteUrl,
   },
   twitter: { card: "summary_large_image" },
+  // Env-gated ownership proof for Google Search Console (and other engines). Renders the
+  // meta tag only once the owner sets NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION.
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } }
+    : {}),
 };
 
 export const viewport: Viewport = {
@@ -60,6 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to main content
         </a>
         {children}
+        <Analytics />
       </body>
     </html>
   );

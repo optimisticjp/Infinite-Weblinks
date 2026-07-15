@@ -1,34 +1,64 @@
-# Layout QA — Review Artifacts
+# Review artifacts
 
-Screenshots captured against the styled production build (webpack `next build` +
-`next start`) during the site-wide alignment correction pass. Widths follow the required
-responsive set: **1440 / 1024 / 768 / 390 / 360**.
+Tracked, human-viewable outputs from the review loop. Unlike `artifacts/`
+(gitignored), everything here is committed so it shows up in a PR.
 
-## Full-page, by width
-- `home-1440.png`, `home-1024.png`, `home-768.png`, `home-390.png`, `home-360.png`
+## Layout
 
-## Focused — chrome
-- `header-closed-1440.png` — closed desktop header (logo/nav/CTA alignment)
-- `megamenu-how-it-works-1280.png`, `megamenu-solutions-1280.png`,
-  `megamenu-services-1280.png`, `megamenu-resources-1280.png` — each desktop mega-menu open
-- `mobile-nav-open-390.png` — full-screen mobile menu (post-fix; was trapped in the header)
-- `mobile-faq-390.png` — mobile FAQ expanded
+| Path | What it is |
+|---|---|
+| `baseline/` | The **frozen before-picture**. Captured once per phase boundary and committed. Every later phase diffs its own screenshots against this. Do not overwrite it casually — it is the reference. |
+| `screenshots/` | **Default output** of `npm run screenshots`. Each phase regenerates its "after" shots here and compares them against `baseline/`. Starts empty (just a `.gitkeep`). |
+| `e2e-capability.json` | Machine-readable output of `npm run probe:e2e` — this session's Playwright tier and every check. See also `../docs/ENVIRONMENT-CAPABILITIES.md`. |
 
-## Routes @ 1440 (page-hero, breadcrumbs, container width, footer)
-- Information: `how-it-works-1440.png`, `about-1440.png`, `solutions-1440.png`,
-  `resources-1440.png`, `faq-1440.png`
-- Conversion: `growth-plan-1440.png`, `contact-1440.png`
-- Listings: `services-1440.png`, `tools-1440.png`, `business-types-1440.png`,
-  `starting-points-1440.png`
-- Details: `service-detail-1440.png`, `tool-detail-1440.png`, `roadmap-detail-1440.png`,
-  `article-detail-1440.png`, `goal-detail-1440.png`
-- Legal / system: `privacy-1440.png`, `404-1440.png`
-- Mobile gutters: `service-detail-390.png`, `growth-plan-390.png`
+## Regenerating the screenshots
 
-## What the visual review confirmed
-- Header, hero and mega-menus are now inset and centred on the shared grid (logo left edge
-  lines up with the hero eyebrow and section content); footer no longer flush-left.
-- Mega-menu inner content aligns with the header bar, three balanced columns + promo card.
-- Homepage section rhythm (alternating dark/band), hidden proof leaves no gaps.
-- Mobile menu covers the full viewport with accordions + both CTAs.
-- No horizontal overflow at any width; container widths within tokens.
+```bash
+# 1. Build (webpack) and serve on the Playwright port. Screenshots do NOT start
+#    a server — point them at a running one.
+npm run build
+PORT=3101 npm run start        # serves http://127.0.0.1:3101
+
+# 2a. Capture the current phase's set (default → review-artifacts/screenshots/):
+npm run screenshots
+
+# 2b. Or (re)capture the frozen baseline:
+npm run screenshots -- --out review-artifacts/baseline
+
+# Override the target server if it runs elsewhere:
+BASE_URL=http://127.0.0.1:3000 npm run screenshots
+```
+
+Run `npm run probe:e2e` first to confirm this session can launch Chromium at all
+(see `../docs/ENVIRONMENT-CAPABILITIES.md`). TIER 3/4 sessions cannot capture here.
+
+## Port
+
+Defaults to **3101**, matching `playwright.config.ts` (`PW_PORT`). This is
+deliberate: the old script defaulted to 3100 while Playwright used 3101, so the
+two tools could never share one running server. Override with `PW_PORT` or
+`BASE_URL`.
+
+## Which browser, and why
+
+The script launches with
+`executablePath: process.env.PW_CHROMIUM ?? "/opt/pw-browsers/chromium"` — the
+**exact** resolution `playwright.config.ts` uses. In the sandbox, that is the
+pre-installed Chromium (its build differs from the pinned Playwright, so
+Playwright must not download its own there). Set `PW_CHROMIUM` to point elsewhere
+(e.g. a CI-provisioned managed browser). Do **not** run `playwright install` in
+the sandbox.
+
+## What is captured
+
+Every route in the list below × widths **1440 / 1280 / 1024 / 390**, full-page,
+at `deviceScaleFactor: 2`, after a 1900ms settle for the hero intro:
+
+`/` · `/how-it-works` · `/services` · `/services/{slug}` (a real service detail)
+· `/growth-plan` · `/about` · `/contact` · `/faq` · a 404 (not-found) page.
+
+Plus three focused shots:
+
+- `home-reduced-motion-1440` — the `prefers-reduced-motion` static end-state.
+- `megamenu-how-it-works-1280` — desktop mega-menu open (hover).
+- `mobile-nav-open-390` — full-screen mobile menu open.

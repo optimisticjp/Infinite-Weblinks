@@ -8,6 +8,16 @@ const apiVersion = process.env.NEXT_PUBLIC_SANITY_API_VERSION ?? "2026-02-01";
 export const isSanityConfigured = Boolean(projectId);
 
 /**
+ * Release-safety switch for reading live CMS content. The Sanity project, Studio, schemas and
+ * imported dataset are all live, but the PUBLIC WEBSITE stays on the reviewed seed content until
+ * this flag is explicitly set to the string `"true"` at build time. Any other value (including
+ * unset) keeps the site fully seed-backed and issues NO Sanity queries — so the branch can merge
+ * without changing what visitors currently see. Flip it to `"true"` only after a controlled
+ * preview verification of the live path.
+ */
+export const sanityLiveContentEnabled = process.env.NEXT_PUBLIC_SANITY_LIVE_CONTENT_ENABLED === "true";
+
+/**
  * How long (seconds) a Sanity read is cached before Next revalidates it. Content pages are
  * otherwise prerendered at build time and would freeze whatever the build fetched — so without
  * this, editor changes (and even the initial dataset) never reach the running site. Kept short so

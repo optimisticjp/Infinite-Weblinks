@@ -280,3 +280,22 @@ Not merged to main.
 - **styled-components warning:** the declared floor (`^6.1.0`) sat below sanity's peer requirement
   (`^6.1.15`); raised the declared range to `^6.1.15` (installed version unchanged at 6.4.3). The
   `sanity build` warning is gone.
+
+### Release-safety flag — public reads seed-backed by default
+
+To make the Sanity PR safe to merge without changing the currently visible site:
+
+- Added build-time flag **`NEXT_PUBLIC_SANITY_LIVE_CONTENT_ENABLED`** (default `false`).
+- **Off (default):** every public content getter returns the reviewed seed content and issues **no**
+  Sanity query (`fromSanityOrSeed` short-circuits on the flag). Content pages build fully static —
+  byte-identical to pre-integration `main`.
+- **On (`"true"`):** the completed live path is active — strict status gating, authoritative
+  empty-result behaviour, ISR (via the Sanity fetch's `next.revalidate`), and outage → seed fallback.
+- Sanity infrastructure is untouched: Studio, schemas, imported 166-doc dataset, `seed:export`, and
+  the GROQ integration all remain in place. Enabling live reads is a future flag flip + controlled
+  preview verification (documented in LAUNCH-SANITY.md).
+- Flag added to both `.env.example` files; adapter tests extended to prove: flag-off → seed with no
+  query; flag-on → live reads; request failure → seed; successful empty → authoritative `[]`.
+
+**Verified:** lint 0, typecheck 0, 109 unit, build (flag off → fully static; flag on → ISR 30s),
+`cf:build`, `sanity build`, 89 e2e. Not merged to main.

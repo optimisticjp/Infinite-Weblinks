@@ -1,4 +1,9 @@
-import { isSanityConfigured, sanityClient, SANITY_REVALIDATE_SECONDS } from "./client";
+import {
+  isSanityConfigured,
+  sanityClient,
+  sanityLiveContentEnabled,
+  SANITY_REVALIDATE_SECONDS,
+} from "./client";
 import type { Statused } from "@/lib/content/types";
 import { isRenderable } from "@/lib/content/types";
 
@@ -35,17 +40,21 @@ export async function sanityFetch<T>(
 /**
  * Return live Sanity content, falling back to seed ONLY when Sanity can't answer:
  *
+ *  - live-content flag off (default)         → seed (NO query is issued — release-safety gate)
  *  - unconfigured project or no query        → seed
  *  - request failed (`sanityFetch` → null)   → seed
  *  - live query returned rows                → map + `isRenderable` gate, returned as-is
  *  - live query returned `[]` (authoritative)→ `[]`
  *  - live rows that all fail the gate        → `[]`
  *
- * The distinction matters now the dataset is populated: a successful empty result is the
- * real answer (e.g. every document of a type set to Draft), so seed content must NOT
- * reappear and re-leak retired content. Only a genuine failure (null) falls back to seed.
- * The `isRenderable` re-filter is defensive — the GROQ already gates, but a mapper mistake
- * must never surface Draft/Placeholder content.
+ * The release-safety gate (`sanityLiveContentEnabled`) keeps the public site on seed content until
+ * live reads are explicitly enabled — when off, Sanity is never queried at all.
+ *
+ * Once enabled, the distinction between failure and emptiness matters: a successful empty result is
+ * the real answer (e.g. every document of a type set to Draft), so seed content must NOT reappear
+ * and re-leak retired content. Only a genuine failure (null) falls back to seed. The `isRenderable`
+ * re-filter is defensive — the GROQ already gates, but a mapper mistake must never surface
+ * Draft/Placeholder content.
  */
 export async function fromSanityOrSeed<TDoc, TOut extends Statused>(opts: {
   query: string | null;
@@ -53,7 +62,7 @@ export async function fromSanityOrSeed<TDoc, TOut extends Statused>(opts: {
   map: (docs: TDoc[]) => TOut[];
   seed: TOut[];
 }): Promise<TOut[]> {
-  if (!isSanityConfigured || !opts.query) return opts.seed;
+  if (!sanityLiveContentEnabled || !isSanityConfigured || !opts.query) return opts.seed;
   const docs = await sanityFetch<TDoc[]>(opts.query, opts.params);
   if (docs === null) return opts.seed; // request failed / unavailable — fall back
   return opts.map(docs).filter(isRenderable); // authoritative live result ([] stays [])

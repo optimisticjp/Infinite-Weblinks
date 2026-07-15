@@ -7,10 +7,16 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
  * now the dataset is populated: a SUCCESSFUL live result is authoritative (an empty live result
  * stays empty — seed must not re-leak), and only a genuine failure falls back to seed.
  */
-const { fetchMock, cfg } = vi.hoisted(() => ({ fetchMock: vi.fn(), cfg: { configured: true } }));
+const { fetchMock, cfg } = vi.hoisted(() => ({
+  fetchMock: vi.fn(),
+  cfg: { configured: true, liveEnabled: true },
+}));
 vi.mock("@/lib/sanity/client", () => ({
   get isSanityConfigured() {
     return cfg.configured;
+  },
+  get sanityLiveContentEnabled() {
+    return cfg.liveEnabled;
   },
   sanityClient: { fetch: fetchMock },
   SANITY_REVALIDATE_SECONDS: 30,
@@ -26,12 +32,30 @@ const identity = (docs: Faq[]) => docs;
 beforeEach(() => {
   fetchMock.mockReset();
   cfg.configured = true;
+  cfg.liveEnabled = true;
   // The adapter logs a warning (with the caught Error) on the fallback path; silence it so
   // the expected, handled error isn't surfaced as noise/failure by the runner.
   vi.spyOn(console, "warn").mockImplementation(() => {});
 });
 
-describe("fromSanityOrSeed", () => {
+describe("release-safety flag (sanityLiveContentEnabled)", () => {
+  it("flag OFF → uses seed and never queries Sanity (default launch behaviour)", async () => {
+    cfg.liveEnabled = false;
+    fetchMock.mockResolvedValue([{ status: "verified", slug: "live", question: "L?", answer: "L." }]);
+    expect(await fromSanityOrSeed<Faq, Faq>({ query: "q", map: identity, seed })).toEqual(seed);
+    expect(fetchMock, "no Sanity request is made when the flag is off").not.toHaveBeenCalled();
+  });
+
+  it("flag ON → live Sanity reads are enabled", async () => {
+    cfg.liveEnabled = true;
+    const rows: Faq[] = [{ status: "verified", slug: "live", question: "L?", answer: "L." }];
+    fetchMock.mockResolvedValue(rows);
+    expect(await fromSanityOrSeed<Faq, Faq>({ query: "q", map: identity, seed })).toEqual(rows);
+    expect(fetchMock).toHaveBeenCalledOnce();
+  });
+});
+
+describe("fromSanityOrSeed (flag enabled)", () => {
   it("live rows override seed", async () => {
     const rows: Faq[] = [{ status: "verified", slug: "live", question: "L?", answer: "L." }];
     fetchMock.mockResolvedValue(rows);

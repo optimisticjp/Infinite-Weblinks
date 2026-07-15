@@ -1,5 +1,20 @@
 # Sanity CMS — Owner Steps to Go Live
 
+> ## 🚦 Release safety — read first
+> The Sanity **infrastructure is live** (project, Studio, schemas, imported dataset, GROQ
+> integration), but the **public website reads stay on the reviewed seed content** by default. This
+> is gated by a build-time flag:
+>
+> ```
+> NEXT_PUBLIC_SANITY_LIVE_CONTENT_ENABLED=false   # default
+> ```
+>
+> - **`false` (default):** the site renders seed content and issues **no** Sanity queries — visible
+>   content is exactly what it is today, so this branch is safe to merge immediately.
+> - **`true`:** enables the completed live Sanity path (strict status gating, authoritative empty
+>   results, ISR, outage fallback). Flip it **only** after a controlled preview verification (see
+>   "Enabling live CMS reads" below).
+
 > ## ✅ Completed by the owner
 > - **Seed imported** — 166 documents into project `ay705p7x`, dataset `production`.
 > - **Studio deployed** — <https://infinite-weblinks.sanity.studio/> (app id `xfsjbzgp9jvzu7htnt03qtvf`,
@@ -102,6 +117,26 @@ Then, on the deployed site / branch preview:
    revert to seed) — proving the authoritative-empty behaviour.
 
 If Sanity is ever unreachable, the site silently falls back to seed content (no breakage).
+
+> **Prerequisite:** live reads only happen when `NEXT_PUBLIC_SANITY_LIVE_CONTENT_ENABLED=true` at
+> build time (see "Enabling live CMS reads"). With the default `false`, the steps above return seed
+> content and issue no Sanity queries.
+
+---
+
+## Enabling live CMS reads (future activation)
+
+The live Sanity path is complete and tested but **off by default** for launch safety. To turn it on:
+
+1. Set `NEXT_PUBLIC_SANITY_LIVE_CONTENT_ENABLED=true` in the Cloudflare **Preview** build variables
+   and redeploy the branch preview.
+2. Run the controlled verification in step 5 on the preview (categories/cards render; a published
+   edit appears within ~30s; setting a whole type to Draft empties it rather than reverting to seed).
+3. Only once the preview passes, set the same variable to `true` in the **Production** build
+   variables and redeploy. Leaving it unset/`false` anywhere keeps that environment on seed content.
+
+Reverting is just as safe: set it back to `false` (or unset it) and redeploy — the site returns to
+seed content with no Sanity queries.
 
 ---
 

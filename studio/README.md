@@ -86,12 +86,16 @@ studio/
 └── sanity.cli.ts          # defineCliConfig — project/dataset + studioHost
 ```
 
-This is the **initial schema slice** (Milestone M3 — see `data-model.md` → "Progressive
-implementation"). `roadmap` lands with M7; `article`/`resource`/`example`/`caseStudy`/
-`testimonial`/`legalPage` land with M8. The three section types that reference them
-(`roadmapShowcase`, `caseStudyShowcase`, `testimonialWall`) already exist in
-`schemaTypes/sections/` for schema completeness but ship with `enabled: false` and must stay
-hidden on the frontend until their document types and Verified content exist.
+The complete content model is designed up front and built in slices (`data-model.md` → "Progressive
+implementation"). Milestone M3 (initial slice), Milestone M7 (`roadmap`), and Milestone M8
+(`article`/`resource`/`example`/`caseStudy`/`testimonial`/`legalPage`) are now all part of this
+schema. The three section types that reference them (`roadmapShowcase`, `caseStudyShowcase`,
+`testimonialWall`) are wired to the real document types: `roadmapShowcase` defaults to
+`enabled: true` (ordinary content), while `caseStudyShowcase` and `testimonialWall` stay
+placeholder-gated and default to `enabled: false` until at least one `caseStudy`/`testimonial` is
+Verified. The frontend must still auto-hide all three whenever their referenced documents are not
+Verified/Ready to publish — no empty frames (data-model.md "Section validation rules"). `solution`
+and `ctaLibrary` remain outside this slice; add them here only when their milestone begins.
 
 ## Content status workflow
 

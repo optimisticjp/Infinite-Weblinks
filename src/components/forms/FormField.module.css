@@ -1,0 +1,64 @@
+.field {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.label {
+  font-family: var(--font-body);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-sm);
+  color: var(--text-heading);
+}
+
+.required {
+  color: var(--pink-bright);
+}
+
+.hint {
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.error {
+  margin: 0;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--danger);
+}
+
+.hasError :global(input),
+.hasError :global(textarea),
+.hasError :global(select) {
+  border-color: var(--danger);
+}
+
+/* Shared control styling — imported by input/textarea/select rendered inside FormField's
+   render-prop, and reused directly by ContactForm / GrowthPlanBuilder controls. */
+.control {
+  width: 100%;
+  min-height: var(--target-min);
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-input, var(--ink-700));
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text-heading);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+.control::placeholder {
+  color: var(--text-muted);
+}
+.control:focus-visible {
+  outline: none;
+  border-color: var(--border-glow);
+  box-shadow: var(--ring);
+}
+
+textarea.control {
+  min-height: 140px;
+  resize: vertical;
+}

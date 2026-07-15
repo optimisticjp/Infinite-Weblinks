@@ -76,6 +76,9 @@ export const megaMenu = defineType({
     }),
   ],
   preview: {
-    select: {title: 'title'},
+    select: {title: 'title', status: 'contentStatus.status'},
+    prepare({title, status}) {
+      return {title, subtitle: status}
+    },
   },
 })

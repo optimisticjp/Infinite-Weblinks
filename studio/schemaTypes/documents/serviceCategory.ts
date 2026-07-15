@@ -23,5 +23,11 @@ export const serviceCategory = defineType({
     defineField({name: 'contentStatus', title: 'Content status', type: 'contentStatus', validation: (Rule) => Rule.required()}),
   ],
   orderings: [{title: 'Order', name: 'orderAsc', by: [{field: 'order', direction: 'asc'}]}],
-  preview: {select: {title: 'name'}},
+  preview: {
+    select: {title: 'name', order: 'order', status: 'contentStatus.status'},
+    prepare({title, order, status}) {
+      const subtitle = [order != null ? `#${order}` : undefined, status].filter(Boolean).join(' · ')
+      return {title, subtitle: subtitle || undefined}
+    },
+  },
 })

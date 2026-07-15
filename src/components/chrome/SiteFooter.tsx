@@ -10,7 +10,7 @@ export function SiteFooter({ footer }: { footer: FooterContent }) {
 
   return (
     <footer className={`theme-dark ${styles.footer}`}>
-      <div className={`iw-container--wide ${styles.inner}`}>
+      <div className={`iw-container iw-container--wide ${styles.inner}`}>
         <div className={styles.brand}>
           <Logo href="/" size={30} className={styles.logo} />
           <p className={styles.tagline}>{footer.tagline}</p>
@@ -38,7 +38,7 @@ export function SiteFooter({ footer }: { footer: FooterContent }) {
         </nav>
       </div>
 
-      <div className={`iw-container--wide ${styles.bottom}`}>
+      <div className={`iw-container iw-container--wide ${styles.bottom}`}>
         <p className={styles.copy}>© {year} Infinite Weblinks. All rights reserved.</p>
         <ul className={styles.legal}>
           {footer.legal.map((link) => (

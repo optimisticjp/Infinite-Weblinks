@@ -1,0 +1,83 @@
+.hero {
+  background-color: var(--surface);
+  padding-block: var(--space-9) var(--space-8);
+  border-bottom: 1px solid var(--hairline);
+  position: relative;
+  overflow: hidden;
+}
+
+/* A soft brand glow behind the header, purely decorative. */
+.hero::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -10%;
+  width: 46rem;
+  height: 46rem;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.14), transparent 62%);
+  pointer-events: none;
+}
+
+.crumbs {
+  margin-bottom: var(--space-5);
+  position: relative;
+}
+
+.row {
+  position: relative;
+  display: flex;
+  gap: var(--space-8);
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.lead {
+  max-width: 62ch;
+}
+
+.title {
+  margin: var(--space-2) 0 0;
+  font-size: var(--fs-h1);
+}
+
+.intro {
+  margin-top: var(--space-4);
+  color: var(--text-body);
+  font-size: var(--fs-lead);
+  line-height: 1.5;
+}
+
+.actions {
+  margin-top: var(--space-6);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.aside {
+  flex: none;
+}
+
+.center {
+  text-align: center;
+}
+.center .row {
+  justify-content: center;
+}
+.center .lead {
+  margin-inline: auto;
+}
+.center .actions {
+  justify-content: center;
+}
+
+@media (max-width: 900px) {
+  .row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-6);
+  }
+  .aside {
+    width: 100%;
+  }
+}

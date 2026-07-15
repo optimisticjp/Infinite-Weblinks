@@ -38,6 +38,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      # The Playwright webServer starts `next start`, which needs a prior production
+      # build; jobs don't share a filesystem with the build job, so build here too.
+      - run: npm run build
       - run: npm run test:e2e
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}

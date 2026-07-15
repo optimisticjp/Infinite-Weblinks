@@ -22,7 +22,11 @@ test.describe("Homepage opening", () => {
       "Analytics",
       "Automation & AI",
     ]) {
-      await expect(page.getByText(area, { exact: true })).toBeVisible();
+      // Some of these strings legitimately recur further down the page (e.g. an
+      // "Analytics" system node, an "Automation & AI" tool category), so assert the
+      // hero renders each as real, visible text via the first match rather than
+      // requiring global uniqueness.
+      await expect(page.getByText(area, { exact: true }).first()).toBeVisible();
     }
   });
 

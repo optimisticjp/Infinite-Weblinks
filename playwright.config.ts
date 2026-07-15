@@ -1,7 +1,17 @@
+import { existsSync } from "node:fs";
 import { defineConfig } from "@playwright/test";
 
 const PORT = process.env.PW_PORT ?? "3101";
 const baseURL = `http://127.0.0.1:${PORT}`;
+
+/**
+ * Use the sandbox's pre-installed Chromium when it exists (its build differs from the
+ * pinned Playwright, so we can't let Playwright download its own there). Everywhere else —
+ * notably GitHub Actions, where `playwright install --with-deps chromium` provisions the
+ * managed browser — leave this unset so Playwright resolves its own executable.
+ */
+const sandboxChromium = process.env.PW_CHROMIUM ?? "/opt/pw-browsers/chromium";
+const executablePath = existsSync(sandboxChromium) ? sandboxChromium : undefined;
 
 export default defineConfig({
   testDir: "tests/e2e",
@@ -15,10 +25,7 @@ export default defineConfig({
     baseURL,
     browserName: "chromium",
     trace: "on-first-retry",
-    // Use the pre-installed Chromium (build differs from the pinned Playwright).
-    launchOptions: {
-      executablePath: process.env.PW_CHROMIUM ?? "/opt/pw-browsers/chromium",
-    },
+    ...(executablePath ? { launchOptions: { executablePath } } : {}),
   },
   webServer: {
     command: `PORT=${PORT} npm run start`,

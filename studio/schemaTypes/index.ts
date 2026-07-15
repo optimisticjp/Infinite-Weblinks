@@ -35,7 +35,7 @@ import {richText} from './sections/richText'
 import {mediaFeature} from './sections/mediaFeature'
 import {logoStrip} from './sections/logoStrip'
 import {contactPrompt} from './sections/contactPrompt'
-// Deferred sections (M7/M8) — see each file's header comment.
+// Placeholder-gated / M7-M8-linked sections — see each file's header comment.
 import {roadmapShowcase} from './sections/roadmapShowcase'
 import {caseStudyShowcase} from './sections/caseStudyShowcase'
 import {testimonialWall} from './sections/testimonialWall'
@@ -52,15 +52,27 @@ import {service} from './documents/service'
 import {toolCategory} from './documents/toolCategory'
 import {tool} from './documents/tool'
 
+// Taxonomy — roadmap (M7)
+import {roadmap} from './documents/roadmap'
+
+// Content & editorial (M8)
+import {article} from './documents/article'
+import {resource} from './documents/resource'
+import {example} from './documents/example'
+import {caseStudy} from './documents/caseStudy'
+import {testimonial} from './documents/testimonial'
+import {legalPage} from './documents/legalPage'
+
 // Content & rules
 import {faq} from './documents/faq'
 import {growthPlanRuleSet} from './documents/growthPlanRuleSet'
 
 /**
- * The initial schema slice (Milestone M3 — data-model.md "Progressive implementation"). The
- * complete content model is designed up front; `roadmap`, `article`, `resource`, `example`,
- * `caseStudy`, `testimonial`, `solution`, `legalPage`, and `ctaLibrary` are NOT yet part of this
- * slice and are added here only when their milestone (M7/M8+) begins.
+ * The complete content model is designed up front (data-model.md "Progressive implementation");
+ * schemas are built in slices. Milestone M3 (initial slice) plus Milestones M7 (`roadmap`) and M8
+ * (`article`/`resource`/`example`/`caseStudy`/`testimonial`/`legalPage`) are now all part of this
+ * schema. `solution` and `ctaLibrary` are still NOT part of this slice — add them here only when
+ * their milestone begins.
  */
 export const schemaTypes: SchemaTypeDefinition[] = [
   // Objects
@@ -113,6 +125,15 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   service,
   toolCategory,
   tool,
+  roadmap,
+
+  // Content & editorial
+  article,
+  resource,
+  example,
+  caseStudy,
+  testimonial,
+  legalPage,
 
   // Content & rules
   faq,

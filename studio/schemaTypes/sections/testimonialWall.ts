@@ -1,17 +1,15 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 
 /**
- * Testimonials (component-inventory.md §4) — homepage block 15, placeholder-gated.
- *
- * DEFERRED: the `testimonial` document type is not part of this initial schema slice — it lands
- * with Milestone M8 (data-model.md "Progressive implementation"). Included now for schema
- * completeness only; keep `enabled: false` until `testimonial` exists and has Verified content.
- * The frontend must auto-hide this section when no referenced testimonial is Verified (no empty
- * frames — data-model.md "Section validation rules").
+ * Testimonials (component-inventory.md §4) — homepage block 15, placeholder-gated. References the
+ * `testimonial` document type (data-model.md → content & editorial; "Progressive implementation"
+ * Milestone M8 — now part of this schema). Defaults to `enabled: false`: editors should only switch
+ * this on once at least one `testimonial` is Verified — the frontend must also auto-hide when no
+ * referenced testimonial is Verified (no empty frames — data-model.md "Section validation rules").
  */
 export const testimonialWall = defineType({
   name: 'testimonialWall',
-  title: 'Testimonial Wall (deferred — M8)',
+  title: 'Testimonial Wall',
   type: 'object',
   fields: [
     defineField({name: 'enabled', title: 'Enabled', type: 'boolean', initialValue: false}),
@@ -22,7 +20,6 @@ export const testimonialWall = defineType({
     defineField({
       name: 'testimonials',
       title: 'Testimonials',
-      description: 'References the M8 `testimonial` document type once it exists.',
       type: 'array',
       of: [defineArrayMember({type: 'reference', to: [{type: 'testimonial'}]})],
     }),
@@ -30,7 +27,10 @@ export const testimonialWall = defineType({
   preview: {
     select: {title: 'heading', enabled: 'enabled'},
     prepare({title, enabled}) {
-      return {title: title || 'Testimonial Wall', subtitle: enabled ? 'Deferred to M8' : 'Hidden (deferred to M8)'}
+      return {
+        title: title || 'Testimonial Wall',
+        subtitle: enabled ? 'Enabled — auto-hides until a testimonial is Verified' : 'Hidden',
+      }
     },
   },
 })

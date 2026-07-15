@@ -94,8 +94,10 @@ Then, on the deployed site / branch preview:
 
 1. Load a content page — goals surface through **`/solutions`** and their detail routes
    (e.g. `/solutions`, a `/goals/<slug>` detail page), plus `/services` and `/tools`.
-2. Edit a document in Studio (e.g. tweak a goal's name), and after the page's cache revalidates
-   confirm the change appears — this proves the read is live, not seed.
+2. Edit a document in Studio (e.g. tweak a goal's name) and **publish**. Content routes are ISR
+   with a ~30s revalidate window, so wait up to ~30s, then reload and confirm the change appears —
+   this proves the read is live, not seed. (For instant updates, wire a Sanity webhook to an
+   on-demand `revalidateTag` route — a recommended production follow-up.)
 3. Optionally set every document of one type to Draft and confirm that type goes empty (does **not**
    revert to seed) — proving the authoritative-empty behaviour.
 

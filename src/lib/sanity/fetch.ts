@@ -1,4 +1,4 @@
-import { isSanityConfigured, sanityClient } from "./client";
+import { isSanityConfigured, sanityClient, SANITY_REVALIDATE_SECONDS } from "./client";
 import type { Statused } from "@/lib/content/types";
 import { isRenderable } from "@/lib/content/types";
 
@@ -20,7 +20,11 @@ export async function sanityFetch<T>(
 ): Promise<T | null> {
   if (!sanityClient) return null;
   try {
-    return await sanityClient.fetch<T>(query, params);
+    // `next.revalidate` makes each read an ISR fetch: content routes re-fetch from the live
+    // dataset on this cadence instead of being frozen at build time (so editor changes appear).
+    return await sanityClient.fetch<T>(query, params, {
+      next: { revalidate: SANITY_REVALIDATE_SECONDS },
+    });
   } catch (err) {
     // Never let a Sanity outage take down a page — degrade to seed.
     console.warn("[sanity] query failed; falling back to seed content.", err);

@@ -13,6 +13,7 @@ vi.mock("@/lib/sanity/client", () => ({
     return cfg.configured;
   },
   sanityClient: { fetch: fetchMock },
+  SANITY_REVALIDATE_SECONDS: 30,
   PUBLIC_STATUS_FILTER: 'contentStatus.status in ["verified","readyToPublish"]',
 }));
 

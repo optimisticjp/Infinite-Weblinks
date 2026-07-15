@@ -17,7 +17,19 @@ const noSeriousA11y = async (page: import("@playwright/test").Page) => {
 };
 
 test.describe("listing & hub routes", () => {
-  for (const path of ["/services", "/tools", "/solutions", "/roadmaps", "/learn", "/how-it-works", "/faq", "/about"]) {
+  for (const path of [
+    "/services",
+    "/tools",
+    "/solutions",
+    "/business-types",
+    "/starting-points",
+    "/resources",
+    "/roadmaps",
+    "/learn",
+    "/how-it-works",
+    "/faq",
+    "/about",
+  ]) {
     test(`${path} renders one H1 and internal links`, async ({ page }) => {
       const res = await page.goto(path);
       expect(res?.status(), `${path} should not 404`).toBeLessThan(400);
@@ -69,6 +81,16 @@ test.describe("404", () => {
     await expect(page.getByText("404")).toBeVisible();
     await expect(page.getByRole("link", { name: /Back to home/i })).toBeVisible();
   });
+});
+
+test.describe("proof stays hidden until verified", () => {
+  // No proof record is Verified/Ready-to-Publish, so these must all 404 (index + detail).
+  for (const path of ["/case-studies", "/examples", "/case-studies/anything", "/examples/anything"]) {
+    test(`${path} returns 404`, async ({ page }) => {
+      const res = await page.goto(path);
+      expect(res?.status()).toBe(404);
+    });
+  }
 });
 
 test.describe("accessibility of key templates", () => {

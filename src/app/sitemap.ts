@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { canonical } from "@/lib/seo/metadata";
 import {
   getBusinessTypes,
+  getCaseStudies,
+  getExamples,
   getGoals,
   getLearnArticles,
   getRoadmaps,
@@ -20,25 +22,28 @@ import {
  * which would falsely churn every URL's date on each deploy.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  // Indexable top-level pages only. /growth-plan and /contact are noindex (conversion
+  // utilities), so they're intentionally excluded here even though they're crawlable.
   const staticPaths = [
     "/",
     "/how-it-works",
     "/services",
     "/tools",
     "/solutions",
+    "/business-types",
+    "/starting-points",
     "/roadmaps",
     "/learn",
+    "/resources",
     "/faq",
     "/about",
-    "/contact",
-    "/growth-plan",
     "/privacy",
     "/cookies",
     "/terms",
     "/accessibility",
   ];
 
-  const [services, tools, roadmaps, articles, businessTypes, startingPoints, goals] =
+  const [services, tools, roadmaps, articles, businessTypes, startingPoints, goals, caseStudies, examples] =
     await Promise.all([
       getServices(),
       getTools(),
@@ -47,6 +52,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       getBusinessTypes(),
       getStartingPoints(),
       getGoals(),
+      getCaseStudies(),
+      getExamples(),
     ]);
 
   const dynamicPaths = [
@@ -57,6 +64,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...businessTypes.map((b) => `/business-types/${b.slug}`),
     ...startingPoints.map((p) => `/starting-points/${p.slug}`),
     ...goals.map((g) => `/goals/${g.slug}`),
+    // Proof routes are only listed once a record is Verified / Ready to Publish (the
+    // index route itself 404s while empty, so it must not appear until then either).
+    ...(caseStudies.length > 0
+      ? ["/case-studies", ...caseStudies.map((c) => `/case-studies/${c.slug}`)]
+      : []),
+    ...(examples.length > 0 ? ["/examples", ...examples.map((e) => `/examples/${e.slug}`)] : []),
   ];
 
   return [...staticPaths, ...dynamicPaths].map((path) => ({

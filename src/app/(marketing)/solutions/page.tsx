@@ -9,6 +9,15 @@ import { pageMetadata } from "@/lib/seo/metadata";
 import { getBusinessTypes, getGoals, getStartingPoints } from "@/lib/content";
 import styles from "./solutions.module.css";
 
+/**
+ * /solutions is the cross-cutting HUB (by goal / by business type / by where you are).
+ * Canonical strategy: there is intentionally NO `/solutions/[slug]` route — the canonical
+ * detail page for a goal is `/goals/[slug]`, for a business type `/business-types/[slug]`,
+ * and for a situation `/starting-points/[slug]`. This hub links straight to those, so we
+ * never ship two near-identical detail pages (e.g. `/solutions/launch-store` duplicating
+ * `/goals/launch-professional-store`) competing for the same query.
+ */
+
 export const metadata: Metadata = pageMetadata({
   title: "Solutions",
   description:

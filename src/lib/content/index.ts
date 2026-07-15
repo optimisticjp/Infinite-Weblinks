@@ -1,4 +1,15 @@
 import { isSanityConfigured } from "@/lib/sanity/client";
+import { fromSanityOrSeed } from "@/lib/sanity/fetch";
+import {
+  caseStudyQuery,
+  exampleQuery,
+  faqQuery,
+  mapCaseStudies,
+  mapExamples,
+  mapFaqs,
+  mapTestimonials,
+  testimonialQuery,
+} from "@/lib/sanity/queries";
 import { seedChrome, seedEditorial, seedHero } from "./seed";
 import * as data from "./data";
 import { isRenderable, type Statused } from "./types";
@@ -42,8 +53,26 @@ function bySlug<T extends { slug: string }>(items: readonly T[], slug: string): 
   return items.find((i) => i.slug === slug);
 }
 
-/* When Sanity is configured, these will branch to GROQ; seed is the fallback. */
-export const usingSanity = isSanityConfigured;
+/**
+ * Sanity read status. `isSanityConfigured` reports only whether a project id is present.
+ *
+ * IMPORTANT — accurate as of this build: live status-gated Sanity reads are wired ONLY for
+ * the content types whose Studio schema maps cleanly and completely onto the app types —
+ * FAQs and proof (case studies / testimonials / examples). Those getters call
+ * `fromSanityOrSeed`, preferring live Sanity content and falling back to the (already
+ * status-gated) seed array. `sanityWiredTypes` lists them.
+ *
+ * Every other getter (services, goals, stages, tools, roadmaps, articles, legal, chrome…)
+ * STILL RETURNS SEED. This is intentional and deferred, not a bug: the Studio schema and
+ * these app types diverge — field renames (name↔title, plainSummary↔summary,
+ * mainTools↔exampleTools), reference-vs-slug, text-vs-string[], portable-text-vs-blocks[],
+ * and app-only fields with no Sanity source (icon, color, exampleTools, readMinutes). A
+ * correct query path requires reconciling the schema and types (and a live dataset to
+ * validate), which is a larger change than a focused correction. Seed is the status-gated
+ * source of truth in both modes until then.
+ */
+export { isSanityConfigured };
+export const sanityWiredTypes = ["faq", "caseStudy", "testimonial", "example"] as const;
 
 /* ---- chrome / hero / editorial (existing seed) ---- */
 export async function getSiteChrome(): Promise<SiteChrome> {
@@ -132,7 +161,11 @@ export async function getRoadmap(slug: string): Promise<Roadmap | undefined> {
   return r && isRenderable(r) ? r : undefined;
 }
 export async function getFaqs(): Promise<Faq[]> {
-  return renderable(data.faqs);
+  return fromSanityOrSeed<Faq, Faq>({
+    query: faqQuery,
+    map: mapFaqs,
+    seed: renderable(data.faqs),
+  });
 }
 export async function getLearnArticles(): Promise<LearnArticle[]> {
   return renderable(data.learnArticles);
@@ -146,15 +179,35 @@ export async function getLegalPage(slug: string): Promise<LegalPage | undefined>
   return l && isRenderable(l) ? l : undefined;
 }
 
-/* ---- proof (placeholder-gated → empty until verified) ---- */
+/* ---- proof (placeholder-gated → empty until Verified/ReadyToPublish, in seed OR Sanity) ---- */
 export async function getCaseStudies(): Promise<CaseStudy[]> {
-  return renderable(data.caseStudies);
+  return fromSanityOrSeed<CaseStudy, CaseStudy>({
+    query: caseStudyQuery,
+    map: mapCaseStudies,
+    seed: renderable(data.caseStudies),
+  });
 }
 export async function getTestimonials(): Promise<Testimonial[]> {
-  return renderable(data.testimonials);
+  return fromSanityOrSeed<Testimonial, Testimonial>({
+    query: testimonialQuery,
+    map: mapTestimonials,
+    seed: renderable(data.testimonials),
+  });
 }
 export async function getExamples(): Promise<Example[]> {
-  return renderable(data.examples);
+  return fromSanityOrSeed<Example, Example>({
+    query: exampleQuery,
+    map: mapExamples,
+    seed: renderable(data.examples),
+  });
+}
+/* Single-item proof getters resolve against the status-gated list, so a placeholder /
+   unverified record is never found → the detail route 404s (proof stays hidden). */
+export async function getCaseStudy(slug: string): Promise<CaseStudy | undefined> {
+  return (await getCaseStudies()).find((c) => c.slug === slug);
+}
+export async function getExample(slug: string): Promise<Example | undefined> {
+  return (await getExamples()).find((e) => e.slug === slug);
 }
 
 /* ---- homepage section order (data-driven; each section owns its theme) ---- */

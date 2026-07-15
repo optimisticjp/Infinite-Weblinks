@@ -2,17 +2,20 @@ import type { Metadata } from "next";
 import { SectionHeader } from "@/components/primitives/SectionHeader";
 import { ContactForm } from "@/components/forms/ContactForm";
 import { CONTACT_SUBJECTS, type ContactSubject } from "@/lib/validation/forms";
+import { canonical } from "@/lib/seo/metadata";
 import { supportEmail } from "@/lib/forms/config";
 
 /**
  * /contact — "Ask Our Team" / "Send Us Your Goals". Honours `?subject=growth-goals`
- * (and the other known subjects) to prefill the form; noindex per the brief, this is a
- * conversion utility page, not evergreen content.
+ * (and the other known subjects) to prefill the form. `noindex, follow` per the SEO
+ * spec (conversion utility, not evergreen content); the self-canonical to the clean
+ * `/contact` URL consolidates every `?subject=` variant onto one indexable target.
  */
 export const metadata: Metadata = {
   title: "Contact",
   description: "Ask our team a question or send us your growth goals — we reply by email.",
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: true },
+  alternates: { canonical: canonical("/contact") },
 };
 
 function isContactSubject(value: string | undefined): value is ContactSubject {

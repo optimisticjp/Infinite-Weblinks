@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
 import { SectionHeader } from "@/components/primitives/SectionHeader";
 import { GrowthPlanBuilder } from "@/components/builder/GrowthPlanBuilder";
+import { canonical } from "@/lib/seo/metadata";
 import { getBusinessTypes, getGoals, getStages } from "@/lib/content";
 
 /**
  * /growth-plan — the site's primary CTA destination ("Build My Digital Growth Plan").
- * Noindex per the brief: this is a conversion tool, not an evergreen content page.
+ * `noindex, follow` per the SEO spec: this conversion tool is kept out of the index, but
+ * link equity still flows through it. A self-canonical keeps any tracking-param variants
+ * consolidated onto the clean URL.
  */
 export const metadata: Metadata = {
   title: "Build My Digital Growth Plan",
   description:
     "Answer a few guided questions about your business and get a structured starting point — what to build first, what to connect next, and what can wait.",
-  robots: { index: false, follow: false },
+  robots: { index: false, follow: true },
+  alternates: { canonical: canonical("/growth-plan") },
 };
 
 export default async function GrowthPlanPage() {

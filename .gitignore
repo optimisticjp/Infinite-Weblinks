@@ -22,6 +22,7 @@ wrangler.*.local
 !.env.example
 studio/.env
 studio/.env.*
+!studio/.env.example
 
 # testing / reports
 coverage/

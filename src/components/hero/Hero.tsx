@@ -14,7 +14,7 @@ export function Hero({ hero }: { hero: HeroContent }) {
   return (
     <section className={`theme-dark ${styles.hero}`} aria-labelledby="hero-heading">
       <div className={styles.glow} aria-hidden="true" />
-      <div className={`iw-container--wide ${styles.grid}`}>
+      <div className={`iw-container iw-container--wide ${styles.grid}`}>
         <div className={styles.copy}>
           <p className={`iw-eyebrow ${styles.eyebrow}`}>{hero.eyebrow}</p>
           <p className={styles.slogan}>{hero.slogan}</p>

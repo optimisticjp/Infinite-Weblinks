@@ -14,7 +14,7 @@ function MegaPanel({ item, panelId }: { item: NavItem; panelId: string }) {
   const menu = item.megaMenu!;
   return (
     <div id={panelId} className={styles.megaPanel} role="group" aria-label={menu.title}>
-      <div className={`iw-container--wide ${styles.megaInner}`}>
+      <div className={`iw-container iw-container--wide ${styles.megaInner}`}>
         <div className={styles.megaColumns}>
           {menu.columns.map((col) => (
             <div key={col.heading} className={styles.megaColumn}>
@@ -105,92 +105,101 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
   }, []);
 
   return (
-    <header className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
-      <div className={`iw-container--wide ${styles.bar}`}>
-        <Logo href="/" size={28} className={styles.logo} />
+    <>
+      <header className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
+        <div className={`iw-container iw-container--wide ${styles.bar}`}>
+          <Logo href="/" size={28} className={styles.logo} />
 
-        <nav
-          className={styles.desktopNav}
-          aria-label="Primary"
-          ref={navRef}
-          onMouseLeave={scheduleClose}
-          onFocusCapture={clearClose}
-          onBlurCapture={(e) => {
-            if (navRef.current && !navRef.current.contains(e.relatedTarget as Node)) {
-              setOpenKey(null);
-            }
-          }}
-        >
-          <ul className={styles.navList}>
-            {nav.primary.map((item) => {
-              const isOpen = openKey === item.label;
-              if (!item.megaMenu) {
+          <nav
+            className={styles.desktopNav}
+            aria-label="Primary"
+            ref={navRef}
+            onMouseLeave={scheduleClose}
+            onFocusCapture={clearClose}
+            onBlurCapture={(e) => {
+              if (navRef.current && !navRef.current.contains(e.relatedTarget as Node)) {
+                setOpenKey(null);
+              }
+            }}
+          >
+            <ul className={styles.navList}>
+              {nav.primary.map((item) => {
+                const isOpen = openKey === item.label;
+                if (!item.megaMenu) {
+                  return (
+                    <li key={item.label} className={styles.navItem}>
+                      <Link href={item.href} className={styles.navLink}>
+                        {item.label}
+                      </Link>
+                    </li>
+                  );
+                }
+                const panelId = `mega-${item.label.replace(/\s+/g, "-").toLowerCase()}`;
                 return (
-                  <li key={item.label} className={styles.navItem}>
-                    <Link href={item.href} className={styles.navLink}>
+                  <li
+                    key={item.label}
+                    className={styles.navItem}
+                    onMouseEnter={() => {
+                      clearClose();
+                      setOpenKey(item.label);
+                    }}
+                  >
+                    <button
+                      type="button"
+                      className={styles.navTrigger}
+                      aria-expanded={isOpen}
+                      aria-controls={panelId}
+                      ref={(el) => {
+                        triggerRefs.current[item.label] = el;
+                      }}
+                      onClick={() => setOpenKey(isOpen ? null : item.label)}
+                    >
                       {item.label}
-                    </Link>
+                      <ChevronDown
+                        className={styles.chevron}
+                        aria-hidden="true"
+                        data-open={isOpen}
+                      />
+                    </button>
+                    {isOpen && <MegaPanel item={item} panelId={panelId} />}
                   </li>
                 );
-              }
-              const panelId = `mega-${item.label.replace(/\s+/g, "-").toLowerCase()}`;
-              return (
-                <li
-                  key={item.label}
-                  className={styles.navItem}
-                  onMouseEnter={() => {
-                    clearClose();
-                    setOpenKey(item.label);
-                  }}
+              })}
+            </ul>
+          </nav>
+
+          <div className={styles.actions}>
+            <div className={styles.ctaGroup}>
+              {nav.ctas.map((cta) => (
+                <Button
+                  key={cta.label}
+                  href={cta.route}
+                  variant={cta.style === "primary" ? "primary" : "secondary"}
+                  size="sm"
+                  className={cta.style === "secondary" ? styles.secondaryCta : undefined}
                 >
-                  <button
-                    type="button"
-                    className={styles.navTrigger}
-                    aria-expanded={isOpen}
-                    aria-controls={panelId}
-                    ref={(el) => {
-                      triggerRefs.current[item.label] = el;
-                    }}
-                    onClick={() => setOpenKey(isOpen ? null : item.label)}
-                  >
-                    {item.label}
-                    <ChevronDown className={styles.chevron} aria-hidden="true" data-open={isOpen} />
-                  </button>
-                  {isOpen && <MegaPanel item={item} panelId={panelId} />}
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-
-        <div className={styles.actions}>
-          <div className={styles.ctaGroup}>
-            {nav.ctas.map((cta) => (
-              <Button
-                key={cta.label}
-                href={cta.route}
-                variant={cta.style === "primary" ? "primary" : "secondary"}
-                size="sm"
-                className={cta.style === "secondary" ? styles.secondaryCta : undefined}
-              >
-                {cta.label}
-              </Button>
-            ))}
+                  {cta.label}
+                </Button>
+              ))}
+            </div>
+            <button
+              type="button"
+              className={styles.menuButton}
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-nav"
+              onClick={() => setMobileOpen(true)}
+            >
+              <Menu aria-hidden="true" />
+              <span className="iw-visually-hidden">Open menu</span>
+            </button>
           </div>
-          <button
-            type="button"
-            className={styles.menuButton}
-            aria-expanded={mobileOpen}
-            aria-controls="mobile-nav"
-            onClick={() => setMobileOpen(true)}
-          >
-            <Menu aria-hidden="true" />
-            <span className="iw-visually-hidden">Open menu</span>
-          </button>
         </div>
-      </div>
+      </header>
 
+      {/* Rendered OUTSIDE <header>: the header's `backdrop-filter` establishes a
+          containing block for position:fixed descendants, which would otherwise trap the
+          full-screen overlay inside the 72px header bar. */}
       <MobileNav nav={nav} open={mobileOpen} onClose={() => setMobileOpen(false)} />
-    </header>
+    </>
   );
 }

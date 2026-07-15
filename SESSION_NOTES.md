@@ -152,3 +152,41 @@ A focused correction pass (no redesign) resolved six items:
    header). Both form routes now call the adapter.
 6. **Verification** re-run green: lint, typecheck, 89 unit tests, build (145 pages),
    cf:build, and 43 Playwright/axe e2e — including new proof-404 and hub-route coverage.
+
+---
+
+## Site-wide alignment / layout correction pass
+
+**Root cause:** `.iw-container--wide` is a *modifier* (it only sets `max-width`); used
+without the base `.iw-container` it loses `margin-inline:auto` + `padding-inline:gutter`,
+so the element goes flush-left and touches the viewport edge. Five elements did this: the
+header bar, the desktop mega-menu inner panel, the hero inner grid, and the two footer
+rows. Fix: add the base `.iw-container` to all five (`GrowthJourneySection` already had it).
+
+**Contract enforced:** standard container `--container` = 1200px, wide `--container-wide` =
+1320px, gutter `--gutter` = `clamp(20px,5vw,64px)` (already the token values). Header/hero/
+mega-menu use the wide centred container; content sections use the standard one; full-bleed
+backgrounds/glows stay full-width while their content centres.
+
+**Other fixes made this pass:**
+- **Header fit:** adding the (correct) gutter squeezed the dense header, causing real
+  horizontal overflow at 1080px (full nav) and 1280px (2nd CTA). Tightened nav spacing and
+  moved the breakpoints so the desktop nav appears ≥1160px and the secondary CTA ≥1400px —
+  where they demonstrably fit. Not a redesign; the identity/links are unchanged.
+- **Mobile menu bug (real):** the full-screen `position:fixed` overlay was trapped in the
+  72px header because the header's `backdrop-filter` establishes a containing block for
+  fixed descendants. Fixed by rendering `MobileNav` as a sibling *outside* `<header>`.
+- **Production CSS serving:** Next 16.2 Turbopack `next build` + `next start` served a
+  broken CSS chunk (one chunk 500s), rendering the page unstyled under `next start` (and
+  thus in CI e2e). Switched the build to `next build --webpack`, which serves complete CSS.
+  The OpenNext/Cloudflare deploy path was verified styled either way (it repackages the
+  build correctly); this change only fixes the local/CI `next start` server.
+
+**Regression guards added:** a source-level unit test forbidding modifier-only
+`.iw-container--wide`, and a Playwright `layout.spec.ts` asserting no overflow at 6 widths,
+header/hero/mega-menu content insets + centring, container max-widths, and full-viewport
+mobile-nav coverage (all tolerance-based, not pixel snapshots).
+
+**Verified:** lint 0, typecheck 0, 90 unit tests, `next build` (webpack) 145 pages,
+`cf:build` (OpenNext worker), 89 Playwright/axe e2e. Screenshots at 1440/1024/768/390/360
+in `review-artifacts/`.

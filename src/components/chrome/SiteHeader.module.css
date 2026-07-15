@@ -18,7 +18,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-6);
+  gap: var(--space-4);
   height: var(--header-h);
 }
 
@@ -49,7 +49,7 @@
   align-items: center;
   gap: 4px;
   min-height: 40px;
-  padding: 0 var(--space-4);
+  padding: 0 var(--space-3);
   border: 0;
   border-radius: var(--radius-md);
   background: transparent;
@@ -210,10 +210,15 @@
 }
 
 /* ---- Breakpoints ----
-   < 1080px  : compact header (logo + hamburger) — the full-screen mobile nav carries the CTAs.
-   ≥ 1080px  : desktop nav + primary CTA (mega-menus enabled).
-   ≥ 1280px  : the secondary CTA joins as well. */
-@media (min-width: 1080px) {
+   Thresholds account for the wide container's responsive gutter (up to 64px/side, added
+   by the alignment fix): the desktop nav + CTAs only appear where they fit inside the
+   centred grid without pushing past it (verified: the full nav overflowed at 1080px and
+   the 2nd CTA at 1280px once the gutter was applied). Below each threshold the
+   full-screen mobile nav carries the same links and CTAs.
+   < 1160px  : compact header (logo + hamburger).
+   ≥ 1160px  : desktop nav + primary CTA (mega-menus enabled).
+   ≥ 1400px  : the secondary CTA joins as well. */
+@media (min-width: 1160px) {
   .desktopNav {
     display: block;
   }
@@ -227,7 +232,7 @@
     grid-template-columns: minmax(0, 1fr) 300px;
   }
 }
-@media (min-width: 1280px) {
+@media (min-width: 1400px) {
   .secondaryCta {
     display: inline-flex;
   }

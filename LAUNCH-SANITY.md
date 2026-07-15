@@ -6,8 +6,8 @@
 >   now pinned in `studio/sanity.cli.ts` so future deploys don't prompt).
 > - **Both admin accounts verified** — both sign in and can view/edit the content.
 >
-> The steps below are retained as the repeatable runbook (re-seeding is idempotent; redeploys use
-> the pinned host + app id).
+> The steps below are retained as the runbook. Re-seeding is a deliberate **reset** (it overwrites
+> Studio edits — see step 2), not a routine action; redeploys use the pinned host + app id.
 
 The Sanity integration is complete in code on branch `integration/sanity-cms`: the app and Studio
 are wired to project **`ay705p7x`** / dataset **`production`**, the Studio schema is reconciled to
@@ -32,18 +32,25 @@ npm install
 npx sanity login      # opens a browser; sign in as one of the two admins
 ```
 
-## 2. Seed the dataset (idempotent — safe to re-run)
+## 2. Seed the dataset (one-time bootstrap / deliberate reset)
 
 ```bash
 # from studio/
 npx sanity dataset import seed/production.ndjson production --replace
 ```
 
-- `--replace` uses the documents' deterministic ids (`<type>.<slug>`), so re-running **updates in
-  place** and never creates duplicates.
-- This imports the reviewed taxonomy/content as **Verified**, so the site will read it live once
-  step 4 is done. Proof (case studies / testimonials) is **not** seeded — add real ones in Studio
-  when you have them; they stay hidden until you set their status to Verified.
+> ⚠️ **This is a bootstrap or deliberate-reset operation, not a routine "safe to re-run" step.**
+> `--replace` overwrites any document with the same id (`<type>.<slug>`) — so once editors have
+> made changes in Studio, re-running it will **overwrite their edits** with the seed content.
+> After editorial work has begun, only re-run it as an intentional reset, and first:
+> 1. **export a backup** — `npx sanity dataset export production backup-YYYYMMDD.tar.gz`, and
+> 2. get **explicit owner approval** for the reset.
+
+- Deterministic ids mean the import never creates **duplicates** (that is what re-import is safe
+  from) — but it is not safe from clobbering later edits, hence the warning above.
+- This imports the reviewed taxonomy/content as **Verified**, so the site reads it live once the
+  build variables are set. Proof (case studies / testimonials) is **not** seeded — add real ones in
+  Studio when you have them; they stay hidden until you set their status to Verified.
 - To regenerate the file after editing seed content in code: `npm run seed:export` (repo root).
 
 ## 3. Deploy the hosted Studio
@@ -56,29 +63,43 @@ npx sanity deploy
 - The Studio host (`infinite-weblinks`) and deployment app id (`xfsjbzgp9jvzu7htnt03qtvf`) are now
   pinned in `studio/sanity.cli.ts`, so redeploys don't prompt. (Overridable via
   `SANITY_STUDIO_HOST` if ever needed.)
-- After it deploys, add the Studio origin to the project's CORS list in
-  [manage.sanity.io](https://www.sanity.io/manage) → API → CORS Origins:
-  `https://<your-studio-host>.sanity.studio` (credentials **enabled** for the Studio origin).
+- **CORS is not a required step for the hosted Studio.** Sanity manages CORS for its own
+  `*.sanity.studio` origins automatically (confirmed working — both admins already sign in and
+  edit), and the Next.js app reads Sanity **server-side** from the Worker, which browser CORS does
+  not apply to. _Troubleshooting only:_ add an explicit CORS origin in
+  [manage.sanity.io](https://www.sanity.io/manage) → API → CORS Origins only if you later run the
+  Studio on a **custom domain** or need **local dev** (`http://localhost:3333`, `:3000`).
 
 ## 4. Verify both admins can access the Studio
 
 - Send each admin the `https://<your-studio-host>.sanity.studio` URL; each signs in and confirms
   they can see and edit documents. (Both were already added as project members.)
 
-## 5. Confirm the live site reads from Sanity
+## 5. Confirm the live site reads from Sanity (controlled owner-side test)
 
-The **deployed Cloudflare Worker** can reach Sanity (unlike the build sandbox), so once steps 2–3
-are done it serves live content automatically — the Cloudflare build variables
-(`NEXT_PUBLIC_SANITY_PROJECT_ID` etc.) are already set. To confirm:
+The **deployed Cloudflare Worker** can reach Sanity (unlike the build sandbox), so once the
+Cloudflare build variables (`NEXT_PUBLIC_SANITY_PROJECT_ID` etc.) are set it serves live content.
+
+> **CI does not prove live reads.** CI and the build sandbox run **without** the Sanity environment
+> variables, so they only exercise the **seed-fallback** path. Confirming that live Sanity content
+> actually reaches the site is a deliberate owner-side test against the deployed Worker (or the
+> branch's Cloudflare preview), described below.
 
 ```bash
 # a Verified goal you seeded should be returned live:
 npx sanity documents query '*[_type=="goal" && contentStatus.status in ["verified","readyToPublish"]][0]{ "slug": slug.current, name }' --dataset production
 ```
 
-Then load a content page on the deployed site (e.g. `/goals`, `/services`, `/tools`) and edit a
-document in Studio — after the page's cache revalidates, the change appears. If Sanity is ever
-unreachable or a document is missing, the site silently falls back to seed content (no breakage).
+Then, on the deployed site / branch preview:
+
+1. Load a content page — goals surface through **`/solutions`** and their detail routes
+   (e.g. `/solutions`, a `/goals/<slug>` detail page), plus `/services` and `/tools`.
+2. Edit a document in Studio (e.g. tweak a goal's name), and after the page's cache revalidates
+   confirm the change appears — this proves the read is live, not seed.
+3. Optionally set every document of one type to Draft and confirm that type goes empty (does **not**
+   revert to seed) — proving the authoritative-empty behaviour.
+
+If Sanity is ever unreachable, the site silently falls back to seed content (no breakage).
 
 ---
 

@@ -1,5 +1,14 @@
 # Sanity CMS — Owner Steps to Go Live
 
+> ## ✅ Completed by the owner
+> - **Seed imported** — 166 documents into project `ay705p7x`, dataset `production`.
+> - **Studio deployed** — <https://infinite-weblinks.sanity.studio/> (app id `xfsjbzgp9jvzu7htnt03qtvf`,
+>   now pinned in `studio/sanity.cli.ts` so future deploys don't prompt).
+> - **Both admin accounts verified** — both sign in and can view/edit the content.
+>
+> The steps below are retained as the repeatable runbook (re-seeding is idempotent; redeploys use
+> the pinned host + app id).
+
 The Sanity integration is complete in code on branch `integration/sanity-cms`: the app and Studio
 are wired to project **`ay705p7x`** / dataset **`production`**, the Studio schema is reconciled to
 the reviewed content, the read adapters + GROQ are done (with seed fallback and status gating), and
@@ -44,9 +53,9 @@ npx sanity dataset import seed/production.ndjson production --replace
 npx sanity deploy
 ```
 
-- On the **first** deploy you choose the Studio hostname once (e.g. `infinite-weblinks` →
-  `https://infinite-weblinks.sanity.studio`). To pin it for later non-interactive deploys, set
-  `SANITY_STUDIO_HOST` in `studio/.env`.
+- The Studio host (`infinite-weblinks`) and deployment app id (`xfsjbzgp9jvzu7htnt03qtvf`) are now
+  pinned in `studio/sanity.cli.ts`, so redeploys don't prompt. (Overridable via
+  `SANITY_STUDIO_HOST` if ever needed.)
 - After it deploys, add the Studio origin to the project's CORS list in
   [manage.sanity.io](https://www.sanity.io/manage) → API → CORS Origins:
   `https://<your-studio-host>.sanity.studio` (credentials **enabled** for the Studio origin).

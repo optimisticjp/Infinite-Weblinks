@@ -268,3 +268,15 @@ the GROQ projection its inverse.
 so live seeding, Studio deploy, admin verification and the live read must run from the owner's
 environment (the deployed Cloudflare Worker reaches Sanity fine). Steps are in `LAUNCH-SANITY.md`.
 Not merged to main.
+
+### Sanity go-live — completed by owner + pinned config
+
+- **Seed imported:** 166 documents into `ay705p7x` / `production`.
+- **Studio deployed:** <https://infinite-weblinks.sanity.studio/>; **both admins verified** they can
+  sign in and view/edit content.
+- **Deployment pinned:** app id `xfsjbzgp9jvzu7htnt03qtvf` + host `infinite-weblinks` added to
+  `studio/sanity.cli.ts` (public identifiers, not secrets) so future `sanity deploy` runs don't
+  prompt and can use fine-grained version selection.
+- **styled-components warning:** the declared floor (`^6.1.0`) sat below sanity's peer requirement
+  (`^6.1.15`); raised the declared range to `^6.1.15` (installed version unchanged at 6.4.3). The
+  `sanity build` warning is gone.

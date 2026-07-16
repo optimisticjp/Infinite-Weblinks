@@ -130,7 +130,7 @@ export default async function RoadmapDetailPage({
                           <ul className={styles.linkList}>
                             {phase.phaseServices.map((sv) => (
                               <li key={sv.slug}>
-                                <Link href={`/services/${sv.slug}`} className={styles.pill}>
+                                <Link href={`/services/${sv.categorySlug}#${sv.slug}`} className={styles.pill}>
                                   {sv.name}
                                 </Link>
                               </li>

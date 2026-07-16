@@ -865,3 +865,116 @@ page-building phase.
 CSS-verified server; +`/goals` render/link-through/a11y, +2 redirect-contract tests, +2 detail-still-
 renders, +the one-left-edge guard). Screenshots at 1440/1024/768/390 for `/goals` and `/` in
 `review-artifacts/phase-3/`.
+
+---
+
+## Session — Phase 4, the services split (branch `refactor/phase-4-services`, from `main` after #11, 16 July 2026)
+
+Split `/services` — the last structural phase before the visual work. It was one 14,378px wall of
+sixteen stacked category sections, so the mega menu's sixteen category links all landed the visitor
+thousands of pixels down the same URL. Now it's a router to sixteen real pages, plus the two token
+cleanups.
+
+### Do the seventy service pages earn their existence? No — they became sections.
+
+I read the data and the detail template. Each service is a **structured record**, not a written page:
+a ~40-word `plainDescription`, four short `whatYouGet` bullets, a delivery badge, `exampleTools`
+chips, and relational slugs. The `[slug]` template wrapped that in boilerplate identical across all
+seventy — a PageHero, a checklist, a delivery blurb, three RelatedLinks blocks. **~100 unique words
+per page.** Seventy of those, many near-identical in shape (four "audit" services, several "setup"
+services), is thin content — a doorway-page liability, not a long-tail play. Stripe ships eight
+product pages, not seventy.
+
+So they folded into their category page as **anchored blocks** (`<li id="<service-slug>">` — h3 name +
+delivery badge + description + a two-column "what you get" + tool chips). One rankable category page
+per intent, and the individual service terms captured within a strong URL instead of seventy weak
+ones. No new copy — every field comes from `service-categories.ts` / `services.ts`.
+
+### URL structure (verified, not assumed)
+
+Your instinct was to nest (`/services/[category]/[service]`). Reading the pages overrode it: folding
+is better *and* it dissolves the collision you flagged. The route is now:
+
+- `/services` — the router (sixteen category cards).
+- `/services/[category]` — sixteen category pages (the old `/services/[slug]` route, repurposed; its
+  `[slug]` param is a category slug now). Services are `#<service>` anchors on it, not URLs.
+
+**Confirmed the sixteen category slugs are disjoint from the seventy service slugs** (`comm -12` on the
+two sets is empty), so only one kind of thing ever lives at `/services/[x]` and no redirect source can
+shadow a live category route — a `service-redirects` unit test asserts this.
+
+### Height — before and after
+
+| Surface | Before | After (@1440) |
+|---|---|---|
+| **`/services`** (router, gate <2,000) | **14,378px** | **1,982px ✓** (1,024: 1,811 ✓) |
+| category pages (gate <4,000 each) | — | **all 16 under**; tallest `websites-development` **3,544px**, smallest `marketplaces-more` 2,687px |
+
+The router hit the wall the same way `/goals` did: sixteen *described* cards plus the shared 434px
+footer and the hero can't fit under 2,000px. A router routes, so its cards are compact **name + service
+count** (no description — the intro copy lives on each category page); `min="13rem"` keeps four across
+down to tablet (four rows, not six), and the single section runs tight. Sub-desktop is taller by the
+same rule as `/goals` (router 768 = 2,088, 390 = 4,067; category pages up to ~4,900 at 390) — a
+sixteen/­six-item index behind a fixed footer. The canonical 1,440 gate is met on every page.
+
+### Redirects — generated, tested, zero 404s
+
+- **70 service URLs** → `/services/<category>#<service>`, **generated from the service data**
+  (`src/lib/seo/service-redirects.ts`, imported by `next.config.ts`), so the map can never drift.
+  Swept all seventy live: **70/70 return 308, none 404**, and every destination anchor exists on its
+  category page.
+- **5 internal link-builders** (goals, business-types, starting-points, roadmaps, tools detail pages)
+  repointed to `/services/<category>#<service>` so links land direct, not via a redirect hop.
+- **Sitemap**: seventy service URLs → sixteen category URLs. **Mega menu**: sixteen `#anchor` links →
+  sixteen `/services/<category>` pages. This is the phase where "the menu only browses one page" stops
+  being true.
+- **`/solutions` → `/goals` (301).** You called Phase 3's hard-404 wrong, and you were right: it was a
+  live URL and Solutions *was* the goal router before `/goals` existed, so the 301 is semantically
+  true. Added it and replaced the 404 test with a redirect test.
+
+### The token cleanup — and the third bug the audit under-called
+
+Repointed every broken `var()` to a **defined** scale step (the scale is deliberately curated — 6, 8,
+10, 12… — so the fix is repoint, not invent the missing number):
+
+- `--space-9` → `--space-10` — `PageHero.module.css:3` and `GrowthJourneySection` ×2. This is the one
+  that mattered: an invalid `var()` kills the whole `padding-block` declaration, and `padding-block`
+  isn't inherited, so **every PageHero rendered with zero vertical padding on all 18 routed page
+  types.** The fix adds padding that never rendered — it shows in the before/after screenshot
+  (`review-artifacts/phase-4/pagehero-BEFORE-broken.png` vs `-AFTER-fixed.png`): the breadcrumb was
+  crammed against the sticky header.
+- `--fs-base` → `--fs-body` — `ServicesExplorerSection`, `GoalCards`.
+- **`--space-7` → `--space-8` — `LegalPageView.module.css:34`. You didn't flag this one.** Same class
+  of bug: undefined, no fallback, so the `gap` died and the four legal pages rendered their content
+  blocks jammed together at zero gap. "If two slipped through, there may be more" — there was a third.
+- `--fs-h5` → `--fs-h4` — `GrowthJourneySection`. Softer (it had a `1.15rem` fallback, so it rendered
+  off-scale rather than breaking), but resolved anyway.
+
+Then grepped every `var(--…)` in the codebase against the defined set. The remaining nine
+(`--font-sora/jakarta/mono`, `--accent`, `--dot`, `--node-color`, `--badge-color`, `--stage`,
+`--hub-min`) are all legitimately runtime-set — next/font on `<html>`, or inline `style` props (most
+with a fallback). **No unresolved `var()` remains.**
+
+### light-budget — zero blockers
+
+Ran the agent on both surfaces: **PASS, zero blockers.** Gradient text stays on the two approved
+headings; no glow on the cream "What's included" band; one left edge (only the terminal CTA centred).
+It flagged one real issue on the new category hero — a `filled` IconTile blooming against the H1 — and
+I switched it to `outline` so the H1 owns the brightest value. The remaining WARNINGs are the
+delivery-model / category domain-colour-coding pattern, the same accepted exception the Phase-3 audit
+noted and #11 merged; the NITs are pre-existing shared primitives (Badge, IndexCard, RelatedLinks
+off-scale px), out of scope for this phase.
+
+### What you got wrong
+
+- **The nesting instinct** — reading the pages says fold, not nest. You invited exactly that override.
+- **The token audit was short by one:** `--space-7` (legal pages) is the same silent-failure class as
+  `--space-9`, unflagged. Found and fixed.
+- Everything else checked out: 14,378px, ~830px × 16, "the mega menu browses one page," and the
+  disjoint-slug assumption behind the redirects.
+
+**Verified:** lint **0** · typecheck **0** · unit **122** (+ the `service-redirects` map integrity
+test) · webpack build ✓ · e2e **108** (workers=1, CSS-verified server; +3 category-render, +3
+redirect-contract incl. `/solutions`, link-through retargeted to categories). Screenshots at
+1440/1024/768/390 for `/services` and three category pages, plus the PageHero before/after, in
+`review-artifacts/phase-4/`.

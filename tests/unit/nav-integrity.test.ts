@@ -25,7 +25,6 @@ const megaMenus = seedChrome.nav.primary
   .map((i) => ({ menu: i.label, columns: i.megaMenu!.columns }));
 
 const set = <T extends { slug: string }>(x: readonly T[]) => new Set(x.map((i) => i.slug));
-const serviceSlugs = set(data.services);
 const serviceCategorySlugs = set(data.serviceCategories);
 const goalSlugs = set(data.goals);
 const businessTypeSlugs = set(data.businessTypes);
@@ -67,8 +66,10 @@ function brokenReason(href: string): string | null {
     const m = path.match(/^\/(services|goals|business-types|starting-points)\/(.+)$/);
     if (!m) return `unknown route "${path}"`;
     const [, kind, slug] = m;
+    // Phase 4: /services/<x> is a category page now (services folded into it as anchors),
+    // so a bare /services/<x> link resolves against the category slugs.
     const ok =
-      (kind === "services" && serviceSlugs.has(slug)) ||
+      (kind === "services" && serviceCategorySlugs.has(slug)) ||
       (kind === "goals" && goalSlugs.has(slug)) ||
       (kind === "business-types" && businessTypeSlugs.has(slug)) ||
       (kind === "starting-points" && startingPointSlugs.has(slug));

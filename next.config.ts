@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { serviceRedirects } from "./src/lib/seo/service-redirects";
 
 /**
  * Content-Security-Policy and security headers.
@@ -48,16 +49,20 @@ const nextConfig: NextConfig = {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
   async redirects() {
-    // Phase 3: the /business-types and /starting-points index pages are retired and
-    // folded into /goals as facets. Their `[slug]` detail pages stay; only the index
-    // URLs move, so a cold link or an old bookmark lands on the matching facet instead
-    // of 404ing. Exact `source` (no `/:slug`), so the detail routes are untouched.
+    // Phase 3: the /business-types and /starting-points index pages fold into /goals as
+    // facets (their `[slug]` detail pages stay). Phase 4: the /services/<service> URLs fold
+    // into their category page as anchored sections, and /solutions 301s to /goals. Every
+    // moved URL lands somewhere true instead of 404ing; the exact `source` paths never
+    // shadow the live detail/category routes (the slug sets are disjoint).
     return [
       { source: "/business-types", destination: "/goals#by-business-type", permanent: true },
       { source: "/starting-points", destination: "/goals#by-where-you-are", permanent: true },
-      // /solutions is intentionally NOT redirected: Phase 2 retired it as a hard 404 on
-      // purpose (routes.spec asserts it), and nothing links to it. Only the two index URLs
-      // dying in this phase get redirects.
+      // /solutions was a live URL and Solutions was the goal router before /goals existed,
+      // so the 301 is semantically true. (Phase 2 hard-404'd it; that was reversed here on
+      // the owner's call, not silently.)
+      { source: "/solutions", destination: "/goals", permanent: true },
+      // The 70 folded services — generated from the service data, never hand-written.
+      ...serviceRedirects,
     ];
   },
 };

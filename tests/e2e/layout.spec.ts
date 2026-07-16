@@ -42,7 +42,7 @@ test.describe("no horizontal overflow at every target width", () => {
   const paths = [
     "/",
     "/services",
-    "/services/website-design-development",
+    "/services/websites-development",
     "/how-it-works",
     "/growth-plan",
     "/tools/websites-hosting-performance",

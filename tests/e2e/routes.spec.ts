@@ -47,19 +47,23 @@ test.describe("listing & hub routes", () => {
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   });
 
-  test("/services links through to a working service detail page", async ({ page }) => {
+  // Phase 4: /services is a router of sixteen category pages; its cards link to
+  // /services/<category>, not to seventy service detail pages (those folded into the
+  // category page as anchored sections).
+  test("/services links through to a working category page", async ({ page }) => {
     await page.goto("/services");
-    const firstService = page.locator('a[href^="/services/"]').first();
-    await expect(firstService).toBeVisible();
-    await firstService.click();
+    const firstCategory = page.locator('main a[href^="/services/"]').first();
+    await expect(firstCategory).toBeVisible();
+    await firstCategory.click();
     await expect(page).toHaveURL(/\/services\/[a-z0-9-]+$/);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    // Detail pages carry a breadcrumb and the primary CTA (scope to main content —
-    // the header mega-menu promo also links to the Growth Plan).
+    // A category page carries a breadcrumb, the primary CTA, and its services as anchored
+    // blocks (the fold: every service is a section with an id, so the old URL lands on it).
     await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toBeVisible();
     await expect(
       page.getByRole("main").getByRole("link", { name: /Build My Digital Growth Plan/i }).first(),
     ).toBeVisible();
+    await expect(page.locator("main li[id]").first()).toBeAttached();
   });
 });
 
@@ -108,6 +112,31 @@ test.describe("retired index URLs fold into /goals (no dead links, no orphans)",
   }
 });
 
+test.describe("services split into category pages (Phase 4)", () => {
+  // A sample of category pages across the Build / Grow / Operate groups render as pages.
+  for (const category of ["strategy-discovery", "seo-content", "analytics-data"]) {
+    test(`/services/${category} renders one H1 and its service blocks`, async ({ page }) => {
+      const res = await page.goto(`/services/${category}`);
+      expect(res?.status(), `/services/${category} should not 404`).toBeLessThan(400);
+      await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+      // The folded services are anchored blocks with an id — the 301 target for each old URL.
+      expect(await page.locator("main li[id]").count()).toBeGreaterThan(0);
+    });
+  }
+
+  // A representative old service URL 301s onto the anchored block on its category page.
+  for (const [from, to] of [
+    ["/services/seo-audit", "/services/strategy-discovery#seo-audit"],
+    ["/services/brand-identity-logo-design", "/services/branding-design#brand-identity-logo-design"],
+  ] as const) {
+    test(`${from} permanently redirects to ${to}`, async ({ request }) => {
+      const res = await request.get(from, { maxRedirects: 0 });
+      expect(res.status()).toBe(308);
+      expect(res.headers()["location"]).toBe(to);
+    });
+  }
+});
+
 test.describe("404", () => {
   test("an unknown URL shows the branded not-found page", async ({ page }) => {
     const res = await page.goto("/this-page-does-not-exist");
@@ -116,11 +145,12 @@ test.describe("404", () => {
     await expect(page.getByRole("link", { name: /Back to home/i })).toBeVisible();
   });
 
-  // /solutions was retired in Phase 2 (its goal/type/situation destinations stay). The
-  // route itself must be gone — not a soft-redirect or an empty shell.
-  test("retired /solutions returns 404", async ({ page }) => {
-    const res = await page.goto("/solutions");
-    expect(res?.status()).toBe(404);
+  // Phase 4: /solutions (a once-live URL — Solutions was the goal router before /goals
+  // existed) 301s to /goals instead of throwing its equity away on a hard 404.
+  test("/solutions permanently redirects to /goals", async ({ request }) => {
+    const res = await request.get("/solutions", { maxRedirects: 0 });
+    expect(res.status()).toBe(308);
+    expect(res.headers()["location"]).toBe("/goals");
   });
 });
 
@@ -135,9 +165,9 @@ test.describe("proof stays hidden until verified", () => {
 });
 
 test.describe("accessibility of key templates", () => {
-  test("service detail page has no serious/critical a11y violations", async ({ page }) => {
+  test("service category page has no serious/critical a11y violations", async ({ page }) => {
     await page.goto("/services");
-    await page.locator('a[href^="/services/"]').first().click();
+    await page.locator('main a[href^="/services/"]').first().click();
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await noSeriousA11y(page);
   });

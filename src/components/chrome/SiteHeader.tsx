@@ -10,11 +10,28 @@ import type { NavItem, SiteNav } from "@/lib/content/types";
 import { MobileNav } from "./MobileNav";
 import styles from "./SiteHeader.module.css";
 
+type Pt = { x: number; y: number };
+
+/** Standard point-in-triangle (barycentric sign test). */
+function pointInTriangle(p: Pt, a: Pt, b: Pt, c: Pt) {
+  const sign = (p1: Pt, p2: Pt, p3: Pt) => (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+  const d1 = sign(p, a, b);
+  const d2 = sign(p, b, c);
+  const d3 = sign(p, c, a);
+  const hasNeg = d1 < 0 || d2 < 0 || d3 < 0;
+  const hasPos = d1 > 0 || d2 > 0 || d3 > 0;
+  return !(hasNeg && hasPos);
+}
+
 function MegaPanel({ item, panelId }: { item: NavItem; panelId: string }) {
   const menu = item.megaMenu!;
   return (
     <div id={panelId} className={styles.megaPanel} role="group" aria-label={menu.title}>
-      <div className={`iw-container iw-container--wide ${styles.megaInner}`}>
+      <div
+        className={`iw-container iw-container--wide ${styles.megaInner} ${
+          menu.promo ? styles.megaInnerPromo : ""
+        }`}
+      >
         <div className={styles.megaColumns}>
           {menu.columns.map((col) => (
             <div key={col.heading} className={styles.megaColumn}>
@@ -60,8 +77,19 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
   // True when the imminent click came from a pointer (pointerdown fired first);
   // a keyboard-activated click has no preceding pointerdown. Robust, no UA sniffing.
   const clickFromPointer = useRef(false);
+  // Safe-corridor (aim) state for Defect 3: the previous pointer position, and a pending
+  // "switch to a neighbour" fallback timer.
+  const pointerPrev = useRef<Pt | null>(null);
+  const switchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
   const router = useRouter();
+
+  const clearSwitch = () => {
+    if (switchTimer.current) {
+      clearTimeout(switchTimer.current);
+      switchTimer.current = null;
+    }
+  };
 
   // Close any open menu when the route changes (sync navigation → transient UI).
   useEffect(() => {
@@ -89,10 +117,11 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
     return () => mq.removeEventListener("change", onChange);
   }, []);
 
-  // Clear any pending close timer on unmount.
+  // Clear any pending timers on unmount.
   useEffect(
     () => () => {
       if (closeTimer.current) clearTimeout(closeTimer.current);
+      if (switchTimer.current) clearTimeout(switchTimer.current);
     },
     [],
   );
@@ -149,16 +178,70 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
             onPointerMove={(e) => {
               if (!hoverCapable || e.pointerType !== "mouse") return;
               // The pointer is inside the nav subtree. Cancel any scheduled close —
-              // UNCONDITIONALLY. Gating this on the label changing is what killed the
-              // panel mid-reach: moving within the open menu (label === openKey) toward
-              // a link never cleared the timer armed while crossing the gap on the way in.
+              // UNCONDITIONALLY (moving within the open menu toward a link must never let
+              // a close timer armed on the way in survive). See CLAUDE.md "Hover is not state".
               clearClose();
               const el = (e.target as Element).closest?.("[data-nav-item]");
               const label = el?.getAttribute("data-nav-item") ?? null;
-              if (label && label !== openKey) setOpenKey(label);
+              const now = { x: e.clientX, y: e.clientY };
+              const prev = pointerPrev.current;
+              pointerPrev.current = now;
+
+              if (!label) return; // in the nav, but not over a trigger or an open panel
+              if (label === openKey) {
+                clearSwitch(); // over the open trigger or its own panel — stay open
+                return;
+              }
+              if (openKey === null) {
+                setOpenKey(label); // nothing open yet → open on contact, instantly
+                return;
+              }
+
+              // A DIFFERENT trigger while another panel is open. Safe corridor (Defect 3):
+              // if the pointer is descending toward the open panel — inside the triangle
+              // from its previous position to the panel's two top corners — it is still
+              // reaching for a link, so keep the panel and DON'T switch. Crossing a
+              // neighbour on that path no longer swaps menus. A deliberate sideways move
+              // to another trigger falls outside the triangle → switch at once, never sluggish.
+              const panelTop = navRef.current?.getBoundingClientRect().bottom ?? 0;
+              const aiming =
+                prev !== null &&
+                pointInTriangle(now, prev, { x: 0, y: panelTop }, { x: window.innerWidth, y: panelTop });
+              if (aiming) {
+                // Arm a fallback so parking on the neighbour still switches — never stuck
+                // open. Re-validated at fire time against the live pointer position, so a
+                // move away (or an Esc/outside close) can't let a stale switch reopen it.
+                clearSwitch();
+                const target = label;
+                switchTimer.current = setTimeout(() => {
+                  const p = pointerPrev.current;
+                  const over = p
+                    ? document.elementFromPoint(p.x, p.y)?.closest?.("[data-nav-item]")?.getAttribute("data-nav-item")
+                    : null;
+                  if (over === target) setOpenKey(target);
+                }, 220);
+              } else {
+                clearSwitch();
+                setOpenKey(label);
+              }
             }}
-            onMouseLeave={scheduleClose}
+            onMouseLeave={() => {
+              scheduleClose();
+              clearSwitch();
+              pointerPrev.current = null;
+            }}
             onFocusCapture={clearClose}
+            onClick={(e) => {
+              // Any link click closes the panel — regardless of whether the pathname, the
+              // hash, or the URL changes at all (useEffect[pathname] can't see a hash-only
+              // or same-URL navigation, so on its own it leaves the panel open over the
+              // section just requested). Generalises MobileNav's onClick={onClose}. Trigger
+              // buttons aren't <a>, so they keep their own hover/click behaviour.
+              if ((e.target as Element).closest?.("a")) {
+                clearSwitch();
+                setOpenKey(null);
+              }
+            }}
             onBlurCapture={(e) => {
               if (navRef.current && !navRef.current.contains(e.relatedTarget as Node)) {
                 setOpenKey(null);

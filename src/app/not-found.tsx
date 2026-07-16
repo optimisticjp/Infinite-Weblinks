@@ -17,7 +17,7 @@ export default function NotFound() {
   const links = [
     { label: "How it works", href: "/how-it-works" },
     { label: "Services", href: "/services" },
-    { label: "Solutions", href: "/solutions" },
+    { label: "Tools", href: "/tools" },
     { label: "Resources", href: "/learn" },
   ];
 

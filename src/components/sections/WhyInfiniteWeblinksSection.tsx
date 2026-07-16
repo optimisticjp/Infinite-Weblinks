@@ -21,8 +21,12 @@ export async function WhyInfiniteWeblinksSection({ anchorId }: { anchorId?: stri
       aria-labelledby="why-us-heading"
     >
       <div className="iw-container">
+        {/* Centered: this is an editorial manifesto, not a section with a control or
+            route to hang in an aside — centring collapses the empty right column
+            cleanly rather than stranding it. */}
         <SectionHeader
           id="why-us-heading"
+          align="center"
           eyebrow="Why Infinite Weblinks"
           title="What actually makes the difference"
           intro="Not a longer feature list — a different way of thinking about the work."

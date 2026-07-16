@@ -37,6 +37,35 @@ test.describe("Homepage opening", () => {
     ).toBeVisible();
   });
 
+  // Phase 2 regression guard: the homepage summarises and routes. The lean spine renders
+  // in order, and the exhaustive sections that moved to inner pages don't reappear here.
+  test("renders the Phase-2 section spine in order, with relocated sections gone", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    const ids = await page.evaluate(() =>
+      [...document.querySelectorAll("section[id]")].map((s) => s.id),
+    );
+    const spine = ["how-it-connects", "goals", "why-us", "services", "learn", "get-started"];
+    expect(
+      ids.filter((id) => spine.includes(id)),
+      "homepage spine present and in order",
+    ).toEqual(spine);
+    // These moved to /how-it-works, /starting-points, /tools, /faq — not the homepage.
+    for (const gone of ["growth-journey", "start", "tools", "how-we-deliver", "process", "faq"]) {
+      expect(ids, `#${gone} should have moved off the homepage`).not.toContain(gone);
+    }
+  });
+
+  // Two cream bands, not six: exactly the editorial (tension) and learn (rest) sections.
+  test("exactly two cream bands render", async ({ page }) => {
+    await page.goto("/");
+    const bandCount = await page.evaluate(
+      () => document.querySelectorAll("section.theme-band").length,
+    );
+    expect(bandCount, "exactly two theme-band sections").toBe(2);
+  });
+
   for (const width of [360, 390, 768, 1024, 1440]) {
     test(`no horizontal overflow at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });

@@ -1,4 +1,5 @@
 import { ArrowDown, ArrowRight } from "lucide-react";
+import { Button } from "@/components/primitives/Button";
 import { Icon } from "@/components/primitives/Icon";
 import { IconTile } from "@/components/primitives/IconTile";
 import { SectionHeader } from "@/components/primitives/SectionHeader";
@@ -43,6 +44,11 @@ export async function ConnectedSystemSection({ anchorId }: { anchorId?: string }
           eyebrow="How it all connects"
           title="One system, not separate silos"
           intro="Most sites treat search, the store, analytics, email and support as separate tools that don't talk to each other. We connect them, so a change in one place shows up correctly everywhere else."
+          aside={
+            <Button href="/how-it-works" variant="secondary" size="sm">
+              See how it all works
+            </Button>
+          }
         />
 
         <ol

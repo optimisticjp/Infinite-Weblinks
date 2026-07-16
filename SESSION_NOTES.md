@@ -669,3 +669,84 @@ hub-reachable. Footer "Build My Growth Plan" vs nav "Build My Digital Growth Pla
 
 **Verified:** lint **0** · typecheck **0** · unit **122** (incl. 13 nav-integrity) · webpack build ✓
 · e2e **97** (workers=1, against a CSS-verified server).
+
+---
+
+## Session — Phase 2, the homepage diet (branch `refactor/phase-2-homepage`, 16 July 2026)
+
+The biggest structural change in the project: the homepage was the whole Growth Guide rendered as
+one page. It now summarises and routes; the inner pages stay exhaustive.
+
+**Height, measured (full-page @1440, production build):**
+
+| | Before | After |
+|---|---:|---:|
+| Total | **22,729px** | **7,905px** (−65%) |
+| @1024 | 22,043 | 7,527 |
+| @768 | 24,479 | 8,339 |
+| @390 | 35,136 | 12,763 |
+
+Before, the four biggest sections were half the page: Tools 4,063 · Goals 2,566 · Services 2,478 ·
+Starting points 2,438 (= 51%). Every heavy section was already rendered in full on an inner page —
+four of them (journey, system, delivery, process) are the *literal same component* reused on
+`/how-it-works`. So the diet was de-duplication, not deletion: nothing homepage-only left the page.
+
+**New order (hook → tension → one big idea → proof → route → why → route → rest → permission):**
+Hero · Editorial *(band, tension)* · ConnectedSystem *(the "one system" claim)* · CaseStudy +
+Testimonial *(proof slots, empty/gated, positioned right after the claim)* · GoalExplorer *(router
+#1, by goal)* · WhyInfiniteWeblinks *(why us — separates the routers)* · ServicesExplorer *(router
+#2, what we do)* · LearningResources *(band, rest)* · FinalCta *(permission)*.
+
+**The two sections that were the same thing twice:** GrowthJourney and ConnectedSystem — both "the
+connected system," both rendering the 3 cross-cutting systems ("run across every stage"). Kept
+ConnectedSystem (the claim); GrowthJourney moved to `/how-it-works` (already there).
+
+**What left the homepage — all duplication (already on an inner page):**
+
+| Left | Already lives on |
+|---|---|
+| GrowthJourney, DeliveryModels, ProcessSteps | `/how-it-works` (same components) |
+| StartingPointSelector | `/starting-points` (index + 8 detail) |
+| ToolUniverse | `/tools` (full) |
+| FaqSection | `/faq` (same component) |
+| GoalExplorer *full facts* | kept, summarised to compact cards; full on `/goals/[slug]` |
+| ServicesExplorer *depth* | kept, 16 compact category chips; full 70 services on `/services` |
+
+**Two cream bands, not six** (guard test added): Editorial (tension, top) and LearningResources
+(rest, near the end) — maximally spaced. GoalExplorer flipped band → dark; its deep-violet outcome
+pill was retuned for dark (then dropped when the card was simplified).
+
+**Solutions retired.** `/solutions` was indistinguishable from `/services` and the goal explorer
+does outcome-slicing better. Removed: the page, the nav trigger, the footer link, the sitemap entry,
+the 404 suggestion. Its routing survives: **by goal** → the homepage goal router (→ `/goals/<slug>`);
+**by business type / by where you are** → moved into **Resources → Plan**, straight to the real
+`/business-types` and `/starting-points` indexes (no hub). A test asserts `/solutions` 404s.
+
+**Nav afterwards:** four top-level items (was five) — How It Works · Services · Resources · About Us.
+Per your call, the 16 Services category links stay (each resolves to a real `/services#category`
+anchor); the win is dropping Solutions and not stacking two catalogue megas.
+
+**The section-header aside (systemic, not one section).** *Not one of 15 sections passed an `aside`* —
+every SectionHeader stranded ~464px (~584 wide) of dead column. Filled the retained ones with a
+route that doubles as the summarise-and-route CTA: ConnectedSystem → "See how it all works"
+(`/how-it-works`); ServicesExplorer → "Browse all services" (`/services`); LearningResources → "Visit
+the Learn hub" (`/learn`). GoalExplorer and WhyInfiniteWeblinks are centred (no control/route to
+hang; centring collapses the empty column) — the "justify" path.
+
+**Also:** removed the GoalExplorer stage filter — a "make the visitor sift" control that runs against
+the Phase-2 thesis; all 10 goals still show. Renamed `GoalExplorerFilter` → `GoalCards`. No copy was
+written or deleted; section intros are unchanged.
+
+**Things worth flagging (you didn't get much wrong):**
+- **There is no `/goals` index** — `/solutions#by-goal` was it. The homepage goal router is now the
+  goals entry point (goals also cross-link from service/roadmap/learn/business-type pages), so
+  nothing is orphaned, but if you ever want a standalone `/goals` index it doesn't exist yet.
+- The goal cards route to **`/growth-plan?goal=`** (start a plan), not `/goals/[slug]` — that was the
+  existing behaviour; I kept it, since the plan builder is the stronger conversion route.
+- **Proof theming:** the case-study/testimonial slots are band-themed and sit right after the claim.
+  Empty today (2 bands hold). When Sanity fills them they'll want dark theming, or the two-band rule
+  breaks — noted so it isn't a surprise at launch.
+
+**Verified:** lint **0** · typecheck **0** · unit **119** · webpack build ✓ · e2e **98** (workers=1,
+CSS-verified server; adds a Phase-2 section-order guard, a two-band guard, and a `/solutions`-404
+guard). Screenshots at 1440/1024/768/390 in `review-artifacts/phase-2/`.

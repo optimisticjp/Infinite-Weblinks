@@ -62,46 +62,11 @@ export const seedChrome: SiteChrome = {
           },
         },
       },
-      {
-        label: "Solutions",
-        href: "/solutions",
-        megaMenu: {
-          title: "Solutions",
-          columns: [
-            {
-              heading: "By goal",
-              items: [
-                // Goal cards route to /goals/<slug> (the /solutions hub routes there too).
-                { label: "Launch a professional store", href: "/goals/launch-professional-store" },
-                { label: "Get found on Google", href: "/goals/get-found-on-google" },
-                { label: "Turn visitors into buyers", href: "/goals/turn-visitors-into-buyers" },
-                { label: "Bring customers back", href: "/goals/bring-customers-back" },
-              ],
-            },
-            {
-              heading: "By business type",
-              items: [
-                { label: "Ecommerce brands", href: "/business-types/ecommerce" },
-                { label: "Creators", href: "/business-types/creators" },
-                { label: "Local & service businesses", href: "/business-types/local-service" },
-                // "B2B & software" named two audiences but linked only b2b; they are
-                // separate slugs, so each gets its own link.
-                { label: "B2B businesses", href: "/business-types/b2b" },
-                { label: "Software companies", href: "/business-types/software" },
-              ],
-            },
-            {
-              heading: "By where you are",
-              items: [
-                { label: "Just starting out", href: "/starting-points/nothing-built-yet" },
-                { label: "Have a site, need traffic", href: "/starting-points/website-no-traffic" },
-                { label: "Traffic, but few sales", href: "/starting-points/traffic-few-sales" },
-                { label: "Established & scaling", href: "/starting-points/established-want-to-scale" },
-              ],
-            },
-          ],
-        },
-      },
+      // Solutions retired (Phase 2): the /solutions hub was indistinguishable from
+      // /services and the homepage goal explorer does outcome-slicing better. Its
+      // destinations all stay — by goal lives on the homepage goal router (→ /goals/<slug>),
+      // and by business type / by where you are move into Resources → Plan below, pointing
+      // straight at their real index pages instead of a redundant hub.
       {
         label: "Services",
         href: "/services",
@@ -166,6 +131,10 @@ export const seedChrome: SiteChrome = {
               items: [
                 { label: "Business roadmaps", href: "/roadmaps" },
                 { label: "Tool Universe", href: "/tools" },
+                // Relocated from the retired Solutions menu — same labels, straight to
+                // the real index pages (no hub in between).
+                { label: "By business type", href: "/business-types" },
+                { label: "By where you are", href: "/starting-points" },
               ],
             },
             {
@@ -187,7 +156,6 @@ export const seedChrome: SiteChrome = {
         heading: "Explore",
         links: [
           { label: "How It Works", href: "/how-it-works" },
-          { label: "Solutions", href: "/solutions" },
           { label: "Services", href: "/services" },
           { label: "Resources", href: "/resources" },
         ],

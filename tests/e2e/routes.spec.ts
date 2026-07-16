@@ -20,7 +20,6 @@ test.describe("listing & hub routes", () => {
   for (const path of [
     "/services",
     "/tools",
-    "/solutions",
     "/business-types",
     "/starting-points",
     "/resources",
@@ -81,6 +80,13 @@ test.describe("404", () => {
     await expect(page.getByText("404")).toBeVisible();
     await expect(page.getByRole("link", { name: /Back to home/i })).toBeVisible();
   });
+
+  // /solutions was retired in Phase 2 (its goal/type/situation destinations stay). The
+  // route itself must be gone — not a soft-redirect or an empty shell.
+  test("retired /solutions returns 404", async ({ page }) => {
+    const res = await page.goto("/solutions");
+    expect(res?.status()).toBe(404);
+  });
 });
 
 test.describe("proof stays hidden until verified", () => {
@@ -101,8 +107,8 @@ test.describe("accessibility of key templates", () => {
     await noSeriousA11y(page);
   });
 
-  test("solutions hub has no serious/critical a11y violations", async ({ page }) => {
-    await page.goto("/solutions");
+  test("starting-points hub has no serious/critical a11y violations", async ({ page }) => {
+    await page.goto("/starting-points");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await noSeriousA11y(page);
   });

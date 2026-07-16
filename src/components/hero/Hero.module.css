@@ -40,7 +40,7 @@
 }
 .headline {
   font-size: var(--fs-display);
-  line-height: var(--lh-tight);
+  line-height: var(--lh-display);
   letter-spacing: var(--ls-display);
 }
 .support {

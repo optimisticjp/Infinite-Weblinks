@@ -21,10 +21,9 @@
   font-size: clamp(3rem, 12vw, 6rem);
   font-weight: 700;
   line-height: 1;
-  background: var(--grad-text);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  /* Solid, not gradient text — gradient text is reserved site-wide for exactly the
+     hero H1 and the final CTA headline. Dimmed so the primary CTA owns the light. */
+  color: var(--text-muted);
 }
 
 .title {

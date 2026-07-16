@@ -34,11 +34,7 @@ export default async function GrowthPlanPage() {
           as="h1"
           id="growth-plan-heading"
           eyebrow="Build my digital growth plan"
-          title={
-            <>
-              A few questions. A <span className="iw-gradient-text">clear starting point.</span>
-            </>
-          }
+          title="A few questions. A clear starting point."
           intro="Answer a handful of guided questions about your business and we'll map out where to start, what to connect next, and what can wait — no jargon, no guesswork, no call required."
         />
         <GrowthPlanBuilder businessTypes={businessTypes} goals={goals} stages={stages} />

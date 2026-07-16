@@ -72,7 +72,9 @@ let failed = 0;
 async function shot(name, { path = "/", width, height, reducedMotion = false, full = true, action } = {}) {
   const ctx = await browser.newContext({
     viewport: { width, height },
-    deviceScaleFactor: 2, // kept — crisp 2x output
+    // Full-page shots answer "did a section move or disappear" — 1x is plenty and
+    // ~4x smaller on a 22k-px page. Viewport crops judge type/spacing, so 2x there.
+    deviceScaleFactor: full ? 1 : 2,
     reducedMotion: reducedMotion ? "reduce" : "no-preference",
   });
   const page = await ctx.newPage();

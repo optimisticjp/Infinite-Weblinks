@@ -15,7 +15,7 @@
   grid-template-columns: auto 1fr;
   gap: var(--space-5);
   align-items: start;
-  padding: clamp(20px, 3vw, 28px);
+  padding: var(--space-8); /* ≥ radius-lg + 12px */
   background: var(--surface-raised);
   border: 1px solid var(--hairline);
   border-left: 3px solid var(--accent, var(--violet));

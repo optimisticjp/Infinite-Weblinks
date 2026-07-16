@@ -19,7 +19,7 @@ export async function LearningResourcesSection({ anchorId }: { anchorId?: string
   return (
     <section
       id={anchorId}
-      className={`theme-band iw-section ${styles.section}`}
+      className={`theme-band iw-section iw-section--tight ${styles.section}`}
       aria-labelledby="learn-heading"
     >
       <div className="iw-container">

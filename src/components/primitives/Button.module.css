@@ -16,12 +16,14 @@
   white-space: nowrap;
   transition:
     transform var(--dur-fast) var(--ease-out),
-    filter var(--dur-fast) var(--ease-out),
+    background-position var(--dur-base) var(--ease-out),
     box-shadow var(--dur-base) var(--ease-out),
     background-color var(--dur-base) var(--ease-out),
     border-color var(--dur-base) var(--ease-out);
 }
-.btn:hover:not(:disabled) {
+/* The lift is scoped to md/lg — a 2px lift on a 40px nav pill reads twitchy. */
+.md:hover:not(:disabled),
+.lg:hover:not(:disabled) {
   transform: translateY(-2px);
 }
 .btn:active:not(:disabled) {
@@ -47,30 +49,38 @@
   font-size: var(--fs-body);
 }
 
-/* Primary — pink→orange gradient, DARK ink text (contrast fix). */
+/* Primary — pink→orange gradient, DARK ink text (contrast fix). Hover slides the
+   gradient rather than brightening it: brightness() shifts the relationships
+   between the stops (violet-pink-orange goes chalky) and washes out the shadow. */
 .primary {
   background-image: var(--grad-cta);
+  background-size: 160% 100%;
+  background-position: 0% 50%;
   color: var(--cta-text);
   box-shadow: var(--glow-cta);
 }
 .primary:hover:not(:disabled) {
-  filter: brightness(1.05);
+  background-position: 100% 50%;
   box-shadow:
     0 14px 40px rgba(245, 25, 126, 0.5),
     0 8px 22px rgba(255, 122, 24, 0.34);
 }
 
-/* Brand — tri-colour gradient, dark ink text. */
+/* Brand — tri-colour gradient, dark ink text. Same gradient-slide hover. */
 .brand {
   background-image: var(--grad-brand);
+  background-size: 160% 100%;
+  background-position: 0% 50%;
   color: var(--cta-text);
   box-shadow: var(--glow-violet);
 }
 .brand:hover:not(:disabled) {
-  filter: brightness(1.05);
+  background-position: 100% 50%;
 }
 
-/* Secondary — outlined, follows section text colour. */
+/* Secondary — outlined, follows section text colour. Hover surface is a per-theme
+   token, not currentColor (which resolved to near-black text = a muddy wash on
+   the cream band). */
 .secondary {
   background: transparent;
   color: var(--text-heading);
@@ -78,16 +88,16 @@
 }
 .secondary:hover:not(:disabled) {
   border-color: var(--border-glow);
-  background: color-mix(in srgb, currentColor 8%, transparent);
+  background: var(--surface-hover);
 }
 
-/* Ghost — very subtle. */
+/* Ghost — very subtle; explicit per-theme hover surface, resting lighter than hover. */
 .ghost {
-  background: color-mix(in srgb, currentColor 6%, transparent);
+  background: color-mix(in srgb, var(--surface-hover) 55%, transparent);
   color: var(--text-heading);
 }
 .ghost:hover:not(:disabled) {
-  background: color-mix(in srgb, currentColor 12%, transparent);
+  background: var(--surface-hover);
 }
 
 /* Text — link-like, no lift. */

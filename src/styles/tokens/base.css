@@ -34,17 +34,21 @@ h4 {
   font-family: var(--font-display);
   color: var(--text-heading);
   line-height: var(--lh-heading);
-  letter-spacing: var(--ls-heading);
   font-weight: var(--fw-black);
   margin: 0;
   text-wrap: balance;
 }
 
+/* Tracking is set per level — large headings tighter, small headings looser
+   (see typography.css). h3/h4 inherit the body's 0 tracking, which is correct
+   for their near-body size. */
 h1 {
   font-size: var(--fs-h1);
+  letter-spacing: var(--ls-h1);
 }
 h2 {
   font-size: var(--fs-h2);
+  letter-spacing: var(--ls-h2);
 }
 h3 {
   font-size: var(--fs-h3);
@@ -56,6 +60,9 @@ h4 {
 p {
   text-wrap: pretty;
   margin: 0;
+  /* Readable line length by default. UI paragraphs (nav, badges, table cells)
+     opt out with `max-width: none` in their own module. */
+  max-width: var(--measure);
 }
 
 a {
@@ -117,6 +124,14 @@ video {
   padding-block: var(--section-y);
   position: relative;
 }
+/* Rhythm modifiers — defined after .iw-section so the modifier wins when both
+   classes are present (equal specificity, later declaration). */
+.iw-section--tight {
+  padding-block: var(--section-y-tight);
+}
+.iw-section--loose {
+  padding-block: var(--section-y-loose);
+}
 
 /* ---- Type helpers ---- */
 .iw-eyebrow {
@@ -131,6 +146,7 @@ video {
 .iw-lead {
   font-size: var(--fs-lead);
   color: var(--text-body);
+  max-width: var(--measure);
 }
 .iw-gradient-text {
   background: var(--grad-text);

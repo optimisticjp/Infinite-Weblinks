@@ -1,11 +1,29 @@
 .header {
-  max-width: 46rem;
-  margin-bottom: clamp(28px, 4vw, 48px);
+  display: grid;
+  grid-template-columns: minmax(0, 46rem) auto;
+  align-items: end;
+  gap: var(--space-8);
+  margin-bottom: clamp(32px, 4vw, 56px);
 }
+.headerText {
+  max-width: 46rem;
+}
+.headerAside {
+  justify-self: end;
+}
+
+/* Centred variant — the final CTA is the only consumer. Collapse to a single
+   centred column so heading + intro sit centred, not left in a two-slot row. */
 .center {
-  margin-inline: auto;
+  grid-template-columns: minmax(0, 46rem);
+  justify-content: center;
   text-align: center;
 }
+.center .headerText,
+.center .intro {
+  margin-inline: auto;
+}
+
 .title {
   margin-top: var(--space-3);
   font-size: var(--fs-h2);
@@ -15,4 +33,14 @@
   margin-top: var(--space-4);
   font-size: var(--fs-lead);
   color: var(--text-body);
+}
+
+@media (max-width: 768px) {
+  .header {
+    grid-template-columns: 1fr;
+  }
+  .headerAside {
+    justify-self: start;
+    margin-top: var(--space-5);
+  }
 }

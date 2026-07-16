@@ -37,7 +37,8 @@
   align-items: center;
   justify-content: center;
   background: var(--accent, var(--violet));
-  box-shadow: 0 0 22px color-mix(in srgb, var(--accent, var(--violet)) 50%, transparent);
+  /* No glow: this is the cream daylight band. The marker reads via its solid
+     --accent fill and number; a coloured bloom on daylight is off-budget. */
 }
 .markerNumber {
   font-family: var(--font-display);

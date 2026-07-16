@@ -126,7 +126,7 @@ test.describe("mobile nav covers the full viewport", () => {
 
 test.describe("desktop mega-menu inner content is inset and centred", () => {
   test.use({ viewport: { width: 1280, height: 900 } });
-  for (const label of ["How It Works", "Solutions", "Services", "Resources"]) {
+  for (const label of ["How It Works", "Services", "Resources"]) {
     test(`${label} panel`, async ({ page }) => {
       await page.goto("/");
       // Hover opens the panel; clicking the trigger now navigates to the hub.

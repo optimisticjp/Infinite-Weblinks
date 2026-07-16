@@ -284,23 +284,32 @@ export async function getExample(slug: string): Promise<Example | undefined> {
   return (await getExamples()).find((e) => e.slug === slug);
 }
 
-/* ---- homepage section order (data-driven; each section owns its theme) ---- */
+/* ---- homepage section order (data-driven; each section owns its theme) ----
+ *
+ * Phase 2 — the homepage summarises and routes; inner pages are exhaustive. The
+ * narrative is hook → tension → one big idea → proof → permission, with two routers
+ * that don't stack and proof sitting immediately after the claim it proves.
+ *
+ * Deliberately NOT on the homepage any more (each is rendered in full on an inner
+ * page, so this is de-duplication, not deletion):
+ *   growthJourney, connectedSystem's twin, deliveryModels, processSteps → /how-it-works
+ *   startingPointSelector → /starting-points   ·   toolUniverse → /tools
+ *   faqSection → /faq
+ * Hero + editorialStatement are rendered explicitly by the page (GATE-1 opening);
+ * editorialStatement stays in this list only to document its position — the registry
+ * skips it. Proof (caseStudyShowcase, testimonialWall) is status-gated and renders
+ * nothing today; its slot is positioned now, right after the claim, ready for Sanity.
+ */
 export function getHomepageSections(): SectionConfig[] {
   return [
-    { type: "editorialStatement", enabled: true, anchorId: "why-it-matters" },
-    { type: "growthJourney", enabled: true, anchorId: "growth-journey" },
-    { type: "goalExplorer", enabled: true, anchorId: "goals" },
-    { type: "connectedSystem", enabled: true, anchorId: "how-it-connects" },
-    { type: "startingPointSelector", enabled: true, anchorId: "start" },
-    { type: "servicesExplorer", enabled: true, anchorId: "services" },
-    { type: "toolUniverse", enabled: true, anchorId: "tools" },
-    { type: "deliveryModels", enabled: true, anchorId: "how-we-deliver" },
-    { type: "processSteps", enabled: true, anchorId: "process" },
-    { type: "whyInfiniteWeblinks", enabled: true, anchorId: "why-us" },
-    { type: "caseStudyShowcase", enabled: true, anchorId: "case-studies" },
-    { type: "testimonialWall", enabled: true, anchorId: "testimonials" },
-    { type: "learningResources", enabled: true, anchorId: "learn" },
-    { type: "faqSection", enabled: true, anchorId: "faq" },
-    { type: "finalCtaBanner", enabled: true, anchorId: "get-started" },
+    { type: "editorialStatement", enabled: true, anchorId: "why-it-matters" }, // tension (band)
+    { type: "connectedSystem", enabled: true, anchorId: "how-it-connects" }, // the one big idea (claim)
+    { type: "caseStudyShowcase", enabled: true, anchorId: "case-studies" }, // proof — after the claim
+    { type: "testimonialWall", enabled: true, anchorId: "testimonials" }, // proof — after the claim
+    { type: "goalExplorer", enabled: true, anchorId: "goals" }, // router #1 — by goal, near the top
+    { type: "whyInfiniteWeblinks", enabled: true, anchorId: "why-us" }, // why us — separates the routers
+    { type: "servicesExplorer", enabled: true, anchorId: "services" }, // router #2 — what we do, later
+    { type: "learningResources", enabled: true, anchorId: "learn" }, // rest beat (band)
+    { type: "finalCtaBanner", enabled: true, anchorId: "get-started" }, // permission to act
   ];
 }

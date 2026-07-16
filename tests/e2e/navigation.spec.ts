@@ -42,7 +42,7 @@ function crossCount(a: Pt, b: Pt, rects: Box[]) {
   return n;
 }
 
-const MEGA_TRIGGERS = ["How It Works", "Solutions", "Services", "Resources"];
+const MEGA_TRIGGERS = ["How It Works", "Services", "Resources"];
 
 /**
  * Open `trigger`, then travel a straight diagonal to the panel link whose straight path
@@ -142,9 +142,9 @@ test.describe("Desktop mega-menu — pointer open / navigate / reopen", () => {
   test("moving onto a trigger opens its panel", async ({ page }) => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
-    const t = center((await page.getByRole("button", { name: "Solutions" }).boundingBox())!);
+    const t = center((await page.getByRole("button", { name: "Resources" }).boundingBox())!);
     await page.mouse.move(t.x, t.y);
-    await expect(page.getByRole("group", { name: "Solutions" })).toBeVisible();
+    await expect(page.getByRole("group", { name: "Resources" })).toBeVisible();
   });
 
   test("moving onto a trigger opens it; clicking the trigger navigates to the hub", async ({ page }) => {
@@ -216,15 +216,15 @@ test.describe("Desktop mega-menu — promo column only when there's a promo (Def
   test("a promo-less panel does not reserve the 300px promo column", async ({ page }) => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
-    // Solutions has no promo. Its inner grid must be a single track — not two with a
+    // Services has no promo. Its inner grid must be a single track — not two with a
     // 300px column reserved for a card that isn't there (which squeezes the links).
-    const t = center((await page.getByRole("button", { name: "Solutions", exact: true }).boundingBox())!);
+    const t = center((await page.getByRole("button", { name: "Services", exact: true }).boundingBox())!);
     await page.mouse.move(t.x, t.y);
-    await expect(page.locator("#mega-solutions")).toBeVisible();
+    await expect(page.locator("#mega-services")).toBeVisible();
     const cols = await page
-      .locator("#mega-solutions > div")
+      .locator("#mega-services > div")
       .evaluate((el) => getComputedStyle(el).gridTemplateColumns);
-    expect(cols.trim().split(/\s+/).length, `Solutions inner grid tracks: "${cols}"`).toBe(1);
+    expect(cols.trim().split(/\s+/).length, `Services inner grid tracks: "${cols}"`).toBe(1);
 
     // How It Works DOES have a promo, so it keeps the two-track layout.
     await page.keyboard.press("Escape");

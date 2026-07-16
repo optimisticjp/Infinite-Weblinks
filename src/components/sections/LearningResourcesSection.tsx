@@ -28,6 +28,11 @@ export async function LearningResourcesSection({ anchorId }: { anchorId?: string
           id="learn-heading"
           title="Plain-English guides, before any sales pitch"
           intro="Short reads that explain what things are, why they matter, and what to do about them."
+          aside={
+            <Button href="/learn" variant="secondary" size="sm">
+              Visit the Learn hub
+            </Button>
+          }
         />
 
         <ul className={styles.grid}>
@@ -43,12 +48,6 @@ export async function LearningResourcesSection({ anchorId }: { anchorId?: string
             </li>
           ))}
         </ul>
-
-        <div className={styles.cta}>
-          <Button href="/learn" variant="secondary">
-            Visit the Learn hub
-          </Button>
-        </div>
       </div>
     </section>
   );

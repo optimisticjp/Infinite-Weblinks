@@ -159,6 +159,15 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
             }}
             onMouseLeave={scheduleClose}
             onFocusCapture={clearClose}
+            onClick={(e) => {
+              // Clicking ANY link inside the panel closes it — always. The route
+              // effect (useEffect[pathname]) can't be relied on: a hash-only anchor
+              // or a link to the current page never changes the pathname, so without
+              // this the panel would sit open over the section the visitor just asked
+              // for. Generalises MobileNav, which closes on every link click. Trigger
+              // buttons aren't <a>, so they keep their own hover/click behaviour.
+              if ((e.target as Element).closest?.("a")) setOpenKey(null);
+            }}
             onBlurCapture={(e) => {
               if (navRef.current && !navRef.current.contains(e.relatedTarget as Node)) {
                 setOpenKey(null);

@@ -39,10 +39,11 @@ export const seedChrome: SiteChrome = {
             {
               heading: "How we deliver",
               items: [
-                { label: "We Do the Work", href: "/how-it-works#delivery" },
-                { label: "We Bring In an Expert", href: "/how-it-works#delivery" },
-                { label: "We Run It End to End", href: "/how-it-works#delivery" },
-                { label: "You Run It After", href: "/how-it-works#delivery" },
+                // Each delivery model card on /how-it-works carries id=delivery-<key>.
+                { label: "We Do the Work", href: "/how-it-works#delivery-we-do" },
+                { label: "We Bring In an Expert", href: "/how-it-works#delivery-we-expert" },
+                { label: "We Run It End to End", href: "/how-it-works#delivery-we-run" },
+                { label: "You Run It After", href: "/how-it-works#delivery-you-run" },
               ],
             },
           ],
@@ -62,10 +63,12 @@ export const seedChrome: SiteChrome = {
             {
               heading: "By goal",
               items: [
-                { label: "Launch a professional store", href: "/solutions" },
-                { label: "Get found on Google", href: "/solutions" },
-                { label: "Turn visitors into buyers", href: "/solutions" },
-                { label: "Bring customers back", href: "/solutions" },
+                // Each goal has its own detail page at /goals/<slug> (linked from the
+                // /solutions "By goal" section too) — land on the goal, not the hub.
+                { label: "Launch a professional store", href: "/goals/launch-professional-store" },
+                { label: "Get found on Google", href: "/goals/get-found-on-google" },
+                { label: "Turn visitors into buyers", href: "/goals/turn-visitors-into-buyers" },
+                { label: "Bring customers back", href: "/goals/bring-customers-back" },
               ],
             },
             {
@@ -98,28 +101,33 @@ export const seedChrome: SiteChrome = {
             {
               heading: "Build",
               items: [
-                { label: "Websites & Development", href: "/services" },
-                { label: "Shopify / WooCommerce", href: "/services" },
-                { label: "Branding & Design", href: "/services" },
-                { label: "Funnels & Conversion", href: "/services" },
+                // Category sections on /services carry an id={category.slug}, so each
+                // label anchors to the group it names. Shopify/WooCommerce has no
+                // category of its own — it's a service under Websites & Development —
+                // so it links to that service's detail page (keeping it distinct from
+                // the "Websites & Development" category link above).
+                { label: "Websites & Development", href: "/services#websites-development" },
+                { label: "Shopify / WooCommerce", href: "/services/shopify-woocommerce-store-builds" },
+                { label: "Branding & Design", href: "/services#branding-design" },
+                { label: "Funnels & Conversion", href: "/services#funnels-conversion" },
               ],
             },
             {
               heading: "Grow",
               items: [
-                { label: "SEO & Content", href: "/services" },
-                { label: "Paid Ads", href: "/services" },
-                { label: "Social & Video", href: "/services" },
-                { label: "Email, SMS & CRM", href: "/services" },
+                { label: "SEO & Content", href: "/services#seo-content" },
+                { label: "Paid Ads", href: "/services#paid-ads" },
+                { label: "Social & Video", href: "/services#social-media" },
+                { label: "Email, SMS & CRM", href: "/services#email-sms-crm" },
               ],
             },
             {
               heading: "Operate",
               items: [
-                { label: "Analytics & Data", href: "/services" },
-                { label: "AI & Automation", href: "/services" },
-                { label: "Ecommerce Ops", href: "/services" },
-                { label: "Security & Maintenance", href: "/services" },
+                { label: "Analytics & Data", href: "/services#analytics-data" },
+                { label: "AI & Automation", href: "/services#ai-automation" },
+                { label: "Ecommerce Ops", href: "/services#ecommerce-ops-delivery" },
+                { label: "Security & Maintenance", href: "/services#security-maintenance-compliance" },
               ],
             },
           ],

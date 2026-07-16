@@ -89,7 +89,7 @@ test.describe("Desktop mega-menu — hover / click / keyboard intents", () => {
     await page.mouse.move(lb.x + lb.width / 2, lb.y + lb.height / 2, { steps: 25 });
     await page.mouse.down();
     await page.mouse.up();
-    await page.waitForURL("**/services");
+    await page.waitForURL(/\/services(#|$)/);
     // The menu closes on navigation…
     await expect(page.locator("#mega-services")).toBeHidden();
 
@@ -120,7 +120,7 @@ test.describe("Desktop mega-menu — hover / click / keyboard intents", () => {
     // Click the trigger — navigates to the hub
     await page.mouse.down();
     await page.mouse.up();
-    await page.waitForURL("**/services");
+    await page.waitForURL(/\/services(#|$)/);
 
     // The route change closes the panel via useEffect([pathname]). Wait for that so
     // the reopen below is the real sequence (close, then move) and not racing it.
@@ -160,7 +160,7 @@ test.describe("Desktop mega-menu — hover / click / keyboard intents", () => {
 
     await page.mouse.down();
     await page.mouse.up();
-    await page.waitForURL("**/services");
+    await page.waitForURL(/\/services(#|$)/);
   });
 
   test("keyboard: Enter toggles the panel open, then closed", async ({ page }) => {
@@ -173,6 +173,68 @@ test.describe("Desktop mega-menu — hover / click / keyboard intents", () => {
     await page.keyboard.press("Enter");
     await expect(trigger).toHaveAttribute("aria-expanded", "false");
     await expect(trigger).toBeFocused();
+  });
+});
+
+test.describe("Desktop mega-menu — link destinations & close-on-click", () => {
+  test.use({ viewport: { width: 1280, height: 900 } });
+
+  // Open the trigger's panel and click a link inside it, reaching the link the way a
+  // real cursor does — down into the panel then across — so it never teleports over
+  // the gap or cuts across an adjacent trigger.
+  async function openAndClickLink(
+    page: import("@playwright/test").Page,
+    trigger: string | RegExp,
+    panelSelector: string,
+    linkName: string,
+  ) {
+    const tb = (await page.getByRole("button", { name: trigger }).boundingBox())!;
+    const tcx = tb.x + tb.width / 2;
+    await page.mouse.move(tcx, tb.y + tb.height / 2);
+    const panel = page.locator(panelSelector);
+    await expect(panel).toBeVisible();
+    const lb = (await panel.getByRole("link", { name: linkName }).boundingBox())!;
+    await page.mouse.move(tcx, lb.y + lb.height / 2, { steps: 20 });
+    await page.mouse.move(lb.x + lb.width / 2, lb.y + lb.height / 2, { steps: 20 });
+    await page.mouse.down();
+    await page.mouse.up();
+  }
+
+  test("two different Services links land on different URLs", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+
+    await openAndClickLink(page, /^Services$/, "#mega-services", "Websites & Development");
+    await page.waitForURL(/\/services(#|$)/);
+    const url1 = page.url();
+
+    await openAndClickLink(page, /^Services$/, "#mega-services", "SEO & Content");
+    await page.waitForURL(/#seo-content$/);
+    const url2 = page.url();
+
+    expect(url1, `both links resolved to ${url1}`).not.toBe(url2);
+  });
+
+  test("clicking a Services link closes the panel — hash-only nav on the same page", async ({
+    page,
+  }) => {
+    await page.goto("/services");
+    await page.waitForLoadState("networkidle");
+
+    await openAndClickLink(page, /^Services$/, "#mega-services", "SEO & Content");
+    await expect(page).toHaveURL(/#seo-content$/);
+    // Hash-only nav never fires useEffect([pathname]); the panel must still close.
+    await expect(page.locator("#mega-services")).toBeHidden();
+  });
+
+  test("clicking a link to the current page closes the panel — no URL change", async ({ page }) => {
+    await page.goto("/how-it-works");
+    await page.waitForLoadState("networkidle");
+
+    // "The 8-stage journey" → /how-it-works, the page we're already on: no pathname
+    // change, no URL change at all. The panel must still close.
+    await openAndClickLink(page, "How It Works", "#mega-how-it-works", "The 8-stage journey");
+    await expect(page.locator("#mega-how-it-works")).toBeHidden();
   });
 });
 

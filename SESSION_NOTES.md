@@ -593,3 +593,101 @@ this component. Worth a decision next.
 
 **Verified:** lint 0 · typecheck 0 · 109 unit · webpack build · **94 e2e** (adds the survives-the-trip
 reproduction), nav spec stable at `--repeat-each=5`.
+
+---
+
+## Session — nav link destinations (branch `fix/nav-link-destinations`, 16 July 2026)
+
+**Reported bug:** the Services mega menu had 12 links, all `href: "/services"`. A content bug —
+click any of "SEO & Content", "Paid Ads", "Branding & Design"… and land on the same hub. The menu
+code was fine; the seed data pointed everything at one place.
+
+**Audit (every mega-menu href, not just Services).** Three submenus shared one href across a whole
+group; the other five groups were already distinct and correct.
+
+| Menu → group | Before | After |
+|---|---|---|
+| Services (all 12) | all `/services` | 11 category anchors + 1 service page (below) |
+| Solutions → *By goal* (4) | all `/solutions` | `/goals/<slug>` ×4 |
+| How It Works → *How we deliver* (4) | all `/how-it-works#delivery` | `/how-it-works#delivery-<key>` ×4 |
+| Solutions → *By business type* / *By where you are* | already distinct | unchanged |
+| How It Works → *growth journey* / *runs across* | already distinct | unchanged |
+| Resources → *Learn* / *Plan* / *Answers* | already distinct | unchanged |
+
+No label/destination mismatches found beyond the shared-href groups.
+
+**Services mapping (approved before building).** The `/services` page renders each of 16 categories
+as `<section id={category.slug}>`, so anchors already exist — no new pages invented. The menu's
+3×4 Build/Grow/Operate grid maps onto **11 categories by anchor** + **1 service detail page**:
+- Build: Websites & Development `#websites-development` · Shopify / WooCommerce
+  `/services/shopify-woocommerce-store-builds` (a *service*, not a category — kept distinct from the
+  Websites category above) · Branding & Design `#branding-design` · Funnels & Conversion
+  `#funnels-conversion`
+- Grow: SEO & Content `#seo-content` · Paid Ads `#paid-ads` · Social & Video `#social-media` ·
+  Email, SMS & CRM `#email-sms-crm`
+- Operate: Analytics & Data `#analytics-data` · AI & Automation `#ai-automation` · Ecommerce Ops
+  `#ecommerce-ops-delivery` · Security & Maintenance `#security-maintenance-compliance`
+
+For *How we deliver*, `DeliveryModelsSection` now stamps `id="delivery-<key>"` on each of the four
+cards (keys `we-do`/`we-expert`/`we-run`/`you-run`), so each link lands on its own card instead of
+all four sharing the section-level `#delivery`.
+
+**The regression the repoint introduced — and the fix.** Repointing Services to hash anchors means
+clicking a *second* Services link while already on `/services` is a **hash-only** change.
+`usePathname()` ignores the hash, so `useEffect([pathname])` — the only thing closing the panel —
+never fires. Same for any link to the page you're already on (no URL change at all). Result: the
+panel sits open over the very section the visitor just asked for.
+
+MobileNav already solved this the blunt way: every `<Link>` has `onClick={onClose}`. Generalised it
+to desktop with one delegated handler on `<nav>`: `if (e.target.closest("a")) setOpenKey(null)`.
+Closes the panel on **any** link click — regardless of whether the pathname, the hash, or the URL
+changes at all. Trigger buttons aren't `<a>`, so their hover/click behaviour is untouched.
+
+**Tests — both red before, green after (the owner's explicit standard).**
+- `tests/unit/nav-integrity.test.ts` (new, 8 tests): per menu, (1) every href distinct, (2) every
+  href resolves to a real slug/category/goal/anchor. **Red-before:** 3 "distinct" tests fail on the
+  pre-fix seed — `Services → /services`, `Solutions → /solutions`, `How It Works →
+  /how-it-works#delivery`. **Green-after:** 8/8.
+- `tests/e2e/navigation.spec.ts` — new describe block, viewport 1280:
+  - *two different Services links land on different URLs* (the URL-differ test the prompt asked for).
+  - *clicking a Services link closes the panel — hash-only nav on the same page* (start on
+    `/services`, click "SEO & Content"). **Red-before:** fails at `toBeHidden()` → panel `Received:
+    visible`. **Green-after:** passes.
+  - *clicking a link to the current page closes the panel — no URL change* (on `/how-it-works`,
+    click "The 8-stage journey"). **Red-before:** fails at `toBeHidden()` → panel `Received:
+    visible`. **Green-after:** passes.
+  - Red-before captured by reverting only `SiteHeader.tsx` (the 9-line onClick) and rebuilding.
+  - Also relaxed three pre-existing `waitForURL("**/services")` → `waitForURL(/\/services(#|$)/)`
+    (the first Services link now carries a hash).
+- Reaching panel links in tests uses the down-then-across stepped path
+  (`page.mouse.move(..., { steps: 20 })`), never `.hover()`/`.click()` teleport — per the repo's
+  "Cursors travel. Playwright teleports." doctrine.
+
+**Orphaned categories — reported, NOT fixed (per instruction).** The 3×4 grid holds 12 slots; one
+went to the Shopify service page, so **11 of 16 categories** get a direct menu anchor. The other
+five — `strategy-discovery`, `social-growth`, `courses-memberships`, `retention-loyalty-advocacy`,
+`marketplaces-more` — have verified content and render as sections on `/services`, so they are
+**reachable** (the Services trigger itself goes to the `/services` hub where all 16 render; direct
+`#anchor` URLs also resolve). What they lack is a dedicated mega-menu shortcut. Looks like a
+deliberate curation to fit Build/Grow/Operate, but flagging for a content decision. Untouched here.
+
+**Scroll-precision finding (investigated, no change).** Because anchors now drive the primary nav,
+I checked where they land. `base.css` sets `scroll-behavior: smooth` (globally; `auto` under
+`prefers-reduced-motion`). Measured against the **production build**: mid-animation snapshots looked
+alarming (deep anchors "2600px off", cold-load values as wild as −10176) — but that is purely the
+smooth-scroll still in flight. Once it settles, **every** anchor lands at a consistent `top: 176px`
+— identical to the site's existing, untouched `/how-it-works#foundation`. Page height is stable
+(13890px, no images, no post-load growth), so there is no layout-shift bug. The section lands cleanly
+below the closed 72px header; the panel is closed by then, so the original "panel covers the section"
+concern is resolved by the close fix. The 176-vs-88 (`scroll-padding-top`) gap is a pre-existing,
+site-wide baseline, not a regression from this change — noted for a possible future pass, out of
+scope here.
+
+**Environment note (e2e).** `npm run test:e2e` with default parallelism (`fullyParallel`, ~4 workers
+on this 4-core VM + the prod server) flakes on a **cold** server — clicks race hydration and a
+handful of tests fail at the panel-*open* step. Against a warmed server at `--workers=1` the full
+suite is **97/97**. Every "failing" test passes in isolation. This is a sandbox-contention artifact,
+not a product defect.
+
+**Verified:** lint **0** · typecheck **0** · unit **117** (incl. 8 new nav-integrity) · webpack
+build ✓ · e2e **97** (workers=1, warm server; adds the URL-differ + two panel-close tests).

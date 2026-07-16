@@ -5,7 +5,7 @@
 /* ---- the connected rail ---- */
 .rail {
   position: relative;
-  margin-top: var(--space-9);
+  margin-top: var(--space-10);
 }
 
 /* The spectrum line that threads the stages together. Sits behind the nodes. */
@@ -82,7 +82,7 @@
 }
 
 .stageName {
-  font-size: var(--fs-h5, 1.15rem);
+  font-size: var(--fs-h4);
   color: var(--text-heading);
   margin: 0;
 }
@@ -113,7 +113,7 @@
 
 /* ---- cross-cutting systems band ---- */
 .systems {
-  margin-top: var(--space-9);
+  margin-top: var(--space-10);
   padding-top: var(--space-8);
   border-top: 1px solid var(--hairline);
 }

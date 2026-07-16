@@ -64,7 +64,7 @@ export default async function ToolDetailPage({
   const relatedServices = tool.relatedServiceSlugs
     .map((s) => services.find((sv) => sv.slug === s))
     .filter((sv): sv is NonNullable<typeof sv> => Boolean(sv))
-    .map((sv) => ({ name: sv.name, href: `/services/${sv.slug}`, hint: sv.plainDescription }));
+    .map((sv) => ({ name: sv.name, href: `/services/${sv.categorySlug}#${sv.slug}`, hint: sv.plainDescription }));
 
   const relatedStages = tool.stageSlugs
     .map((s) => stages.find((st) => st.slug === s))

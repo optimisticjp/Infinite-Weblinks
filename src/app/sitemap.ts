@@ -7,7 +7,7 @@ import {
   getGoals,
   getLearnArticles,
   getRoadmaps,
-  getServices,
+  getServiceCategories,
   getStartingPoints,
   getTools,
 } from "@/lib/content";
@@ -41,9 +41,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/accessibility",
   ];
 
-  const [services, tools, roadmaps, articles, businessTypes, startingPoints, goals, caseStudies, examples] =
+  const [serviceCategories, tools, roadmaps, articles, businessTypes, startingPoints, goals, caseStudies, examples] =
     await Promise.all([
-      getServices(),
+      getServiceCategories(),
       getTools(),
       getRoadmaps(),
       getLearnArticles(),
@@ -55,7 +55,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ]);
 
   const dynamicPaths = [
-    ...services.map((s) => `/services/${s.slug}`),
+    // Phase 4: sixteen category pages replace the seventy folded service URLs (those 301
+    // to /services/<category>#<service>, so they must not appear as indexable URLs here).
+    ...serviceCategories.map((c) => `/services/${c.slug}`),
     ...tools.map((t) => `/tools/${t.slug}`),
     ...roadmaps.map((r) => `/roadmaps/${r.slug}`),
     ...articles.map((a) => `/learn/${a.slug}`),

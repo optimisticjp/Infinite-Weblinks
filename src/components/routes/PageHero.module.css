@@ -1,6 +1,6 @@
 .hero {
   background-color: var(--surface);
-  padding-block: var(--space-9) var(--space-8);
+  padding-block: var(--space-10) var(--space-8);
   border-bottom: 1px solid var(--hairline);
   position: relative;
   overflow: hidden;

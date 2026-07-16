@@ -64,7 +64,7 @@ export default async function BusinessTypeDetailPage({
   const relevantServices = services
     .filter((sv) => sv.businessTypeSlugs.includes(businessType.slug))
     .slice(0, 6)
-    .map((sv) => ({ name: sv.name, href: `/services/${sv.slug}`, hint: sv.plainDescription }));
+    .map((sv) => ({ name: sv.name, href: `/services/${sv.categorySlug}#${sv.slug}`, hint: sv.plainDescription }));
 
   return (
     <>

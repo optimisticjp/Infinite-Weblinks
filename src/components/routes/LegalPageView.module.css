@@ -31,7 +31,7 @@
   max-width: 72ch;
   display: flex;
   flex-direction: column;
-  gap: var(--space-7);
+  gap: var(--space-8);
 }
 
 .block {

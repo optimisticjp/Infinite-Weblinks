@@ -243,7 +243,9 @@
   .ctaGroup {
     display: flex;
   }
-  .megaInner {
+  /* Reserve the 300px promo column ONLY when there's a promo to fill it. Solutions,
+     Services and Resources have none, so they keep the full width for their links. */
+  .megaInnerPromo {
     grid-template-columns: minmax(0, 1fr) 300px;
   }
 }

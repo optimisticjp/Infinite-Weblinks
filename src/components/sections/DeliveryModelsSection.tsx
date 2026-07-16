@@ -37,7 +37,9 @@ export async function DeliveryModelsSection({ anchorId }: { anchorId?: string })
 
         <ul className={styles.grid}>
           {models.map((model) => (
-            <li key={model.key} className={styles.card}>
+            // Per-model anchor so the "How we deliver" mega-menu links can each land on
+            // their own card (/how-it-works#delivery-<key>), not all on the section #delivery.
+            <li key={model.key} id={`delivery-${model.key}`} className={styles.card}>
               <IconTile color={DELIVERY_COLOR[model.key]} variant="filled" size={52}>
                 <Icon name={MODEL_ICON[model.key] ?? "settings"} />
               </IconTile>

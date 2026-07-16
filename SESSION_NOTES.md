@@ -593,3 +593,79 @@ this component. Worth a decision next.
 
 **Verified:** lint 0 · typecheck 0 · 109 unit · webpack build · **94 e2e** (adds the survives-the-trip
 reproduction), nav spec stable at `--repeat-each=5`.
+
+---
+
+## Session — navigation system repair (branch `fix/navigation-system`, 16 July 2026)
+
+Whole-nav repair, not just Services: four defects, three of which hit every menu. Supersedes the
+partial Services-only fix (that PR is closed in favour of this).
+
+**Defect 1 — dead links (20 of 36).** Whole columns shared one href, so only the first click in a
+column did anything. Fixed in `seed.ts`, and made the menu reflect the real content model:
+- **Services** was a 12-slot grid of invented labels over 16 real categories. Rebuilt as all **16
+  category anchors** (`/services#<slug>`), grouped Build (5) / Grow (5) / Operate (6). The shape
+  survived; the contents were wrong. Three unmatched labels adjudicated: *Shopify / WooCommerce* was
+  a service, not a category → dropped (it lives inside Websites & Development; `/services/<slug>`
+  pages are reached from the category sections, not the nav — 67 services isn't a nav set). *Social &
+  Video* was one label for two categories → split into **Social Media** + **Social Growth**.
+- **How It Works → The growth journey** promised eight stages, listed three → now lists **all 8**
+  (each renders an anchor on the page).
+- **How we deliver** (4×`#delivery`) → per-card `#delivery-<key>` (added `id` to each
+  `DeliveryModelsSection` card).
+- **Solutions → By goal** (4×`/solutions`) → `/goals/<slug>` (the hub routes there too).
+- **Solutions → By business type**: *"B2B & software"* named two audiences, linked one → split into
+  **B2B businesses** (`/business-types/b2b`) + **Software companies** (`/business-types/software`).
+  `established`/`beginner` stay hub-only by choice (reachable via `/solutions`).
+
+**Defect 2 — panel didn't close on hash-only / same-URL nav.** Desktop closed only on `pathname`
+change; a hash link, a same-page link, or a link to the URL you're already on left it open over the
+content just requested. Added the delegated `onClick` on `<nav>` that MobileNav already had in spirit:
+any `<a>` click → `setOpenKey(null)`, regardless of whether the URL changes at all.
+
+**Defect 3 — menu swapped mid-reach.** `onPointerMove` switched `openKey` the instant the pointer
+touched a different trigger, so a diagonal from a trigger to a far link swapped menus while crossing
+the neighbours. Chose a **safe corridor (aim triangle)**, not a dwell delay — a dwell can't meet
+"at any speed" (a slow diagonal parks on a neighbour longer than any non-sluggish threshold). While a
+panel is open and the pointer is over a *different* trigger, if it's inside the triangle from its
+previous position to the panel's two top corners (i.e. descending toward the panel) the panel is
+kept; a sideways move to another trigger falls outside → switches at once. Can't get stuck: opening
+stays pointer-driven and self-healing (open), and a re-validated ~220ms fallback switches if the
+pointer parks on a neighbour (never stuck open); every existing close path is intact.
+
+**Defect 4 — empty reserved column.** `.megaInner` reserved a 300px promo column unconditionally at
+≥1160px, squeezing the three promo-less menus. Made it a `.megaInnerPromo` modifier applied only when
+`menu.promo` exists.
+
+**Tests — the doctrine (every earlier fix shipped past a test that dodged the bug).** Rewrote the
+mega-menu tests to take a straight diagonal from trigger to link *through whatever it crosses* — no
+more "down then across". At 1280 the two reaches that genuinely cross a neighbour (the trigger buttons
+are only ~40px tall, so most diagonals dive below the row before reaching a neighbour) are
+Services→left and Resources→left; the test finds the max-crossing link at runtime and **guards that
+one exists**, so layout drift fails loudly instead of passing silently. Close-on-click is
+keyboard-driven so Defect 3 can't confound Defect 2. Added the cheap unit guards: every href distinct
+**per column**, every href in `seed.ts` resolves.
+
+Red on main → green on branch (all captured against a verified-good production build — see the trap
+below):
+- unit `nav-integrity`: **5 columns** duplicate-href red (Services Build/Grow/Operate, By-goal,
+  How-we-deliver) → **13/13** green.
+- e2e Defect 3 (Services, Resources): red = panel `toBeVisible` fails (swapped mid-reach) → green.
+- e2e Defect 2 (same-URL, hash-only): red = `toBeHidden` receives `visible` (stays open) → green.
+- e2e Defect 4: red = Solutions inner grid has **2 tracks** (300px reserved) → green = **1 track**.
+
+**The trap that ate hours (write it down):** `next start` spawns a child `next-server` that survives
+killing the npm wrapper, so zombies accumulate; a new `PORT=… npm run start` then `EADDRINUSE`-exits
+and every test silently hits a **stale zombie serving broken CSS** — the desktop nav renders unstyled
+(vertical, `header` 1400px tall), so geometry is nonsense and panels "don't open". Symptom: served
+HTML references a CSS hash not on disk. Fix: kill next-server by **PID** (not the wrapper, and not
+`pkill -f` — that aborts the agent shell with exit 144), verify zero remain, and **gate every run on
+`curl`-ing the served CSS for `desktopNav`** before trusting it. All the "broken CSS" scares this
+session were this, not the build.
+
+**Reported, not fixed:** `/services/<slug>` has no nav link — deliberate (category-granularity nav).
+6 goals / 2 business types (`established`, `beginner`) / 4 starting-points are curated out of nav but
+hub-reachable. Footer "Build My Growth Plan" vs nav "Build My Digital Growth Plan" — minor copy drift.
+
+**Verified:** lint **0** · typecheck **0** · unit **122** (incl. 13 nav-integrity) · webpack build ✓
+· e2e **97** (workers=1, against a CSS-verified server).

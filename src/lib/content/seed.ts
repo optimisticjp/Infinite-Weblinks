@@ -22,10 +22,17 @@ export const seedChrome: SiteChrome = {
             {
               heading: "The growth journey",
               items: [
+                // The label promises eight stages, so list all eight — each renders an
+                // anchor on /how-it-works — with the hub itself as the overview.
                 { label: "The 8-stage journey", href: "/how-it-works", description: "One connected path, start to scale" },
                 { label: "Discovery & Plan", href: "/how-it-works#discovery-plan" },
                 { label: "Foundation", href: "/how-it-works#foundation" },
                 { label: "Get Discovered", href: "/how-it-works#get-discovered" },
+                { label: "Build Trust", href: "/how-it-works#build-trust" },
+                { label: "Convert", href: "/how-it-works#convert" },
+                { label: "Deliver & Operate", href: "/how-it-works#deliver-operate" },
+                { label: "Retain", href: "/how-it-works#retain" },
+                { label: "Advocacy & Growth", href: "/how-it-works#advocacy-growth" },
               ],
             },
             {
@@ -39,10 +46,12 @@ export const seedChrome: SiteChrome = {
             {
               heading: "How we deliver",
               items: [
-                { label: "We Do the Work", href: "/how-it-works#delivery" },
-                { label: "We Bring In an Expert", href: "/how-it-works#delivery" },
-                { label: "We Run It End to End", href: "/how-it-works#delivery" },
-                { label: "You Run It After", href: "/how-it-works#delivery" },
+                // Each delivery-model card on /how-it-works carries id=delivery-<key>, so
+                // each link lands on its own card instead of all four sharing #delivery.
+                { label: "We Do the Work", href: "/how-it-works#delivery-we-do" },
+                { label: "We Bring In an Expert", href: "/how-it-works#delivery-we-expert" },
+                { label: "We Run It End to End", href: "/how-it-works#delivery-we-run" },
+                { label: "You Run It After", href: "/how-it-works#delivery-you-run" },
               ],
             },
           ],
@@ -62,10 +71,11 @@ export const seedChrome: SiteChrome = {
             {
               heading: "By goal",
               items: [
-                { label: "Launch a professional store", href: "/solutions" },
-                { label: "Get found on Google", href: "/solutions" },
-                { label: "Turn visitors into buyers", href: "/solutions" },
-                { label: "Bring customers back", href: "/solutions" },
+                // Goal cards route to /goals/<slug> (the /solutions hub routes there too).
+                { label: "Launch a professional store", href: "/goals/launch-professional-store" },
+                { label: "Get found on Google", href: "/goals/get-found-on-google" },
+                { label: "Turn visitors into buyers", href: "/goals/turn-visitors-into-buyers" },
+                { label: "Bring customers back", href: "/goals/bring-customers-back" },
               ],
             },
             {
@@ -74,7 +84,10 @@ export const seedChrome: SiteChrome = {
                 { label: "Ecommerce brands", href: "/business-types/ecommerce" },
                 { label: "Creators", href: "/business-types/creators" },
                 { label: "Local & service businesses", href: "/business-types/local-service" },
-                { label: "B2B & software", href: "/business-types/b2b" },
+                // "B2B & software" named two audiences but linked only b2b; they are
+                // separate slugs, so each gets its own link.
+                { label: "B2B businesses", href: "/business-types/b2b" },
+                { label: "Software companies", href: "/business-types/software" },
               ],
             },
             {
@@ -94,32 +107,42 @@ export const seedChrome: SiteChrome = {
         href: "/services",
         megaMenu: {
           title: "Services",
+          // The 16 real service categories on /services, each rendered as an anchor
+          // (id={category.slug}), grouped Build / Grow / Operate. Shopify/WooCommerce is a
+          // service inside Websites & Development, not a category, so it isn't a top-level
+          // item; "Social & Video" was one label for two categories (Social Media and
+          // Social Growth), so it becomes two. Individual /services/<slug> pages are
+          // reached from the category sections, not the nav — 67 services isn't a nav set.
           columns: [
             {
               heading: "Build",
               items: [
-                { label: "Websites & Development", href: "/services" },
-                { label: "Shopify / WooCommerce", href: "/services" },
-                { label: "Branding & Design", href: "/services" },
-                { label: "Funnels & Conversion", href: "/services" },
+                { label: "Strategy & Discovery", href: "/services#strategy-discovery" },
+                { label: "Branding & Design", href: "/services#branding-design" },
+                { label: "Websites & Development", href: "/services#websites-development" },
+                { label: "Funnels & Conversion", href: "/services#funnels-conversion" },
+                { label: "Courses & Memberships", href: "/services#courses-memberships" },
               ],
             },
             {
               heading: "Grow",
               items: [
-                { label: "SEO & Content", href: "/services" },
-                { label: "Paid Ads", href: "/services" },
-                { label: "Social & Video", href: "/services" },
-                { label: "Email, SMS & CRM", href: "/services" },
+                { label: "SEO & Content", href: "/services#seo-content" },
+                { label: "Paid Ads", href: "/services#paid-ads" },
+                { label: "Social Media", href: "/services#social-media" },
+                { label: "Social Growth", href: "/services#social-growth" },
+                { label: "Marketplaces & More", href: "/services#marketplaces-more" },
               ],
             },
             {
               heading: "Operate",
               items: [
-                { label: "Analytics & Data", href: "/services" },
-                { label: "AI & Automation", href: "/services" },
-                { label: "Ecommerce Ops", href: "/services" },
-                { label: "Security & Maintenance", href: "/services" },
+                { label: "Email, SMS & CRM", href: "/services#email-sms-crm" },
+                { label: "Ecommerce Ops & Delivery", href: "/services#ecommerce-ops-delivery" },
+                { label: "Retention, Loyalty & Advocacy", href: "/services#retention-loyalty-advocacy" },
+                { label: "AI & Automation", href: "/services#ai-automation" },
+                { label: "Analytics & Data", href: "/services#analytics-data" },
+                { label: "Security, Maintenance & Compliance", href: "/services#security-maintenance-compliance" },
               ],
             },
           ],

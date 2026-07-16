@@ -528,3 +528,68 @@ the reopened panel.
 
 **Verified:** lint 0 · typecheck 0 · 109 unit · webpack build · **93 e2e** (Phase 1's 92 + the new
 reproduction test), nav spec stable at `--repeat-each=5`.
+
+## Hotfix 2 — mega menu, the dead-band close (same branch `fix/mega-menu-hover-state`, PR #7)
+
+The first hotfix (pointermove) regressed a different way: the panel disappeared while the cursor
+travelled from the trigger toward a panel link. Cause was in the prompt I'd implemented — I gated
+`clearClose()` inside `if (label !== openKey)`, so moving *within* the open menu (reaching for a
+link) never cancelled the close timer that gets armed while crossing the dead band.
+
+The dead band: `.navItem` is `position: static`, so the panel's containing block is the sticky
+header. The panel sits at `top: 100%` (72px) while the nav was only ~40px tall and centred — a ~16px
+strip between them belonged to neither. Descending toward a link: leave nav → `mouseleave` →
+`scheduleClose(140ms)`; enter panel → `pointermove` with `label === openKey` → gated `clearClose`
+never runs → +140ms → gone.
+
+**Fixes:**
+- **Fix 1 (state):** `clearClose()` unconditionally at the top of `onPointerMove`, before the
+  label check. One line moved out of the condition.
+- **Fix 2 (geometry):** `.desktopNav { align-self: stretch }` + `.navList { height: 100% }` so the
+  nav fills the full 72px header — trigger, gap and panel are one continuous hover region. Visual
+  identical (items still centred); only the hit area grows.
+- **Fix 3 (affordance):** the chevron now has its own colour (`--text-3`, dimmer than the `--text-2`
+  label, so it reads as a mark not punctuation), 15→16px, optically seated on the cap height, and
+  brightens to `--text-1` on hover/open alongside the label. Rotation on `[data-open]` kept. No glow,
+  no accent — light budget intact. About Us has no chevron (correct — no menu).
+
+**Did removing the dead band eliminate the spurious `mouseleave`, or is Fix 1 load-bearing?**
+Measured directly: during a slow down-then-across reach on all four menus, the nav fired **0
+`mouseleave` events** with Fix 2. And with Fix 1 reverted (clearClose re-gated) but Fix 2 kept, both
+reproduction tests still pass. So **Fix 2 eliminates the spurious mouseleave entirely; Fix 1 is not
+load-bearing for the trigger→panel reach.** Fix 1 is kept anyway — it is the correctness fix for a
+genuine `mouseleave`-and-return within the same open menu (e.g. grazing the nav's side edge, where a
+real close is armed and only an unconditional clearClose cancels it), and it is free. Both, as the
+prompt said, not either alone.
+
+**Test findings (this is where it got interesting):**
+- New reproduction `panel survives the trip from trigger to a panel link` — red on the branch head,
+  green after the fixes, stable at `--repeat-each=5`.
+- **Tests converted off teleporting: 1** — the panel-link regression test (`clicking a panel link…`)
+  used a bare `.click()` on the link, which teleports over the gap; converted to a stepped
+  `page.mouse.move(..., { steps: 25 })` + down/up. (The other mega-menu tests don't teleport between
+  two nav elements: the "hover opens" ones only teleport for an *initial* open, and the rest are
+  keyboard.)
+- **The prompt's verbatim straight-line travel doesn't isolate this bug — it also trips a separate,
+  pre-existing issue.** The Services panel's *first* link is in the left column, at x≈189 — **left of
+  the nav** (x 358–941). A straight diagonal from the trigger to it cuts across the **Solutions**
+  trigger at the nav row and switches menus (confirmed: `aria-expanded` moves to Solutions). That is
+  the classic mega-menu "diagonal problem," present on `main` too, orthogonal to the dead-band close.
+  So both new tests travel the way a real cursor reaches a left-column link — **down through the gap
+  into the panel, then across** — which isolates the dead-band bug (red on head, green after fix) and
+  clicks the actual Services link. Reported for Phase 2 below.
+- Added `### Cursors travel. Playwright teleports.` to CLAUDE.md.
+
+**Manual check (headless, real mouse):** all four menus — open, move slowly down into the panel,
+pause ~220ms, move across to the furthest link, pause ~260ms (> the 140ms timer): panel **survives
+on all four**, link clickable. Chevron reads as an affordance at a glance on all four (screenshot).
+
+**For Phase 2 (found, NOT fixed):** the **diagonal problem** — cutting a straight diagonal from a
+trigger to a far (left-column) link crosses the adjacent trigger and switches menus. It is
+pre-existing (on `main`), milder than the reported bug (only affects corner-cutting to off-column
+links, not the "every sub-link" the owner reported), and the proper fix is a trajectory-aware
+safe-triangle or a small intent-delay — deliberately out of scope here to avoid a fourth churn on
+this component. Worth a decision next.
+
+**Verified:** lint 0 · typecheck 0 · 109 unit · webpack build · **94 e2e** (adds the survives-the-trip
+reproduction), nav spec stable at `--repeat-each=5`.

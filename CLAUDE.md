@@ -164,6 +164,21 @@ In tests: never use `.hover()` to re-open a menu after a click. Playwright's
 mouse always arrives from elsewhere; a real user's cursor is already there.
 Use `page.mouse.move()` with explicit coordinates.
 
+### Cursors travel. Playwright teleports.
+
+`.hover()` and `.click()` jump the pointer straight to the target. A real cursor
+crosses everything in between. Three live nav bugs on this repo shipped past a
+green suite for exactly this reason: the bug was in the journey, not the
+destination.
+
+Any test that moves the pointer between two elements must use
+`page.mouse.move(x, y, { steps: 25 })` so the pointer actually traverses the
+space between them. Never `.hover()` to re-establish a hover state, and never
+`.hover()` to reach into an open panel.
+
+If a fix is about pointer behaviour and the test passes on the unfixed code,
+the test is teleporting. Find the gap it skipped.
+
 ## Performance budget: hard limits
 
 - LCP < 2.5s, and **the LCP element must be the H1 text.** A canvas as LCP is a

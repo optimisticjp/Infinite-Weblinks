@@ -79,7 +79,17 @@ test.describe("Desktop mega-menu — hover / click / keyboard intents", () => {
     const panel = page.locator("#mega-services");
     await expect(panel).toBeVisible();
 
-    await panel.getByRole("link").first().click();
+    // Travel to the link with steps — never teleport over the gap. Go DOWN through
+    // the dead band into the panel first, then across to the left-column link: the
+    // path a real cursor takes, and one that doesn't cut across the adjacent
+    // Solutions trigger (which would switch menus — a separate, pre-existing issue).
+    const link = panel.getByRole("link").first();
+    const lb = (await link.boundingBox())!;
+    await page.mouse.move(cx, lb.y + lb.height / 2, { steps: 25 });
+    await page.mouse.move(lb.x + lb.width / 2, lb.y + lb.height / 2, { steps: 25 });
+    await page.mouse.down();
+    await page.mouse.up();
+    await page.waitForURL("**/services");
     // The menu closes on navigation…
     await expect(page.locator("#mega-services")).toBeHidden();
 
@@ -121,6 +131,36 @@ test.describe("Desktop mega-menu — hover / click / keyboard intents", () => {
     await page.mouse.move(cx + 1, cy);
 
     await expect(panel).toBeVisible(); // fails on main today (mouseenter can't refire)
+  });
+
+  test("panel survives the trip from trigger to a panel link", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    const trigger = page.getByRole("button", { name: /^Services$/ });
+    const panel = page.locator("#mega-services");
+
+    const tb = (await trigger.boundingBox())!;
+    const tcx = tb.x + tb.width / 2;
+    await page.mouse.move(tcx, tb.y + tb.height / 2);
+    await expect(panel).toBeVisible();
+
+    const link = panel.getByRole("link").first();
+    const lb = (await link.boundingBox())!;
+
+    // Travel with steps so the pointer traverses the dead band between the nav and
+    // the panel instead of teleporting over it. Go DOWN through the gap into the
+    // panel, then across to the link — the real path to a left-column link, which
+    // never cuts across an adjacent trigger. Without steps this passes on broken
+    // code — that is exactly how this bug shipped.
+    await page.mouse.move(tcx, lb.y + lb.height / 2, { steps: 25 });
+    await page.mouse.move(lb.x + lb.width / 2, lb.y + lb.height / 2, { steps: 25 });
+
+    await page.waitForTimeout(250); // longer than the 140ms close timer
+    await expect(panel).toBeVisible();
+
+    await page.mouse.down();
+    await page.mouse.up();
+    await page.waitForURL("**/services");
   });
 
   test("keyboard: Enter toggles the panel open, then closed", async ({ page }) => {

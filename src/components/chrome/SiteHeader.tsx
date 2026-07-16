@@ -148,12 +148,14 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
             // reintroduces the lag this removes. See CLAUDE.md "Hover is not state".
             onPointerMove={(e) => {
               if (!hoverCapable || e.pointerType !== "mouse") return;
+              // The pointer is inside the nav subtree. Cancel any scheduled close —
+              // UNCONDITIONALLY. Gating this on the label changing is what killed the
+              // panel mid-reach: moving within the open menu (label === openKey) toward
+              // a link never cleared the timer armed while crossing the gap on the way in.
+              clearClose();
               const el = (e.target as Element).closest?.("[data-nav-item]");
               const label = el?.getAttribute("data-nav-item") ?? null;
-              if (label && label !== openKey) {
-                clearClose();
-                setOpenKey(label);
-              }
+              if (label && label !== openKey) setOpenKey(label);
             }}
             onMouseLeave={scheduleClose}
             onFocusCapture={clearClose}

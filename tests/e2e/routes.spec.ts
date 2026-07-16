@@ -18,10 +18,9 @@ const noSeriousA11y = async (page: import("@playwright/test").Page) => {
 
 test.describe("listing & hub routes", () => {
   for (const path of [
+    "/goals",
     "/services",
     "/tools",
-    "/business-types",
-    "/starting-points",
     "/resources",
     "/roadmaps",
     "/learn",
@@ -36,6 +35,17 @@ test.describe("listing & hub routes", () => {
       expect(await page.getByRole("link").count()).toBeGreaterThan(3);
     });
   }
+
+  // The /goals front door routes without a meta-choice: a cold visitor sees goals first,
+  // then two alternate ways in. It must link straight to the goal detail pages.
+  test("/goals links through to a working goal detail page", async ({ page }) => {
+    await page.goto("/goals");
+    const firstGoal = page.locator('main a[href^="/goals/"]').first();
+    await expect(firstGoal).toBeVisible();
+    await firstGoal.click();
+    await expect(page).toHaveURL(/\/goals\/[a-z0-9-]+$/);
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  });
 
   test("/services links through to a working service detail page", async ({ page }) => {
     await page.goto("/services");
@@ -69,6 +79,31 @@ test.describe("legal pages", () => {
       await page.goto(path);
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
       await expect(page.getByText(/professional legal review/i)).toBeVisible();
+    });
+  }
+});
+
+test.describe("retired index URLs fold into /goals (no dead links, no orphans)", () => {
+  // The /business-types and /starting-points *index* pages are retired and folded into
+  // /goals as facets. An old bookmark or inbound link must land on the matching facet,
+  // never 404.
+  for (const [from, to] of [
+    ["/business-types", "/goals#by-business-type"],
+    ["/starting-points", "/goals#by-where-you-are"],
+  ] as const) {
+    test(`${from} permanently redirects to ${to}`, async ({ request }) => {
+      const res = await request.get(from, { maxRedirects: 0 });
+      expect(res.status()).toBe(308);
+      expect(res.headers()["location"]).toBe(to);
+    });
+  }
+
+  // Only the index URLs move — every [slug] detail page stays and stays reachable.
+  for (const path of ["/business-types/ecommerce", "/starting-points/website-no-traffic"]) {
+    test(`${path} detail page still renders`, async ({ page }) => {
+      const res = await page.goto(path);
+      expect(res?.status(), `${path} should not 404`).toBeLessThan(400);
+      await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
     });
   }
 });
@@ -107,8 +142,8 @@ test.describe("accessibility of key templates", () => {
     await noSeriousA11y(page);
   });
 
-  test("starting-points hub has no serious/critical a11y violations", async ({ page }) => {
-    await page.goto("/starting-points");
+  test("/goals front door has no serious/critical a11y violations", async ({ page }) => {
+    await page.goto("/goals");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await noSeriousA11y(page);
   });

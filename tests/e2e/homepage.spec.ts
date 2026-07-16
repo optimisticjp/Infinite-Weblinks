@@ -51,10 +51,29 @@ test.describe("Homepage opening", () => {
       ids.filter((id) => spine.includes(id)),
       "homepage spine present and in order",
     ).toEqual(spine);
-    // These moved to /how-it-works, /starting-points, /tools, /faq — not the homepage.
+    // These moved to /how-it-works, /goals, /tools, /faq — not the homepage.
     for (const gone of ["growth-journey", "start", "tools", "how-we-deliver", "process", "faq"]) {
       expect(ids, `#${gone} should have moved off the homepage`).not.toContain(gone);
     }
+  });
+
+  // Phase 3 regression guard: Phase 2 centred the goalExplorer and whyUs headers, creating
+  // a left/left/centre/centre/left zigzag. The site holds a single left edge; only the
+  // finalCtaBanner (the second and last gradient headline) is centred.
+  test("one left edge — only the final CTA section is centred", async ({ page }) => {
+    await page.goto("/");
+    const aligns = await page.evaluate(() =>
+      [...document.querySelectorAll("main section")]
+        .map((s) => {
+          const h = s.querySelector("h1, h2");
+          return { id: s.id, align: h ? getComputedStyle(h).textAlign : "none" };
+        })
+        .filter((x) => x.align !== "none"),
+    );
+    const centred = aligns.filter((a) => a.align === "center").map((a) => a.id);
+    expect(centred, `only #get-started may be centred; got [${centred.join(", ")}]`).toEqual([
+      "get-started",
+    ]);
   });
 
   // Two cream bands, not six: exactly the editorial (tension) and learn (rest) sections.

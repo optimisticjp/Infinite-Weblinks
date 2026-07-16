@@ -293,7 +293,7 @@ export async function getExample(slug: string): Promise<Example | undefined> {
  * Deliberately NOT on the homepage any more (each is rendered in full on an inner
  * page, so this is de-duplication, not deletion):
  *   growthJourney, connectedSystem's twin, deliveryModels, processSteps → /how-it-works
- *   startingPointSelector → /starting-points   ·   toolUniverse → /tools
+ *   startingPointSelector → /goals (by where you are)   ·   toolUniverse → /tools
  *   faqSection → /faq
  * Hero + editorialStatement are rendered explicitly by the page (GATE-1 opening);
  * editorialStatement stays in this list only to document its position — the registry

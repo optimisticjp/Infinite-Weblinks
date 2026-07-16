@@ -750,3 +750,118 @@ written or deleted; section intros are unchanged.
 **Verified:** lint **0** · typecheck **0** · unit **119** · webpack build ✓ · e2e **98** (workers=1,
 CSS-verified server; adds a Phase-2 section-order guard, a two-band guard, and a `/solutions`-404
 guard). Screenshots at 1440/1024/768/390 in `review-artifacts/phase-2/`.
+
+---
+
+## Session — Phase 3, the front door (branch `feat/phase-3-goals`, from `main` after #10, 16 July 2026)
+
+Built the page the brand had been missing since launch — `/goals`, the place a cold visitor lands
+from "how do I get more ecommerce sales" — retired two index pages into it, made the goals router the
+first nav item, and fixed the two Phase-2 regressions.
+
+### What shipped
+
+- **`/goals` — one decision, one primary way in, two alternates.** A router, not a book: `PageHero`
+  ("What are you trying to achieve?") then three facet sections over existing route primitives
+  (`SectionHeader` + `HubGrid` + `IndexCard`) — **by goal** (10, primary, dark, default rhythm), **by
+  business type** (7, cream band, tight rhythm), **by where you are** (8, dark, tight rhythm). It does
+  not ask the visitor to choose *how* to choose: they land, see goals immediately, and can slice
+  differently below if they'd rather. **No new copy** — every facet header reuses the exact eyebrow /
+  title / intro from the page it replaces.
+- **The facet that leads, and why: by goal.** You resolved the stage-first (Growth Guide) vs
+  goal-first (homepage) tension in favour of goal-first here, because a cold visitor arrives *knowing
+  the outcome they want* and rarely their stage — the homepage already sequences goal-first, so the
+  front door matches it. Business-type and situation are how people *re-slice* once "by goal" doesn't
+  frame it their way, so they read as alternates, not co-equal primaries. The **tight vs default
+  section rhythm** is what makes that hierarchy legible without a word of new copy — air signals which
+  way in is primary.
+- **Same-component question — answered "no, deliberately."** The homepage router (`GoalCards` →
+  `/growth-plan?goal=`, the conversion path) and the `/goals` router (`IndexCard` → `/goals/<slug>`,
+  the learn-more path) route to **different destinations by design**, so they stay two small
+  components, not one over-configured one. You approved this.
+- **Two indexes retired, nothing orphaned.** `/business-types` and `/starting-points` were facets of
+  one question; their index `page.tsx` files are deleted and 308-redirect into the matching `/goals`
+  facet (`#by-business-type` / `#by-where-you-are`). **Every `[slug]` detail page stays and stays
+  linked** — only the index URLs moved. The Resources → Plan nav column dropped its two now-duplicate
+  links; sitemap swapped the two index entries for `/goals` (the `[slug]` entries stay). The
+  `/goals/[slug]` breadcrumb that pointed at a non-existent `/goals` now resolves.
+- **Nav — five items, thesis first:** `Your goal | How It Works | Services | Resources | About Us`.
+  "Your goal" is a plain link (the page is itself the router; no dropdown to duplicate its facets).
+  `/resources` untouched this phase, as asked.
+- **Regression 1 — one left edge restored.** Phase 2 centred `goalExplorer` and `whyInfiniteWeblinks`,
+  making a left/left/centre/centre/left zigzag. Both return to the shared left edge with real asides —
+  goalExplorer → "See all goals" (`/goals`), whyUs → "About Infinite Weblinks" (`/about`). Only
+  `finalCtaBanner` is centred now (the second and last gradient headline). Guarded by a new e2e test
+  (`homepage.spec.ts` "one left edge — only the final CTA section is centred").
+- **Regression 2 — no broken grids.** The homepage's ten goal cards rendered 4/4/2 with two stranded
+  left. `GoalCards` and the `/goals` `HubGrid center` variant both wrap-and-centre the last row, so
+  10/7/8 read as intentional (4/4/2, 4/3, 4/4 — remainders centred), never orphaned. No goal was cut.
+
+### Height — the 4,000px gate
+
+| Breakpoint | Before (first cut) | After |
+|---|---|---|
+| **1440 (canonical desktop)** | 4,423px | **3,619px ✓** |
+| 1024 | 3,942px | **3,938px ✓** |
+| 768 | 4,266px | **3,780px ✓** |
+| 390 (phone) | 7,426px | 6,704px |
+
+The lever wasn't padding — it was **columns**. The container content is 1072px at 1440; `IndexCard` at
+16rem (256px) is 12px too wide to fit four, so cards rendered 3-up and left a lonely orphan row per
+facet. Dropped the basis to 15rem → clean 4-up, killing a row per facet. Density then steps down with
+the viewport (`.gridCenter` media queries, `/goals`-only): 4-up desktop → 3-up tablet → **1-up
+full-width phone** (a fixed narrow basis on a phone only wraps text into *taller* cards, so each card
+owns the row). The two alternates also run `iw-section--tight`, which both saves height and encodes
+the primary/alternate hierarchy.
+
+**Phone is 6,704px, over 4,000 — and that is the honest floor, not a miss.** The project's canonical
+page-height metric is the 1440 desktop `scrollHeight` (the "22.7k → 7.9k" homepage-diet figure was
+desktop; the homepage itself is 7.9k at 1440 and taller on phones). A 25-item index at 1-up on a phone
+is the correct mobile art direction — "follow one readable path at a time," not a cramped desktop grid
+shrunk down. Forcing it under 4,000 would mean denser, less-readable cards, which the repo's own rules
+forbid. Three of four breakpoints are under; the deliverable gate (1440) has ~380px of headroom.
+
+### light-budget audit — **0 blockers** (gate met)
+
+Ran the `light-budget` agent on both surfaces. Gradient text still appears in exactly two places
+site-wide (hero H1 + finalCtaBanner); no glow on the `/goals` cream band (`IndexCard` is glow-free).
+The competing-brightness pressure it flagged (per-card domain colour-coding via `IconTile`/`IndexCard`)
+is a **pre-existing** hub pattern on dark surfaces, not introduced here — WARNING, not blocker.
+
+### Found, NOT fixed (raised, not worked around)
+
+The audit surfaced two genuine **undefined-token** bugs — invalid CSS custom properties with no
+fallback, so the whole declaration is dropped:
+
+- `--space-9` (the scale defines `--space-8`=32px and `--space-10`=40px, but **not** `--space-9`) —
+  used in `PageHero.module.css:3`, `GrowthJourneySection.module.css:8,116`.
+- `--fs-base` (typography defines `--fs-body`, not `--fs-base`) — used in `GoalCards.module.css:43`,
+  `ServicesExplorerSection.module.css:29`.
+
+Neither shows a visible defect today (the hero still has spacing from elsewhere; card titles inherit a
+fine size), and the correct fix is a **coordinated token-scale decision** (add `--space-9`=36px to the
+4px scale, or migrate the four usages to a defined token) touching two components outside this phase's
+surface. Per "raise it instead of working around it" and "one phase per session," I'm flagging it here
+with exact file:line for a dedicated cleanup rather than sprawling a token migration into a
+page-building phase.
+
+### Where the prompt and the repo diverged
+
+- **`/solutions` — I did NOT redirect it.** My first cut added `/solutions → /goals`. But Phase 2
+  retired `/solutions` as a deliberate hard 404 (`routes.spec.ts` asserts it: "must be gone — not a
+  soft-redirect"), and `/solutions` wasn't in this phase's brief — nothing links to it. Reversing a
+  documented prior decision without being asked is scope creep, so I removed the redirect and kept the
+  404. Only the two indexes *dying in this phase* redirect.
+
+### You didn't get much wrong
+
+- The zigzag and the broken grid were both real and both fixed. The "under 4,000px" standard is met at
+  the canonical width; the one caveat is phone height (above), which is a metric-scope question, not a
+  layout failure.
+- The `/goals/[slug]` breadcrumb was already pointing at a `/goals` index that didn't exist — a latent
+  404 this phase closes.
+
+**Verified:** lint **0** · typecheck **0** · unit **119** · webpack build ✓ · e2e **103** (workers=1,
+CSS-verified server; +`/goals` render/link-through/a11y, +2 redirect-contract tests, +2 detail-still-
+renders, +the one-left-edge guard). Screenshots at 1440/1024/768/390 for `/goals` and `/` in
+`review-artifacts/phase-3/`.

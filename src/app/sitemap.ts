@@ -26,11 +26,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // utilities), so they're intentionally excluded here even though they're crawlable.
   const staticPaths = [
     "/",
+    "/goals",
     "/how-it-works",
     "/services",
     "/tools",
-    "/business-types",
-    "/starting-points",
     "/roadmaps",
     "/learn",
     "/resources",

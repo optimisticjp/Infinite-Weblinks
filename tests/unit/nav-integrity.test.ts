@@ -35,16 +35,18 @@ const systemKeys = new Set<string>(data.systems.map((s) => s.key));
 const deliveryKeys = new Set<string>(data.deliveryModels.map((m) => m.key));
 
 // Bare top-level marketing routes that are valid destinations on their own.
+// /business-types and /starting-points are intentionally absent: their index URLs were
+// retired in Phase 3 (they now 308 into /goals facets), so a bare link to either is a
+// broken destination — only their /<slug> detail routes resolve, via the regex below.
 const HUB_ROUTES = new Set([
   "/",
+  "/goals",
   "/services",
   "/how-it-works",
   "/resources",
   "/learn",
   "/roadmaps",
   "/tools",
-  "/business-types",
-  "/starting-points",
   "/faq",
   "/about",
   "/growth-plan",

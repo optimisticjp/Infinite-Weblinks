@@ -1,3 +1,4 @@
+import { Button } from "@/components/primitives/Button";
 import { SectionHeader } from "@/components/primitives/SectionHeader";
 import { getGoals } from "@/lib/content";
 import { GoalCards, type GoalCardVM } from "./GoalCards";
@@ -30,15 +31,19 @@ export async function GoalExplorerSection({ anchorId }: { anchorId?: string }) {
       aria-labelledby="goal-explorer-heading"
     >
       <div className="iw-container">
-        {/* Centred: the stage filter that used to sit here is gone (Phase 2), so there's
-            no control or route to hang in an aside — centring collapses the empty right
-            column rather than stranding it. The cards below carry the routing. */}
+        {/* One left edge (Phase 3): a real aside — the route to the full goals page —
+            replaces the Phase-2 centring, so this heading sits on the same left line as
+            every other section. Doubles as the summary → /goals link. */}
         <SectionHeader
           id="goal-explorer-heading"
-          align="center"
           eyebrow="Choose a goal"
           title="What are you trying to achieve?"
           intro="Every plan starts from a goal, not a feature list. Pick the outcome closest to yours to see what it actually needs, how we'd help, and where it fits in the wider journey."
+          aside={
+            <Button href="/goals" variant="secondary" size="sm">
+              See all goals
+            </Button>
+          }
         />
         <GoalCards goals={cards} />
       </div>

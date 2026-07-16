@@ -47,6 +47,19 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  async redirects() {
+    // Phase 3: the /business-types and /starting-points index pages are retired and
+    // folded into /goals as facets. Their `[slug]` detail pages stay; only the index
+    // URLs move, so a cold link or an old bookmark lands on the matching facet instead
+    // of 404ing. Exact `source` (no `/:slug`), so the detail routes are untouched.
+    return [
+      { source: "/business-types", destination: "/goals#by-business-type", permanent: true },
+      { source: "/starting-points", destination: "/goals#by-where-you-are", permanent: true },
+      // /solutions is intentionally NOT redirected: Phase 2 retired it as a hard 404 on
+      // purpose (routes.spec asserts it), and nothing links to it. Only the two index URLs
+      // dying in this phase get redirects.
+    ];
+  },
 };
 
 export default nextConfig;

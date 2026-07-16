@@ -64,22 +64,63 @@ test.describe("Desktop mega-menu — hover / click / keyboard intents", () => {
     await expect(page).toHaveURL(/\/how-it-works$/);
   });
 
-  test("clicking a panel link navigates, and the menu reopens on the next hover (regression)", async ({
+  test("clicking a panel link navigates, and the menu reopens on the next pointer move (regression)", async ({
     page,
   }) => {
     await page.goto("/");
+    await page.waitForLoadState("networkidle");
     const trigger = page.getByRole("button", { name: "Services" });
-    await trigger.hover();
-    const panel = page.getByRole("group", { name: "Services" });
+    const box = (await trigger.boundingBox())!;
+    const cx = box.x + box.width / 2;
+    const cy = box.y + box.height / 2;
+
+    // Open by moving the cursor onto the trigger (a real journey, not .hover()).
+    await page.mouse.move(cx, cy);
+    const panel = page.locator("#mega-services");
     await expect(panel).toBeVisible();
 
     await panel.getByRole("link").first().click();
     // The menu closes on navigation…
-    await expect(page.getByRole("group", { name: "Services" })).toBeHidden();
+    await expect(page.locator("#mega-services")).toBeHidden();
 
-    // …and — the reported bug — must reopen on the next hover, not sit dead.
-    await page.getByRole("button", { name: "Services" }).hover();
-    await expect(page.getByRole("group", { name: "Services" })).toBeVisible();
+    // …and must reopen when the cursor returns to the trigger. Drive the mouse with
+    // real coordinates — NEVER .hover() to re-establish a hover state after an
+    // interaction; it teleports the cursor and manufactures a mouseenter.
+    await page.mouse.move(cx, cy);
+    await expect(page.locator("#mega-services")).toBeVisible();
+  });
+
+  // The reproduction the Phase 1 tests missed: the cursor clicks the trigger and
+  // NEVER leaves it. A one-shot mouseenter cannot fire again without a boundary
+  // crossing, so a menu whose open-state is driven by mouseenter stays dead.
+  test("mega menu reopens when the cursor never leaves the trigger", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    const trigger = page.getByRole("button", { name: /^Services$/ });
+    const panel = page.locator("#mega-services");
+
+    const box = (await trigger.boundingBox())!;
+    const cx = box.x + box.width / 2;
+    const cy = box.y + box.height / 2;
+
+    // Open by hover
+    await page.mouse.move(cx, cy);
+    await expect(panel).toBeVisible();
+
+    // Click the trigger — navigates to the hub
+    await page.mouse.down();
+    await page.mouse.up();
+    await page.waitForURL("**/services");
+
+    // The route change closes the panel via useEffect([pathname]). Wait for that so
+    // the reopen below is the real sequence (close, then move) and not racing it.
+    await expect(panel).toBeHidden();
+
+    // THE REAL SEQUENCE: the cursor does not leave. It twitches 1px.
+    // Do NOT use .hover() here — it teleports the mouse and masks the bug.
+    await page.mouse.move(cx + 1, cy);
+
+    await expect(panel).toBeVisible(); // fails on main today (mouseenter can't refire)
   });
 
   test("keyboard: Enter toggles the panel open, then closed", async ({ page }) => {

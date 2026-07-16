@@ -483,3 +483,48 @@ violet-white; cards breathe; section headings share one left edge down the page.
   colour-coding or a rainbow to tame on daylight is a deliberate Phase 2 call — not touched here.
 - **`StartingPointSelector`** drives per-row `sp.color` (IconTile + badge + left border) — several hues
   in one band section; defensible as domain colour-coding, worth a conscious confirm in Phase 2.
+
+## Hotfix — mega menu, properly (branch `fix/mega-menu-hover-state`, from `main`)
+
+The Phase 1 mega-menu fix was still broken in the same way, re-entered through a different door.
+The Phase 1 `onClick` set `setOpenKey(null)` before `router.push` — closing the panel while the
+cursor is still on the trigger. `onMouseEnter` is one-shot and only fires on a boundary crossing;
+the pointer is already inside, so it can't refire, and the menu sits dead. Same outcome as the
+original toggle bug.
+
+**Root cause:** `mouseenter` mirrors a continuous fact (where the cursor is) in a one-shot handler,
+so the mirror desyncs and can't self-correct. Patching *when* `setOpenKey` runs keeps failing.
+
+**Fix (self-healing state):**
+- Removed the per-`<li>` `onMouseEnter`; added a single `onPointerMove` on the `<nav>` that
+  hit-tests `closest("[data-nav-item]")` and syncs `openKey`. `pointermove` fires on every pixel, so
+  the state corrects the instant the cursor twitches — no dead window. Guarded on
+  `hoverCapable && pointerType === "mouse"`; not throttled (a `closest()` per frame is nothing).
+- Deleted `setOpenKey(null)` from the click handler's hover branch. Route changes still close the
+  panel via `useEffect([pathname])`; same-route clicks correctly leave it open (cursor is on the trigger).
+- Kept everything else intact: keyboard `onKeyDown` toggle, `clickFromPointer` ref, `hoverCapable`
+  detection, Esc handler, outside-mousedown close, unmount cleanup, the touch first/second-tap path.
+- Added `## Hover is not state` to CLAUDE.md.
+
+**Why the Phase 1 tests missed it:** `.hover()` teleports Playwright's virtual mouse to the target,
+crossing the boundary and manufacturing the `mouseenter` a real user (whose cursor is already there)
+never generates. The tests simulated a user who moves away after every click and comes back. That
+user doesn't exist.
+
+**Which Phase 1 mega-menu tests used `.hover()` to re-establish a hover state after an interaction:**
+**exactly one** — the panel-link regression test ("clicking a panel link … reopens on the next
+hover"), which re-opened via `trigger.hover()` after clicking a link. Converted it to
+`page.mouse.move(cx, cy)` with real coordinates. The other two are clean: the "clicking the trigger
+navigates to the hub" test uses `.hover()` only for the *initial* open (never a re-open after an
+interaction), and the "Enter toggles" test is keyboard-only. (The pre-existing "pointer: hover opens
+the panel" test likewise uses `.hover()` only for an initial open — fine.)
+
+**New reproduction test** (`navigation.spec.ts`): moves the real mouse onto the Services trigger,
+clicks it (down/up), waits for the hub URL, waits for the panel to close, then moves **1px without
+leaving** and asserts the panel reopens. Confirmed **red on `main`** (fails at the reopen — element
+not found) and **green on the branch** (stable over `--repeat-each=5`). Also drove the reported
+"click a service link, then move without leaving" path in a real (headless) browser and screenshotted
+the reopened panel.
+
+**Verified:** lint 0 · typecheck 0 · 109 unit · webpack build · **93 e2e** (Phase 1's 92 + the new
+reproduction test), nav spec stable at `--repeat-each=5`.

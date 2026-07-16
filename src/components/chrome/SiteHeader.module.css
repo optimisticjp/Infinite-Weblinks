@@ -34,7 +34,8 @@
 }
 .navList {
   display: flex;
-  align-items: center;
+  align-items: center; /* items centred within the full-height nav */
+  height: 100%;
   gap: var(--space-1);
   list-style: none;
   margin: 0;
@@ -70,9 +71,17 @@
   background: rgba(255, 255, 255, 0.06);
 }
 .chevron {
-  width: 15px;
-  height: 15px;
-  transition: transform var(--dur-base) var(--ease-out);
+  width: 16px;
+  height: 16px;
+  margin-block-start: -1px; /* seat it on the cap height, not the line-box centre */
+  color: var(--text-3); /* its own colour, dimmer than the text-2 label — reads as a mark, not punctuation */
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.navTrigger:hover .chevron,
+.navTrigger[aria-expanded="true"] .chevron {
+  color: var(--text-1); /* full strength alongside the label on hover/open */
 }
 .chevron[data-open="true"] {
   transform: rotate(180deg);
@@ -220,7 +229,13 @@
    ≥ 1400px  : the secondary CTA joins as well. */
 @media (min-width: 1160px) {
   .desktopNav {
-    display: block;
+    /* Stretch to the full header height so the trigger, the gap below it, and the
+       panel (at top:100% of the 72px header) are one continuous hover region — no
+       dead band where the pointer hits the header and fires a spurious mouseleave
+       mid-reach. .navList centres the items inside that full height, so the visual
+       is unchanged; only the hit area grows. See CLAUDE.md "Hover is not state". */
+    display: flex;
+    align-self: stretch;
   }
   .menuButton {
     display: none;

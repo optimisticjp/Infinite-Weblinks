@@ -64,22 +64,103 @@ test.describe("Desktop mega-menu — hover / click / keyboard intents", () => {
     await expect(page).toHaveURL(/\/how-it-works$/);
   });
 
-  test("clicking a panel link navigates, and the menu reopens on the next hover (regression)", async ({
+  test("clicking a panel link navigates, and the menu reopens on the next pointer move (regression)", async ({
     page,
   }) => {
     await page.goto("/");
+    await page.waitForLoadState("networkidle");
     const trigger = page.getByRole("button", { name: "Services" });
-    await trigger.hover();
-    const panel = page.getByRole("group", { name: "Services" });
+    const box = (await trigger.boundingBox())!;
+    const cx = box.x + box.width / 2;
+    const cy = box.y + box.height / 2;
+
+    // Open by moving the cursor onto the trigger (a real journey, not .hover()).
+    await page.mouse.move(cx, cy);
+    const panel = page.locator("#mega-services");
     await expect(panel).toBeVisible();
 
-    await panel.getByRole("link").first().click();
+    // Travel to the link with steps — never teleport over the gap. Go DOWN through
+    // the dead band into the panel first, then across to the left-column link: the
+    // path a real cursor takes, and one that doesn't cut across the adjacent
+    // Solutions trigger (which would switch menus — a separate, pre-existing issue).
+    const link = panel.getByRole("link").first();
+    const lb = (await link.boundingBox())!;
+    await page.mouse.move(cx, lb.y + lb.height / 2, { steps: 25 });
+    await page.mouse.move(lb.x + lb.width / 2, lb.y + lb.height / 2, { steps: 25 });
+    await page.mouse.down();
+    await page.mouse.up();
+    await page.waitForURL("**/services");
     // The menu closes on navigation…
-    await expect(page.getByRole("group", { name: "Services" })).toBeHidden();
+    await expect(page.locator("#mega-services")).toBeHidden();
 
-    // …and — the reported bug — must reopen on the next hover, not sit dead.
-    await page.getByRole("button", { name: "Services" }).hover();
-    await expect(page.getByRole("group", { name: "Services" })).toBeVisible();
+    // …and must reopen when the cursor returns to the trigger. Drive the mouse with
+    // real coordinates — NEVER .hover() to re-establish a hover state after an
+    // interaction; it teleports the cursor and manufactures a mouseenter.
+    await page.mouse.move(cx, cy);
+    await expect(page.locator("#mega-services")).toBeVisible();
+  });
+
+  // The reproduction the Phase 1 tests missed: the cursor clicks the trigger and
+  // NEVER leaves it. A one-shot mouseenter cannot fire again without a boundary
+  // crossing, so a menu whose open-state is driven by mouseenter stays dead.
+  test("mega menu reopens when the cursor never leaves the trigger", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    const trigger = page.getByRole("button", { name: /^Services$/ });
+    const panel = page.locator("#mega-services");
+
+    const box = (await trigger.boundingBox())!;
+    const cx = box.x + box.width / 2;
+    const cy = box.y + box.height / 2;
+
+    // Open by hover
+    await page.mouse.move(cx, cy);
+    await expect(panel).toBeVisible();
+
+    // Click the trigger — navigates to the hub
+    await page.mouse.down();
+    await page.mouse.up();
+    await page.waitForURL("**/services");
+
+    // The route change closes the panel via useEffect([pathname]). Wait for that so
+    // the reopen below is the real sequence (close, then move) and not racing it.
+    await expect(panel).toBeHidden();
+
+    // THE REAL SEQUENCE: the cursor does not leave. It twitches 1px.
+    // Do NOT use .hover() here — it teleports the mouse and masks the bug.
+    await page.mouse.move(cx + 1, cy);
+
+    await expect(panel).toBeVisible(); // fails on main today (mouseenter can't refire)
+  });
+
+  test("panel survives the trip from trigger to a panel link", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    const trigger = page.getByRole("button", { name: /^Services$/ });
+    const panel = page.locator("#mega-services");
+
+    const tb = (await trigger.boundingBox())!;
+    const tcx = tb.x + tb.width / 2;
+    await page.mouse.move(tcx, tb.y + tb.height / 2);
+    await expect(panel).toBeVisible();
+
+    const link = panel.getByRole("link").first();
+    const lb = (await link.boundingBox())!;
+
+    // Travel with steps so the pointer traverses the dead band between the nav and
+    // the panel instead of teleporting over it. Go DOWN through the gap into the
+    // panel, then across to the link — the real path to a left-column link, which
+    // never cuts across an adjacent trigger. Without steps this passes on broken
+    // code — that is exactly how this bug shipped.
+    await page.mouse.move(tcx, lb.y + lb.height / 2, { steps: 25 });
+    await page.mouse.move(lb.x + lb.width / 2, lb.y + lb.height / 2, { steps: 25 });
+
+    await page.waitForTimeout(250); // longer than the 140ms close timer
+    await expect(panel).toBeVisible();
+
+    await page.mouse.down();
+    await page.mouse.up();
+    await page.waitForURL("**/services");
   });
 
   test("keyboard: Enter toggles the panel open, then closed", async ({ page }) => {

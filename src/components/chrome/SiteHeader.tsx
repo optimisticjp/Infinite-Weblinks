@@ -139,6 +139,24 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
             className={styles.desktopNav}
             aria-label="Primary"
             ref={navRef}
+            // Hover is a continuous geometric fact, so drive the open panel from a
+            // continuous event. On every mouse move we hit-test which nav item is
+            // under the pointer and sync openKey. The state is self-healing: the
+            // instant the cursor twitches, it corrects — no dead window after a
+            // click, because there is no one-shot boundary event to miss. Do not
+            // throttle (a closest() per frame on a nav bar is nothing); throttling
+            // reintroduces the lag this removes. See CLAUDE.md "Hover is not state".
+            onPointerMove={(e) => {
+              if (!hoverCapable || e.pointerType !== "mouse") return;
+              // The pointer is inside the nav subtree. Cancel any scheduled close —
+              // UNCONDITIONALLY. Gating this on the label changing is what killed the
+              // panel mid-reach: moving within the open menu (label === openKey) toward
+              // a link never cleared the timer armed while crossing the gap on the way in.
+              clearClose();
+              const el = (e.target as Element).closest?.("[data-nav-item]");
+              const label = el?.getAttribute("data-nav-item") ?? null;
+              if (label && label !== openKey) setOpenKey(label);
+            }}
             onMouseLeave={scheduleClose}
             onFocusCapture={clearClose}
             onBlurCapture={(e) => {
@@ -164,16 +182,11 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
                   <li
                     key={item.label}
                     className={styles.navItem}
-                    // Hover opens only on hover-capable devices; on touch the click
-                    // handler owns open/navigate so a tap doesn't open-then-navigate.
-                    onMouseEnter={
-                      hoverCapable
-                        ? () => {
-                            clearClose();
-                            setOpenKey(item.label);
-                          }
-                        : undefined
-                    }
+                    // Opening is driven by the nav's continuous onPointerMove (see
+                    // below), not a one-shot onMouseEnter here — mouseenter cannot
+                    // re-fire while the cursor is already inside the item, which is
+                    // exactly the state after clicking the trigger.
+                    data-nav-item={item.label}
                   >
                     <button
                       type="button"
@@ -201,10 +214,13 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
                         if (!clickFromPointer.current) return;
                         clickFromPointer.current = false;
                         // Pointer on a hover device: hover already opened the panel,
-                        // so the click navigates to the hub — it never toggles closed.
+                        // so the click just navigates to the hub. Do NOT setOpenKey(null)
+                        // here — the cursor is still on the trigger, and closing the
+                        // panel now leaves it dead (mouseenter/pointermove won't refire
+                        // without a move). Route changes close it via useEffect([pathname]);
+                        // if the route is unchanged, staying open is the correct state.
                         if (hoverCapable) {
                           clearClose();
-                          setOpenKey(null);
                           router.push(item.href);
                           return;
                         }

@@ -13,6 +13,10 @@ const SEE_HOW = { label: "See How It All Works", route: "/how-it-works", style: 
 export const seedChrome: SiteChrome = {
   nav: {
     primary: [
+      // Thesis first (Phase 3): the brand is built around your goals, so the goals
+      // router leads the nav. A plain link — the /goals page is itself the router, so
+      // there's no dropdown to duplicate its three facets.
+      { label: "Your goal", href: "/goals" },
       {
         label: "How It Works",
         href: "/how-it-works",
@@ -131,10 +135,8 @@ export const seedChrome: SiteChrome = {
               items: [
                 { label: "Business roadmaps", href: "/roadmaps" },
                 { label: "Tool Universe", href: "/tools" },
-                // Relocated from the retired Solutions menu — same labels, straight to
-                // the real index pages (no hub in between).
-                { label: "By business type", href: "/business-types" },
-                { label: "By where you are", href: "/starting-points" },
+                // "By business type" / "By where you are" are now facets of the goals
+                // router — reached from the "Your goal" nav item, not duplicated here.
               ],
             },
             {

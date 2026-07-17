@@ -90,7 +90,7 @@ Rationale: A chosen, constrained direction reads as intentional; unconstrained
 mixing reads as generic.
 
 ### V. Selective Skill Activation
-This template contains 321 installed skills. Skills MUST NOT be activated
+This template contains 322 installed skills. Skills MUST NOT be activated
 blindly or speculatively. Only skills directly relevant to the current task may
 be invoked. For website work, consider when relevant: UI/UX Pro Max, Frontend
 Design, Humanizer, SEO, Marketing and CRO, OWASP Security, TDD and testing,

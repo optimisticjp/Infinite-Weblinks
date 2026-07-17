@@ -1,5 +1,6 @@
 import { ArrowRight, Compass, Sparkles } from "lucide-react";
 import { Button } from "@/components/primitives/Button";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import type { HeroContent } from "@/lib/content/types";
 import { HeroUniverse } from "./HeroUniverse";
 import styles from "./Hero.module.css";
@@ -9,7 +10,8 @@ import styles from "./Hero.module.css";
  * All copy is server-rendered (SEO/AEO critical); the animated infinity universe is a
  * client island layered over it. The five connected domains are listed as real text
  * below the CTAs, so the message never depends on the animation, and the platform rail
- * names real tools we can connect (text, not logos — the repo ships no third-party marks).
+ * shows real, locally-stored brand logos for an illustrative "works with" display
+ * (approved integration marks — see public/brand-logos; never partners or endorsements).
  */
 export function Hero({ hero }: { hero: HeroContent }) {
   return (
@@ -74,15 +76,15 @@ export function Hero({ hero }: { hero: HeroContent }) {
  * Platform rail — the tools your business already uses, as plain text. Neutral framing
  * (never "partners" or "clients"); names are the approved exampleTools from the content.
  */
-function PlatformRail({ platforms }: { platforms: string[] }) {
+function PlatformRail({ platforms }: { platforms: HeroContent["platforms"] }) {
   return (
     <div className={styles.railWrap}>
       <div className={`iw-container iw-container--wide ${styles.rail}`}>
         <p className={styles.railLabel}>Works with the tools your business already uses.</p>
         <ul className={styles.railList} aria-label="Example tools we can connect">
-          {platforms.map((name) => (
-            <li key={name} className={styles.railItem}>
-              {name}
+          {platforms.map((p) => (
+            <li key={p.slug} className={styles.railItem}>
+              <BrandLogo slug={p.slug} name={p.name} />
             </li>
           ))}
         </ul>

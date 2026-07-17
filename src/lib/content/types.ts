@@ -114,12 +114,12 @@ export interface HeroContent {
   secondaryCta: Cta;
   areas: HeroArea[];
   /**
-   * Named example platforms shown as a plain-text rail below the hero ("the tools
-   * your business already uses"). These mirror the approved `exampleTools` in
-   * src/lib/content/data/* — real tool names we can connect, never presented as
-   * partners or clients (brief). Text only; the repo ships no third-party logos.
+   * Example platforms shown in the hero rail ("the tools your business already uses").
+   * Rendered as real, locally-stored brand logos (see public/brand-logos) for an
+   * illustrative "works with" display — never presented as partners, clients or
+   * endorsements. `slug` maps to /public/brand-logos/<slug>.svg.
    */
-  platforms: string[];
+  platforms: { name: string; slug: string }[];
 }
 
 /* ------------------------------------------------------------------ taxonomy */

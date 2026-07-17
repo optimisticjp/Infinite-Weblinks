@@ -1,5 +1,6 @@
 import { Bell, Compass, Link2, Mail, Target, type LucideIcon } from "lucide-react";
 import { InfinityMark } from "@/components/brand/InfinityMark";
+import { BrandLogo } from "@/components/brand/BrandLogo";
 import { IconTile } from "@/components/primitives/IconTile";
 import { NotificationCard } from "@/components/viz/NotificationCard";
 import type { EditorialSection } from "@/lib/content/types";
@@ -12,19 +13,20 @@ const ICONS: Record<string, LucideIcon> = {
 };
 
 /**
- * Named example platforms a business already touches — plain text tiles, never logos
- * (the repo ships no third-party marks). They ring the central mark to picture the
- * "everything connects around one centre" idea from ref 18. Positions are on an even
- * ring around the pedestal; the layout collapses to a wrapped row on narrow screens.
+ * Example platforms a business already touches — real brand logos (see public/brand-logos)
+ * on light tiles, picturing the "everything connects around one centre" idea from ref 18.
+ * Illustrative only, never partners or endorsements. Positions ring the pedestal; the
+ * layout collapses to a wrapped row on narrow screens. The whole visual is aria-hidden
+ * with a describing label on the wrapper, so each mark is a decorative duplicate.
  */
-const PLATFORMS: { name: string; x: number; y: number }[] = [
-  { name: "TikTok", x: 38, y: 6 },
-  { name: "Google", x: 68, y: 9 },
-  { name: "LinkedIn", x: 90, y: 34 },
-  { name: "Meta", x: 86, y: 64 },
-  { name: "YouTube", x: 10, y: 30 },
-  { name: "Instagram", x: 8, y: 60 },
-  { name: "Shopify", x: 26, y: 84 },
+const PLATFORMS: { name: string; slug: string; x: number; y: number }[] = [
+  { name: "TikTok", slug: "tiktok", x: 38, y: 6 },
+  { name: "Google", slug: "google", x: 68, y: 9 },
+  { name: "LinkedIn", slug: "linkedin", x: 90, y: 34 },
+  { name: "Meta", slug: "meta", x: 86, y: 64 },
+  { name: "YouTube", slug: "youtube", x: 10, y: 30 },
+  { name: "Instagram", slug: "instagram", x: 8, y: 60 },
+  { name: "Shopify", slug: "shopify", x: 26, y: 84 },
 ];
 
 /**
@@ -69,11 +71,11 @@ export function EditorialStatement({ data }: { data: EditorialSection }) {
               <div className={styles.ring}>
                 {PLATFORMS.map((p) => (
                   <span
-                    key={p.name}
+                    key={p.slug}
                     className={styles.chip}
                     style={{ ["--x" as string]: `${p.x}%`, ["--y" as string]: `${p.y}%` }}
                   >
-                    {p.name}
+                    <BrandLogo slug={p.slug} name={p.name} decorative />
                   </span>
                 ))}
               </div>

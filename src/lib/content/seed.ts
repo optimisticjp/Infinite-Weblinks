@@ -242,7 +242,17 @@ export const seedHero: HeroContent = {
   // Real, named example tools drawn from the approved exampleTools in
   // src/lib/content/data/* — shown as plain text ("works with the tools you already
   // use"), not as logos, partners or clients. The repo ships no third-party marks.
-  platforms: ["Shopify", "WordPress", "Klaviyo", "HubSpot", "Google Ads", "Meta", "Webflow"],
+  // Real brand logos for an illustrative "works with" rail (ref 07), stored locally in
+  // public/brand-logos. A focused, famous, genuinely-relevant set: store, site, search,
+  // ads/social, email and CRM — no endorsement or partnership implied.
+  platforms: [
+    { name: "Shopify", slug: "shopify" },
+    { name: "WordPress", slug: "wordpress" },
+    { name: "Google", slug: "google" },
+    { name: "Meta", slug: "meta" },
+    { name: "Mailchimp", slug: "mailchimp" },
+    { name: "HubSpot", slug: "hubspot" },
+  ],
 };
 
 export const seedEditorial: EditorialSection = {

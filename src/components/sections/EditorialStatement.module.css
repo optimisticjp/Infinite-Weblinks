@@ -71,21 +71,21 @@
   inset: 0;
   z-index: 3;
 }
+/* A white logo tile (ref 18): full-colour brand mark on a clean daylight chip, glow-free. */
 .chip {
   position: absolute;
   left: var(--x);
   top: var(--y);
   transform: translate(-50%, -50%);
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-pill);
+  display: grid;
+  place-items: center;
+  width: clamp(46px, 10vw, 58px);
+  height: clamp(46px, 10vw, 58px);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
   background: var(--surface-raised);
   border: 1px solid var(--hairline);
   box-shadow: var(--shadow-md);
-  font-family: var(--font-display);
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-semibold);
-  color: var(--text-heading);
-  white-space: nowrap;
 }
 
 .note1,

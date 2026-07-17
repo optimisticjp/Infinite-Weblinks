@@ -216,3 +216,26 @@
   gap: var(--space-3);
   align-items: flex-start;
 }
+
+/* Narrow phones: the panel's 32px padding plus a long primary-CTA label
+   ("Build My Digital Growth Plan") forced the button's min-width past the ~320px
+   viewport. Trim the padding and let the buttons take the full column so they can't
+   push the panel wider than the screen. */
+@media (max-width: 560px) {
+  .focusInner {
+    padding: var(--space-5);
+  }
+  .focusCtas {
+    align-self: stretch;
+    width: 100%;
+  }
+  /* Higher specificity than the global .btn so the long CTA label may wrap and shrink
+     to the column instead of forcing its nowrap min-width past the viewport. */
+  .focusInner .focusCtas > * {
+    width: 100%;
+    min-width: 0;
+    white-space: normal;
+    text-align: center;
+    justify-content: center;
+  }
+}

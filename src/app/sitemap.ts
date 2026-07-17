@@ -22,8 +22,10 @@ import {
  * which would falsely churn every URL's date on each deploy.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Indexable top-level pages only. /growth-plan and /contact are noindex (conversion
-  // utilities), so they're intentionally excluded here even though they're crawlable.
+  // Indexable top-level pages only. /growth-plan stays noindex (a personalised conversion
+  // tool), so it's excluded even though it's crawlable. /contact IS indexable — it's a
+  // content-ful Contact Us page (why/when to get in touch, what happens next, the
+  // ownership guarantee), so it earns a sitemap entry.
   const staticPaths = [
     "/",
     "/goals",
@@ -35,24 +37,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/resources",
     "/faq",
     "/about",
+    "/contact",
     "/privacy",
     "/cookies",
     "/terms",
     "/accessibility",
   ];
 
-  const [serviceCategories, tools, roadmaps, articles, businessTypes, startingPoints, goals, caseStudies, examples] =
-    await Promise.all([
-      getServiceCategories(),
-      getTools(),
-      getRoadmaps(),
-      getLearnArticles(),
-      getBusinessTypes(),
-      getStartingPoints(),
-      getGoals(),
-      getCaseStudies(),
-      getExamples(),
-    ]);
+  const [
+    serviceCategories,
+    tools,
+    roadmaps,
+    articles,
+    businessTypes,
+    startingPoints,
+    goals,
+    caseStudies,
+    examples,
+  ] = await Promise.all([
+    getServiceCategories(),
+    getTools(),
+    getRoadmaps(),
+    getLearnArticles(),
+    getBusinessTypes(),
+    getStartingPoints(),
+    getGoals(),
+    getCaseStudies(),
+    getExamples(),
+  ]);
 
   const dynamicPaths = [
     // Phase 4: sixteen category pages replace the seventy folded service URLs (those 301

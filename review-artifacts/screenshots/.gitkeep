@@ -1,5 +1,0 @@
-# Default output directory for `npm run screenshots`.
-#
-# Each phase regenerates its "after" shots here and diffs them against the frozen
-# ../baseline/ set. This file only keeps the (otherwise empty) directory tracked so
-# the pipeline's output location exists in the repo. See ../README.md.

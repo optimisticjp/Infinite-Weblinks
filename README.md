@@ -1,23 +1,59 @@
-# claude-web-builder-skills
+# Infinite Weblinks
 
-A reusable **GitHub template** for building websites and web tools with **Claude Code on the web**. It ships with 321 pre-installed skills, a `CLAUDE.md` guide, the official GitHub Spec Kit workflow, and a project constitution.
+Marketing website for **Infinite Weblinks**, a Digital Growth Partner that helps businesses
+plan, build and connect the right digital tools and services around their goals.
+
+## Tech stack
+
+- **Next.js** (App Router) + **React** + **TypeScript**
+- **CSS Modules** with a CSS-variable design-token system
+- **GSAP** and **motion** for animation
+- **Sanity** as the (optional) content source — the site renders reviewed local seed content
+  by default; live Sanity reads stay flag-gated
+- **Vitest** (unit) and **Playwright** + **axe** (e2e / accessibility) for testing
+- **OpenNext** on **Cloudflare Workers** for hosting
 
 ## Getting started
 
-1. **Create a new project with "Use this template"** on GitHub — do not build directly in this master template. This repo is the source that new projects are cloned from; keep it clean.
-2. Open your new project in Claude Code (web).
-3. Every new project inherits, out of the box:
-   - **321 skills** under `.claude/skills/` (design, frontend, SEO, marketing, security, testing, context, research, and more)
-   - **`CLAUDE.md`** — the working guide and default checklist for web tasks
-   - **GitHub Spec Kit** — the 10 `speckit-*` skills that drive the spec-driven workflow
-   - **The constitution** at `.specify/memory/constitution.md` — the governing project principles
+Requires Node.js ≥ 20.9.
 
-## Normal workflow
-
-Because the template constitution already exists, a new project normally begins at the **specify** stage:
-
-```
-/speckit-specify → clarify → plan → checklist → tasks → analyze → implement → converge
+```bash
+npm install
+cp .env.example .env   # then fill in any values you need
 ```
 
-Run `/speckit-constitution` again only if you want to amend the inherited principles for that specific project. Small, low-risk changes may skip the full cycle. See `CLAUDE.md` for full guidance and `INSTALL_REPORT.md` for the installed-skill inventory.
+## Local development
+
+```bash
+npm run dev        # start the dev server (http://localhost:3000)
+npm run lint       # ESLint
+npm run typecheck  # TypeScript, no emit
+npm run format     # Prettier
+```
+
+## Testing
+
+```bash
+npm run test      # unit tests (Vitest)
+npm run test:e2e  # end-to-end + accessibility (Playwright + axe)
+```
+
+## Production build
+
+```bash
+npm run build     # Next.js production build (webpack)
+```
+
+## Cloudflare (OpenNext)
+
+```bash
+npm run cf:build    # build the Cloudflare Worker bundle
+npm run cf:preview  # build and preview locally
+npm run cf:deploy   # build and deploy
+```
+
+## Design references
+
+The target visual direction lives in [`docs/design-references/`](docs/design-references/) —
+the reference images and their `README.md`. Consult these when designing or reworking a
+section.

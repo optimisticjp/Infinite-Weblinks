@@ -32,10 +32,9 @@ test-results/
 lighthouse-*.json
 lighthouse-*.html
 
-# Scratch screenshot output — the default `npm run screenshots` target. Regenerable;
-# ignored so nobody commits ~80MB of PNGs by accident. baseline/ and phase-N/ stay tracked.
-review-artifacts/screenshots/*
-!review-artifacts/screenshots/.gitkeep
+# local screenshot / visual-review output (regenerable, never committed)
+screenshots/
+review-artifacts/
 
 # sanity
 studio/dist/

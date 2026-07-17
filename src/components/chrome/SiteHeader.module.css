@@ -78,6 +78,25 @@
   color: var(--text-1);
   background: rgba(255, 255, 255, 0.06);
 }
+/* Current-page indicator on the simple nav links — a short accent underline plus a
+   brighter label, so a visitor can see where they are. Not colour-only: the label also
+   brightens to full strength. */
+.navLinkActive {
+  color: var(--text-1);
+}
+.navLinkActive::after {
+  content: "";
+  position: absolute;
+  left: var(--space-3);
+  right: var(--space-3);
+  bottom: 6px;
+  height: 2px;
+  border-radius: var(--radius-pill);
+  background: var(--grad-cta);
+}
+.navLink {
+  position: relative;
+}
 .chevron {
   width: 16px;
   height: 16px;

@@ -298,3 +298,24 @@ these; the rest lives in `.claude/skills-archive/` and is recoverable from git.
 | `review-local-changes` | Reviewing the working-tree diff before a commit or PR. Run it on visual phases against the light budget and anti-patterns. |
 | `commit` | Crafting a well-structured, conventional commit message. |
 | `create-pr` | Opening a structured pull request. |
+
+## Website redesign authority
+
+The images in `docs/design-references/` are the primary design direction for this project.
+
+Before editing the website:
+
+1. Read `docs/design-references/README.md`.
+2. Inspect every image in `docs/design-references/`.
+3. Review the current implementation.
+4. Create a coherent redesign plan.
+
+You have broad authority to change the website.
+
+You may edit, add, remove, rewrite, restructure or replace pages, components, content, styles, interactions and assets where useful.
+
+Do not limit the redesign to small cosmetic changes.
+
+Aim for a polished, responsive website that closely reflects the reference images while remaining usable, accessible and maintainable.
+
+Make reasonable decisions independently. Only stop for clarification when a decision cannot safely be inferred from the repository or design references.

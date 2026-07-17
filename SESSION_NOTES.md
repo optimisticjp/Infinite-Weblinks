@@ -1076,3 +1076,40 @@ filter, so no filtered geometry re-rasterises per frame.
   full `--measure`; the decorative SVG layer keeps a handful of bespoke `rgba()` stroke/fill alphas,
   consistent with the pre-existing `BrandSprite`/old-HeroUniverse pattern.
 - Branch name (`claude/…` vs the requested `feat/cinematic-connected-hero`) — owner's call.
+
+### Pre-commit review round (fixes applied after the first commit)
+
+Two general review agents ran on the diff; they found what the visual agents didn't:
+
+- **HIGH — GSAP ambient tween leaked on unmount (fixed).** The vortex loop is created inside a
+  timeline `.add()` callback, which fires *after* `gsap.context()` stops capturing, so
+  `ctx.revert()` alone couldn't see it — it kept rotating on the unmounted subtree and stacked on
+  every return to `/`. Fixed: `cleanup()` now `ambient.forEach((t) => t.kill())` before
+  `ctx.revert()` (killing the in-context pulse twice is a harmless no-op). The pulse timeline was
+  already reverted correctly (created synchronously in-context).
+- **A11y-safe reveal (changed after diagnosis).** Nodes and cards now reveal via **transform**
+  (rise + scale) at constant opacity instead of an opacity fade — an accessibility scan samples one
+  frame, and compositing a mid-fade decorative label (e.g. the `--text-3` AI label) briefly dips it
+  under 4.5:1. Transform-only keeps every label at full contrast throughout. (This also matches the
+  motion rules more strictly.)
+- **Strengthened the platforms guardrail.** `content.test.ts` now asserts every rail name is a
+  member of the approved `exampleTools` across the goals/services/tools data (was type/length only),
+  so an invented or off-brand platform name can never slip into the rail.
+
+**Pre-existing flake surfaced (not a regression): the mega-menu a11y test.**
+`navigation.spec.ts` opens the "How It Works" mega panel and scans immediately, but `SiteHeader`'s
+`@keyframes megaIn` fades the whole panel `opacity: 0→1` over ~240ms — so axe intermittently sampled
+the panel's `--text-3` heading mid-fade at ~3.5:1 (foreground `#68627f`/`#777192`, composited). This
+is `SiteHeader` code **byte-identical to `origin/main`** (confirmed with `git diff origin/main`), not
+caused by this phase; the earlier green runs simply won the timing race. A transient dip during a
+240ms entrance isn't a resting-state WCAG 1.4.3 failure, so the fix is to scan the **settled** panel:
+the test now waits for the panel's open animation to finish (`getAnimations().finished`) before
+`AxeBuilder.analyze()`. No production/nav behaviour changed. Verified deflaked: the test passed
+**10/10** in a loop (was ~2/10 before). **Follow-up for the nav owner (out of this phase's scope):**
+make `megaIn` a transform-only reveal (drop the `opacity` keyframe) so the transient never occurs at
+all — the same fix applied to the hero here.
+
+**Re-verified after the fixes:** lint 0 · typecheck 0 · 123 unit · webpack build ✓ · **109 e2e**
+(full suite green; nav a11y stable 10/10). perf-guard/light-budget/motion-critic verdicts unchanged
+(no blockers; their should-fixes were already applied). Screenshots refreshed in
+`review-artifacts/cinematic-hero/`.

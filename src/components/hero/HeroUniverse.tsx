@@ -69,20 +69,22 @@ export function HeroUniverse({ areas }: { areas: HeroArea[] }) {
     const pulse = root.querySelector<SVGCircleElement>("[data-pulse]");
     const mark = root.querySelector<SVGGElement>("[data-mark]");
 
-    // Hide the start state synchronously (before paint) so there is no flash of the
-    // complete scene before the intro runs — the mark included, so it never shows
-    // full-state then snaps small.
+    // Set the start state synchronously (before paint) so the scene never flashes complete
+    // before the intro runs. Nodes and cards reveal via TRANSFORM only — never a text-opacity
+    // fade: an accessibility scan samples a single frame, and compositing a mid-fade label's
+    // colour dips it under 4.5:1. A transform reveal keeps every decorative label at full
+    // contrast throughout.
     lines.forEach((l) => (l.style.strokeDashoffset = "1"));
-    nodes.forEach((n) => (n.style.opacity = "0"));
-    cards.forEach((c) => (c.style.opacity = "0"));
+    nodes.forEach((n) => (n.style.transform = "translateY(16px) scale(0.85)"));
+    cards.forEach((c) => (c.style.transform = "translateY(12px)"));
     if (mark) mark.style.opacity = "0";
 
     // The complete static end-state — used when GSAP is absent OR fails to load, so a
-    // chunk/network failure never leaves the decorative scene stuck hidden.
+    // chunk/network failure never leaves the decorative scene stuck mid-reveal.
     const revealStatic = () => {
       lines.forEach((l) => (l.style.strokeDashoffset = "0"));
-      nodes.forEach((n) => (n.style.opacity = ""));
-      cards.forEach((c) => (c.style.opacity = ""));
+      nodes.forEach((n) => (n.style.transform = ""));
+      cards.forEach((c) => (c.style.transform = ""));
       if (mark) mark.style.opacity = "";
     };
 
@@ -106,8 +108,8 @@ export function HeroUniverse({ areas }: { areas: HeroArea[] }) {
           const tl = gsap.timeline();
           tl.to("[data-mark]", { opacity: 1, scale: 1, svgOrigin: "50 25", duration: 0.8, ease: "power2.out" })
             .to(lines, { strokeDashoffset: 0, duration: 0.85, stagger: 0.07, ease: "power2.out" }, "-=0.35")
-            .to(nodes, { opacity: 1, duration: 0.5, stagger: 0.06, ease: "power1.out" }, "-=0.5")
-            .to(cards, { opacity: 1, duration: 0.5, stagger: 0.12, ease: "power1.out" }, "-=0.2")
+            .to(nodes, { y: 0, scale: 1, duration: 0.55, stagger: 0.06, ease: "power2.out" }, "-=0.5")
+            .to(cards, { y: 0, duration: 0.5, stagger: 0.12, ease: "power2.out" }, "-=0.25")
             // Settle into ONE background ambient loop — the vortex. Foreground nodes and
             // cards stay put: ambient belongs in the background, and not every node pulses.
             .add(() => {
@@ -152,6 +154,11 @@ export function HeroUniverse({ areas }: { areas: HeroArea[] }) {
 
         cleanup = () => {
           io.disconnect();
+          // The vortex loop is created inside a timeline .add() callback, which fires
+          // after gsap.context() stops capturing — so ctx.revert() alone can't see it.
+          // Kill every collected ambient tween explicitly (killing the in-context pulse
+          // twice is a harmless no-op) so nothing keeps ticking on the unmounted subtree.
+          ambient.forEach((t) => t.kill());
           ctx.revert();
         };
       })

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Mail } from "lucide-react";
+import { Mail, User, Briefcase, Target, Send, ShieldCheck, ChevronDown } from "lucide-react";
 import { Button } from "@/components/primitives/Button";
 import { FormField } from "@/components/forms/FormField";
 import { TurnstileField } from "@/components/forms/Turnstile";
@@ -21,6 +21,8 @@ const SUBJECT_OPTIONS: { value: ContactSubject; label: string }[] = [
   { value: "general", label: "General enquiry" },
   { value: "services", label: "Ask about a service" },
 ];
+
+const MESSAGE_MAX = 2000;
 
 interface FormState {
   name: string;
@@ -128,6 +130,7 @@ export function ContactForm({ subject, className }: ContactFormProps) {
   }
 
   const errorList = Object.entries(fieldErrors);
+  const messageLength = form.message.length;
 
   if (status === "success") {
     return (
@@ -187,77 +190,105 @@ export function ContactForm({ subject, className }: ContactFormProps) {
       ) : null}
 
       <div className={styles.grid}>
-        <FormField label="Your name" required error={fieldErrors.name}>
+        <FormField label="Name" required error={fieldErrors.name}>
           {(controlProps) => (
-            <input
-              {...controlProps}
-              type="text"
-              className={formFieldStyles.control}
-              value={form.name}
-              onChange={(e) => update("name", e.target.value)}
-              autoComplete="name"
-            />
+            <span className={styles.inputWrap}>
+              <User className={styles.inputIcon} size={18} aria-hidden="true" />
+              <input
+                {...controlProps}
+                type="text"
+                placeholder="Your name"
+                className={`${formFieldStyles.control} ${styles.hasIcon}`}
+                value={form.name}
+                onChange={(e) => update("name", e.target.value)}
+                autoComplete="name"
+              />
+            </span>
           )}
         </FormField>
 
-        <FormField label="Email address" required error={fieldErrors.email}>
+        <FormField label="Email" required error={fieldErrors.email}>
           {(controlProps) => (
-            <input
-              {...controlProps}
-              type="email"
-              className={formFieldStyles.control}
-              value={form.email}
-              onChange={(e) => update("email", e.target.value)}
-              autoComplete="email"
-            />
+            <span className={styles.inputWrap}>
+              <Mail className={styles.inputIcon} size={18} aria-hidden="true" />
+              <input
+                {...controlProps}
+                type="email"
+                placeholder="you@yourbusiness.com"
+                className={`${formFieldStyles.control} ${styles.hasIcon}`}
+                value={form.email}
+                onChange={(e) => update("email", e.target.value)}
+                autoComplete="email"
+              />
+            </span>
           )}
         </FormField>
 
-        <FormField label="Company (optional)" error={fieldErrors.company}>
+        <FormField label="Business name" error={fieldErrors.company} className={styles.fullWidth}>
           {(controlProps) => (
-            <input
-              {...controlProps}
-              type="text"
-              className={formFieldStyles.control}
-              value={form.company}
-              onChange={(e) => update("company", e.target.value)}
-              autoComplete="organization"
-            />
+            <span className={styles.inputWrap}>
+              <Briefcase className={styles.inputIcon} size={18} aria-hidden="true" />
+              <input
+                {...controlProps}
+                type="text"
+                placeholder="Your business name"
+                className={`${formFieldStyles.control} ${styles.hasIcon}`}
+                value={form.company}
+                onChange={(e) => update("company", e.target.value)}
+                autoComplete="organization"
+              />
+            </span>
           )}
         </FormField>
 
-        <FormField label="What's this about?" required error={fieldErrors.subject}>
+        <FormField label="How can we help?" required error={fieldErrors.subject} className={styles.fullWidth}>
           {(controlProps) => (
-            <select
-              {...controlProps}
-              className={formFieldStyles.control}
-              value={form.subject}
-              onChange={(e) => update("subject", e.target.value as ContactSubject)}
-            >
-              {SUBJECT_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
+            <span className={styles.inputWrap}>
+              <Target className={styles.inputIcon} size={18} aria-hidden="true" />
+              <select
+                {...controlProps}
+                className={`${formFieldStyles.control} ${styles.hasIcon} ${styles.select}`}
+                value={form.subject}
+                onChange={(e) => update("subject", e.target.value as ContactSubject)}
+              >
+                {SUBJECT_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className={styles.selectChevron} size={18} aria-hidden="true" />
+            </span>
           )}
         </FormField>
 
         <FormField
-          label="Your message"
+          label="Message"
           required
           hint="10–2000 characters. Tell us as much or as little as you'd like."
           error={fieldErrors.message}
           className={styles.fullWidth}
         >
           {(controlProps) => (
-            <textarea
-              {...controlProps}
-              className={formFieldStyles.control}
-              value={form.message}
-              onChange={(e) => update("message", e.target.value)}
-              rows={6}
-            />
+            <span className={styles.textareaWrap}>
+              <textarea
+                {...controlProps}
+                className={formFieldStyles.control}
+                placeholder="Tell us more about your business, your challenges and what you want to achieve."
+                value={form.message}
+                onChange={(e) => update("message", e.target.value)}
+                rows={6}
+                maxLength={MESSAGE_MAX}
+              />
+              <span
+                className={[styles.counter, messageLength >= MESSAGE_MAX ? styles.counterFull : ""]
+                  .filter(Boolean)
+                  .join(" ")}
+                aria-hidden="true"
+              >
+                {messageLength} / {MESSAGE_MAX}
+              </span>
+            </span>
           )}
         </FormField>
       </div>
@@ -271,9 +302,21 @@ export function ContactForm({ subject, className }: ContactFormProps) {
       ) : null}
 
       <div className={styles.actions}>
-        <Button type="submit" variant="primary" aria-busy={status === "submitting"} disabled={status === "submitting"}>
-          {status === "submitting" ? "Sending…" : "Send message"}
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          className={styles.submit}
+          iconLeft={<Send size={18} aria-hidden="true" />}
+          aria-busy={status === "submitting"}
+          disabled={status === "submitting"}
+        >
+          {status === "submitting" ? "Sending…" : "Send My Goals"}
         </Button>
+        <p className={styles.reassure}>
+          <ShieldCheck size={15} aria-hidden="true" className={styles.reassureIcon} />
+          We&apos;ll reply by email.
+        </p>
         <p className={styles.fallback}>
           Prefer email directly?{" "}
           <a href={`mailto:${supportEmail}`}>

@@ -1,21 +1,64 @@
 .hero {
+  --hero-accent: var(--violet);
   background-color: var(--surface);
-  padding-block: var(--space-10) var(--space-8);
-  border-bottom: 1px solid var(--hairline);
+  padding-block: clamp(var(--space-10), 6vw, var(--space-20)) clamp(var(--space-8), 4vw, var(--space-16));
   position: relative;
   overflow: hidden;
+  isolation: isolate;
 }
 
-/* A soft brand glow behind the header, purely decorative. */
+/* A soft accent glow behind the header, tinted by the page's accent. Purely decorative
+   and low-strength, so the H1 keeps the brightest value in the band (light budget). */
 .hero::before {
   content: "";
   position: absolute;
-  top: -40%;
-  right: -10%;
+  top: -45%;
+  right: -8%;
   width: 46rem;
   height: 46rem;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.14), transparent 62%);
+  z-index: -2;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--hero-accent) 22%, transparent),
+    transparent 62%
+  );
   pointer-events: none;
+}
+
+/* A gradient hairline along the bottom edge — a premium seam into the next section,
+   brightest at the accent side and fading out. */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--hero-accent) 60%, transparent) 30%,
+    var(--hairline-strong) 70%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* Ambient starfield — a faint scatter of points, faked with layered radial-gradients
+   (no photography, no per-frame work). Sits behind everything, never competes. */
+.field {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 32%, rgba(255, 255, 255, 0.55), transparent 60%),
+    radial-gradient(1.5px 1.5px at 78% 18%, rgba(255, 255, 255, 0.4), transparent 60%),
+    radial-gradient(1px 1px at 34% 72%, rgba(255, 255, 255, 0.4), transparent 60%),
+    radial-gradient(1px 1px at 88% 64%, rgba(255, 255, 255, 0.35), transparent 60%),
+    radial-gradient(1.5px 1.5px at 62% 46%, color-mix(in srgb, var(--hero-accent) 70%, white), transparent 60%),
+    radial-gradient(1px 1px at 50% 12%, rgba(255, 255, 255, 0.3), transparent 60%),
+    radial-gradient(1px 1px at 22% 88%, rgba(255, 255, 255, 0.28), transparent 60%);
 }
 
 .crumbs {
@@ -26,17 +69,21 @@
 .row {
   position: relative;
   display: flex;
-  gap: var(--space-8);
+  gap: var(--space-10);
   align-items: flex-end;
   justify-content: space-between;
 }
 
 .lead {
-  max-width: 62ch;
+  max-width: 60ch;
+}
+
+.hero .eyebrow {
+  color: color-mix(in srgb, var(--hero-accent) 72%, var(--text-1));
 }
 
 .title {
-  margin: var(--space-2) 0 0;
+  margin: var(--space-3) 0 0;
   font-size: var(--fs-h1);
 }
 
@@ -45,6 +92,7 @@
   color: var(--text-body);
   font-size: var(--fs-lead);
   line-height: 1.5;
+  max-width: 58ch;
 }
 
 .actions {
@@ -65,6 +113,9 @@
   justify-content: center;
 }
 .center .lead {
+  margin-inline: auto;
+}
+.center .intro {
   margin-inline: auto;
 }
 .center .actions {

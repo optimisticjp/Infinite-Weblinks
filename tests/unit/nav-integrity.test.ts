@@ -49,6 +49,7 @@ const HUB_ROUTES = new Set([
   "/faq",
   "/about",
   "/growth-plan",
+  "/troubleshooter",
   "/contact",
   "/privacy",
   "/cookies",

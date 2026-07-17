@@ -1,5 +1,6 @@
 .card {
   --card-accent: var(--violet);
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
@@ -9,16 +10,43 @@
   border: 1px solid var(--hairline);
   border-radius: var(--radius-lg);
   color: var(--text-body);
+  overflow: hidden;
+  box-shadow: var(--inset-hairline);
   transition:
     border-color var(--dur-base) var(--ease-out),
     transform var(--dur-base) var(--ease-out),
     box-shadow var(--dur-base) var(--ease-out);
 }
+
+/* Accent rail across the top — the card's quiet signal of its colour family. At rest it
+   runs at ~55% and lifts to full on hover, so a whole grid reads calm until a card is
+   picked (light budget: the surroundings stay down). */
+.card::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--card-accent) 85%, transparent),
+    color-mix(in srgb, var(--card-accent) 20%, transparent)
+  );
+  opacity: 0.55;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
 .card:hover {
   border-color: color-mix(in srgb, var(--card-accent) 55%, transparent);
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-card);
+  transform: translateY(-4px);
+  box-shadow:
+    var(--shadow-card),
+    0 0 0 1px color-mix(in srgb, var(--card-accent) 30%, transparent),
+    0 18px 44px -20px color-mix(in srgb, var(--card-accent) 65%, transparent);
   color: var(--text-body);
+}
+.card:hover::before {
+  opacity: 1;
 }
 
 .head {
@@ -28,21 +56,46 @@
   gap: var(--space-3);
 }
 
+/* Lit circular node — echoes the constellation tile, so listing cards and the orbit
+   visuals share one vocabulary. No animated blur; the "lit" look is a static radial. */
 .tile {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 46px;
+  height: 46px;
   flex: none;
-  border-radius: var(--radius-sm);
+  border-radius: 50%;
   color: var(--card-accent);
-  background: color-mix(in srgb, var(--card-accent) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--card-accent) 32%, transparent);
+  background: radial-gradient(
+    circle at 50% 35%,
+    color-mix(in srgb, var(--card-accent) 26%, transparent),
+    var(--surface-raised) 78%
+  );
+  border: 1.5px solid color-mix(in srgb, var(--card-accent) 45%, transparent);
+  transition:
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
 }
 .tile svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
+}
+.card:hover .tile {
+  border-color: color-mix(in srgb, var(--card-accent) 70%, transparent);
+  box-shadow: var(--glow-node-soft);
+}
+
+/* Daylight bands are glow-free by rule (the cream is what makes the dark sections read as
+   dark). On those surfaces the hover keeps the accent border + lift but drops the neon
+   bloom, using a neutral elevation shadow instead. */
+:global(.theme-band) .card:hover,
+:global(.theme-band-bright) .card:hover {
+  box-shadow: var(--shadow-md);
+}
+:global(.theme-band) .card:hover .tile,
+:global(.theme-band-bright) .card:hover .tile {
+  box-shadow: none;
 }
 
 .title {
@@ -65,8 +118,10 @@
   height: 18px;
   color: var(--card-accent);
   transform: translate(-2px, 2px);
-  opacity: 0.75;
-  transition: transform var(--dur-base) var(--ease-out), opacity var(--dur-base) var(--ease-out);
+  opacity: 0.7;
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    opacity var(--dur-base) var(--ease-out);
 }
 .card:hover .arrow {
   transform: translate(0, 0);
@@ -87,7 +142,10 @@
 
 .footer {
   margin-top: auto;
-  padding-top: var(--space-1);
+  padding-top: var(--space-2);
   font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  /* Theme-scoped muted text — guarantees AA on both dark cards and daylight cards
+     (the accent-mixed tint dropped below 4.5:1 on the dark surface). */
   color: var(--text-muted);
 }

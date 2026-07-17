@@ -34,10 +34,14 @@ import { seedChrome, seedEditorial, seedHero } from "./seed";
 import * as data from "./data";
 import { isRenderable, type Statused } from "./types";
 import type {
+  AccountOwnership,
   BusinessType,
   CaseStudy,
+  ConnectedExample,
   CrossCuttingSystem,
+  CustomerJourneyStep,
   DeliveryModel,
+  TroubleshooterProblem,
   EditorialSection,
   Example,
   Faq,
@@ -151,6 +155,18 @@ export async function getProcessSteps(): Promise<ProcessStep[]> {
 }
 export async function getValueProps(): Promise<ValueProp[]> {
   return [...data.valueProps];
+}
+export async function getCustomerJourney(): Promise<CustomerJourneyStep[]> {
+  return [...data.customerJourney].sort((a, b) => a.order - b.order);
+}
+export async function getConnectedExamples(): Promise<ConnectedExample[]> {
+  return [...data.connectedExamples];
+}
+export async function getAccountOwnership(): Promise<AccountOwnership> {
+  return data.accountOwnership;
+}
+export async function getTroubleshooterProblems(): Promise<TroubleshooterProblem[]> {
+  return [...data.troubleshooterProblems];
 }
 
 /* ---- status-gated content (Sanity-backed with seed fallback) ---- */
@@ -301,15 +317,28 @@ export async function getExample(slug: string): Promise<Example | undefined> {
  * nothing today; its slot is positioned now, right after the claim, ready for Sanity.
  */
 export function getHomepageSections(): SectionConfig[] {
+  // Redesign — recomposed to the master reference layout (docs/design-references/11).
+  // Rhythm is deliberately non-uniform and never runs more than two dark sections before
+  // a daylight break: dark hero → cream ecosystem → goals → journey → cream "systems
+  // connect" → customer journey → cream "where are you" → services → examples → cream
+  // "ways of working" → ownership → why-us → proof → cream resources → final CTA.
+  // Hero + editorialStatement (the "digital world" cream band, ref 18) are rendered
+  // explicitly by the page; editorialStatement stays here only to document its slot.
   return [
-    { type: "editorialStatement", enabled: true, anchorId: "why-it-matters" }, // tension (band)
-    { type: "connectedSystem", enabled: true, anchorId: "how-it-connects" }, // the one big idea (claim)
-    { type: "caseStudyShowcase", enabled: true, anchorId: "case-studies" }, // proof — after the claim
-    { type: "testimonialWall", enabled: true, anchorId: "testimonials" }, // proof — after the claim
-    { type: "goalExplorer", enabled: true, anchorId: "goals" }, // router #1 — by goal, near the top
-    { type: "whyInfiniteWeblinks", enabled: true, anchorId: "why-us" }, // why us — separates the routers
-    { type: "servicesExplorer", enabled: true, anchorId: "services" }, // router #2 — what we do, later
-    { type: "learningResources", enabled: true, anchorId: "learn" }, // rest beat (band)
-    { type: "finalCtaBanner", enabled: true, anchorId: "get-started" }, // permission to act
+    { type: "editorialStatement", enabled: true, anchorId: "why-it-matters" }, // cream — the digital world (ref 18)
+    { type: "goalExplorer", enabled: true, anchorId: "goals" }, // router #1 — by goal (ref 10)
+    { type: "growthJourney", enabled: true, anchorId: "growth-journey" }, // the connected journey (ref 05)
+    { type: "connectedSystem", enabled: true, anchorId: "how-it-connects" }, // cream — systems that connect
+    { type: "customerJourney", enabled: true, anchorId: "customer-journey" }, // follow one customer (ref 15)
+    { type: "startingPointSelector", enabled: true, anchorId: "where-you-are" }, // cream — where are you (ref 08)
+    { type: "servicesExplorer", enabled: true, anchorId: "services" }, // router #2 — services constellation (ref 12)
+    { type: "connectedExamples", enabled: true, anchorId: "examples" }, // what works together (ref 16)
+    { type: "deliveryModels", enabled: true, anchorId: "ways-of-working" }, // cream — ways of working (ref 01)
+    { type: "accountOwnership", enabled: true, anchorId: "ownership" }, // you own it (ref 13)
+    { type: "whyInfiniteWeblinks", enabled: true, anchorId: "why-us" }, // partner for long-term growth
+    { type: "caseStudyShowcase", enabled: true, anchorId: "case-studies" }, // proof — status-gated (null today)
+    { type: "testimonialWall", enabled: true, anchorId: "testimonials" }, // proof — status-gated (null today)
+    { type: "learningResources", enabled: true, anchorId: "learn" }, // cream — practical guides
+    { type: "finalCtaBanner", enabled: true, anchorId: "get-started" }, // permission to act (ref 19)
   ];
 }

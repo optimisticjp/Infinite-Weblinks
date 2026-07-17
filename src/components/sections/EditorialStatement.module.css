@@ -1,12 +1,13 @@
-.section {
-  /* theme-band supplies the cream surface + dark ink text tokens. */
-}
+/* theme-band supplies the cream surface + dark ink text tokens.
+   Daylight: no neon glow, no bloom, no gradient text — the mark is the one focal object. */
 
-.top {
+.layout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: clamp(28px, 4vw, 56px);
+  gap: clamp(40px, 6vw, 72px);
+  align-items: center;
 }
+
 .lead {
   max-width: 34rem;
 }
@@ -16,25 +17,98 @@
   color: var(--text-heading);
 }
 .accent {
-  color: var(--violet-deep); /* 6:1 on cream — the gradient is reserved for dark sections */
+  color: var(--violet-deep); /* solid accent — the gradient is reserved for dark headings */
 }
 .body {
   display: grid;
   gap: var(--space-5);
-  align-content: start;
+  margin-top: var(--space-6);
 }
 .para {
   font-size: var(--fs-lead);
   color: var(--text-body);
-  max-width: 40rem;
+  max-width: var(--measure);
 }
 
+/* ---- ecosystem visual (ref 18) ---- */
+.visual {
+  width: 100%;
+}
+.stage {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  margin-inline: auto;
+  aspect-ratio: 1 / 1;
+}
+
+.mark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+/* A soft daylight pedestal disc under the mark — neutral ink shadow, never a neon glow. */
+.pedestal {
+  position: absolute;
+  left: 50%;
+  top: 56%;
+  width: 62%;
+  height: 26%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    50% 60% at 50% 50%,
+    color-mix(in srgb, var(--band-ink) 12%, transparent),
+    transparent 72%
+  );
+  z-index: 1;
+}
+
+.ring {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+/* A white logo tile (ref 18): full-colour brand mark on a clean daylight chip, glow-free. */
+.chip {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  width: clamp(46px, 10vw, 58px);
+  height: clamp(46px, 10vw, 58px);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--shadow-md);
+}
+
+.note1,
+.note2 {
+  position: absolute;
+  z-index: 4;
+}
+.note1 {
+  left: 4%;
+  top: 82%;
+}
+.note2 {
+  right: 2%;
+  top: 88%;
+}
+
+/* ---- three points ---- */
 .points {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-8);
   list-style: none;
-  margin: clamp(40px, 6vw, 72px) 0 0;
+  margin: clamp(48px, 7vw, 80px) 0 0;
   padding: 0;
   border-top: 1px solid var(--hairline);
   padding-top: clamp(32px, 4vw, 56px);
@@ -56,10 +130,44 @@
   color: var(--text-muted);
 }
 
+/* Collapse the ring to a centred mark + wrapped chip row: follow one connected path at a
+   time rather than shrinking the diagram (mobile is its own art direction). */
+@media (max-width: 720px) {
+  .stage {
+    aspect-ratio: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-6);
+    max-width: none;
+    padding-block: var(--space-4);
+  }
+  .mark {
+    position: static;
+    transform: none;
+    order: -1;
+  }
+  .pedestal,
+  .note1,
+  .note2 {
+    display: none;
+  }
+  .ring {
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+  .chip {
+    position: static;
+    transform: none;
+  }
+}
+
 @media (min-width: 860px) {
-  .top {
-    grid-template-columns: 0.95fr 1.05fr;
-    align-items: end;
+  .layout {
+    grid-template-columns: 1fr 1fr;
   }
   .points {
     grid-template-columns: repeat(3, minmax(0, 1fr));

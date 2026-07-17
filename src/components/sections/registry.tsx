@@ -3,6 +3,9 @@ import type { SectionConfig, SectionType } from "@/lib/content/types";
 import { GrowthJourneySection } from "./GrowthJourneySection";
 import { GoalExplorerSection } from "./GoalExplorerSection";
 import { ConnectedSystemSection } from "./ConnectedSystemSection";
+import { CustomerJourneySection } from "./CustomerJourneySection";
+import { ConnectedExamplesSection } from "./ConnectedExamplesSection";
+import { AccountOwnershipSection } from "./AccountOwnershipSection";
 import { StartingPointSelectorSection } from "./StartingPointSelectorSection";
 import { ServicesExplorerSection } from "./ServicesExplorerSection";
 import { ToolUniverseSection } from "./ToolUniverseSection";
@@ -32,6 +35,9 @@ const REGISTRY: Partial<Record<SectionType, SectionRenderer>> = {
   growthJourney: (id) => <GrowthJourneySection anchorId={id} />,
   goalExplorer: (id) => <GoalExplorerSection anchorId={id} />,
   connectedSystem: (id) => <ConnectedSystemSection anchorId={id} />,
+  customerJourney: (id) => <CustomerJourneySection anchorId={id} />,
+  connectedExamples: (id) => <ConnectedExamplesSection anchorId={id} />,
+  accountOwnership: (id) => <AccountOwnershipSection anchorId={id} />,
   startingPointSelector: (id) => <StartingPointSelectorSection anchorId={id} />,
   servicesExplorer: (id) => <ServicesExplorerSection anchorId={id} />,
   toolUniverse: (id) => <ToolUniverseSection anchorId={id} />,

@@ -129,13 +129,25 @@
   top: 100%;
   left: 0;
   right: 0;
-  background: color-mix(in srgb, var(--ink-900) 96%, transparent);
-  backdrop-filter: blur(calc(var(--blur-panel) + 6px));
-  -webkit-backdrop-filter: blur(calc(var(--blur-panel) + 6px));
-  border-top: 1px solid var(--border-1);
+  /* Near-opaque so the hero behind never bleeds through the link columns; the blur adds
+     the glass depth without sacrificing legibility. */
+  background: color-mix(in srgb, var(--ink-900) 99%, transparent);
+  backdrop-filter: blur(calc(var(--blur-panel) + 8px)) saturate(1.4);
+  -webkit-backdrop-filter: blur(calc(var(--blur-panel) + 8px)) saturate(1.4);
   border-bottom: 1px solid var(--border-2);
-  box-shadow: var(--shadow-lg);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  box-shadow: var(--shadow-lg), var(--inset-hairline);
   animation: megaIn var(--dur-base) var(--ease-out);
+}
+/* A single hairline of brand light along the top edge — echoes the reference's lit
+   panel border without spending a glow (it is a 1px line, not a field). */
+.megaPanel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: var(--grad-path);
+  opacity: 0.55;
 }
 @keyframes megaIn {
   from {
@@ -150,13 +162,13 @@
 .megaInner {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-10);
-  padding-block: var(--space-10);
+  gap: var(--space-8);
+  padding-block: var(--space-8) var(--space-10);
 }
 .megaColumns {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-8);
+  grid-template-columns: repeat(var(--mega-cols, 3), minmax(0, 1fr));
+  gap: var(--space-4) var(--space-6);
 }
 .megaColumn {
   min-width: 0;
@@ -167,7 +179,7 @@
   letter-spacing: var(--ls-mono);
   text-transform: uppercase;
   color: var(--text-3);
-  margin: 0 0 var(--space-4);
+  margin: 0 0 var(--space-3);
 }
 .megaLinks {
   list-style: none;
@@ -177,20 +189,54 @@
   gap: 2px;
 }
 .megaLink {
-  display: block;
-  padding: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--target-min);
+  padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-md);
-  color: var(--text-1);
-  transition: background-color var(--dur-fast) var(--ease-out);
+  color: var(--text-2);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
 }
 .megaLink:hover {
   background: rgba(255, 255, 255, 0.06);
   color: var(--text-1);
 }
+.megaLinkIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: var(--radius-sm);
+  color: var(--col-accent, var(--violet));
+  background: color-mix(in srgb, var(--col-accent, var(--violet)) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--col-accent, var(--violet)) 32%, transparent);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+.megaLink:hover .megaLinkIcon {
+  background: color-mix(in srgb, var(--col-accent, var(--violet)) 20%, transparent);
+  border-color: color-mix(in srgb, var(--col-accent, var(--violet)) 52%, transparent);
+}
+.megaLinkIcon > svg {
+  width: 18px;
+  height: 18px;
+}
+.megaLinkText {
+  flex: 1;
+  min-width: 0;
+}
 .megaLinkLabel {
   display: block;
   font-weight: var(--fw-semibold);
   font-size: var(--fs-sm);
+  color: var(--text-1);
+  line-height: var(--lh-snug);
 }
 .megaLinkDesc {
   display: block;
@@ -198,12 +244,52 @@
   color: var(--text-3);
   margin-top: 2px;
 }
+.megaLinkChevron {
+  width: 16px;
+  height: 16px;
+  flex: none;
+  color: var(--text-4);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.megaLink:hover .megaLinkChevron {
+  opacity: 1;
+  transform: translateX(0);
+  color: var(--text-2);
+}
+
+/* ---- Promo panel (the panel's one bright element: the gradient CTA) ---- */
 .megaPromo {
-  align-self: start;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
   padding: var(--space-6);
   border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.16), rgba(245, 25, 126, 0.12));
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(168, 85, 247, 0.18), transparent 70%),
+    color-mix(in srgb, var(--ink-800) 68%, transparent);
   border: 1px solid var(--border-2);
+}
+.megaPromoGlyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-pill);
+  color: var(--violet-bright);
+  border: 1px solid color-mix(in srgb, var(--violet) 40%, transparent);
+  background: radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.22), transparent 70%);
+  box-shadow: var(--glow-node-soft);
+}
+.megaPromoGlyph > svg {
+  width: 24px;
+  height: 24px;
 }
 .megaPromoHeading {
   font-family: var(--font-display);
@@ -216,6 +302,32 @@
   font-size: var(--fs-sm);
   color: var(--text-2);
   margin: 0 0 var(--space-5);
+}
+.megaPromoActions {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+.megaPromoLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--text-1);
+}
+.megaPromoLink > svg {
+  width: 15px;
+  height: 15px;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.megaPromoLink:hover {
+  color: var(--link-hover);
+}
+.megaPromoLink:hover > svg {
+  transform: translateX(3px);
 }
 
 /* ---- Breakpoints ----

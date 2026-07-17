@@ -1,71 +1,191 @@
 .section {
   position: relative;
   overflow: hidden;
-  /* The signature tri-colour violet→pink→orange banner (theme-statement's default
-     is a two-stop violet→pink gradient reserved to stay clear of the orange end
-     for text contrast; this section wants the full spectrum instead). The scrim
-     below darkens the whole surface so white text stays ≥ 8:1 even where the
-     gradient runs orange — verified so we don't repeat the white-on-orange
-     contrast failure the CTA button already had to fix (see Button.module.css). */
-  background-image: var(--grad-banner);
+  text-align: center;
 }
 
-/* Uniform dark scrim UNDER the text so contrast never depends on where it falls
-   along the gradient. Raised to 0.6 in Phase 1: the headline is now gradient text
-   (pink→orange), which is lower-luminance than the previous white — this keeps the
-   large-text headline ≥ 3:1 even where its stops sit over the same-hue banner stops. */
-.scrim {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: rgba(7, 5, 15, 0.6);
-}
-
-.glow {
+/* A faint ambient wash — NOT the section's bright element. The InfinityMark's bloom
+   (below) owns the one glow; this only seats the band in the cosmic field. */
+.wash {
   position: absolute;
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(50% 60% at 15% 20%, rgba(255, 255, 255, 0.1), transparent 70%),
-    radial-gradient(45% 55% at 85% 80%, rgba(255, 255, 255, 0.07), transparent 70%);
+    radial-gradient(60% 45% at 50% 78%, rgba(109, 40, 217, 0.16), transparent 72%),
+    radial-gradient(40% 30% at 50% 30%, rgba(245, 25, 126, 0.08), transparent 72%);
 }
 
 .inner {
   position: relative;
   z-index: 1;
-  max-width: 46rem;
-  margin-inline: auto;
-  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
+/* ---- centred copy (the site's one centred heading, per the single-left-edge law) ---- */
 .header {
-  margin-bottom: clamp(28px, 4vw, 40px);
+  max-width: 46rem;
+  margin-inline: auto;
 }
-.header :global(.iw-eyebrow) {
-  color: rgba(255, 255, 255, 0.86);
+.eyebrow {
+  display: inline-block;
+  color: var(--pink-bright);
+  padding-bottom: var(--space-2);
+  border-bottom: 2px solid color-mix(in srgb, var(--pink) 55%, transparent);
+}
+.title {
+  margin-top: var(--space-5);
+  font-size: var(--fs-h1);
+  letter-spacing: var(--ls-h1);
+  color: var(--text-heading);
+}
+.intro {
+  margin-top: var(--space-5);
+  margin-inline: auto;
+  max-width: 40rem;
+  font-size: var(--fs-lead);
+  color: var(--text-body);
 }
 
-.ctas {
+.actions {
+  margin-top: var(--space-8);
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
 }
-
-.fallback {
-  margin-top: clamp(20px, 3vw, 28px);
+.email {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   font-size: var(--fs-sm);
   color: var(--text-body);
 }
-.fallbackLink {
-  color: #ffffff;
-  font-weight: var(--fw-semibold);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+.email:hover {
+  color: var(--text-heading);
 }
-.fallbackLink:hover {
-  color: #ffe9f4;
+.emailIcon {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  color: var(--violet-bright);
+}
+.emailAddr {
+  color: var(--text-heading);
+  font-weight: var(--fw-semibold);
+}
+
+/* ---- constellation (decorative): mark + radiating service labels over the horizon ---- */
+.constellation {
+  position: relative;
+  width: 100%;
+  margin-top: clamp(40px, 6vw, 72px);
+}
+.globe {
+  opacity: 0.7;
+}
+.markWrap {
+  display: flex;
+  justify-content: center;
+}
+/* The mark is the section's single glow (InfinityMark glow=true). A slow, subtle breathe
+   under the crossover — transform/opacity only; reduced-motion gets the static state. */
+@media (prefers-reduced-motion: no-preference) {
+  .mark {
+    animation: iw-cta-breathe 7s var(--ease-in-out) infinite;
+  }
+}
+@keyframes iw-cta-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.015);
+    opacity: 0.92;
+  }
+}
+
+.orbit {
+  list-style: none;
+  margin: var(--space-8) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
+/* Mobile-first: each node is a pill chip flowing below the mark. */
+.node {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4) var(--space-2) var(--space-2);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--hairline-strong);
+  background: color-mix(in srgb, var(--ink-800) 60%, transparent);
+}
+.nodeIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: var(--radius-pill);
+  color: var(--node-accent, var(--violet));
+  background: color-mix(in srgb, var(--node-accent, var(--violet)) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--node-accent, var(--violet)) 34%, transparent);
+}
+.nodeIcon > svg {
+  width: 16px;
+  height: 16px;
+}
+.nodeLabel {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  text-transform: uppercase;
+  color: var(--text-body);
+  white-space: nowrap;
+}
+
+/* Desktop: the mark centres in a fixed field and the nodes radiate to their --x/--y. */
+@media (min-width: 900px) {
+  .constellation {
+    min-height: clamp(440px, 44vw, 560px);
+  }
+  .markWrap {
+    position: absolute;
+    inset: 0;
+    align-items: center;
+  }
+  .orbit {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    display: block;
+  }
+  .node {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    transform: translate(-50%, -50%);
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: 0;
+    border: 0;
+    background: none;
+    text-align: center;
+  }
+  .nodeIcon {
+    width: 46px;
+    height: 46px;
+  }
+  .nodeIcon > svg {
+    width: 20px;
+    height: 20px;
+  }
 }

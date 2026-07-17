@@ -1,8 +1,7 @@
 import { describe, it, expect } from "vitest";
+import { existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { seedChrome, seedHero } from "@/lib/content/seed";
-import { goals } from "@/lib/content/data/goals";
-import { services } from "@/lib/content/data/services";
-import { tools } from "@/lib/content/data/tools";
 
 /**
  * Guardrail invariants on the shipped content — these encode the locked brief so a
@@ -21,15 +20,16 @@ describe("content guardrails", () => {
     ]);
   });
 
-  it("every platform-rail name is an approved example tool from the content (no fabricated proof)", () => {
+  it("every platform-rail logo maps to a real, locally-stored brand asset (no invented marks)", () => {
     expect(seedHero.platforms.length).toBeGreaterThan(0);
-    // The rail must only name tools that already appear in the approved exampleTools
-    // data — so it can never introduce an invented or off-brand platform name.
-    const approved = new Set(
-      [...goals, ...services, ...tools].flatMap((item) => item.exampleTools ?? []),
-    );
-    for (const name of seedHero.platforms) {
-      expect(approved.has(name), `"${name}" is not in any approved exampleTools list`).toBe(true);
+    // Real platform logos are allowed for the illustrative "works with" rail, but each
+    // must resolve to an accurately-sourced SVG stored locally in public/brand-logos — so
+    // a platform can never be added without shipping its genuine (non-invented) mark.
+    for (const p of seedHero.platforms) {
+      expect(p.name.trim().length, "platform name is non-empty").toBeGreaterThan(0);
+      expect(/^[a-z0-9-]+$/.test(p.slug), `"${p.slug}" is a clean slug`).toBe(true);
+      const asset = fileURLToPath(new URL(`../../public/brand-logos/${p.slug}.svg`, import.meta.url));
+      expect(existsSync(asset), `missing local logo asset for "${p.name}" (${p.slug}.svg)`).toBe(true);
     }
   });
 

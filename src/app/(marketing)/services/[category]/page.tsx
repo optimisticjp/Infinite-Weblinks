@@ -92,10 +92,11 @@ export default async function ServiceCategoryPage({
         title={category.name}
         intro={category.intro}
         breadcrumbs={[{ name: "Services", path: "/services" }, { name: category.name }]}
+        accent={category.color}
         aside={
           // Outline, not filled: the H1 must own the brightest value in the hero — the tile
           // is a quiet category marker, not a second bloom competing with the headline.
-          <IconTile color={category.color} variant="outline" size={64}>
+          <IconTile color={category.color} variant="outline" size={72}>
             <Icon name={category.icon} />
           </IconTile>
         }
@@ -106,7 +107,11 @@ export default async function ServiceCategoryPage({
         }
       />
 
-      <section className="theme-band iw-section" aria-labelledby="whats-included">
+      <section
+        className="theme-band iw-section"
+        aria-labelledby="whats-included"
+        style={{ ["--cat-accent" as string]: category.color }}
+      >
         <div className="iw-container">
           <h2 id="whats-included" className={styles.sectionTitle}>
             What&rsquo;s included

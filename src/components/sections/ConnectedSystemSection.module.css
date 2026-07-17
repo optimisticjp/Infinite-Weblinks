@@ -1,156 +1,77 @@
-.section {
-  position: relative;
-  overflow: hidden;
-}
+/* theme-band-bright supplies the near-white daylight surface + dark ink text tokens.
+   Daylight is glow-free by rule: no section bloom, no gradient text. The mark carries
+   glow={false}; the constellation's orbit strokes resolve to ink on this surface. */
 
-.glow {
-  position: absolute;
-  inset: -10% -5% auto -5%;
-  height: 70%;
-  pointer-events: none;
-  background:
-    radial-gradient(40% 50% at 20% 20%, rgba(59, 130, 246, 0.22), transparent 72%),
-    radial-gradient(40% 50% at 80% 30%, rgba(52, 211, 153, 0.16), transparent 72%);
-  filter: blur(6px);
-}
-
-/* ---- connected flow rail ---- */
-.rail {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: var(--space-2);
-  list-style: none;
-  margin: clamp(32px, 5vw, 56px) 0 0;
-  padding: 0;
-}
-.step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-2);
-}
-.node {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  text-align: center;
-}
-.label {
-  font-family: var(--font-display);
-  font-weight: var(--fw-bold);
-  font-size: var(--fs-sm);
-  color: var(--text-heading);
-  max-width: 11rem;
-}
-
-.connector {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
-  width: 28px;
-  height: 28px;
-}
-.connectorIconRow {
-  display: none;
-}
-.connectorIconCol {
-  display: block;
-  width: 20px;
-  height: 20px;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .node {
-    animation: iw-node-float 4.2s ease-in-out infinite;
-  }
-  .step:nth-child(2n) .node {
-    animation-delay: 0.6s;
-  }
-  .step:nth-child(3n) .node {
-    animation-delay: 1.2s;
-  }
-}
-@keyframes iw-node-float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-4px);
-  }
-}
-
-/* ---- cross-cutting systems band ---- */
-.systemsBand {
-  position: relative;
-  z-index: 1;
-  margin-top: clamp(40px, 6vw, 64px);
-  padding-top: clamp(32px, 4vw, 48px);
-  border-top: 1px solid var(--hairline);
-}
-.systemsCaption {
-  font-family: var(--font-mono);
-  font-size: var(--fs-mono);
-  letter-spacing: var(--ls-mono);
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin: 0 0 var(--space-6);
-}
-.systemsList {
+.layout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-6);
+  gap: clamp(40px, 6vw, 72px);
+  align-items: center;
+}
+
+.lead {
+  max-width: 34rem;
+}
+
+/* ---- three cross-cutting systems as connected checkpoints ---- */
+.checkpoints {
   list-style: none;
-  margin: 0;
+  margin: clamp(28px, 4vw, 40px) 0 0;
   padding: 0;
+  display: grid;
+  gap: var(--space-5);
 }
-.systemItem {
-  display: flex;
+.checkpoint {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr;
   gap: var(--space-4);
-  align-items: flex-start;
+  align-items: start;
 }
-.systemName {
+/* Connector line joining the checkpoints — a faint ink thread, not a neon rail. */
+.checkpoint:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--space-8) / 2 - 1px);
+  top: var(--space-8);
+  bottom: calc(-1 * var(--space-5));
+  width: 2px;
+  background: var(--hairline-strong);
+}
+.check {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: var(--space-8);
+  height: var(--space-8);
+  border-radius: 50%;
+  color: var(--surface);
+  background: var(--accent);
+}
+.checkName {
   font-family: var(--font-display);
   font-weight: var(--fw-bold);
   font-size: var(--fs-h4);
   color: var(--text-heading);
-  margin: 2px 0 var(--space-2);
+  margin: 4px 0 var(--space-1);
 }
-.systemDescription {
+.checkDesc {
   font-size: var(--fs-sm);
   color: var(--text-muted);
   margin: 0;
 }
 
-@media (min-width: 720px) {
-  .rail {
-    flex-direction: row;
-    align-items: flex-start;
-    justify-content: space-between;
-  }
-  .step {
-    flex-direction: row;
-    flex: 1;
-  }
-  .connector {
-    flex: none;
-    margin-top: 24px;
-  }
-  .connectorIconRow {
-    display: block;
-    width: 20px;
-    height: 20px;
-  }
-  .connectorIconCol {
-    display: none;
-  }
-  .systemsList {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+.cta {
+  margin-top: clamp(28px, 4vw, 40px);
+}
+
+.visual {
+  width: 100%;
+}
+
+@media (min-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr 1fr;
   }
 }

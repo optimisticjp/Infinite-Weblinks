@@ -29,11 +29,11 @@
 }
 .storyStep {
   position: relative;
-  padding: var(--space-5);
-  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
   background: var(--surface-raised);
   border: 1px solid var(--hairline);
-  border-left: 3px solid var(--violet);
+  border-left: 3px solid color-mix(in srgb, var(--accent, var(--violet)) 70%, transparent);
 }
 .storyLabel {
   display: block;
@@ -42,7 +42,8 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--violet-deep);
+  /* Accent-as-text alone can fail on the cream band, so mix toward the ink like Badge does. */
+  color: color-mix(in srgb, var(--accent, var(--violet)) 45%, var(--band-ink));
   margin-bottom: var(--space-2);
 }
 .storyBody {

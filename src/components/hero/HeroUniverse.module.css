@@ -225,6 +225,12 @@
   bottom: 3%;
   right: 0;
 }
+/* A third ambient card in the clear top-right corner (matches the reference's floating
+   system-state chips). Ambient only — never brighter than the crossover. */
+.cardMid {
+  top: 5%;
+  right: 1%;
+}
 
 /* ---- Desktop / mobile network switch ---- */
 .mobileNet {

@@ -6,10 +6,10 @@ import { getValueProps } from "@/lib/content";
 import styles from "./WhyInfiniteWeblinksSection.module.css";
 
 /**
- * WhyInfiniteWeblinksSection — differentiators (theme-dark).
- * Rendered as a plain editorial list rather than boxed equal cards, so it reads
- * as a point-by-point argument rather than a SaaS feature grid. No invented
- * awards, stats or client counts — only what the value props actually say.
+ * WhyInfiniteWeblinksSection — "A partner for your long-term growth" (theme-dark, ref 11).
+ * A restrained, icon-led grid: the six value props read as a clean point-by-point argument,
+ * not a glowing SaaS feature wall. No invented awards, stats or client counts — only what
+ * the value props actually say.
  */
 export async function WhyInfiniteWeblinksSection({ anchorId }: { anchorId?: string }) {
   const valueProps = await getValueProps();
@@ -18,17 +18,15 @@ export async function WhyInfiniteWeblinksSection({ anchorId }: { anchorId?: stri
   return (
     <section
       id={anchorId}
-      className={`theme-dark iw-section ${styles.section}`}
+      className="theme-dark iw-section"
       aria-labelledby="why-us-heading"
     >
       <div className="iw-container">
-        {/* One left edge (Phase 3): the deeper "who we are" read fills the aside, so this
-            heading returns to the shared left line instead of the Phase-2 centring. */}
         <SectionHeader
           id="why-us-heading"
           eyebrow="Why Infinite Weblinks"
-          title="What actually makes the difference"
-          intro="Not a longer feature list — a different way of thinking about the work."
+          title="A partner for your long-term growth"
+          intro="Not a longer feature list — a different way of thinking about the work, so every part is built to support the next."
           aside={
             <Button href="/about" variant="secondary" size="sm">
               About Infinite Weblinks
@@ -36,16 +34,14 @@ export async function WhyInfiniteWeblinksSection({ anchorId }: { anchorId?: stri
           }
         />
 
-        <ul className={styles.list}>
+        <ul className={styles.grid}>
           {valueProps.map((vp) => (
             <li key={vp.title} className={styles.item}>
-              <IconTile color={vp.color} variant="filled" size={52}>
+              <IconTile color={vp.color} variant="outline" size={48}>
                 <Icon name={vp.icon} />
               </IconTile>
-              <div>
-                <h3 className={styles.title}>{vp.title}</h3>
-                <p className={styles.body}>{vp.body}</p>
-              </div>
+              <h3 className={styles.title}>{vp.title}</h3>
+              <p className={styles.body}>{vp.body}</p>
             </li>
           ))}
         </ul>

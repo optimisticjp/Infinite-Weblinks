@@ -29,6 +29,16 @@
   --glass-bg: rgba(12, 9, 26, 0.72);
   --glass-border: rgba(255, 255, 255, 0.12);
 
+  /* Soft / ambient glows — for SECONDARY lit elements only. The one bright element per
+     section owns the full-strength --glow-*; supporting nodes run at ≤40% via these so
+     they read as lit without competing (the light budget). */
+  --glow-node-soft: 0 0 16px -2px rgba(168, 85, 247, 0.28);
+  --glow-ambient: 0 0 44px -10px rgba(168, 85, 247, 0.2);
+
+  /* Glass panel elevation — cards, phone frames, floating notification chips. */
+  --glass-shadow: 0 20px 50px -18px rgba(0, 0, 0, 0.72);
+  --glass-bg-light: rgba(255, 255, 255, 0.86); /* floating chips over illustrations */
+
   /* Motion — easing + durations */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
@@ -36,4 +46,5 @@
   --dur-fast: 140ms;
   --dur-base: 240ms;
   --dur-slow: 480ms;
+  --dur-entrance: 720ms; /* entrance reveals (480–900ms window) */
 }

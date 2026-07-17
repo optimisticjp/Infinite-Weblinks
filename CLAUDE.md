@@ -131,6 +131,25 @@ result. Not as a placeholder. Not "for layout testing." Not with a TODO.** If a
 component needs realistic content length to design against, use the existing
 obviously-non-real placeholders, which are non-real by design.
 
+## Platform logos are allowed (illustrative integration only)
+
+Real, third-party **platform** logos ARE permitted — the earlier "no third-party marks,
+text only" rule is retired. They are used only for illustrative "works with" / integration
+displays (the hero platform rail and the "digital world" ecosystem visual), never as proof
+of a client, endorsement, partnership or certification.
+
+- Assets live locally in `public/brand-logos/` and are rendered via the `BrandLogo`
+  component. **Never load a logo from an external CDN at runtime.**
+- Source them accurately (we use **Simple Icons**, whose SVG data is **CC0** — the brands'
+  official shapes) — never redraw, approximate or invent a logo. Regenerate with
+  `scripts/fetch-brand-logos.mjs`; provenance is documented in `public/brand-logos/README.md`.
+- Only add a platform that is **genuinely relevant** and visibly used in the design
+  references. Pick the top, most-famous brand for the slot. **Don't overuse them.**
+- A logo that carries meaning gets an accessible name; a decorative duplicate is
+  `aria-hidden` (its container already conveys the meaning).
+- This does NOT loosen the proof rule above: fabricating a *client's* logo, or implying a
+  brand endorses us, is still banned.
+
 ---
 
 ## Motion rules

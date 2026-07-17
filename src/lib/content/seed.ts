@@ -76,45 +76,53 @@ export const seedChrome: SiteChrome = {
         href: "/services",
         megaMenu: {
           title: "Services",
-          // The 16 real service categories on /services, each rendered as an anchor
-          // (id={category.slug}), grouped Build / Grow / Operate. Shopify/WooCommerce is a
-          // service inside Websites & Development, not a category, so it isn't a top-level
-          // item; "Social & Video" was one label for two categories (Social Media and
-          // Social Growth), so it becomes two. Individual /services/<slug> pages are
-          // reached from the category sections, not the nav — 67 services isn't a nav set.
+          // The 16 real service categories on /services, each an anchor (id={category.slug}),
+          // grouped into the four growth phases from the reference mega-menu (ref 03):
+          // Build your foundation / Get discovered / Convert & retain / Operate & scale.
+          // Icons are decorative; every href resolves to a real category page.
           columns: [
             {
-              heading: "Build",
+              heading: "Build your foundation",
               items: [
-                { label: "Strategy & Discovery", href: "/services/strategy-discovery" },
-                { label: "Branding & Design", href: "/services/branding-design" },
-                { label: "Websites & Development", href: "/services/websites-development" },
-                { label: "Funnels & Conversion", href: "/services/funnels-conversion" },
-                { label: "Courses & Memberships", href: "/services/courses-memberships" },
+                { label: "Strategy & Discovery", href: "/services/strategy-discovery", icon: "compass" },
+                { label: "Branding & Design", href: "/services/branding-design", icon: "pen-tool" },
+                { label: "Websites & Development", href: "/services/websites-development", icon: "monitor" },
+                { label: "Funnels & Conversion", href: "/services/funnels-conversion", icon: "git-branch" },
               ],
             },
             {
-              heading: "Grow",
+              heading: "Get discovered",
               items: [
-                { label: "SEO & Content", href: "/services/seo-content" },
-                { label: "Paid Ads", href: "/services/paid-ads" },
-                { label: "Social Media", href: "/services/social-media" },
-                { label: "Social Growth", href: "/services/social-growth" },
-                { label: "Marketplaces & More", href: "/services/marketplaces-more" },
+                { label: "SEO & Content", href: "/services/seo-content", icon: "search" },
+                { label: "Paid Ads", href: "/services/paid-ads", icon: "megaphone" },
+                { label: "Social Media", href: "/services/social-media", icon: "share-2" },
+                { label: "Social Growth", href: "/services/social-growth", icon: "trending-up" },
               ],
             },
             {
-              heading: "Operate",
+              heading: "Convert & retain",
               items: [
-                { label: "Email, SMS & CRM", href: "/services/email-sms-crm" },
-                { label: "Ecommerce Ops & Delivery", href: "/services/ecommerce-ops-delivery" },
-                { label: "Retention, Loyalty & Advocacy", href: "/services/retention-loyalty-advocacy" },
-                { label: "AI & Automation", href: "/services/ai-automation" },
-                { label: "Analytics & Data", href: "/services/analytics-data" },
-                { label: "Security, Maintenance & Compliance", href: "/services/security-maintenance-compliance" },
+                { label: "Email, SMS & CRM", href: "/services/email-sms-crm", icon: "mail" },
+                { label: "Retention, Loyalty & Advocacy", href: "/services/retention-loyalty-advocacy", icon: "heart" },
+                { label: "Courses & Memberships", href: "/services/courses-memberships", icon: "book-open" },
+                { label: "Marketplaces & More", href: "/services/marketplaces-more", icon: "shopping-bag" },
+              ],
+            },
+            {
+              heading: "Operate & scale",
+              items: [
+                { label: "Ecommerce Ops & Delivery", href: "/services/ecommerce-ops-delivery", icon: "settings" },
+                { label: "AI & Automation", href: "/services/ai-automation", icon: "zap" },
+                { label: "Analytics & Data", href: "/services/analytics-data", icon: "bar-chart-3" },
+                { label: "Security, Maintenance & Compliance", href: "/services/security-maintenance-compliance", icon: "shield" },
               ],
             },
           ],
+          promo: {
+            heading: "Everything works better when it's connected",
+            body: "Pick one service or connect them all around your goals — we plan the order so each part strengthens the next.",
+            cta: BUILD_PLAN,
+          },
         },
       },
       {
@@ -155,19 +163,40 @@ export const seedChrome: SiteChrome = {
     tagline: "Digital growth, built around your goals.",
     columns: [
       {
-        heading: "Explore",
+        heading: "Start here",
         links: [
           { label: "How It Works", href: "/how-it-works" },
-          { label: "Services", href: "/services" },
-          { label: "Resources", href: "/resources" },
+          { label: "Explore by goal", href: "/goals" },
+          { label: "Build My Growth Plan", href: "/growth-plan" },
+          { label: "Growth Troubleshooter", href: "/troubleshooter" },
+          { label: "Contact", href: "/contact" },
+        ],
+      },
+      {
+        heading: "Services",
+        links: [
+          { label: "Websites & Development", href: "/services/websites-development" },
+          { label: "SEO & Content", href: "/services/seo-content" },
+          { label: "Paid Ads", href: "/services/paid-ads" },
+          { label: "AI & Automation", href: "/services/ai-automation" },
+          { label: "All services", href: "/services" },
+        ],
+      },
+      {
+        heading: "Resources",
+        links: [
+          { label: "Guides & articles", href: "/learn" },
+          { label: "Business roadmaps", href: "/roadmaps" },
+          { label: "Tool Universe", href: "/tools" },
+          { label: "FAQ", href: "/faq" },
         ],
       },
       {
         heading: "Company",
         links: [
           { label: "About Us", href: "/about" },
-          { label: "Build My Growth Plan", href: "/growth-plan" },
-          { label: "Contact", href: "/contact" },
+          { label: "Resources hub", href: "/resources" },
+          { label: "Accessibility", href: "/accessibility" },
         ],
       },
     ],
@@ -213,7 +242,17 @@ export const seedHero: HeroContent = {
   // Real, named example tools drawn from the approved exampleTools in
   // src/lib/content/data/* — shown as plain text ("works with the tools you already
   // use"), not as logos, partners or clients. The repo ships no third-party marks.
-  platforms: ["Shopify", "WordPress", "Klaviyo", "HubSpot", "Google Ads", "Meta", "Webflow"],
+  // Real brand logos for an illustrative "works with" rail (ref 07), stored locally in
+  // public/brand-logos. A focused, famous, genuinely-relevant set: store, site, search,
+  // ads/social, email and CRM — no endorsement or partnership implied.
+  platforms: [
+    { name: "Shopify", slug: "shopify" },
+    { name: "WordPress", slug: "wordpress" },
+    { name: "Google", slug: "google" },
+    { name: "Meta", slug: "meta" },
+    { name: "Mailchimp", slug: "mailchimp" },
+    { name: "HubSpot", slug: "hubspot" },
+  ],
 };
 
 export const seedEditorial: EditorialSection = {

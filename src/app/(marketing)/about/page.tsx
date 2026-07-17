@@ -3,8 +3,7 @@ import { PageHero } from "@/components/routes/PageHero";
 import { SectionHeader } from "@/components/primitives/SectionHeader";
 import { Button } from "@/components/primitives/Button";
 import { Icon } from "@/components/primitives/Icon";
-import { IconTile } from "@/components/primitives/IconTile";
-import { DeliveryModelsSection } from "@/components/sections/DeliveryModelsSection";
+import { AccountOwnershipSection } from "@/components/sections/AccountOwnershipSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -66,6 +65,7 @@ export default function AboutPage() {
         title="Your Digital Growth Partner"
         intro="Infinite Weblinks is a full-stack web development and digital marketing services company that helps businesses choose the right digital tools and services, build what they need, and connect everything around their goals."
         breadcrumbs={[{ name: "About" }]}
+        accent="var(--cyan)"
       />
 
       <section className="theme-band iw-section" aria-labelledby="about-who-heading">
@@ -108,9 +108,9 @@ export default function AboutPage() {
                 className={styles.principle}
                 style={{ ["--accent" as string]: principle.color }}
               >
-                <IconTile color={principle.color} variant="filled" size={48}>
+                <span className={styles.principleTile} aria-hidden="true">
                   <Icon name={principle.icon} />
-                </IconTile>
+                </span>
                 <h3 className={styles.principleTitle}>{principle.title}</h3>
                 <p className={styles.principleBody}>{principle.body}</p>
               </li>
@@ -119,8 +119,9 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Reuses the shared delivery-models section (the four exact models + ownership line). */}
-      <DeliveryModelsSection />
+      {/* The ownership promise, reused whole (ref 13): we build and connect everything in
+          your name — you keep control of it. */}
+      <AccountOwnershipSection />
 
       <section className="theme-band iw-section" aria-labelledby="about-cta-heading">
         <div className="iw-container">

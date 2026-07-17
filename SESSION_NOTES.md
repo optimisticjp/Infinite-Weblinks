@@ -978,3 +978,138 @@ test) · webpack build ✓ · e2e **108** (workers=1, CSS-verified server; +3 ca
 redirect-contract incl. `/solutions`, link-through retargeted to categories). Screenshots at
 1440/1024/768/390 for `/services` and three category pages, plus the PageHero before/after, in
 `review-artifacts/phase-4/`.
+
+---
+
+## Session — Cinematic connected hero (branch `claude/cinematic-connected-hero-0z28yn`, 17 July 2026)
+
+The first visual phase after the structural work: a full rebuild of the homepage hero into a
+cinematic dark connected-universe opening. Scope was the hero and its direct support only —
+nav, footer, sections, content architecture and Sanity were not touched.
+
+**Branch note:** the task text asked for `feat/cinematic-connected-hero`; the provisioned/
+checked-out branch is `claude/cinematic-connected-hero-0z28yn`, which the standing git rule says
+never to leave without permission — so the work is on `claude/cinematic-connected-hero-0z28yn`.
+Owner can rename if they prefer the `feat/` name.
+
+### What changed
+
+- **`HeroUniverse.tsx` / `.module.css` rebuilt.** Straight radial spokes → a curved SVG network:
+  five domain nodes on a dotted orbital ellipse, curved Bézier connections with small connector
+  points, a subtle central vortex, a restrained Earth arc (CSS/SVG, lower-right, clipped to the
+  square), **two** glass interface cards ("Campaign ready", "Tracking active" — generic system
+  states, zero metrics), a dim **AI** secondary waypoint, and **one** travelling signal that
+  routes back through the crossover each hop.
+- **The mark is now the real Signature Crossover**, reused from the global `BrandSprite` symbol via
+  `<use href="#iw-infinity">` (BrandSprite is in the root layout), with a single bloom pass so it
+  owns the brightest value. A white `crossGlow` sits *behind* the mark so the mask's centre cut
+  reveals it — the crossover literally glows through the point where the strands connect.
+- **Domains 6 → 5.** Search + social fold into **Marketing**; AI drops out of "Automation & AI" and
+  becomes the dim secondary waypoint. Primaries: Website · Marketing · Customer Tools · Automation ·
+  Analytics (seed `areas`).
+- **`Hero.tsx` / `.module.css`:** pill eyebrow, kept slogan + H1 (gradient only on "grow") + support
+  + two CTAs + reassurance + the "Connected across" 5-domain chips (the accessible/SEO source of
+  truth; the scene is `aria-hidden`). Added a **platform rail** below the grid.
+- **The H1 is a container-query size** (`clamp(2.4rem, 11.5cqi, 4.25rem)` on a `container-type:
+  inline-size` copy column). A vw-based `--fs-display` cannot hold a ≤4-line wrap across the
+  two-column range (the column shrinks faster than the capped font); a column-relative size can.
+  Result: **exactly 4 lines at 1440/1280/1024/768/390/360**, font 38–68px, measured on the built page.
+- **Platform rail:** "Works with the tools your business already uses." + real tool names as text
+  (Shopify · WordPress · Klaviyo · HubSpot · Google Ads · Meta · Webflow — all verbatim from the
+  approved `exampleTools`). Added `platforms: string[]` to `HeroContent` + `seedHero`.
+
+### Mobile is its own art direction
+
+Order: eyebrow → slogan → headline → support → CTAs → reassurance → visual. The scene re-choreographs
+to a central mark + **three** nodes (Website top, Marketing / Analytics flanking the bottom) on a
+simple path — Customer Tools, Automation, the AI waypoint, both cards, the Earth, secondary orbits
+and the travelling signal are all hidden < 720px (node positions are driven by CSS classes so the
+media query can move them; the SVG carries a separate `mobileNet` path group). 0px horizontal
+overflow at 360 and 390.
+
+### Motion
+
+Lazy GSAP + `prefersReducedMotion` preserved. Sequence: mark resolves → paths draw → nodes reveal →
+cards settle → settle into **one** background ambient loop (the vortex) plus the **one** signature
+motion (the crossover signal). Reduced-motion and no-GSAP (and now a GSAP load *failure*, via a new
+`.catch`) all render the complete static end-state. An IntersectionObserver pauses the ambient loops
+off-viewport. Transform/opacity only; the signal animates a transform (not `cx/cy`) and carries no
+filter, so no filtered geometry re-rasterises per frame.
+
+### What was intentionally NOT copied from the references
+
+- **No raster background / no Earth photo.** `public/` ships no clean background asset and the brief
+  forbids cropping the reference screenshots into production assets, so the atmosphere is pure CSS/SVG
+  (gradients, dotted ellipses, a clipped arc). **Fidelity limitation:** the Earth reads as a restrained
+  luminous limb, not a photographic planet with city lights.
+- **No platform logos.** The repo ships no third-party marks, and logos-as-a-rail risks implying
+  partnership/customers, so the rail is **text names** under neutral "works with" framing.
+- **Reference 03's density** was not copied (5 nodes, not 7+); no fabricated cards/metrics/ratings/
+  avatars; AI is secondary, not a sixth bright node.
+
+### Verification
+
+- `npm run lint` **0** · `npm run typecheck` **0** · `npm run test` **123** · `npm run build`
+  (webpack) ✓ · `npm run test:e2e` **109** (TIER 2: built, served on `PORT=3101 npm run start`,
+  sandbox Chromium, CSS-verified). Updated: `content.test.ts` (5 areas + platforms), `homepage.spec.ts`
+  (five domains + platform-rail framing).
+- **Screenshots** (final build) at 1440/1280/1024/768/390/360 + reduced-motion in
+  `review-artifacts/cinematic-hero/` (home-*, plus focused `hero-desktop-1440`, `hero-mobile-universe-390`,
+  `hero-reduced-motion-1440`). Inspected: 4-line H1 every width, 0 overflow, mark brightest, no node
+  collisions, Earth crop restrained, both CTAs visible, reduced-motion = complete static scene.
+- **Agents:** `perf-guard` PASS on every hard line (H1 is LCP; **138 kB gz** initial route JS; GSAP
+  ~44.5 kB gz stays lazy/off-critical; CLS ~0; no new dependency). `motion-critic` + `light-budget`:
+  no blockers. Their should-fixes were applied — cut the two foreground ambient loops (node float,
+  card drift) leaving one background ambient + one signature motion; collapsed to a single bloom pass;
+  moved the signal off `cx/cy`+filter onto a gradient dot; dimmed the Earth rim (0.55→0.32) and
+  connector dots (0.7→0.4); neutralised the card icons; reduced the atmosphere to two hues; added the
+  GSAP-failure `.catch`; snapped stray dimensions to scale; put `--measure` on the slogan/reassurance;
+  used `--section-y-tight` for the hero top rhythm.
+
+### Remaining visual limitations / owner decisions
+
+- Earth is CSS/SVG, not a photographic horizon (asset limitation, above). If the owner supplies a
+  clean, text/logo-free space+Earth AVIF/WebP it can drop straight into `.earth` behind the scene.
+- The five domain-node hues are the accepted domain-colour-coding exception (light-budget WARNING,
+  not a blocker), consistent with prior phases.
+- `.support` keeps a 34rem measure (a deliberately tighter ~3-line support column) rather than the
+  full `--measure`; the decorative SVG layer keeps a handful of bespoke `rgba()` stroke/fill alphas,
+  consistent with the pre-existing `BrandSprite`/old-HeroUniverse pattern.
+- Branch name (`claude/…` vs the requested `feat/cinematic-connected-hero`) — owner's call.
+
+### Pre-commit review round (fixes applied after the first commit)
+
+Two general review agents ran on the diff; they found what the visual agents didn't:
+
+- **HIGH — GSAP ambient tween leaked on unmount (fixed).** The vortex loop is created inside a
+  timeline `.add()` callback, which fires *after* `gsap.context()` stops capturing, so
+  `ctx.revert()` alone couldn't see it — it kept rotating on the unmounted subtree and stacked on
+  every return to `/`. Fixed: `cleanup()` now `ambient.forEach((t) => t.kill())` before
+  `ctx.revert()` (killing the in-context pulse twice is a harmless no-op). The pulse timeline was
+  already reverted correctly (created synchronously in-context).
+- **A11y-safe reveal (changed after diagnosis).** Nodes and cards now reveal via **transform**
+  (rise + scale) at constant opacity instead of an opacity fade — an accessibility scan samples one
+  frame, and compositing a mid-fade decorative label (e.g. the `--text-3` AI label) briefly dips it
+  under 4.5:1. Transform-only keeps every label at full contrast throughout. (This also matches the
+  motion rules more strictly.)
+- **Strengthened the platforms guardrail.** `content.test.ts` now asserts every rail name is a
+  member of the approved `exampleTools` across the goals/services/tools data (was type/length only),
+  so an invented or off-brand platform name can never slip into the rail.
+
+**Pre-existing flake surfaced (not a regression): the mega-menu a11y test.**
+`navigation.spec.ts` opens the "How It Works" mega panel and scans immediately, but `SiteHeader`'s
+`@keyframes megaIn` fades the whole panel `opacity: 0→1` over ~240ms — so axe intermittently sampled
+the panel's `--text-3` heading mid-fade at ~3.5:1 (foreground `#68627f`/`#777192`, composited). This
+is `SiteHeader` code **byte-identical to `origin/main`** (confirmed with `git diff origin/main`), not
+caused by this phase; the earlier green runs simply won the timing race. A transient dip during a
+240ms entrance isn't a resting-state WCAG 1.4.3 failure, so the fix is to scan the **settled** panel:
+the test now waits for the panel's open animation to finish (`getAnimations().finished`) before
+`AxeBuilder.analyze()`. No production/nav behaviour changed. Verified deflaked: the test passed
+**10/10** in a loop (was ~2/10 before). **Follow-up for the nav owner (out of this phase's scope):**
+make `megaIn` a transform-only reveal (drop the `opacity` keyframe) so the transient never occurs at
+all — the same fix applied to the hero here.
+
+**Re-verified after the fixes:** lint 0 · typecheck 0 · 123 unit · webpack build ✓ · **109 e2e**
+(full suite green; nav a11y stable 10/10). perf-guard/light-budget/motion-critic verdicts unchanged
+(no blockers; their should-fixes were already applied). Screenshots refreshed in
+`review-artifacts/cinematic-hero/`.

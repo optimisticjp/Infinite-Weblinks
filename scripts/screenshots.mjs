@@ -46,12 +46,14 @@ const ROUTES = [
   { name: "404", path: "/__intentionally-missing__" },
 ];
 
-// Viewport widths mirror the tracked set: 1440 / 1280 / 1024 / 390.
+// Viewport widths mirror the tracked set: 1440 / 1280 / 1024 / 768 / 390 / 360.
 const VIEWPORTS = [
   { w: 1440, h: 900 },
   { w: 1280, h: 900 },
   { w: 1024, h: 800 },
+  { w: 768, h: 900 },
   { w: 390, h: 844 },
+  { w: 360, h: 780 },
 ];
 
 // ── browser ─────────────────────────────────────────────────────────────────

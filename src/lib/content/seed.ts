@@ -200,14 +200,20 @@ export const seedHero: HeroContent = {
   reassurance: "Start from where you are. We will help you understand what comes next.",
   primaryCta: BUILD_PLAN,
   secondaryCta: SEE_HOW,
+  // Five primary connected domains. Search + social fold into "Marketing"; AI is a
+  // secondary connection in the hero visual (a dim waypoint), never a sixth bright
+  // node — the mark, not the count, carries the "everything connects" idea.
   areas: [
-    { key: "website", label: "Website or Store", color: "var(--domain-website)", icon: "monitor" },
-    { key: "search", label: "Search & Advertising", color: "var(--domain-search)", icon: "megaphone" },
-    { key: "social", label: "Social & Content", color: "var(--domain-social)", icon: "share" },
+    { key: "website", label: "Website", color: "var(--domain-website)", icon: "monitor" },
+    { key: "marketing", label: "Marketing", color: "var(--domain-social)", icon: "megaphone" },
     { key: "customer", label: "Customer Tools", color: "var(--domain-customer)", icon: "users" },
+    { key: "automation", label: "Automation", color: "var(--domain-automation)", icon: "workflow" },
     { key: "analytics", label: "Analytics", color: "var(--domain-analytics)", icon: "trending" },
-    { key: "automation", label: "Automation & AI", color: "var(--domain-automation)", icon: "sparkles" },
   ],
+  // Real, named example tools drawn from the approved exampleTools in
+  // src/lib/content/data/* — shown as plain text ("works with the tools you already
+  // use"), not as logos, partners or clients. The repo ships no third-party marks.
+  platforms: ["Shopify", "WordPress", "Klaviyo", "HubSpot", "Google Ads", "Meta", "Webflow"],
 };
 
 export const seedEditorial: EditorialSection = {

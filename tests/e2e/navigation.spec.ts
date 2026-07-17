@@ -126,6 +126,13 @@ test.describe("Desktop mega-menu — keyboard & a11y", () => {
     await page.getByRole("button", { name: "How It Works" }).focus();
     await page.keyboard.press("Enter");
     await expect(page.getByRole("group", { name: "How It Works" })).toBeVisible();
+    // Scan the SETTLED panel. The mega panel reveals with a `megaIn` opacity keyframe
+    // (~240ms); while it is running, axe can sample the panel's muted heading mid-fade and
+    // report a transient sub-4.5:1 contrast that does not exist in the resting state (which
+    // is what WCAG 1.4.3 governs). Wait for the open animation to finish before analysing.
+    await page
+      .locator("#mega-how-it-works")
+      .evaluate((el) => Promise.all(el.getAnimations().map((a) => a.finished)));
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
       .analyze();

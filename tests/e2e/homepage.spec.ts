@@ -12,22 +12,24 @@ test.describe("Homepage opening", () => {
     await expect(page.getByRole("link", { name: "See How It All Works" }).first()).toBeVisible();
   });
 
-  test("lists the six connected areas as real text", async ({ page }) => {
+  test("lists the five connected domains as real text", async ({ page }) => {
     await page.goto("/");
-    for (const area of [
-      "Website or Store",
-      "Search & Advertising",
-      "Social & Content",
-      "Customer Tools",
-      "Analytics",
-      "Automation & AI",
-    ]) {
-      // Some of these strings legitimately recur further down the page (e.g. an
-      // "Analytics" system node, an "Automation & AI" tool category), so assert the
-      // hero renders each as real, visible text via the first match rather than
-      // requiring global uniqueness.
+    await expect(page.getByText("Connected across")).toBeVisible();
+    for (const area of ["Website", "Marketing", "Customer Tools", "Automation", "Analytics"]) {
+      // These strings legitimately recur further down the page, so assert the hero
+      // renders each as real, visible text via the first match rather than requiring
+      // global uniqueness.
       await expect(page.getByText(area, { exact: true }).first()).toBeVisible();
     }
+  });
+
+  test("shows the platform rail with neutral, non-partner framing", async ({ page }) => {
+    await page.goto("/");
+    await expect(
+      page.getByText("Works with the tools your business already uses."),
+    ).toBeVisible();
+    // Never claims partnership or ownership of these tools.
+    await expect(page.getByText(/official partner|our clients/i)).toHaveCount(0);
   });
 
   test("shows the bright editorial band after the hero", async ({ page }) => {

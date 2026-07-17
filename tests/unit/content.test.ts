@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { seedChrome, seedHero } from "@/lib/content/seed";
+import { goals } from "@/lib/content/data/goals";
+import { services } from "@/lib/content/data/services";
+import { tools } from "@/lib/content/data/tools";
 
 /**
  * Guardrail invariants on the shipped content — these encode the locked brief so a
@@ -7,8 +10,27 @@ import { seedChrome, seedHero } from "@/lib/content/seed";
  * non-approved CTA.
  */
 describe("content guardrails", () => {
-  it("the hero has exactly six connected areas", () => {
-    expect(seedHero.areas).toHaveLength(6);
+  it("the hero has exactly five primary connected domains", () => {
+    expect(seedHero.areas).toHaveLength(5);
+    expect(seedHero.areas.map((a) => a.label)).toEqual([
+      "Website",
+      "Marketing",
+      "Customer Tools",
+      "Automation",
+      "Analytics",
+    ]);
+  });
+
+  it("every platform-rail name is an approved example tool from the content (no fabricated proof)", () => {
+    expect(seedHero.platforms.length).toBeGreaterThan(0);
+    // The rail must only name tools that already appear in the approved exampleTools
+    // data — so it can never introduce an invented or off-brand platform name.
+    const approved = new Set(
+      [...goals, ...services, ...tools].flatMap((item) => item.exampleTools ?? []),
+    );
+    for (const name of seedHero.platforms) {
+      expect(approved.has(name), `"${name}" is not in any approved exampleTools list`).toBe(true);
+    }
   });
 
   it("primary CTA is email-led (Build My Digital Growth Plan → /growth-plan)", () => {

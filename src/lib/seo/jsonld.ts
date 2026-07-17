@@ -34,6 +34,29 @@ export function websiteJsonLd() {
   };
 }
 
+/** ContactPage node for /contact — carries the Organization and a support ContactPoint
+ * (email only; no phone exists to claim), with the areas actually served. Factually
+ * grounded: nothing here asserts a response time or any unverifiable proof. */
+export function contactPageJsonLd(description: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    name: "Contact Infinite Weblinks",
+    url: canonical("/contact"),
+    description,
+    mainEntity: {
+      ...ORG,
+      contactPoint: {
+        "@type": "ContactPoint",
+        email: "support@infiniteweblinks.com",
+        contactType: "customer support",
+        areaServed: ["GB", "US", "CA", "AU", "EU"],
+        availableLanguage: ["English"],
+      },
+    },
+  };
+}
+
 export function breadcrumbJsonLd(items: { name: string; path: string }[]) {
   return {
     "@context": "https://schema.org",

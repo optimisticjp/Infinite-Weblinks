@@ -59,8 +59,26 @@ export function Button(props: LinkProps | ActionProps) {
     );
   }
 
-  const { href: _omit, ...buttonProps } = props as ActionProps;
-  void _omit;
+  // Strip every non-DOM prop (variant/size/icon*/children/href) so only genuine
+  // button attributes (type, disabled, aria-*, onClick…) reach the element — otherwise
+  // React warns about unknown attributes like `iconLeft` on a <button>.
+  const {
+    href: _href,
+    variant: _variant,
+    size: _size,
+    iconLeft: _iconLeft,
+    iconRight: _iconRight,
+    className: _className,
+    children: _children,
+    ...buttonProps
+  } = props as ActionProps;
+  void _href;
+  void _variant;
+  void _size;
+  void _iconLeft;
+  void _iconRight;
+  void _className;
+  void _children;
   return (
     <button {...buttonProps} className={classes(variant, size, className)}>
       {inner}

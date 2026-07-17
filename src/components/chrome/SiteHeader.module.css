@@ -21,6 +21,14 @@
   gap: var(--space-4);
   height: var(--header-h);
 }
+/* Very narrow phones (~320px): the wordmark + gap + 44px menu button can just exceed the
+   content box and push 2–3px past the viewport. Tightening the single gap here keeps the
+   compact header overflow-free at 320px without touching the normal/desktop layout. */
+@media (max-width: 400px) {
+  .bar {
+    gap: var(--space-2);
+  }
+}
 
 .logo {
   color: var(--text-1);

@@ -99,6 +99,20 @@
   margin: 0;
   padding-left: var(--space-5);
   color: var(--text-body);
+  display: grid;
+  gap: var(--space-1);
+}
+.errorLink {
+  color: var(--text-body);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--danger) 70%, transparent);
+  text-underline-offset: 3px;
+  font-weight: var(--fw-medium);
+}
+.errorLink:hover,
+.errorLink:focus-visible {
+  color: var(--text-heading);
+  text-decoration-color: var(--danger);
 }
 
 .notice {
@@ -111,14 +125,47 @@
   outline: none;
 }
 
-.successBanner {
-  padding: var(--space-5);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--lime);
-  background: color-mix(in srgb, var(--lime) 14%, transparent);
-  color: var(--text-heading);
-  font-weight: var(--fw-semibold);
+/* Success state — a proper confirmation panel, not just a one-line banner. */
+.success {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in srgb, var(--lime) 45%, var(--hairline-strong));
+  background: color-mix(in srgb, var(--lime) 12%, transparent);
   outline: none;
+}
+.successIcon {
+  display: inline-flex;
+  color: var(--lime);
+}
+.successIcon svg {
+  width: 34px;
+  height: 34px;
+}
+.successTitle {
+  margin: 0;
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+}
+.successBody {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+.successLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin-top: var(--space-1);
+}
+.successLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
 }
 
 .hintNote {
@@ -150,6 +197,20 @@
 .reassureIcon {
   flex: none;
   color: var(--lime);
+}
+
+.consent {
+  margin: 0;
+  max-width: 46ch;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-snug);
+  color: var(--text-muted);
+  text-align: center;
+}
+.consent a {
+  font-weight: var(--fw-semibold);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .fallback {

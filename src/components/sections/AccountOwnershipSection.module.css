@@ -144,6 +144,66 @@
   color: var(--text-4);
 }
 
+/* ---- connected tools cluster (ref 13's right-hand constellation) ---- */
+.tools {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-5);
+  padding: var(--space-8) var(--space-6);
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(90% 120% at 50% 0%, rgba(168, 85, 247, 0.12), transparent 65%),
+    color-mix(in srgb, var(--surface-raised) 55%, transparent);
+  border: 1px solid var(--hairline);
+}
+.toolsLabel {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--text-2);
+}
+.toolsGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-5) var(--space-6);
+}
+.tool {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  width: 5.5rem;
+  text-align: center;
+}
+.toolIcon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  color: var(--accent);
+  background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--accent) 30%, transparent), var(--surface-raised) 80%);
+  border: 1.5px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  box-shadow: 0 0 18px -6px var(--accent);
+}
+.toolIcon svg {
+  width: 22px;
+  height: 22px;
+}
+.toolLabel {
+  font-size: 0.74rem;
+  line-height: 1.25;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
 /* ---- guarantees ---- */
 .guarantees {
   list-style: none;

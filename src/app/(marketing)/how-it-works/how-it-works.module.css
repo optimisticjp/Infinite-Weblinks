@@ -4,6 +4,46 @@ p.eyebrow {
   color: color-mix(in srgb, var(--pink) 78%, var(--text-1));
 }
 
+/* ---- hero aside: the Signature Crossover as the hero's brightest object (refs 05/07) ---- */
+.heroMark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(240px, 30vw, 360px);
+  aspect-ratio: 1;
+}
+.heroGlow {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    color-mix(in srgb, var(--violet) 26%, transparent),
+    transparent 68%
+  );
+  filter: blur(6px);
+  pointer-events: none;
+}
+.heroRing,
+.heroRingInner {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.heroRing {
+  inset: 2%;
+  border: 1px solid var(--hairline-strong);
+}
+.heroRingInner {
+  inset: 24%;
+  border: 1px solid color-mix(in srgb, var(--pink) 32%, transparent);
+}
+@media (max-width: 900px) {
+  .heroMark {
+    width: clamp(200px, 60vw, 280px);
+  }
+}
+
 /* ---- overview: the system at a glance (mark + orbiting stages) ---- */
 .overview {
   position: relative;

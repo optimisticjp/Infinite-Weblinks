@@ -189,8 +189,8 @@ export function HeroUniverse({ areas }: { areas: HeroArea[] }) {
             <stop offset="100%" stopColor="rgba(255,120,180,0)" />
           </radialGradient>
           <radialGradient id="heroEarth" cx="34%" cy="30%" r="82%">
-            <stop offset="0" stopColor="rgba(59,130,246,0.42)" />
-            <stop offset="45%" stopColor="rgba(30,58,138,0.30)" />
+            <stop offset="0" stopColor="rgba(59,130,246,0.52)" />
+            <stop offset="45%" stopColor="rgba(30,58,138,0.34)" />
             <stop offset="100%" stopColor="rgba(7,5,15,0)" />
           </radialGradient>
           <radialGradient id="heroPulse" cx="50%" cy="50%" r="50%">
@@ -306,16 +306,29 @@ export function HeroUniverse({ areas }: { areas: HeroArea[] }) {
         </span>
       </div>
 
-      {/* Two floating interface cards — generic system states, never business metrics. */}
-      <div className={`${styles.card} ${styles.cardTop}`} data-card>
+      {/* Floating interface cards — generic system states, never business metrics. Each
+          carries its own accent so they read as distinct glass notification chips. */}
+      <div
+        className={`${styles.card} ${styles.cardTop}`}
+        data-card
+        style={{ ["--card-accent" as string]: "var(--cyan)" }}
+      >
         <Send className={styles.cardIcon} aria-hidden="true" />
         <span className={styles.cardText}>Campaign ready</span>
       </div>
-      <div className={`${styles.card} ${styles.cardBottom}`} data-card>
+      <div
+        className={`${styles.card} ${styles.cardBottom}`}
+        data-card
+        style={{ ["--card-accent" as string]: "var(--lime)" }}
+      >
         <Activity className={styles.cardIcon} aria-hidden="true" />
         <span className={styles.cardText}>Tracking active</span>
       </div>
-      <div className={`${styles.card} ${styles.cardMid}`} data-card>
+      <div
+        className={`${styles.card} ${styles.cardMid}`}
+        data-card
+        style={{ ["--card-accent" as string]: "var(--orange)" }}
+      >
         <ShoppingBag className={styles.cardIcon} aria-hidden="true" />
         <span className={styles.cardText}>Order synced</span>
       </div>

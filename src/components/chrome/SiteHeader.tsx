@@ -290,9 +290,16 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
               {nav.primary.map((item) => {
                 const isOpen = openKey === item.label;
                 if (!item.megaMenu) {
+                  const isCurrent =
+                    pathname === item.href ||
+                    (item.href !== "/" && pathname.startsWith(`${item.href}/`));
                   return (
                     <li key={item.label} className={styles.navItem}>
-                      <Link href={item.href} className={styles.navLink}>
+                      <Link
+                        href={item.href}
+                        className={`${styles.navLink} ${isCurrent ? styles.navLinkActive : ""}`}
+                        aria-current={isCurrent ? "page" : undefined}
+                      >
                         {item.label}
                       </Link>
                     </li>

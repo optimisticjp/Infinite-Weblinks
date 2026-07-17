@@ -23,38 +23,38 @@
 /* ---- Vortex (behind the mark) ---- */
 .vortexRings ellipse {
   fill: none;
-  stroke: rgba(168, 85, 247, 0.16);
-  stroke-width: 0.3;
+  stroke: rgba(168, 85, 247, 0.22);
+  stroke-width: 0.4;
 }
 .vortexRings {
   transform-box: view-box;
 }
 
-/* ---- Earth horizon ---- */
+/* ---- Earth horizon — a lit rim over the heroEarth glow that anchors the scene's base ---- */
 .earthRim {
   fill: none;
-  stroke: rgba(91, 155, 255, 0.32);
-  stroke-width: 0.6;
+  stroke: rgba(91, 155, 255, 0.46);
+  stroke-width: 0.85;
   stroke-linecap: round;
 }
 
 /* ---- Orbit paths ---- */
 .orbit {
   fill: none;
-  stroke: rgba(196, 190, 220, 0.22);
-  stroke-width: 0.3;
+  stroke: rgba(196, 190, 220, 0.3);
+  stroke-width: 0.42;
   stroke-dasharray: 0.6 2.2;
   stroke-linecap: round;
 }
 .orbitInner {
-  stroke: rgba(196, 190, 220, 0.14);
+  stroke: rgba(196, 190, 220, 0.2);
 }
 
 /* ---- Connection lines (draw on with stroke-dashoffset; pathLength=1) ---- */
 .line {
   fill: none;
-  stroke: rgba(196, 190, 220, 0.5);
-  stroke-width: 0.45;
+  stroke: rgba(196, 190, 220, 0.62);
+  stroke-width: 0.55;
   stroke-linecap: round;
   stroke-dasharray: 1;
   stroke-dashoffset: 0; /* complete/static by default; the intro hides then draws */
@@ -110,15 +110,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: clamp(44px, 11%, 56px);
-  height: clamp(44px, 11%, 56px);
+  width: clamp(46px, 11.5%, 58px);
+  height: clamp(46px, 11.5%, 58px);
   border-radius: 30%;
   color: var(--node-color, var(--violet));
-  background: color-mix(in srgb, var(--node-color, var(--violet)) 18%, var(--ink-900));
-  border: 1px solid color-mix(in srgb, var(--node-color, var(--violet)) 50%, transparent);
+  background: color-mix(in srgb, var(--node-color, var(--violet)) 24%, var(--ink-900));
+  border: 1.5px solid color-mix(in srgb, var(--node-color, var(--violet)) 64%, transparent);
   box-shadow:
-    0 0 18px color-mix(in srgb, var(--node-color, var(--violet)) 30%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    0 0 22px color-mix(in srgb, var(--node-color, var(--violet)) 42%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
 }
 .nodeIcon {
   width: 46%;
@@ -199,9 +199,12 @@
   gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-md);
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-md), var(--inset-hairline);
+  background: color-mix(in srgb, var(--ink-800) 78%, transparent);
+  border: 1px solid color-mix(in srgb, var(--card-accent, var(--cyan)) 34%, var(--glass-border));
+  box-shadow:
+    var(--shadow-md),
+    0 0 20px -8px color-mix(in srgb, var(--card-accent, var(--cyan)) 60%, transparent),
+    var(--inset-hairline);
   -webkit-backdrop-filter: blur(var(--blur-panel));
   backdrop-filter: blur(var(--blur-panel));
   white-space: nowrap;
@@ -210,7 +213,7 @@
 .cardIcon {
   width: 16px;
   height: 16px;
-  color: var(--text-3);
+  color: var(--card-accent, var(--cyan));
 }
 .cardText {
   font-size: var(--fs-xs);

@@ -32,6 +32,9 @@
 .heroLead {
   margin-bottom: var(--space-5);
 }
+.heroActions {
+  margin: var(--space-6) 0 var(--space-5);
+}
 .heroReassure {
   display: inline-flex;
   align-items: center;

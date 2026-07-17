@@ -5,6 +5,24 @@ import { getAccountOwnership } from "@/lib/content";
 import styles from "./AccountOwnershipSection.module.css";
 
 /**
+ * The systems we set up and connect on your behalf — every one created in your name, so
+ * the whole cluster stays yours (ref 13's right-hand tool constellation). Plain text
+ * labels + colour-coded nodes; decorative reinforcement of the ownership promise, so the
+ * list itself carries the meaning and the tiles are aria-hidden.
+ */
+const TOOLS: { label: string; icon: string; color: string }[] = [
+  { label: "Website & domain", icon: "globe", color: "var(--blue)" },
+  { label: "Analytics", icon: "bar-chart-3", color: "var(--cyan)" },
+  { label: "Advertising", icon: "target", color: "var(--orange)" },
+  { label: "Marketing & social", icon: "megaphone", color: "var(--pink)" },
+  { label: "CRM & data", icon: "database", color: "var(--violet)" },
+  { label: "Email", icon: "mail", color: "var(--blue-bright)" },
+  { label: "Ecommerce", icon: "shopping-bag", color: "var(--lime)" },
+  { label: "Automation", icon: "workflow", color: "var(--violet-bright)" },
+  { label: "Customer tools", icon: "message-square", color: "var(--orange-bright)" },
+];
+
+/**
  * "Your digital world, owned by you" (ref 13). The load-bearing ownership promise: we
  * build and connect everything in your name. Dark theme. The lit vault panel owns the
  * section's brightest value; the flow and guarantees run as ambient support. The closing
@@ -65,6 +83,20 @@ export async function AccountOwnershipSection({ anchorId }: { anchorId?: string 
               </li>
             ))}
           </ol>
+        </div>
+
+        <div className={styles.tools}>
+          <p className={styles.toolsLabel}>Set up and connected in your name</p>
+          <ul className={styles.toolsGrid}>
+            {TOOLS.map((t) => (
+              <li key={t.label} className={styles.tool} style={{ ["--accent" as string]: t.color }}>
+                <span className={styles.toolIcon} aria-hidden="true">
+                  <Icon name={t.icon} />
+                </span>
+                <span className={styles.toolLabel}>{t.label}</span>
+              </li>
+            ))}
+          </ul>
         </div>
 
         <ul className={styles.guarantees}>

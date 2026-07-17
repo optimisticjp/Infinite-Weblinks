@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, ArrowDown } from "lucide-react";
+import { Button } from "@/components/primitives/Button";
 import { Icon } from "@/components/primitives/Icon";
 import { GlobeArc } from "@/components/viz/GlobeArc";
 import { GrowthTroubleshooter } from "@/components/troubleshooter/GrowthTroubleshooter";
@@ -43,6 +44,16 @@ export default async function TroubleshooterPage() {
               Choose a business problem and get a simple explanation, useful checks and a sensible next step —
               built around the connected growth journey.
             </p>
+            <div className={styles.heroActions}>
+              <Button
+                href="#ts-select-heading"
+                variant="primary"
+                size="lg"
+                iconRight={<ArrowDown aria-hidden="true" />}
+              >
+                Diagnose my growth problem
+              </Button>
+            </div>
             <p className={styles.heroReassure}>
               <ShieldCheck aria-hidden="true" />
               See useful guidance without entering an email address.

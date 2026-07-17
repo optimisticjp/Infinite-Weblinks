@@ -8,7 +8,7 @@ import { Button } from "@/components/primitives/Button";
 import { Icon } from "@/components/primitives/Icon";
 import { IconTile } from "@/components/primitives/IconTile";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/seo/jsonld";
+import { breadcrumbJsonLd, itemListJsonLd, serviceJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getDeliveryModels, getGoals, getServiceCategories, getServices } from "@/lib/content";
 import styles from "./category.module.css";
@@ -77,6 +77,14 @@ export default async function ServiceCategoryPage({
           { name: "Services", path: "/services" },
           { name: category.name, path: `/services/${category.slug}` },
         ])}
+      />
+      {/* Service node: each category page is a real, provider-backed service offering. */}
+      <JsonLd
+        data={serviceJsonLd({
+          name: category.name,
+          description: category.intro,
+          path: `/services/${category.slug}`,
+        })}
       />
       {items.length > 0 && (
         <JsonLd

@@ -1,6 +1,8 @@
 .grid {
   display: grid;
-  grid-template-columns: 1fr;
+  /* minmax(0,1fr), not 1fr: the auto-min of a card with long meta could push the
+     single column a couple of px past a 320px viewport. minmax(0,…) lets it shrink. */
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-5);
   list-style: none;
   margin: 0;

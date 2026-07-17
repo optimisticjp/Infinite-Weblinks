@@ -15,15 +15,15 @@
 }
 .orbit {
   fill: none;
-  stroke: var(--orbit-stroke);
-  stroke-width: 0.4;
+  stroke: var(--orbit-stroke-strong);
+  stroke-width: 0.55;
   stroke-dasharray: 1.5 2.5;
 }
 .link {
   fill: none;
   stroke: var(--link-color);
-  stroke-width: 0.5;
-  opacity: 0.4;
+  stroke-width: 0.7;
+  opacity: 0.55;
   stroke-linecap: round;
 }
 
@@ -62,17 +62,17 @@
 .tile {
   display: grid;
   place-items: center;
-  width: 46px;
-  height: 46px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   color: var(--node-color);
-  background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--node-color) 26%, transparent), var(--surface-raised) 78%);
-  border: 1.5px solid color-mix(in srgb, var(--node-color) 55%, transparent);
-  box-shadow: 0 0 16px -4px var(--node-color);
+  background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--node-color) 34%, transparent), var(--surface-raised) 80%);
+  border: 1.5px solid color-mix(in srgb, var(--node-color) 66%, transparent);
+  box-shadow: 0 0 22px -4px var(--node-color);
 }
 .tile svg {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
 }
 
 .label {

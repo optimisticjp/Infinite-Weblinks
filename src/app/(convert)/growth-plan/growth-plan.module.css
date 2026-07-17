@@ -92,15 +92,19 @@
   z-index: 1;
   justify-self: end;
   width: 100%;
-  max-width: 15rem;
+  max-width: 16.5rem;
   display: grid;
   gap: var(--space-3);
   justify-items: center;
   padding: var(--space-6) var(--space-5);
   border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--violet) 12%, var(--surface-raised));
-  border: 1px solid color-mix(in srgb, var(--violet) 40%, transparent);
-  box-shadow: var(--glow-ambient);
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(168, 85, 247, 0.2), transparent 62%),
+    color-mix(in srgb, var(--violet) 16%, var(--surface-raised));
+  border: 1px solid color-mix(in srgb, var(--violet) 55%, transparent);
+  box-shadow:
+    var(--glow-ambient),
+    0 0 40px -14px var(--violet);
 }
 .planCardTitle {
   margin: 0;

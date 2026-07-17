@@ -70,6 +70,14 @@ export default async function HowItWorksPage() {
             </Button>
           </>
         }
+        aside={
+          <div className={styles.heroMark} aria-hidden="true">
+            <span className={styles.heroGlow} />
+            <span className={styles.heroRing} />
+            <span className={styles.heroRingInner} />
+            <InfinityMark size={188} glow />
+          </div>
+        }
       />
 
       {/* Overview — the whole system at a glance: the mark at the centre with the eight

@@ -2,7 +2,7 @@
   "name": "infinite-weblinks",
   "version": "0.1.0",
   "private": true,
-  "description": "Infinite Weblinks — Digital Growth Partner website (Milestone M2–M4 / GATE-1)",
+  "description": "Infinite Weblinks — Digital Growth Partner marketing website",
   "engines": {
     "node": ">=20.9.0"
   },
@@ -15,8 +15,6 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "probe:e2e": "node scripts/probe-e2e.mjs",
-    "screenshots": "node scripts/screenshots.mjs",
     "seed:export": "tsx scripts/export-sanity-seed.ts",
     "cf:build": "opennextjs-cloudflare build",
     "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",

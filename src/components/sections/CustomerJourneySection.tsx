@@ -38,7 +38,9 @@ export async function CustomerJourneySection({ anchorId }: { anchorId?: string }
           </Button>
         </div>
 
-        <div className={styles.strip} role="list" aria-label="Six connected customer-journey stages">
+        {/* tabIndex so the horizontally-scrolling strip is keyboard-operable
+            (WCAG 2.1.1 / axe scrollable-region-focusable). */}
+        <div className={styles.strip} role="list" tabIndex={0} aria-label="Six connected customer-journey stages">
           {steps.map((step, i) => (
             <div key={step.order} className={styles.stepCol} role="listitem" style={{ ["--accent" as string]: step.color }}>
               <span className={styles.stepBadge} aria-hidden="true">

@@ -49,3 +49,8 @@
   color: var(--nc-color);
   font-weight: 600;
 }
+/* On the light chip the accent alone fails AA on near-white; darken it toward ink so
+   the status line meets contrast while keeping a hint of its hue. */
+.light .detail {
+  color: color-mix(in srgb, var(--nc-color) 40%, var(--band-ink));
+}

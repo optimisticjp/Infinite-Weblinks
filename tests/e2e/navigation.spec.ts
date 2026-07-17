@@ -223,15 +223,16 @@ test.describe("Desktop mega-menu — promo column only when there's a promo (Def
   test("a promo-less panel does not reserve the 300px promo column", async ({ page }) => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
-    // Services has no promo. Its inner grid must be a single track — not two with a
-    // 300px column reserved for a card that isn't there (which squeezes the links).
-    const t = center((await page.getByRole("button", { name: "Services", exact: true }).boundingBox())!);
+    // Resources has no promo (the redesign gave Services a promo panel, matching the
+    // reference mega-menu). A promo-less panel's inner grid must be a single track — not
+    // two with a 300px column reserved for a card that isn't there (which squeezes links).
+    const t = center((await page.getByRole("button", { name: "Resources", exact: true }).boundingBox())!);
     await page.mouse.move(t.x, t.y);
-    await expect(page.locator("#mega-services")).toBeVisible();
+    await expect(page.locator("#mega-resources")).toBeVisible();
     const cols = await page
-      .locator("#mega-services > div")
+      .locator("#mega-resources > div")
       .evaluate((el) => getComputedStyle(el).gridTemplateColumns);
-    expect(cols.trim().split(/\s+/).length, `Services inner grid tracks: "${cols}"`).toBe(1);
+    expect(cols.trim().split(/\s+/).length, `Resources inner grid tracks: "${cols}"`).toBe(1);
 
     // How It Works DOES have a promo, so it keeps the two-track layout.
     await page.keyboard.press("Escape");

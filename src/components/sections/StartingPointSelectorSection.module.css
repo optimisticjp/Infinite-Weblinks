@@ -77,7 +77,9 @@
   margin-top: var(--space-2);
 }
 .order {
-  color: var(--accent);
+  /* Darkened accent so the ordinal meets AA on the daylight band (the node above
+     carries the full-strength accent). */
+  color: color-mix(in srgb, var(--accent) 45%, var(--band-ink));
   margin-right: 4px;
 }
 .situation {

@@ -145,5 +145,7 @@
   padding-top: var(--space-2);
   font-size: var(--fs-xs);
   font-weight: var(--fw-semibold);
-  color: color-mix(in srgb, var(--card-accent) 45%, var(--text-muted));
+  /* Theme-scoped muted text — guarantees AA on both dark cards and daylight cards
+     (the accent-mixed tint dropped below 4.5:1 on the dark surface). */
+  color: var(--text-muted);
 }

@@ -39,23 +39,40 @@ test.describe("Homepage opening", () => {
     ).toBeVisible();
   });
 
-  // Phase 2 regression guard: the homepage summarises and routes. The lean spine renders
-  // in order, and the exhaustive sections that moved to inner pages don't reappear here.
-  test("renders the Phase-2 section spine in order, with relocated sections gone", async ({
+  // Redesign guard: the homepage was recomposed to the reference master layout (a richer
+  // spine than the Phase-2 lean one — the connected journey, customer journey, starting
+  // points, examples, ways-of-working and ownership are now on the homepage by design).
+  // The spine still renders in the approved order, and the sections that genuinely belong
+  // on inner pages (tool universe, process steps, delivery deep-anchors, FAQ) don't appear.
+  test("renders the homepage section spine in order, with inner-page-only sections absent", async ({
     page,
   }) => {
     await page.goto("/");
     const ids = await page.evaluate(() =>
       [...document.querySelectorAll("section[id]")].map((s) => s.id),
     );
-    const spine = ["how-it-connects", "goals", "why-us", "services", "learn", "get-started"];
+    const spine = [
+      "goals",
+      "growth-journey",
+      "how-it-connects",
+      "customer-journey",
+      "where-you-are",
+      "services",
+      "examples",
+      "ways-of-working",
+      "ownership",
+      "why-us",
+      "learn",
+      "get-started",
+    ];
     expect(
       ids.filter((id) => spine.includes(id)),
       "homepage spine present and in order",
     ).toEqual(spine);
-    // These moved to /how-it-works, /goals, /tools, /faq — not the homepage.
-    for (const gone of ["growth-journey", "start", "tools", "how-we-deliver", "process", "faq"]) {
-      expect(ids, `#${gone} should have moved off the homepage`).not.toContain(gone);
+    // Still relocated to inner pages: the old startingPointSelector anchor ("start"),
+    // the tool universe, delivery deep-anchors ("how-we-deliver"), process steps and FAQ.
+    for (const gone of ["start", "tools", "how-we-deliver", "process", "faq"]) {
+      expect(ids, `#${gone} should not be on the homepage`).not.toContain(gone);
     }
   });
 

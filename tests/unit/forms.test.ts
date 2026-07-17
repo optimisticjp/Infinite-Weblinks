@@ -72,6 +72,30 @@ describe("contactSchema", () => {
   it("rejects a company name over 120 characters", () => {
     expect(contactSchema.safeParse({ ...base, company: "a".repeat(121) }).success).toBe(false);
   });
+
+  it("accepts an optional website, whether a bare domain or a full URL", () => {
+    expect(contactSchema.safeParse({ ...base, website: "acme.com" }).success).toBe(true);
+    expect(
+      contactSchema.safeParse({ ...base, website: "https://acme.co.uk/pricing" }).success,
+    ).toBe(true);
+  });
+
+  it("accepts a missing or empty website", () => {
+    expect(contactSchema.safeParse(base).success).toBe(true);
+    expect(contactSchema.safeParse({ ...base, website: "" }).success).toBe(true);
+  });
+
+  it("rejects a website over 200 characters", () => {
+    expect(
+      contactSchema.safeParse({ ...base, website: `https://${"a".repeat(200)}.com` }).success,
+    ).toBe(false);
+  });
+
+  it("rejects newline-smuggling in the website field", () => {
+    expect(
+      contactSchema.safeParse({ ...base, website: "acme.com\r\nBcc: attacker@evil.com" }).success,
+    ).toBe(false);
+  });
 });
 
 describe("growthPlanSchema", () => {
@@ -91,7 +115,9 @@ describe("growthPlanSchema", () => {
   });
 
   it("accepts a valid submission with an optional message", () => {
-    expect(growthPlanSchema.safeParse({ ...base, message: "Some extra context." }).success).toBe(true);
+    expect(growthPlanSchema.safeParse({ ...base, message: "Some extra context." }).success).toBe(
+      true,
+    );
   });
 
   it("rejects an existingSetup value outside the locked, neutral options", () => {
@@ -105,11 +131,15 @@ describe("growthPlanSchema", () => {
   });
 
   it("rejects a timeline value that isn't one of the locked options", () => {
-    expect(growthPlanSchema.safeParse({ ...base, timeline: "Whenever, I guess" }).success).toBe(false);
+    expect(growthPlanSchema.safeParse({ ...base, timeline: "Whenever, I guess" }).success).toBe(
+      false,
+    );
   });
 
   it("rejects a malformed slug for businessType", () => {
-    expect(growthPlanSchema.safeParse({ ...base, businessType: "Not A Slug!" }).success).toBe(false);
+    expect(growthPlanSchema.safeParse({ ...base, businessType: "Not A Slug!" }).success).toBe(
+      false,
+    );
   });
 
   it("rejects an empty businessType", () => {

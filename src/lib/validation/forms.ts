@@ -19,7 +19,10 @@ import {
 const HEADER_INJECTION_RE = /[\r\n,;]/;
 
 const noHeaderInjection = <T extends z.ZodString>(schema: T, label: string) =>
-  schema.refine((v) => !HEADER_INJECTION_RE.test(v), `${label} cannot contain line breaks, commas or semicolons.`);
+  schema.refine(
+    (v) => !HEADER_INJECTION_RE.test(v),
+    `${label} cannot contain line breaks, commas or semicolons.`,
+  );
 
 /** Known contact subjects (includes the `?subject=growth-goals` deep-link target). */
 export const CONTACT_SUBJECTS = ["growth-goals", "general", "services"] as const;
@@ -56,9 +59,18 @@ const slugSchema = (label: string) =>
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/i, `That ${label} value looks invalid.`);
 
 /** Hidden anti-bot field (`_gotcha`). Must stay empty — any content trips a silent reject. */
-const honeypotSchema = z
+const honeypotSchema = z.string().max(0, "Leave this field empty.").optional();
+
+/** Optional website URL for the enquiry — pure context forwarded to the inbox, never
+ * used as an email header, so only newline-smuggling needs guarding (not the full
+ * comma/semicolon header set). Kept forgiving on format: people paste "acme.com" as
+ * often as a full URL, and rejecting that would cost a genuine enquiry for no security
+ * gain. Empty string is allowed (the client sends `undefined` when blank anyway). */
+const websiteSchema = z
   .string()
-  .max(0, "Leave this field empty.")
+  .trim()
+  .max(200, "Website address must be 200 characters or fewer.")
+  .refine((v) => !/[\r\n]/.test(v), "Website address cannot contain line breaks.")
   .optional();
 
 /** Verified server-side against Cloudflare siteverify; optional here because an
@@ -81,6 +93,7 @@ export const contactSchema = z.object({
     .min(10, "Message must be at least 10 characters.")
     .max(2000, "Message must be 2000 characters or fewer."),
   company: z.string().trim().max(120, "Company must be 120 characters or fewer.").optional(),
+  website: websiteSchema,
   _gotcha: honeypotSchema,
   turnstileToken: turnstileTokenSchema,
   elapsedMs: elapsedMsSchema,

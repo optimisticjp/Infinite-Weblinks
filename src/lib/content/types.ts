@@ -111,6 +111,13 @@ export interface HeroContent {
   primaryCta: Cta;
   secondaryCta: Cta;
   areas: HeroArea[];
+  /**
+   * Named example platforms shown as a plain-text rail below the hero ("the tools
+   * your business already uses"). These mirror the approved `exampleTools` in
+   * src/lib/content/data/* — real tool names we can connect, never presented as
+   * partners or clients (brief). Text only; the repo ships no third-party logos.
+   */
+  platforms: string[];
 }
 
 /* ------------------------------------------------------------------ taxonomy */

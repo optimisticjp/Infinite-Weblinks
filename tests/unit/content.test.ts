@@ -7,8 +7,24 @@ import { seedChrome, seedHero } from "@/lib/content/seed";
  * non-approved CTA.
  */
 describe("content guardrails", () => {
-  it("the hero has exactly six connected areas", () => {
-    expect(seedHero.areas).toHaveLength(6);
+  it("the hero has exactly five primary connected domains", () => {
+    expect(seedHero.areas).toHaveLength(5);
+    expect(seedHero.areas.map((a) => a.label)).toEqual([
+      "Website",
+      "Marketing",
+      "Customer Tools",
+      "Automation",
+      "Analytics",
+    ]);
+  });
+
+  it("the platform rail lists real named tools (text only, no fabricated proof)", () => {
+    expect(seedHero.platforms.length).toBeGreaterThan(0);
+    // Every rail name is an approved example tool used elsewhere in the content.
+    for (const name of seedHero.platforms) {
+      expect(typeof name).toBe("string");
+      expect(name.length).toBeGreaterThan(0);
+    }
   });
 
   it("primary CTA is email-led (Build My Digital Growth Plan → /growth-plan)", () => {

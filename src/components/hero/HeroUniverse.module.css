@@ -1,7 +1,11 @@
+/* Cinematic connected-universe scene. A square coordinate box (0–100) at every
+   breakpoint, so SVG paths and absolutely-positioned HTML nodes share one grid.
+   The mark owns the brightest value; everything else runs dimmer (the light budget). */
+
 .universe {
   position: relative;
   width: 100%;
-  max-width: 34rem;
+  max-width: 38rem;
   margin-inline: auto;
   aspect-ratio: 1 / 1;
 }
@@ -11,46 +15,256 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  overflow: visible;
+  /* Clip the Earth (and any bleed) to the square so nothing extends past the column
+     and forces horizontal scroll. */
+  overflow: hidden;
 }
 
-.lines {
-  color: var(--violet);
+/* ---- Vortex (behind the mark) ---- */
+.vortexRings ellipse {
+  fill: none;
+  stroke: rgba(168, 85, 247, 0.16);
+  stroke-width: 0.3;
 }
+.vortexRings {
+  transform-box: view-box;
+}
+
+/* ---- Earth horizon ---- */
+.earthRim {
+  fill: none;
+  stroke: rgba(91, 155, 255, 0.32);
+  stroke-width: 0.6;
+  stroke-linecap: round;
+}
+
+/* ---- Orbit paths ---- */
+.orbit {
+  fill: none;
+  stroke: rgba(196, 190, 220, 0.22);
+  stroke-width: 0.3;
+  stroke-dasharray: 0.6 2.2;
+  stroke-linecap: round;
+}
+.orbitInner {
+  stroke: rgba(196, 190, 220, 0.14);
+}
+
+/* ---- Connection lines (draw on with stroke-dashoffset; pathLength=1) ---- */
 .line {
   fill: none;
   stroke: rgba(196, 190, 220, 0.5);
-  stroke-width: 0.4;
+  stroke-width: 0.45;
   stroke-linecap: round;
-  stroke-dasharray: 1; /* pathLength=1 → dashoffset 1 hides, 0 draws */
-  filter: drop-shadow(0 0 2px rgba(168, 85, 247, 0.5));
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0; /* complete/static by default; the intro hides then draws */
+}
+.connDot {
+  fill: rgba(245, 245, 255, 0.4);
+}
+.aiLink {
+  fill: none;
+  stroke: rgba(181, 113, 255, 0.35);
+  stroke-width: 0.3;
+  stroke-dasharray: 0.5 1.8;
+  stroke-linecap: round;
 }
 
+/* ---- Crossover core glow (revealed through the mask cut) ---- */
+.crossGlow {
+  mix-blend-mode: screen;
+}
+
+/* ---- The Signature Crossover mark — the one bright thing (single bloom pass) ---- */
+.markSharp {
+  color: inherit;
+}
+.markBloom {
+  filter: url(#heroBloom);
+  opacity: 0.9;
+}
+
+/* ---- Travelling signal (soft gradient dot; fill set in JSX, no filter) ---- */
 .pulse {
-  fill: #ffffff;
-  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.9))
-    drop-shadow(0 0 6px rgba(245, 25, 126, 0.7));
+  opacity: 0; /* hidden until it travels; static state shows no moving signal */
+  mix-blend-mode: screen;
+  will-change: transform;
 }
 
-/* Domain nodes */
+/* ---- Domain nodes ---- */
 .node {
   position: absolute;
+  left: var(--nx);
+  top: var(--ny);
   transform: translate(-50%, -50%);
+  z-index: 2;
+}
+.nodeInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  will-change: transform, opacity;
+}
+.nodeTile {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: clamp(44px, 12%, 62px);
-  height: clamp(44px, 12%, 62px);
+  width: clamp(44px, 11%, 56px);
+  height: clamp(44px, 11%, 56px);
   border-radius: 30%;
   color: var(--node-color, var(--violet));
-  background: color-mix(in srgb, var(--node-color, var(--violet)) 20%, #0a0715);
-  border: 1px solid color-mix(in srgb, var(--node-color, var(--violet)) 55%, transparent);
+  background: color-mix(in srgb, var(--node-color, var(--violet)) 18%, var(--ink-900));
+  border: 1px solid color-mix(in srgb, var(--node-color, var(--violet)) 50%, transparent);
   box-shadow:
-    0 0 26px color-mix(in srgb, var(--node-color, var(--violet)) 45%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.14);
-  will-change: transform;
+    0 0 18px color-mix(in srgb, var(--node-color, var(--violet)) 30%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 .nodeIcon {
   width: 46%;
   height: 46%;
+}
+.nodeLabel {
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--text-2);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  text-shadow: 0 1px 8px rgba(7, 5, 15, 0.85);
+}
+
+/* Node positions (desktop) — a pentagon around the mark. */
+.website {
+  --nx: 50%;
+  --ny: 13%;
+}
+.marketing {
+  --nx: 13%;
+  --ny: 37%;
+}
+.customer {
+  --nx: 87%;
+  --ny: 37%;
+}
+.automation {
+  --nx: 74%;
+  --ny: 80%;
+}
+.analytics {
+  --nx: 26%;
+  --ny: 80%;
+}
+
+/* ---- AI secondary waypoint (dim, small — never a primary node) ---- */
+.ai {
+  --nx: 50%;
+  --ny: 89%;
+}
+.aiInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  will-change: transform, opacity;
+}
+.aiTile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(24px, 6%, 32px);
+  height: clamp(24px, 6%, 32px);
+  border-radius: 30%;
+  color: var(--violet-bright);
+  background: color-mix(in srgb, var(--violet-bright) 12%, var(--ink-900));
+  border: 1px solid color-mix(in srgb, var(--violet-bright) 28%, transparent);
+}
+.aiIcon {
+  width: 48%;
+  height: 48%;
+}
+.aiLabel {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  color: var(--text-3);
+}
+
+/* ---- Floating interface cards ---- */
+.card {
+  position: absolute;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-md), var(--inset-hairline);
+  -webkit-backdrop-filter: blur(var(--blur-panel));
+  backdrop-filter: blur(var(--blur-panel));
+  white-space: nowrap;
+  will-change: transform, opacity;
+}
+.cardIcon {
+  width: 16px;
+  height: 16px;
+  color: var(--text-3);
+}
+.cardText {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--text-1);
+}
+.cardTop {
+  top: 1%;
+  left: 0;
+}
+.cardBottom {
+  bottom: 3%;
+  right: 0;
+}
+
+/* ---- Desktop / mobile network switch ---- */
+.mobileNet {
+  display: none;
+}
+
+/* =========================================================================
+   MOBILE — its own composition, not a shrunken desktop network.
+   Central mark + one simple path sequence, at most three visible nodes.
+   Cards, satellites, secondary orbits, the Earth and the AI waypoint are gone.
+   ========================================================================= */
+@media (max-width: 719px) {
+  .universe {
+    max-width: 22rem;
+  }
+  .desktopNet,
+  .earth,
+  .orbits,
+  .ai,
+  .pulse,
+  .card {
+    display: none;
+  }
+  .mobileNet {
+    display: inline;
+  }
+  .customer,
+  .automation {
+    display: none;
+  }
+  .website {
+    --nx: 50%;
+    --ny: 12%;
+  }
+  .marketing {
+    --nx: 24%;
+    --ny: 80%;
+  }
+  .analytics {
+    --nx: 76%;
+    --ny: 80%;
+  }
 }

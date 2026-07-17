@@ -57,7 +57,7 @@ export async function GoalExplorerSection({ anchorId }: { anchorId?: string }) {
                 Featured
               </span>
             </span>
-            <IconTile color={featured.color} variant="filled" size={56} className={styles.featuredIcon}>
+            <IconTile color={featured.color} variant="filled" size={64} className={styles.featuredIcon}>
               <Icon name={featured.icon} />
             </IconTile>
             <h3 className={styles.featuredTitle}>{featured.title}</h3>
@@ -78,7 +78,7 @@ export async function GoalExplorerSection({ anchorId }: { anchorId?: string }) {
                     </span>
                     <ArrowRight className={styles.cardArrow} aria-hidden="true" size={18} />
                   </span>
-                  <IconTile color={g.color} variant="outline" size={44}>
+                  <IconTile color={g.color} variant="outline" size={52}>
                     <Icon name={g.icon} />
                   </IconTile>
                   <h3 className={styles.title}>{g.title}</h3>

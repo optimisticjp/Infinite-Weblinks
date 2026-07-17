@@ -136,9 +136,9 @@ export default async function GrowthPlanPage() {
                   d={`M0 ${y} C 42 ${y}, 58 50, 100 50`}
                   fill="none"
                   stroke={color}
-                  strokeWidth="0.7"
+                  strokeWidth="1"
                   strokeLinecap="round"
-                  opacity="0.55"
+                  opacity="0.72"
                 />
               ))}
             </svg>

@@ -3,12 +3,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronDown, Menu } from "lucide-react";
+import { ArrowUpRight, ChevronDown, ChevronRight, Compass, Menu } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/primitives/Button";
+import { Icon } from "@/components/primitives/Icon";
 import type { NavItem, SiteNav } from "@/lib/content/types";
 import { MobileNav } from "./MobileNav";
 import styles from "./SiteHeader.module.css";
+
+/** Per-column accent, cycled — matches the four-phase colour story in the reference
+    mega-menu (build → discover → convert → operate). Decorative only; the promo CTA
+    owns the panel's one bright element (the light budget). */
+const MEGA_COL_ACCENTS = ["var(--blue)", "var(--violet)", "var(--pink)", "var(--orange)"];
 
 type Pt = { x: number; y: number };
 
@@ -27,23 +33,41 @@ function MegaPanel({ item, panelId }: { item: NavItem; panelId: string }) {
   const menu = item.megaMenu!;
   return (
     <div id={panelId} className={styles.megaPanel} role="group" aria-label={menu.title}>
+      {/* Keep `.megaInner` as the panel's DIRECT child grid: its track count (1 without a
+          promo, 2 with) is a contract exercised by the nav e2e suite, and its content box
+          shares the header's left edge. Only the styling + inner markup change here. */}
       <div
         className={`iw-container iw-container--wide ${styles.megaInner} ${
           menu.promo ? styles.megaInnerPromo : ""
         }`}
       >
-        <div className={styles.megaColumns}>
-          {menu.columns.map((col) => (
-            <div key={col.heading} className={styles.megaColumn}>
+        <div
+          className={styles.megaColumns}
+          style={{ ["--mega-cols" as string]: menu.columns.length }}
+        >
+          {menu.columns.map((col, i) => (
+            <div
+              key={col.heading}
+              className={styles.megaColumn}
+              style={{ ["--col-accent" as string]: MEGA_COL_ACCENTS[i % MEGA_COL_ACCENTS.length] }}
+            >
               <p className={styles.megaHeading}>{col.heading}</p>
               <ul className={styles.megaLinks}>
                 {col.items.map((link) => (
                   <li key={link.label + link.href}>
                     <Link href={link.href} className={styles.megaLink}>
-                      <span className={styles.megaLinkLabel}>{link.label}</span>
-                      {link.description && (
-                        <span className={styles.megaLinkDesc}>{link.description}</span>
-                      )}
+                      {link.icon ? (
+                        <span className={styles.megaLinkIcon} aria-hidden="true">
+                          <Icon name={link.icon} />
+                        </span>
+                      ) : null}
+                      <span className={styles.megaLinkText}>
+                        <span className={styles.megaLinkLabel}>{link.label}</span>
+                        {link.description ? (
+                          <span className={styles.megaLinkDesc}>{link.description}</span>
+                        ) : null}
+                      </span>
+                      <ChevronRight className={styles.megaLinkChevron} aria-hidden="true" />
                     </Link>
                   </li>
                 ))}
@@ -52,13 +76,27 @@ function MegaPanel({ item, panelId }: { item: NavItem; panelId: string }) {
           ))}
         </div>
         {menu.promo && (
-          <div className={styles.megaPromo}>
+          <aside className={styles.megaPromo}>
+            <span className={styles.megaPromoGlyph} aria-hidden="true">
+              <Compass />
+            </span>
             <p className={styles.megaPromoHeading}>{menu.promo.heading}</p>
             <p className={styles.megaPromoBody}>{menu.promo.body}</p>
-            <Button href={menu.promo.cta.route} variant="primary" size="sm">
-              {menu.promo.cta.label}
-            </Button>
-          </div>
+            <div className={styles.megaPromoActions}>
+              <Button
+                href={menu.promo.cta.route}
+                variant="primary"
+                size="sm"
+                iconRight={<ArrowUpRight aria-hidden="true" />}
+              >
+                {menu.promo.cta.label}
+              </Button>
+              <Link href={item.href} className={styles.megaPromoLink}>
+                View all {menu.title}
+                <ChevronRight aria-hidden="true" />
+              </Link>
+            </div>
+          </aside>
         )}
       </div>
     </div>

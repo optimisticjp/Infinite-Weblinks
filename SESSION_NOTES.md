@@ -1,3 +1,35 @@
+# Reference-Driven Redesign — Infinite Weblinks
+
+**Branch:** `claude/design-references-review-igh5i6`
+**Date:** 17 July 2026
+**Status:** Full visual redesign to the `docs/design-references/` target implemented, verified green, pushed. Nothing merged to `main`.
+
+## What shipped
+- **Design foundation:** extended tokens (daylight `--band-bright` theme, connection/orbit strokes, `--grad-path`, soft/ambient glows for secondary lights, `--glass-shadow`, `--dur-entrance`). No arbitrary values; light budget honoured (one bright element per section, gradient text still only on the hero H1 + final CTA, no glow on cream bands).
+- **New shared viz primitives:** `InfinityMark`, `Constellation`, `JourneyTimeline`, `PhoneFrame`, `NotificationCard`, `GlobeArc`, and a `Card` primitive.
+- **Homepage recomposed** to the master reference (ref 11): dark hero → cream "digital world" → goals → connected journey → cream "systems that connect" → customer-journey phones → cream "where are you" selector → services constellation → connected examples → cream "ways of working" → account ownership → why-us → proof (gated) → cream resources → gradient final CTA.
+- **Three new sections:** CustomerJourney (ref 15), ConnectedExamples (ref 16), AccountOwnership (ref 13) + their code-authoritative content.
+- **Growth Troubleshooter** (ref 06): new `/troubleshooter` route + interactive click-driven diagnostic (8 problems → reasons → checks → focus-first), content model, footer link, nav-integrity allowlist updated.
+- **Restyled** every homepage section, the hero (richer floating cards), the header + 4-column icon mega-menu (ref 03), full-screen mobile nav (ref 04), multi-column footer + radiating final CTA (ref 19), the Contact (ref 02) and Growth-plan builder (ref 09) pages, and the How-It-Works / Services / Goals / About pages + shared route blocks (PageHero, IndexCard).
+
+## Verification (green on pushed HEAD)
+- `eslint .` — 0 errors, 0 warnings
+- `tsc --noEmit` — 0 errors
+- `vitest run` — 124 passed (10 files), incl. content-integrity, nav-integrity, container-contract, forms, growth-plan
+- `next build --webpack` — ✓ all routes prerender, incl. `/troubleshooter`
+- Screenshots (69, 6 viewports 360–1440) captured against the production server: strong reference match, no horizontal overflow, reduced-motion renders the complete static end-state, mega-menu + mobile-nav verified.
+
+## What remains / not verified
+- **Playwright e2e (`npm run test:e2e`) was not run** and is expected to need assertion updates for the intentional redesign — at least `navigation.spec.ts` ("Defect 4" now-present Services promo) and `homepage.spec.ts` (final-CTA centering). The unit suite (`npm run test`) is green.
+- Form/builder logic, field names, validation, API routes and the growth-plan state machine were preserved byte-for-byte (restyle only).
+- Real proof (case studies/testimonials) stays status-gated → renders nothing, as designed.
+
+## What surprised
+- The existing hero was already close to ref 07 and law-compliant (5 nodes + AI, single bloom), so it was enriched, not rebuilt.
+- The "digital world" editorial band already carried ref 18's exact copy — it only needed the ecosystem visual.
+
+---
+
 # Overnight Build Report — Infinite Weblinks (M5 → M10)
 
 **Branch:** `impl/full-site-build` (based on `origin/main`, GATE-1)

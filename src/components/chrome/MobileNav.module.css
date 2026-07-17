@@ -26,16 +26,33 @@
   }
 }
 
+/* One restrained ambient glow, low in the sheet — the horizon hint from the reference.
+   It stays well under the primary CTA, which owns the sheet's bright element. */
+.glow {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 42%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(70% 60% at 50% 100%, rgba(109, 40, 217, 0.28), transparent 70%),
+    radial-gradient(50% 50% at 82% 96%, rgba(245, 25, 126, 0.14), transparent 72%);
+}
+
 .dialogHead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: var(--header-h);
   padding-inline: var(--gutter);
   border-bottom: 1px solid var(--border-1);
-  position: sticky;
-  top: 0;
-  background: var(--ink-950);
+  background: color-mix(in srgb, var(--ink-950) 88%, transparent);
+  backdrop-filter: blur(var(--blur-panel));
+  -webkit-backdrop-filter: blur(var(--blur-panel));
   color: var(--text-1);
 }
 .close {
@@ -49,6 +66,10 @@
   background: rgba(255, 255, 255, 0.04);
   color: var(--text-1);
   cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+.close:hover {
+  background: rgba(255, 255, 255, 0.09);
 }
 .close > svg {
   width: 22px;
@@ -56,10 +77,12 @@
 }
 
 .body {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  padding: var(--space-6) var(--gutter) var(--space-12);
-  gap: var(--space-2);
+  flex: 1;
+  padding: var(--space-4) var(--gutter) var(--space-12);
 }
 .list {
   list-style: none;
@@ -75,38 +98,46 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  min-height: 56px;
-  padding: var(--space-4) var(--space-2);
+  min-height: 60px;
+  padding: var(--space-4) var(--space-1);
   border: 0;
   border-bottom: 1px solid var(--border-1);
   background: transparent;
   color: var(--text-1);
   font-family: var(--font-display);
   font-weight: var(--fw-bold);
-  font-size: var(--fs-h4);
+  font-size: var(--fs-h3);
+  letter-spacing: -0.01em;
   text-align: left;
   cursor: pointer;
 }
 .chevron {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
+  flex: none;
   transition: transform var(--dur-base) var(--ease-out);
   color: var(--text-3);
 }
 .chevron[data-open="true"] {
   transform: rotate(180deg);
+  color: var(--violet-bright);
 }
 
 .panel {
-  padding: var(--space-3) var(--space-2) var(--space-6);
+  padding: var(--space-2) 0 var(--space-6);
   display: grid;
   gap: var(--space-5);
 }
 .overviewLink {
   display: inline-flex;
+  align-items: center;
+  min-height: var(--target-min);
   font-size: var(--fs-sm);
   font-weight: var(--fw-semibold);
   color: var(--violet-bright);
+}
+.overviewLink:hover {
+  color: var(--pink-bright);
 }
 .panelHeading {
   font-family: var(--font-mono);
@@ -124,9 +155,11 @@
   gap: 2px;
 }
 .subLink {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
   min-height: var(--target-min);
-  padding: var(--space-3);
+  padding: var(--space-2) var(--space-2);
   border-radius: var(--radius-md);
   color: var(--text-2);
   font-size: var(--fs-body);
@@ -135,12 +168,56 @@
   background: rgba(255, 255, 255, 0.06);
   color: var(--text-1);
 }
+.subIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: var(--radius-sm);
+  color: var(--violet-bright);
+  background: color-mix(in srgb, var(--violet) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--violet) 30%, transparent);
+}
+.subIcon > svg {
+  width: 18px;
+  height: 18px;
+}
+.subLabel {
+  min-width: 0;
+}
 
+.footer {
+  margin-top: auto;
+  padding-top: var(--space-8);
+}
 .ctas {
   display: grid;
   gap: var(--space-3);
-  margin-top: var(--space-8);
 }
 .cta {
   width: 100%;
+}
+.email {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+  min-height: var(--target-min);
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+.email:hover {
+  color: var(--text-1);
+}
+.emailIcon {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  color: var(--violet-bright);
+}
+.emailAddr {
+  color: var(--text-1);
+  font-weight: var(--fw-semibold);
 }

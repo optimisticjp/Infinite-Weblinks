@@ -69,6 +69,7 @@ export default async function GoalDetailPage({
         title={goal.title}
         intro={goal.outcome}
         breadcrumbs={[{ name: "Goals", path: "/goals" }, { name: goal.title }]}
+        accent={goal.color}
         actions={
           <Button href="/growth-plan" variant="primary">
             Build My Digital Growth Plan
@@ -76,7 +77,11 @@ export default async function GoalDetailPage({
         }
       />
 
-      <section className="theme-band iw-section" aria-labelledby="goal-body-heading">
+      <section
+        className="theme-band iw-section"
+        aria-labelledby="goal-body-heading"
+        style={{ ["--accent" as string]: goal.color }}
+      >
         <div className="iw-container">
           <div className={styles.layout}>
             <div className={styles.main}>

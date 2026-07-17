@@ -1,7 +1,7 @@
 .wrap {
   display: grid;
   gap: var(--space-6);
-  max-width: 44rem;
+  width: 100%;
 }
 
 .honeypotWrap {
@@ -21,13 +21,66 @@
   grid-template-columns: 1fr;
   gap: var(--space-5);
 }
-@media (min-width: 640px) {
+@media (min-width: 560px) {
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 .fullWidth {
   grid-column: 1 / -1;
+}
+
+/* Input adornments — a muted glyph on the leading edge of each control. Decorative:
+   colour comes from the field's own state, never the sole carrier of meaning. */
+.inputWrap {
+  position: relative;
+  display: block;
+}
+.inputIcon {
+  position: absolute;
+  left: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+.hasIcon {
+  padding-left: var(--space-10);
+}
+
+/* Native select — custom chevron, left glyph, room for both. */
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: var(--space-10);
+  cursor: pointer;
+}
+.selectChevron {
+  position: absolute;
+  right: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+/* Message textarea + live character counter. */
+.textareaWrap {
+  position: relative;
+  display: block;
+}
+.counter {
+  position: absolute;
+  right: var(--space-3);
+  bottom: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+.counterFull {
+  color: var(--warning);
 }
 
 .errorSummary {
@@ -75,16 +128,35 @@
 }
 
 .actions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  gap: var(--space-3);
+  justify-items: center;
+}
+
+/* Full-width primary CTA — the one bright element inside the form card. */
+.submit {
+  width: 100%;
+}
+
+.reassure {
+  margin: 0;
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-5);
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--text-body);
+}
+.reassureIcon {
+  flex: none;
+  color: var(--lime);
 }
 
 .fallback {
   margin: 0;
   font-size: var(--fs-sm);
   color: var(--text-muted);
+  text-align: center;
 }
 .fallback a {
   display: inline-flex;

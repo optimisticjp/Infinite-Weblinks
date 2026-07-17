@@ -10,16 +10,21 @@ type PageHeroProps = {
   breadcrumbs?: Crumb[];
   /** Optional actions row (CTAs) rendered under the intro. */
   actions?: ReactNode;
-  /** Optional aside rendered to the right on wide screens (e.g. meta chips). */
+  /** Optional aside rendered to the right on wide screens (e.g. a category tile, a mark). */
   aside?: ReactNode;
   align?: "start" | "center";
+  /** Accent hue for the eyebrow + ambient glow. Lets a category/goal page tint its own
+      header. Defaults to the brand violet. Never gradient text — that stays reserved for
+      the homepage hero and the final CTA. */
+  accent?: string;
 };
 
 /**
- * Shared route header — a compact dark band sitting directly under the sticky site
- * header. Consistent breadcrumb + H1 + intro for every listing and detail page, so the
- * whole site shares one page-opening rhythm. Reads the section theme tokens, so it stays
- * correct if ever placed on a non-dark surface.
+ * Shared route header — a premium dark cosmic band sitting directly under the sticky site
+ * header. Consistent breadcrumb + eyebrow + H1 + intro for every listing and detail page,
+ * so the whole site shares one page-opening rhythm. The H1 owns the brightest value in the
+ * band (light budget); the ambient starfield + accent glow behind it run far quieter. Reads
+ * the section theme tokens, so it stays correct if ever placed on a non-dark surface.
  */
 export function PageHero({
   eyebrow,
@@ -29,12 +34,15 @@ export function PageHero({
   actions,
   aside,
   align = "start",
+  accent = "var(--violet)",
 }: PageHeroProps) {
   return (
     <section
       className={`theme-dark ${styles.hero} ${align === "center" ? styles.center : ""}`}
       aria-labelledby="page-hero-title"
+      style={{ ["--hero-accent" as string]: accent }}
     >
+      <span className={styles.field} aria-hidden="true" />
       <div className="iw-container">
         {breadcrumbs && breadcrumbs.length > 0 && (
           <div className={styles.crumbs}>
@@ -43,7 +51,7 @@ export function PageHero({
         )}
         <div className={styles.row}>
           <div className={styles.lead}>
-            {eyebrow && <p className="iw-eyebrow">{eyebrow}</p>}
+            {eyebrow && <p className={`iw-eyebrow ${styles.eyebrow}`}>{eyebrow}</p>}
             <h1 id="page-hero-title" className={styles.title}>
               {title}
             </h1>

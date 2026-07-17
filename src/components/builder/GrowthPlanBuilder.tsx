@@ -1,8 +1,24 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import {
+  Briefcase,
+  TrendingUp,
+  Target,
+  Monitor,
+  Users,
+  Clock,
+  Mail,
+  Star,
+  Check,
+  ShieldCheck,
+  ArrowRight,
+  ArrowLeft,
+  type LucideIcon,
+} from "lucide-react";
 import { Button } from "@/components/primitives/Button";
 import { FormField } from "@/components/forms/FormField";
+import { IconTile } from "@/components/primitives/IconTile";
 import { TurnstileField } from "@/components/forms/Turnstile";
 import { GrowthPlanResult } from "./GrowthPlanResult";
 import { resolve } from "@/lib/growth-plan/engine";
@@ -59,6 +75,53 @@ const STEP_TITLES: Record<StepId, string> = {
   contact: "How can we reach you?",
   review: "Review your answers",
 };
+
+/** Short labels for the stepper + live tracker (the question above stays the long form). */
+const STEP_SHORT: Record<StepId, string> = {
+  businessType: "Business",
+  currentStage: "Stage",
+  mainGoal: "Goal",
+  existingSetup: "Current setup",
+  engagement: "Engagement",
+  timeline: "Timeline",
+  contact: "Details",
+  review: "Your plan",
+};
+
+const STEP_SUBTITLE: Record<StepId, string> = {
+  businessType: "Choose the option that fits you most.",
+  currentStage: "This helps us pitch advice at the right level.",
+  mainGoal: "Pick the outcome that matters most right now.",
+  existingSetup: "Tell us what you already have running.",
+  engagement: "There's no wrong answer — it just shapes the plan.",
+  timeline: "So we know how to sequence things.",
+  contact: "So we can send your plan and follow up.",
+  review: "Check everything looks right before we build it.",
+};
+
+const STEP_ICON: Record<StepId, LucideIcon> = {
+  businessType: Briefcase,
+  currentStage: TrendingUp,
+  mainGoal: Target,
+  existingSetup: Monitor,
+  engagement: Users,
+  timeline: Clock,
+  contact: Mail,
+  review: Star,
+};
+
+const STEP_COLOR: Record<StepId, string> = {
+  businessType: "var(--violet)",
+  currentStage: "var(--pink)",
+  mainGoal: "var(--orange)",
+  existingSetup: "var(--cyan)",
+  engagement: "var(--lime)",
+  timeline: "var(--blue)",
+  contact: "var(--violet-bright)",
+  review: "var(--pink-bright)",
+};
+
+type StepState = "done" | "current" | "pending";
 
 interface Option {
   value: string;
@@ -178,6 +241,9 @@ function OptionGroup({
                   onChange={() => onChange(opt.value)}
                   className={styles.optionInput}
                 />
+                <span className={styles.optionCheck} aria-hidden="true">
+                  <Check size={14} strokeWidth={3} />
+                </span>
                 <span className={styles.optionLabel}>{opt.label}</span>
                 {opt.description ? <span className={styles.optionDescription}>{opt.description}</span> : null}
               </label>
@@ -383,6 +449,10 @@ export function GrowthPlanBuilder({ businessTypes, goals, stages }: GrowthPlanBu
     );
   }
 
+  function stateFor(i: number): StepState {
+    return i < stepIndex ? "done" : i === stepIndex ? "current" : "pending";
+  }
+
   return (
     <form className={styles.wrap} onSubmit={handleSubmit} noValidate>
       {/* Honeypot: hidden from sighted and keyboard users, must stay empty. */}
@@ -399,221 +469,280 @@ export function GrowthPlanBuilder({ businessTypes, goals, stages }: GrowthPlanBu
         />
       </div>
 
-      <div className={styles.progressRow}>
-        <p className={styles.progressLabel}>
-          Step {stepIndex + 1} of {totalSteps}
-        </p>
-        <div className={styles.progressTrack} aria-hidden="true">
-          <div
-            className={styles.progressFill}
-            style={{ width: `${((stepIndex + 1) / totalSteps) * 100}%` }}
-          />
-        </div>
-      </div>
       <div className={styles.visuallyHidden} aria-live="polite">
         {`Step ${stepIndex + 1} of ${totalSteps}: ${STEP_TITLES[step]}`}
       </div>
 
-      <h2 className={styles.stepHeading} tabIndex={-1} ref={stepHeadingRef}>
-        {STEP_TITLES[step]}
-      </h2>
+      {/* Numbered step indicator (wide screens) — decorative; progress is announced above. */}
+      <ol className={styles.stepper} aria-hidden="true">
+        {STEP_ORDER.map((s, i) => {
+          const state = stateFor(i);
+          return (
+            <li key={s} className={`${styles.stepperItem} ${styles[state]}`}>
+              <span className={styles.stepperNode}>
+                {state === "done" ? <Check size={16} strokeWidth={3} /> : i + 1}
+              </span>
+              <span className={styles.stepperLabel}>{STEP_SHORT[s]}</span>
+            </li>
+          );
+        })}
+      </ol>
 
-      {status === "error" && submitErrors.length > 0 ? (
-        <div
-          ref={errorSummaryRef}
-          tabIndex={-1}
-          role="alert"
-          className={styles.errorSummary}
-          aria-labelledby="growth-plan-error-summary-heading"
-        >
-          <p id="growth-plan-error-summary-heading" className={styles.errorSummaryHeading}>
-            Please fix the following before we can send your enquiry:
-          </p>
-          <ul>
-            {submitErrors.map((msg) => (
-              <li key={msg}>{msg}</li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-
-      <div className={styles.stepBody}>
-        {step === "businessType" && (
-          <OptionGroup
-            legend="Business type"
-            name="businessType"
-            options={businessTypeOptions}
-            value={form.businessType}
-            onChange={(v) => update("businessType", v)}
-            error={stepError}
-          />
-        )}
-        {step === "currentStage" && (
-          <OptionGroup
-            legend="Current stage"
-            name="currentStage"
-            options={stageOptions}
-            value={form.currentStage}
-            onChange={(v) => update("currentStage", v)}
-            error={stepError}
-          />
-        )}
-        {step === "mainGoal" && (
-          <OptionGroup
-            legend="Main goal"
-            name="mainGoal"
-            options={goalOptions}
-            value={form.mainGoal}
-            onChange={(v) => update("mainGoal", v)}
-            error={stepError}
-          />
-        )}
-        {step === "existingSetup" && (
-          <OptionGroup
-            legend="Existing setup"
-            name="existingSetup"
-            options={existingSetupOptions}
-            value={form.existingSetup}
-            onChange={(v) => update("existingSetup", v as ExistingSetup)}
-            error={stepError}
-          />
-        )}
-        {step === "engagement" && (
-          <OptionGroup
-            legend="Engagement preference"
-            name="engagement"
-            options={engagementOptions}
-            value={form.engagement}
-            onChange={(v) => update("engagement", v as Engagement)}
-            error={stepError}
-          />
-        )}
-        {step === "timeline" && (
-          <OptionGroup
-            legend="Timeline"
-            name="timeline"
-            options={timelineOptions}
-            value={form.timeline}
-            onChange={(v) => update("timeline", v as Timeline)}
-            error={stepError}
-          />
-        )}
-        {step === "contact" && (
-          <fieldset className={styles.fieldset}>
-            <legend className={styles.legend}>Contact details</legend>
-            <div className={styles.contactGrid}>
-              <FormField label="Your name" required>
-                {(controlProps) => (
-                  <input
-                    {...controlProps}
-                    type="text"
-                    className={formFieldStyles.control}
-                    value={form.name}
-                    onChange={(e) => update("name", e.target.value)}
-                    autoComplete="name"
-                  />
-                )}
-              </FormField>
-              <FormField label="Email address" required hint="We'll reply here, never shared or sold.">
-                {(controlProps) => (
-                  <input
-                    {...controlProps}
-                    type="email"
-                    className={formFieldStyles.control}
-                    value={form.email}
-                    onChange={(e) => update("email", e.target.value)}
-                    autoComplete="email"
-                  />
-                )}
-              </FormField>
-              <FormField label="Anything else? (optional)" hint="Up to 2000 characters.">
-                {(controlProps) => (
-                  <textarea
-                    {...controlProps}
-                    className={formFieldStyles.control}
-                    value={form.message}
-                    onChange={(e) => update("message", e.target.value)}
-                    rows={4}
-                  />
-                )}
-              </FormField>
+      <div className={styles.columns}>
+        <div className={styles.main}>
+          {/* Compact progress (narrow screens) */}
+          <div className={styles.progressRow} aria-hidden="true">
+            <p className={styles.progressLabel}>
+              Step {stepIndex + 1} of {totalSteps}
+            </p>
+            <div className={styles.progressTrack}>
+              <div
+                className={styles.progressFill}
+                style={{ transform: `scaleX(${(stepIndex + 1) / totalSteps})` }}
+              />
             </div>
-            {stepError ? (
-              <p className={styles.fieldError} role="alert">
-                {stepError}
-              </p>
-            ) : null}
-          </fieldset>
-        )}
-        {step === "review" && (
-          <fieldset className={styles.fieldset}>
-            <legend className={styles.legend}>Review your answers</legend>
-            <dl className={styles.reviewList}>
-              <div>
-                <dt>Business type</dt>
-                <dd>{businessTypeOptions.find((o) => o.value === form.businessType)?.label ?? "—"}</dd>
-              </div>
-              <div>
-                <dt>Current stage</dt>
-                <dd>{stageOptions.find((o) => o.value === form.currentStage)?.label ?? "—"}</dd>
-              </div>
-              <div>
-                <dt>Main goal</dt>
-                <dd>{goalOptions.find((o) => o.value === form.mainGoal)?.label ?? "—"}</dd>
-              </div>
-              <div>
-                <dt>Existing setup</dt>
-                <dd>{form.existingSetup ?? "—"}</dd>
-              </div>
-              <div>
-                <dt>Engagement</dt>
-                <dd>{form.engagement ?? "—"}</dd>
-              </div>
-              <div>
-                <dt>Timeline</dt>
-                <dd>{form.timeline ?? "—"}</dd>
-              </div>
-              <div>
-                <dt>Name</dt>
-                <dd>{form.name || "—"}</dd>
-              </div>
-              <div>
-                <dt>Email</dt>
-                <dd>{form.email || "—"}</dd>
-              </div>
-            </dl>
+          </div>
 
-            <TurnstileField
-              onToken={setTurnstileToken}
-              onSkipped={() => setTurnstileSkipped(true)}
-            />
-            {turnstileSkipped ? (
-              <p className={styles.emptyNote}>
-                Human verification isn&apos;t active in this preview — your submission is still checked
-                server-side.
-              </p>
-            ) : null}
-          </fieldset>
-        )}
-      </div>
+          <div className={styles.stepHead}>
+            <p className={styles.questionMeta}>
+              Step {stepIndex + 1} of {totalSteps}
+            </p>
+            <h2 className={styles.stepHeading} tabIndex={-1} ref={stepHeadingRef}>
+              {STEP_TITLES[step]}
+            </h2>
+            <p className={styles.stepSubtitle}>{STEP_SUBTITLE[step]}</p>
+          </div>
 
-      <div className={styles.navRow}>
-        {stepIndex > 0 ? (
-          <Button type="button" variant="secondary" onClick={goBack}>
-            Back
-          </Button>
-        ) : (
-          <span />
-        )}
-        {!isLastInputStep ? (
-          <Button type="button" variant="primary" onClick={goNext}>
-            Next
-          </Button>
-        ) : (
-          <Button type="submit" variant="primary" aria-busy={status === "submitting"} disabled={status === "submitting"}>
-            {status === "submitting" ? "Sending…" : "Get my growth plan"}
-          </Button>
-        )}
+          {status === "error" && submitErrors.length > 0 ? (
+            <div
+              ref={errorSummaryRef}
+              tabIndex={-1}
+              role="alert"
+              className={styles.errorSummary}
+              aria-labelledby="growth-plan-error-summary-heading"
+            >
+              <p id="growth-plan-error-summary-heading" className={styles.errorSummaryHeading}>
+                Please fix the following before we can send your enquiry:
+              </p>
+              <ul>
+                {submitErrors.map((msg) => (
+                  <li key={msg}>{msg}</li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+
+          <div className={styles.stepBody}>
+            {step === "businessType" && (
+              <OptionGroup
+                legend="Business type"
+                name="businessType"
+                options={businessTypeOptions}
+                value={form.businessType}
+                onChange={(v) => update("businessType", v)}
+                error={stepError}
+              />
+            )}
+            {step === "currentStage" && (
+              <OptionGroup
+                legend="Current stage"
+                name="currentStage"
+                options={stageOptions}
+                value={form.currentStage}
+                onChange={(v) => update("currentStage", v)}
+                error={stepError}
+              />
+            )}
+            {step === "mainGoal" && (
+              <OptionGroup
+                legend="Main goal"
+                name="mainGoal"
+                options={goalOptions}
+                value={form.mainGoal}
+                onChange={(v) => update("mainGoal", v)}
+                error={stepError}
+              />
+            )}
+            {step === "existingSetup" && (
+              <OptionGroup
+                legend="Existing setup"
+                name="existingSetup"
+                options={existingSetupOptions}
+                value={form.existingSetup}
+                onChange={(v) => update("existingSetup", v as ExistingSetup)}
+                error={stepError}
+              />
+            )}
+            {step === "engagement" && (
+              <OptionGroup
+                legend="Engagement preference"
+                name="engagement"
+                options={engagementOptions}
+                value={form.engagement}
+                onChange={(v) => update("engagement", v as Engagement)}
+                error={stepError}
+              />
+            )}
+            {step === "timeline" && (
+              <OptionGroup
+                legend="Timeline"
+                name="timeline"
+                options={timelineOptions}
+                value={form.timeline}
+                onChange={(v) => update("timeline", v as Timeline)}
+                error={stepError}
+              />
+            )}
+            {step === "contact" && (
+              <fieldset className={styles.fieldset}>
+                <legend className={styles.legend}>Contact details</legend>
+                <div className={styles.contactGrid}>
+                  <FormField label="Your name" required>
+                    {(controlProps) => (
+                      <input
+                        {...controlProps}
+                        type="text"
+                        className={formFieldStyles.control}
+                        value={form.name}
+                        onChange={(e) => update("name", e.target.value)}
+                        autoComplete="name"
+                      />
+                    )}
+                  </FormField>
+                  <FormField label="Email address" required hint="We'll reply here, never shared or sold.">
+                    {(controlProps) => (
+                      <input
+                        {...controlProps}
+                        type="email"
+                        className={formFieldStyles.control}
+                        value={form.email}
+                        onChange={(e) => update("email", e.target.value)}
+                        autoComplete="email"
+                      />
+                    )}
+                  </FormField>
+                  <FormField label="Anything else? (optional)" hint="Up to 2000 characters.">
+                    {(controlProps) => (
+                      <textarea
+                        {...controlProps}
+                        className={formFieldStyles.control}
+                        value={form.message}
+                        onChange={(e) => update("message", e.target.value)}
+                        rows={4}
+                      />
+                    )}
+                  </FormField>
+                </div>
+                {stepError ? (
+                  <p className={styles.fieldError} role="alert">
+                    {stepError}
+                  </p>
+                ) : null}
+              </fieldset>
+            )}
+            {step === "review" && (
+              <fieldset className={styles.fieldset}>
+                <legend className={styles.legend}>Review your answers</legend>
+                <dl className={styles.reviewList}>
+                  <div>
+                    <dt>Business type</dt>
+                    <dd>{businessTypeOptions.find((o) => o.value === form.businessType)?.label ?? "—"}</dd>
+                  </div>
+                  <div>
+                    <dt>Current stage</dt>
+                    <dd>{stageOptions.find((o) => o.value === form.currentStage)?.label ?? "—"}</dd>
+                  </div>
+                  <div>
+                    <dt>Main goal</dt>
+                    <dd>{goalOptions.find((o) => o.value === form.mainGoal)?.label ?? "—"}</dd>
+                  </div>
+                  <div>
+                    <dt>Existing setup</dt>
+                    <dd>{form.existingSetup ?? "—"}</dd>
+                  </div>
+                  <div>
+                    <dt>Engagement</dt>
+                    <dd>{form.engagement ?? "—"}</dd>
+                  </div>
+                  <div>
+                    <dt>Timeline</dt>
+                    <dd>{form.timeline ?? "—"}</dd>
+                  </div>
+                  <div>
+                    <dt>Name</dt>
+                    <dd>{form.name || "—"}</dd>
+                  </div>
+                  <div>
+                    <dt>Email</dt>
+                    <dd>{form.email || "—"}</dd>
+                  </div>
+                </dl>
+
+                <TurnstileField
+                  onToken={setTurnstileToken}
+                  onSkipped={() => setTurnstileSkipped(true)}
+                />
+                {turnstileSkipped ? (
+                  <p className={styles.emptyNote}>
+                    Human verification isn&apos;t active in this preview — your submission is still checked
+                    server-side.
+                  </p>
+                ) : null}
+              </fieldset>
+            )}
+          </div>
+
+          <div className={styles.navRow}>
+            {stepIndex > 0 ? (
+              <Button type="button" variant="secondary" onClick={goBack} iconLeft={<ArrowLeft size={18} aria-hidden="true" />}>
+                Back
+              </Button>
+            ) : (
+              <span />
+            )}
+            {!isLastInputStep ? (
+              <Button type="button" variant="primary" onClick={goNext} iconRight={<ArrowRight size={18} aria-hidden="true" />}>
+                Continue
+              </Button>
+            ) : (
+              <Button type="submit" variant="primary" aria-busy={status === "submitting"} disabled={status === "submitting"}>
+                {status === "submitting" ? "Sending…" : "Get my growth plan"}
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Live tracker — decorative mirror of the announced progress. */}
+        <aside className={styles.tracker} aria-hidden="true">
+          <p className={styles.trackerTitle}>Your plan is taking shape</p>
+          <p className={styles.trackerLead}>
+            Your answers help us understand your business so we can map the right path.
+          </p>
+          <ol className={styles.trackerList}>
+            {STEP_ORDER.map((s, i) => {
+              const state = stateFor(i);
+              const StepGlyph = STEP_ICON[s];
+              return (
+                <li key={s} className={styles.trackerRow}>
+                  <IconTile size={34} color={STEP_COLOR[s]}>
+                    <StepGlyph aria-hidden="true" />
+                  </IconTile>
+                  <span className={styles.trackerLabel}>{STEP_SHORT[s]}</span>
+                  <span className={`${styles.trackerStatus} ${styles[`status_${state}`]}`}>
+                    {state === "done" ? "Done" : state === "current" ? "In progress" : "Pending"}
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+          <div className={styles.safeNote}>
+            <ShieldCheck size={18} aria-hidden="true" className={styles.safeIcon} />
+            <span>
+              <strong className={styles.safeTitle}>Your information is safe.</strong> We&apos;ll never
+              share your details.
+            </span>
+          </div>
+        </aside>
       </div>
     </form>
   );

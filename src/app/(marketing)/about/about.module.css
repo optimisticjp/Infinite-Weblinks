@@ -1,5 +1,5 @@
 .prose {
-  max-width: 68ch;
+  max-width: var(--measure);
 }
 .lead {
   font-size: var(--fs-lead);
@@ -24,11 +24,53 @@
   padding: 0;
 }
 .principle {
-  padding: clamp(20px, 2.4vw, 28px);
+  position: relative;
+  padding: clamp(22px, 2.6vw, 30px);
   background: var(--surface-raised);
   border: 1px solid var(--hairline);
-  border-top: 3px solid var(--accent);
   border-radius: var(--radius-lg);
+  box-shadow: var(--inset-hairline);
+  overflow: hidden;
+  transition:
+    border-color var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out);
+}
+/* Quiet accent rail — the section's brightest element stays the heading (light budget);
+   the tiles below are tinted, not lit, so five cards don't fight for attention. */
+.principle::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent) 85%, transparent),
+    color-mix(in srgb, var(--accent) 15%, transparent)
+  );
+  opacity: 0.6;
+}
+.principle:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  transform: translateY(-3px);
+}
+.principleTile {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  color: var(--accent);
+  background: radial-gradient(
+    circle at 50% 35%,
+    color-mix(in srgb, var(--accent) 24%, transparent),
+    var(--surface-raised) 78%
+  );
+  border: 1px solid color-mix(in srgb, var(--accent) 42%, transparent);
+}
+.principleTile svg {
+  width: 22px;
+  height: 22px;
 }
 .principleTitle {
   font-size: var(--fs-h4);

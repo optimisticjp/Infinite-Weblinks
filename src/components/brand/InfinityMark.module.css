@@ -1,0 +1,30 @@
+.mark {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: var(--mark-w);
+  isolation: isolate;
+}
+
+.svg {
+  width: var(--mark-w);
+  height: auto;
+  overflow: visible;
+}
+
+/* Faked bloom — a soft radial behind the strands, so the mark reads as lit without a
+   per-frame filter. Centred on the crossover (where the light lives). */
+.glow::before {
+  content: "";
+  position: absolute;
+  inset: -40% -20%;
+  z-index: -1;
+  background: radial-gradient(
+    50% 60% at 50% 50%,
+    rgba(245, 25, 126, 0.34),
+    rgba(168, 85, 247, 0.16) 45%,
+    transparent 72%
+  );
+  filter: blur(2px);
+  pointer-events: none;
+}

@@ -1,0 +1,138 @@
+.head {
+  display: grid;
+  gap: var(--space-5);
+  margin-bottom: var(--space-10);
+}
+.heading {
+  margin-top: var(--space-3);
+}
+.intro {
+  margin: 0;
+}
+
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-5);
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-8);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  border-top: 3px solid var(--accent);
+  overflow: hidden;
+}
+
+/* Featured card owns the section's brightest value (the one glow). */
+.featured {
+  grid-column: 1 / -1;
+  background:
+    radial-gradient(120% 140% at 100% 0%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 60%),
+    var(--surface-raised);
+  box-shadow: 0 0 40px -18px var(--accent);
+}
+@media (min-width: 900px) {
+  .featured {
+    grid-column: span 2;
+  }
+}
+
+/* Daylight tiles (glow-free) — the cream cards from the reference mix. */
+.light {
+  background: var(--band-bright);
+  border-color: rgba(10, 7, 21, 0.08);
+  color: var(--band-ink);
+}
+.light .cardTitle {
+  color: var(--band-ink);
+}
+.light .cardSummary {
+  color: var(--band-ink-2);
+}
+.light .chip {
+  background: rgba(10, 7, 21, 0.05);
+  border-color: rgba(10, 7, 21, 0.1);
+  color: var(--band-ink-2);
+}
+.light .goalHint {
+  color: color-mix(in srgb, var(--accent) 72%, var(--band-ink));
+}
+
+.goalHint {
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.cardTitle {
+  font-size: var(--fs-h3);
+  color: var(--text-heading);
+  margin: 0;
+}
+.cardSummary {
+  color: var(--text-body);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  max-width: 46ch;
+}
+
+.chips {
+  list-style: none;
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.chip {
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 6px var(--space-3);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--hairline);
+  color: var(--text-body);
+}
+
+.seeHow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-3);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+.seeHow svg {
+  width: 15px;
+  height: 15px;
+}
+
+.footer {
+  margin-top: var(--space-10);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--hairline);
+}
+.footerNote {
+  color: var(--text-body);
+  font-size: var(--fs-lead);
+  max-width: 48ch;
+  margin: 0;
+}

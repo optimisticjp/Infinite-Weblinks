@@ -6,6 +6,7 @@ import {
   Megaphone,
   Monitor,
   Send,
+  ShoppingBag,
   Sparkles,
   TrendingUp,
   Users,
@@ -313,6 +314,10 @@ export function HeroUniverse({ areas }: { areas: HeroArea[] }) {
       <div className={`${styles.card} ${styles.cardBottom}`} data-card>
         <Activity className={styles.cardIcon} aria-hidden="true" />
         <span className={styles.cardText}>Tracking active</span>
+      </div>
+      <div className={`${styles.card} ${styles.cardMid}`} data-card>
+        <ShoppingBag className={styles.cardIcon} aria-hidden="true" />
+        <span className={styles.cardText}>Order synced</span>
       </div>
     </div>
   );

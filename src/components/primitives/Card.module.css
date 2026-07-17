@@ -1,0 +1,65 @@
+.card {
+  position: relative;
+  padding: var(--space-8); /* ≥ radius-lg (20) + 12 */
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.raised {
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--shadow-card);
+}
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--blur-panel));
+}
+.outline {
+  background: color-mix(in srgb, var(--surface-raised) 55%, transparent);
+  border: 1px solid var(--hairline);
+}
+
+/* Colour-coded top rail — the one bit of accent per card. */
+.railed::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: var(--card-accent);
+  opacity: 0.9;
+}
+
+.index {
+  display: inline-grid;
+  place-items: center;
+  min-width: 34px;
+  height: 34px;
+  padding-inline: var(--space-2);
+  border-radius: var(--radius-pill);
+  border: 1.5px solid color-mix(in srgb, var(--card-accent) 55%, transparent);
+  color: var(--card-accent);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: var(--space-4);
+}
+
+.interactive {
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+.interactive:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--card-accent) 45%, transparent);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 30px -14px var(--card-accent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .interactive:hover {
+    transform: none;
+  }
+}

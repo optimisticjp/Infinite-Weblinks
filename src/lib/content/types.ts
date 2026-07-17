@@ -43,6 +43,8 @@ export interface NavLink {
   label: string;
   href: string;
   description?: string;
+  /** Optional icon name (see primitives/Icon) — used by the icon-led mega-menu. */
+  icon?: string;
 }
 
 export interface Headline {
@@ -324,6 +326,9 @@ export type SectionType =
   | "processSteps"
   | "whyInfiniteWeblinks"
   | "connectedSystem"
+  | "customerJourney"
+  | "connectedExamples"
+  | "accountOwnership"
   | "caseStudyShowcase"
   | "testimonialWall"
   | "learningResources"
@@ -341,4 +346,81 @@ export interface EditorialSection {
   heading: Headline;
   body: string[];
   points?: { title: string; body: string; color: string; icon: string }[];
+}
+
+/* ------ customer journey (ref 15) — follow one customer along a connected path ------
+   Code-authoritative structural content. Screens are stylised, generic interface states
+   with NO fabricated brand, client, quote or metric (brief §14). */
+export interface CustomerJourneyScreen {
+  kind: "social" | "store" | "product" | "message" | "confirmation" | "loyalty";
+  heading: string;
+  lines?: string[];
+}
+export interface CustomerJourneyStep {
+  order: number;
+  phase: string; // "Discover", "Visit Store", "Take Action", ...
+  caption: string;
+  color: string;
+  screen: CustomerJourneyScreen;
+}
+
+/* ------ connected examples (ref 16) — simple combinations that work together ------ */
+export interface ConnectedExample {
+  slug: string;
+  title: string;
+  summary: string;
+  goalHint: string;
+  services: string[]; // plain-text chip labels ("tools we can connect")
+  color: string;
+  theme: "dark" | "band";
+  featured?: boolean;
+}
+
+/* ------ account ownership (ref 13) — you own your digital world ------ */
+export interface OwnershipAsset {
+  label: string;
+  icon: string;
+}
+export interface OwnershipFlowStep {
+  label: string;
+  icon: string;
+  color: string;
+}
+export interface OwnershipGuarantee {
+  title: string;
+  body: string;
+  icon: string;
+  color: string;
+}
+export interface AccountOwnership {
+  eyebrow: string;
+  heading: Headline;
+  body: string;
+  vaultLabel: string;
+  assets: OwnershipAsset[];
+  flow: OwnershipFlowStep[];
+  guarantees: OwnershipGuarantee[];
+  closing: Headline;
+  primaryCta: Cta;
+  secondaryCta: Cta;
+}
+
+/* ------ growth troubleshooter (ref 06) — "tell us what is not working" ------
+   Code-authoritative educational guidance. No fabricated metrics or client results. */
+export interface TroubleshooterReason {
+  title: string;
+  body: string;
+  icon: string;
+}
+export interface TroubleshooterProblem {
+  slug: string;
+  label: string;
+  icon: string;
+  color: string;
+  /** Plain-English explanation of why this usually happens. */
+  explanation: string;
+  reasons: TroubleshooterReason[];
+  checks: string[];
+  focusFirst: string;
+  recommendedStageSlug: string;
 }

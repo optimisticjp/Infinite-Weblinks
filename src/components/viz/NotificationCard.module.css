@@ -1,0 +1,51 @@
+.card {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  max-width: max-content;
+  backdrop-filter: blur(var(--blur-panel));
+  box-shadow: var(--glass-shadow);
+}
+
+.dark {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-1);
+}
+.light {
+  background: var(--glass-bg-light);
+  border: 1px solid rgba(10, 7, 21, 0.08);
+  color: var(--ink-900);
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: var(--radius-sm);
+  color: var(--nc-color);
+  background: color-mix(in srgb, var(--nc-color) 16%, transparent);
+}
+.icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+.title {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.detail {
+  font-size: 0.72rem;
+  color: var(--nc-color);
+  font-weight: 600;
+}

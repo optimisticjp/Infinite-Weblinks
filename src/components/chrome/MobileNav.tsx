@@ -2,11 +2,14 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { ChevronDown, X } from "lucide-react";
+import { ChevronDown, Mail, X } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/primitives/Button";
+import { Icon } from "@/components/primitives/Icon";
 import type { SiteNav } from "@/lib/content/types";
 import styles from "./MobileNav.module.css";
+
+const SUPPORT_EMAIL = "support@infiniteweblinks.com";
 
 export function MobileNav({
   nav,
@@ -60,7 +63,12 @@ export function MobileNav({
     };
   }, [open, onClose]);
 
-  const ctas = useMemo(() => nav.ctas, [nav.ctas]);
+  // Primary CTA first, so the growth-plan action is the prominent one at the foot of
+  // the sheet (the reference puts the gradient CTA above the quieter secondary link).
+  const ctas = useMemo(
+    () => [...nav.ctas].sort((a, b) => (a.style === "primary" ? -1 : b.style === "primary" ? 1 : 0)),
+    [nav.ctas],
+  );
 
   if (!open) return null;
 
@@ -74,8 +82,10 @@ export function MobileNav({
         aria-modal="true"
         aria-label="Site menu"
       >
+        <div className={styles.glow} aria-hidden="true" />
+
         <div className={styles.dialogHead}>
-          <Logo href="/" size={26} variant="mark" label="Infinite Weblinks — home" />
+          <Logo href="/" size={26} label="Infinite Weblinks — home" />
           <button type="button" className={styles.close} ref={closeRef} onClick={onClose}>
             <X aria-hidden="true" />
             <span className="iw-visually-hidden">Close menu</span>
@@ -120,7 +130,12 @@ export function MobileNav({
                             {col.items.map((link) => (
                               <li key={link.label + link.href}>
                                 <Link href={link.href} className={styles.subLink} onClick={onClose}>
-                                  {link.label}
+                                  {link.icon ? (
+                                    <span className={styles.subIcon} aria-hidden="true">
+                                      <Icon name={link.icon} />
+                                    </span>
+                                  ) : null}
+                                  <span className={styles.subLabel}>{link.label}</span>
                                 </Link>
                               </li>
                             ))}
@@ -134,18 +149,26 @@ export function MobileNav({
             })}
           </ul>
 
-          <div className={styles.ctas}>
-            {ctas.map((cta) => (
-              <Button
-                key={cta.label}
-                href={cta.route}
-                variant={cta.style === "primary" ? "primary" : "secondary"}
-                size="lg"
-                className={styles.cta}
-              >
-                {cta.label}
-              </Button>
-            ))}
+          <div className={styles.footer}>
+            <div className={styles.ctas}>
+              {ctas.map((cta) => (
+                <Button
+                  key={cta.label}
+                  href={cta.route}
+                  variant={cta.style === "primary" ? "primary" : "secondary"}
+                  size="lg"
+                  className={styles.cta}
+                >
+                  {cta.label}
+                </Button>
+              ))}
+            </div>
+            <a className={styles.email} href={`mailto:${SUPPORT_EMAIL}`} onClick={onClose}>
+              <Mail aria-hidden="true" className={styles.emailIcon} />
+              <span>
+                Prefer email? <span className={styles.emailAddr}>{SUPPORT_EMAIL}</span>
+              </span>
+            </a>
           </div>
         </nav>
       </div>

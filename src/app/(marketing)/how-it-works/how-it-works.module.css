@@ -1,9 +1,77 @@
-/*
- * Zero-height anchor band sitting directly above each reused section. Each <span>
- * carries a stage slug / system key id so the mega-menu deep links resolve. The
- * scroll-margin-top keeps the anchored section clear of the sticky header (WCAG
- * 2.4.11), matching the global scroll-padding-top.
- */
+/* Shared accent eyebrow for the on-page section headers. Element-qualified so it reliably
+   overrides the global .iw-eyebrow colour without !important. */
+p.eyebrow {
+  color: color-mix(in srgb, var(--pink) 78%, var(--text-1));
+}
+
+/* ---- overview: the system at a glance (mark + orbiting stages) ---- */
+.overview {
+  position: relative;
+  overflow: hidden;
+}
+.overviewGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(40px, 6vw, 72px);
+  align-items: center;
+}
+.overviewText {
+  max-width: 34rem;
+}
+.overviewTitle {
+  margin-top: var(--space-3);
+  font-size: var(--fs-h2);
+  color: var(--text-heading);
+}
+.overviewLead {
+  margin-top: var(--space-4);
+  font-size: var(--fs-lead);
+  line-height: 1.55;
+  color: var(--text-body);
+}
+.pillars {
+  list-style: none;
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+.pillar {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  color: var(--text-body);
+  font-size: var(--fs-body);
+  max-width: 40ch;
+}
+/* Tinted markers, not lit points — the section's one bright element is the InfinityMark;
+   these stay quiet (no glow) so they don't spend the mark's light budget. */
+.pillarDot {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  transform: translateY(-1px);
+  background: var(--violet);
+}
+.pillarDot[data-tone="cyan"] {
+  background: var(--cyan);
+}
+.pillarDot[data-tone="orange"] {
+  background: var(--orange);
+}
+.overviewViz {
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: 960px) {
+  .overviewGrid {
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  }
+}
+
+/* ---- anchor band (stage slugs + system keys → mega-menu deep links) ---- */
 .anchors {
   position: relative;
 }
@@ -11,4 +79,44 @@
   display: block;
   height: 0;
   scroll-margin-top: calc(var(--header-h) + var(--space-4));
+}
+
+/* ---- the connected journey ---- */
+.journeyHead {
+  max-width: 52rem;
+  margin-bottom: clamp(32px, 4vw, 56px);
+}
+.journeyTitle {
+  margin-top: var(--space-3);
+  font-size: var(--fs-h2);
+  color: var(--text-heading);
+}
+.journeyLead {
+  margin-top: var(--space-4);
+  font-size: var(--fs-lead);
+  color: var(--text-body);
+}
+
+/* ---- closing CTA ---- */
+.ctaInner {
+  max-width: 60ch;
+  margin-inline: auto;
+  text-align: center;
+}
+.ctaTitle {
+  font-size: var(--fs-h2);
+  color: var(--text-heading);
+  margin: 0 0 var(--space-4);
+}
+.ctaBody {
+  font-size: var(--fs-lead);
+  color: var(--text-body);
+  margin: 0 0 var(--space-6);
+  margin-inline: auto;
+}
+.ctaActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: center;
 }

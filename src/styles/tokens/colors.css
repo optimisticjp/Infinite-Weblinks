@@ -104,6 +104,27 @@
      Dark ink on the pink→orange gradient: ink-on-pink 5.1:1, ink-on-orange 7.8:1.
      (White would fail: 2.6:1 at the orange end.) */
   --cta-text: var(--ink-950);
+
+  /* ---- Brighter daylight band (redesign) ----
+     The reference cream/light sections (starting-point selector, the "digital world"
+     band, the light growth journey) read as near-white daylight, airier than the
+     editorial band. A separate, brighter surface — still glow-free by rule (daylight
+     is what makes the dark sections read as dark). */
+  --band-bright: #f7f6fc; /* near-white, faint violet undertone */
+  --band-bright-raised: #ffffff;
+  --band-ink-3: #4a4566; /* tertiary ink on the bright band (~8.4:1) */
+
+  /* ---- Connection lines & orbit strokes (constellations, journeys) ----
+     The recurring "everything connects" motif is drawn with tinted strokes, not glows.
+     On dark they are faint white; on daylight they are faint ink. */
+  --orbit-stroke: rgba(255, 255, 255, 0.09);
+  --orbit-stroke-strong: rgba(255, 255, 255, 0.16);
+  --orbit-stroke-band: rgba(10, 7, 21, 0.1);
+  --conn-line-dark: rgba(196, 190, 220, 0.28);
+  --conn-line-band: rgba(74, 69, 102, 0.28);
+
+  /* Full-spectrum stroke for a connected rail/path (matches --grad-spectrum hues). */
+  --grad-path: linear-gradient(90deg, #a855f7, #f5197e, #ff7a18, #34d399, #22d3ee, #3b82f6);
 }
 
 /* ============================================================
@@ -137,6 +158,27 @@
   --text-muted: var(--band-ink-2);
   --hairline: rgba(10, 7, 21, 0.12);
   --hairline-strong: rgba(10, 7, 21, 0.24);
+  --link: var(--violet-deep);
+  --link-hover: var(--pink);
+  background-color: var(--surface);
+  color: var(--text-body);
+}
+
+/* Brighter daylight band — same dark-ink-on-light contract as .theme-band, but on a
+   near-white surface for the airy reference sections. Glow-free by rule; connection
+   art is drawn with tinted ink strokes, never neon. */
+.theme-band-bright {
+  --surface: var(--band-bright);
+  --surface-raised: var(--band-bright-raised);
+  --surface-input: #ffffff;
+  --surface-hover: rgba(109, 40, 217, 0.07);
+  --text-heading: var(--band-ink);
+  --text-body: var(--band-ink);
+  --text-muted: var(--band-ink-2);
+  --hairline: rgba(10, 7, 21, 0.1);
+  --hairline-strong: rgba(10, 7, 21, 0.2);
+  --orbit-stroke: var(--orbit-stroke-band);
+  --conn-line: var(--conn-line-band);
   --link: var(--violet-deep);
   --link-hover: var(--pink);
   background-color: var(--surface);

@@ -1,5 +1,7 @@
-import { Compass, Link2, Target, type LucideIcon } from "lucide-react";
+import { Bell, Compass, Link2, Mail, Target, type LucideIcon } from "lucide-react";
+import { InfinityMark } from "@/components/brand/InfinityMark";
 import { IconTile } from "@/components/primitives/IconTile";
+import { NotificationCard } from "@/components/viz/NotificationCard";
 import type { EditorialSection } from "@/lib/content/types";
 import styles from "./EditorialStatement.module.css";
 
@@ -10,19 +12,38 @@ const ICONS: Record<string, LucideIcon> = {
 };
 
 /**
- * The bright editorial band that follows the dark hero — the required section-rhythm
- * break (never more than ~2 dark sections in a row). Dark ink text on cream, so all
- * contrast passes; the emphasised word uses a solid accent (deep violet), not the
- * dark-tuned gradient text.
+ * Named example platforms a business already touches — plain text tiles, never logos
+ * (the repo ships no third-party marks). They ring the central mark to picture the
+ * "everything connects around one centre" idea from ref 18. Positions are on an even
+ * ring around the pedestal; the layout collapses to a wrapped row on narrow screens.
+ */
+const PLATFORMS: { name: string; x: number; y: number }[] = [
+  { name: "TikTok", x: 38, y: 6 },
+  { name: "Google", x: 68, y: 9 },
+  { name: "LinkedIn", x: 90, y: 34 },
+  { name: "Meta", x: 86, y: 64 },
+  { name: "YouTube", x: 10, y: 30 },
+  { name: "Instagram", x: 8, y: 60 },
+  { name: "Shopify", x: 26, y: 84 },
+];
+
+/**
+ * The bright editorial band that follows the dark hero (ref 18) — the required
+ * section-rhythm break. Dark ink on cream, so all contrast passes; the emphasised
+ * word uses a solid accent (deep violet), never the dark-tuned gradient text.
+ *
+ * The right-hand ecosystem visual pictures the copy: the connected mark at the centre
+ * with the platforms a business already uses floating around it. Daylight, so it is
+ * glow-free — the mark carries glow={false} and there is no section bloom.
  */
 export function EditorialStatement({ data }: { data: EditorialSection }) {
   return (
     <section
-      className={`theme-band iw-section ${styles.section}`}
+      className="theme-band iw-section"
       aria-labelledby="editorial-heading"
     >
       <div className="iw-container">
-        <div className={styles.top}>
+        <div className={styles.layout}>
           <div className={styles.lead}>
             <p className="iw-eyebrow">{data.eyebrow}</p>
             <h2 id="editorial-heading" className={styles.heading}>
@@ -30,13 +51,53 @@ export function EditorialStatement({ data }: { data: EditorialSection }) {
               <span className={styles.accent}>{data.heading.accent}</span>
               {data.heading.post}
             </h2>
+            <div className={styles.body}>
+              {data.body.map((p, i) => (
+                <p key={i} className={styles.para}>
+                  {p}
+                </p>
+              ))}
+            </div>
           </div>
-          <div className={styles.body}>
-            {data.body.map((p, i) => (
-              <p key={i} className={styles.para}>
-                {p}
-              </p>
-            ))}
+
+          <div
+            className={styles.visual}
+            role="img"
+            aria-label="The platforms a business already uses — Instagram, TikTok, Google, LinkedIn, Meta, YouTube and Shopify — connecting around one central mark."
+          >
+            <div className={styles.stage} aria-hidden="true">
+              <div className={styles.ring}>
+                {PLATFORMS.map((p) => (
+                  <span
+                    key={p.name}
+                    className={styles.chip}
+                    style={{ ["--x" as string]: `${p.x}%`, ["--y" as string]: `${p.y}%` }}
+                  >
+                    {p.name}
+                  </span>
+                ))}
+              </div>
+
+              <span className={styles.pedestal} />
+              <InfinityMark glow={false} size={148} className={styles.mark} />
+
+              <NotificationCard
+                className={styles.note1}
+                tone="light"
+                icon={<Mail aria-hidden="true" />}
+                title="Email campaign"
+                detail="Ready to send"
+                color="var(--violet)"
+              />
+              <NotificationCard
+                className={styles.note2}
+                tone="light"
+                icon={<Bell aria-hidden="true" />}
+                title="New order"
+                detail="Synced"
+                color="var(--lime)"
+              />
+            </div>
           </div>
         </div>
 

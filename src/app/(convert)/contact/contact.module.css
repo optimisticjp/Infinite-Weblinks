@@ -1,0 +1,153 @@
+.section {
+  position: relative;
+  overflow: hidden;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(40px, 6vw, 80px);
+  align-items: start;
+}
+@media (min-width: 960px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 34rem);
+    gap: clamp(48px, 5vw, 88px);
+  }
+}
+
+/* ---- Left column: intro + trust + decorative globe ---- */
+.intro {
+  display: grid;
+  gap: var(--space-6);
+  align-content: start;
+}
+
+.eyebrow {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--pink-bright);
+}
+
+.heading {
+  margin: 0;
+  font-size: var(--fs-h1);
+  max-width: 14ch;
+}
+.dot {
+  color: var(--pink-bright);
+}
+
+.subhead {
+  margin: 0;
+  font-size: var(--fs-lead);
+  color: var(--text-body);
+  max-width: 46ch;
+}
+
+.trust {
+  list-style: none;
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+.trustItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.trustLabel {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-medium);
+  color: var(--text-body);
+}
+
+/* ---- Decorative lit-globe + connected pins + the mark ---- */
+.visual {
+  position: relative;
+  margin-top: var(--space-4);
+  min-height: clamp(260px, 32vw, 380px);
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+}
+
+.infinity {
+  position: absolute;
+  right: 8%;
+  top: 4%;
+  z-index: 2;
+}
+
+.pins {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+.pinDot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background: var(--pin-color);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--pin-color) 55%, transparent);
+}
+.pinLabel {
+  font-family: var(--font-label);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+/* ---- Right column: the form card ---- */
+.formCard {
+  width: 100%;
+  align-self: start;
+}
+@media (min-width: 960px) {
+  .formCard {
+    position: sticky;
+    top: calc(var(--header-h) + var(--space-6));
+  }
+}
+
+.formHead {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-8);
+}
+.formTitle {
+  margin: 0;
+  font-size: var(--fs-h3);
+  color: var(--text-heading);
+  text-align: center;
+}
+.formRule {
+  width: 56px;
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--grad-cta);
+}
+
+@media (max-width: 600px) {
+  .heading {
+    max-width: none;
+  }
+}

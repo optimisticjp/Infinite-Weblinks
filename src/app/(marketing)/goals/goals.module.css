@@ -1,0 +1,239 @@
+/* ---- featured goal card (ref 10) ---- */
+.featured {
+  --accent: var(--violet);
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  align-items: center;
+  padding: clamp(24px, 3.5vw, 44px);
+  margin-bottom: var(--space-6);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--inset-hairline);
+  transition:
+    border-color var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+/* Accent wash bleeding from the visual side — the featured card's signature light. */
+.featured::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(
+    60% 120% at 92% 50%,
+    color-mix(in srgb, var(--accent) 20%, transparent),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+.featured:hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  transform: translateY(-3px);
+  box-shadow:
+    var(--shadow-lg),
+    0 24px 60px -28px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.featuredMain {
+  position: relative;
+  z-index: 1;
+  max-width: 44ch;
+}
+.featuredMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.featuredNum {
+  font-family: var(--font-mono);
+  font-size: var(--fs-body);
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: var(--ls-mono);
+}
+.featuredTitle {
+  font-size: var(--fs-h2);
+  color: var(--text-heading);
+  margin: 0 0 var(--space-4);
+}
+.featuredDesc {
+  font-size: var(--fs-lead);
+  line-height: 1.55;
+  color: var(--text-body);
+  margin: 0 0 var(--space-6);
+}
+.featuredCta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: var(--fw-semibold);
+  color: var(--text-heading);
+}
+.featuredCtaIcon {
+  width: 18px;
+  height: 18px;
+  color: var(--accent);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.featured:hover .featuredCtaIcon {
+  transform: translateX(4px);
+}
+.featuredViz {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: 760px) {
+  .featured {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: clamp(24px, 5vw, 64px);
+  }
+  .featuredViz {
+    padding-inline: clamp(16px, 4vw, 56px);
+  }
+}
+
+/* ---- numbered goal grid ---- */
+.goalGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+.goalItem {
+  display: flex;
+}
+.goalItem > * {
+  width: 100%;
+}
+.goalCard {
+  --accent: var(--violet);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  height: 100%;
+  padding: clamp(20px, 2.4vw, 26px) clamp(20px, 2.4vw, 26px) clamp(28px, 3vw, 36px);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  color: var(--text-body);
+  box-shadow: var(--inset-hairline);
+  overflow: hidden;
+  transition:
+    border-color var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+.goalCard:hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  transform: translateY(-4px);
+  box-shadow:
+    var(--shadow-card),
+    0 18px 44px -20px color-mix(in srgb, var(--accent) 65%, transparent);
+}
+.goalTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.goalNum {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 50%;
+  border: 1.5px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  letter-spacing: var(--ls-mono);
+}
+.goalTile {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: 50%;
+  color: var(--accent);
+  background: radial-gradient(
+    circle at 50% 35%,
+    color-mix(in srgb, var(--accent) 24%, transparent),
+    var(--surface-raised) 78%
+  );
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.goalTile svg {
+  width: 20px;
+  height: 20px;
+}
+.goalTitle {
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-bold);
+  color: var(--text-heading);
+  margin: var(--space-1) 0 0;
+}
+.goalOutcome {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+  color: var(--text-muted);
+  margin: 0;
+}
+.goalArrow {
+  position: absolute;
+  right: var(--space-5);
+  bottom: var(--space-4);
+  width: 18px;
+  height: 18px;
+  color: var(--accent);
+  opacity: 0.65;
+  transform: translate(-2px, 2px);
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    opacity var(--dur-base) var(--ease-out);
+}
+.goalCard:hover .goalArrow {
+  transform: translate(0, 0);
+  opacity: 1;
+}
+
+@media (min-width: 640px) {
+  .goalGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .goalGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ---- "not sure which goal fits?" ---- */
+.notSure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: clamp(32px, 4vw, 56px);
+  text-align: center;
+}
+.notSureText {
+  font-family: var(--font-display);
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-semibold);
+  color: var(--text-heading);
+  margin: 0;
+}

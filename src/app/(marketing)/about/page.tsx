@@ -3,6 +3,7 @@ import { PageHero } from "@/components/routes/PageHero";
 import { SectionHeader } from "@/components/primitives/SectionHeader";
 import { Button } from "@/components/primitives/Button";
 import { Icon } from "@/components/primitives/Icon";
+import { InfinityMark } from "@/components/brand/InfinityMark";
 import { AccountOwnershipSection } from "@/components/sections/AccountOwnershipSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
@@ -66,6 +67,14 @@ export default function AboutPage() {
         intro="Infinite Weblinks is a full-stack web development and digital marketing services company that helps businesses choose the right digital tools and services, build what they need, and connect everything around their goals."
         breadcrumbs={[{ name: "About" }]}
         accent="var(--cyan)"
+        aside={
+          <div className={styles.heroMark} aria-hidden="true">
+            <span className={styles.heroGlow} />
+            <span className={styles.heroRing} />
+            <span className={styles.heroRingInner} />
+            <InfinityMark size={188} glow />
+          </div>
+        }
       />
 
       <section className="theme-band iw-section" aria-labelledby="about-who-heading">

@@ -46,3 +46,7 @@ studio/dist/
 npm-debug.log*
 .vscode/
 .idea/
+
+# playwright pixel-baseline snapshots (regenerable, never committed — see visual.spec.ts)
+tests/e2e/**/*-snapshots/
+review-artifacts/visual/

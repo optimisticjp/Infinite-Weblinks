@@ -146,16 +146,16 @@
 }
 
 @media (max-width: 560px) {
-  .steps,
+  /* Mobile compression (brief §P2-01): 2×2 grids (short content) instead of tall 1-col
+     stacks, and tight rhythm — this section is content-dense, so halving the stack height
+     matters. */
+  .steps {
+    grid-template-columns: repeat(2, 1fr);
+    margin-top: var(--space-5);
+    gap: var(--space-5) var(--space-4);
+  }
   .standards {
     grid-template-columns: 1fr;
-  }
-  /* Mobile compression (brief §P2-01): tighten this section hard on phones. */
-  .steps {
-    margin-top: var(--space-6);
-    gap: var(--space-5);
-  }
-  .standards {
     margin-top: var(--space-6);
     gap: var(--space-3);
   }

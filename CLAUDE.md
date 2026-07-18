@@ -336,19 +336,44 @@ requirements, not creative limits. Every change must deliver them, whatever tool
 
 ## Actions & Authorization
 
-As part of normal work, and **without asking permission first**, Claude may: create branches;
-edit files; add or remove dependencies; run temporary development or preview servers (stopping
-them after verification); run migrations in **safe development / throwaway** environments; run
-lint, typecheck, tests, and builds; commit changes; push branches; and open pull requests.
+This is a **repository-control clarification, not a technical restriction** — it does not
+narrow the technical or creative freedom above. It only separates routine work from actions
+that change shared, published, or production state.
+
+As part of normal work, and **without asking permission first**, Claude may:
+
+- create task branches
+- edit files
+- add or remove dependencies
+- run temporary development or preview servers (stopping them after verification)
+- run migrations in **safe development / throwaway** environments
+- run lint, typecheck, tests, and builds
+- commit changes
+- push **task** branches
+- open and update pull requests
 
 **Explicit user authorization is required** before any of the following:
 
+- **Merging a pull request**
+- **Pushing directly to `main`** or another protected branch
+- **Force-pushing**
+- **Rewriting published Git history** (rebasing/amending commits already pushed and shared)
+- **Deleting remote branches**
 - **Production deployment** (e.g. `npm run cf:deploy`)
 - **Destructive changes to production data**
-- **Rotating, exposing, or otherwise handling secrets** in exposure-sensitive ways
-- **Paid purchases or any action that creates a charge**
+- **Creating paid resources or incurring charges**
+- **Exposing, rotating, or transferring secrets**
 - **Deleting important remote resources** (repositories, branches with unmerged work,
   releases, remote environments)
+
+**Major foundation changes** — replacing the framework, CMS, database, hosting platform, or
+primary styling system — **remain allowed when genuinely justified** (see
+[Technical Freedom](#technical-freedom)) and do **not** require permission merely because they
+are large. When you make one, **document the reason, expected impact, migration path, and
+rollback path in the pull request.**
+
+**External services** may be integrated in code, but Claude must **not** create accounts,
+accept paid plans, transmit real user data, or incur charges without explicit authorization.
 
 When unsure whether an action crosses one of these lines, ask via [`AskUserQuestion`].
 

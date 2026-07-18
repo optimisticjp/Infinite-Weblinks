@@ -38,6 +38,13 @@ Added principles:
 
 Added sections:
   Governance → Authorized Actions & Boundaries
+    (Within 2.0.0, this section was clarified with explicit repository-control
+     boundaries — merging PRs, pushing to protected branches, force-pushing,
+     rewriting published history, and deleting remote branches now require explicit
+     authorization — plus a foundation-change documentation rule and an
+     external-service limit. These clarify the new policy without changing its
+     meaning, so the version stays 2.0.0 and the Last Amended date is unchanged;
+     they do not narrow the Principle XV technical/creative freedom.)
 
 Removed sections: None (no principle deleted; restrictive clauses within principles
   were rewritten as outcomes)
@@ -232,21 +239,50 @@ is needed and why a simpler, compliant alternative was rejected. Unjustified
 violations MUST be resolved before implementation.
 
 ### Authorized Actions & Boundaries
-To produce working, verified results without needless friction, Claude MAY, as part
-of normal work and without asking permission first: create branches; edit files; add
-or remove dependencies; run temporary development or preview servers (stopping them
-after verification); run migrations in safe development or throwaway environments;
-run lint, typecheck, tests, and builds; commit changes; push branches; and open pull
-requests. Claude SHOULD optimize for the requested result rather than the smallest
-possible change, and SHOULD explain a major architectural choice briefly, then
-proceed.
+This is a **repository-control clarification, not a technical restriction**: it draws
+the line between routine actions Claude may take to deliver working software and the
+few actions that change shared, published, or production state. It does **not** narrow
+the technical or creative freedom of Principle XV.
 
-Explicit user authorization IS required before: deploying to production; making
-destructive changes to production data; rotating, exposing, or otherwise handling
-secrets in exposure-sensitive ways; any paid purchase or action that creates a
-charge; and deleting important remote resources (repositories, branches with
-unmerged work, releases, remote environments). When in doubt about whether an action
-crosses one of these lines, ask.
+To produce working, verified results without needless friction, Claude MAY, as part
+of normal work and **without asking permission first**:
+- create task branches;
+- edit files;
+- add or remove dependencies;
+- run temporary development or preview servers (stopping them after verification);
+- run migrations in safe development or throwaway environments;
+- run lint, typecheck, tests, and builds;
+- commit changes;
+- push **task** branches;
+- open and update pull requests.
+
+Claude SHOULD optimize for the requested result rather than the smallest possible
+change, and SHOULD explain a major architectural choice briefly, then proceed.
+
+Explicit user authorization IS required before:
+- merging a pull request;
+- pushing directly to `main` or another protected branch;
+- force-pushing;
+- rewriting published Git history (rebasing or amending commits already pushed and shared);
+- deleting remote branches;
+- deploying to production;
+- making destructive changes to production data;
+- creating paid resources or incurring charges;
+- exposing, rotating, or transferring secrets;
+- deleting important remote resources (repositories, branches with unmerged work,
+  releases, remote environments).
+
+**Major foundation changes** — such as replacing the framework, CMS, database,
+hosting platform, or primary styling system — REMAIN allowed when genuinely
+justified, and do NOT require permission merely because they are large (Principle XV).
+When Claude makes one, it MUST document the reason, expected impact, migration path,
+and rollback path in the pull request.
+
+**External services** MAY be integrated in code, but Claude MUST NOT create accounts,
+accept paid plans, transmit real user data, or incur charges without explicit
+authorization.
+
+When in doubt about whether an action crosses one of these lines, ask.
 
 Amendment procedure: Amendments MUST be proposed as an edit to this file with a Sync
 Impact Report describing the change, the version bump, and any dependent templates or

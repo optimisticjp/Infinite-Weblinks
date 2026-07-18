@@ -299,6 +299,33 @@ export interface Example extends Statused {
   summary: string;
 }
 
+/* ------ trust / how-we-work (interim trust layer, review §3/§5/§14; brief §P1-01/§P3-05) ------
+   An HONEST interim trust device that stands in for social proof the business does not yet
+   have. It states method, standards and an ownership promise — NEVER a fabricated client,
+   logo, testimonial, metric or partnership. Code-authoritative (brand-locked), like the hero
+   and editorial content, so it always renders and is never confused with gated proof. */
+export interface TrustStep {
+  title: string;
+  body: string;
+}
+export interface TrustStandard {
+  title: string;
+  body: string;
+  icon: string;
+  color: string;
+}
+export interface TrustNarrative {
+  eyebrow: string;
+  title: string;
+  lead: string;
+  steps: TrustStep[];
+  standards: TrustStandard[];
+  /** Honest note that real, verified proof will appear here once it exists. */
+  reassurance: string;
+  cta: { label: string; href: string };
+  secondary: { label: string; href: string };
+}
+
 /* ------ legal ------ */
 export interface LegalBlock {
   heading?: string;
@@ -329,6 +356,7 @@ export type SectionType =
   | "customerJourney"
   | "connectedExamples"
   | "accountOwnership"
+  | "trustMethodology"
   | "caseStudyShowcase"
   | "testimonialWall"
   | "learningResources"

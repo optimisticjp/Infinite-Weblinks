@@ -3,6 +3,7 @@ import { Button } from "@/components/primitives/Button";
 import { Icon } from "@/components/primitives/Icon";
 import { InfinityMark } from "@/components/brand/InfinityMark";
 import { GlobeArc } from "@/components/viz/GlobeArc";
+import { BuilderExplainer } from "@/components/builder/BuilderExplainer";
 import styles from "./FinalCtaBannerSection.module.css";
 
 const SUPPORT_EMAIL = "support@infiniteweblinks.com";
@@ -72,6 +73,8 @@ export function FinalCtaBannerSection({ anchorId }: { anchorId?: string }) {
             </span>
           </a>
         </div>
+
+        <BuilderExplainer variant="banner" preview className={styles.explainer} />
 
         <div className={styles.constellation} aria-hidden="true">
           <GlobeArc className={styles.globe} />

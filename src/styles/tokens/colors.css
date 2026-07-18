@@ -1,9 +1,12 @@
 /* Colours — Infinite Weblinks
    A "living connected digital universe": deep navy/near-black lit by electric violet,
    hot pink, orange, cyan, lime and blue.
-   Rebuilt cleanly from the approved handoff, WITH the two accessibility fixes from the
+   Rebuilt cleanly from the approved handoff, WITH the accessibility fixes from the
    planning review baked in:
-     - R-A11Y-1 (CHK-A12): primary CTA gradient uses DARK ink text, not white.
+     - R-A11Y-1 (revised for reference alignment): primary CTA gradient uses WHITE text on
+       a *darkened* pink→orange gradient (#d1005f → #c94f00). White passes AA at both ends
+       (5.4:1 pink, 4.6:1 orange) and across the blend, matching the reference look without
+       the earlier dark-ink compromise.
      - R-A11Y-2 (CHK-A13): section-scoped text colours (on-dark / on-band / on-statement)
        instead of one global default that fails on the bright editorial band. */
 
@@ -54,7 +57,7 @@
 
   /* ---- Signature gradients ---- */
   --grad-brand: linear-gradient(120deg, #7c3aed 0%, #f5197e 52%, #ff7a18 100%);
-  --grad-cta: linear-gradient(90deg, #f5197e 0%, #ff7a18 100%);
+  --grad-cta: linear-gradient(90deg, #d1005f 0%, #c94f00 100%); /* white text: 5.4:1 → 4.6:1, passes AA */
   --grad-violet-pink: linear-gradient(120deg, #8b3bff 0%, #f5197e 100%);
   --grad-cyan-blue: linear-gradient(120deg, #22d3ee 0%, #3b82f6 100%);
   --grad-lime: linear-gradient(120deg, #34d399 0%, #22d3ee 100%);
@@ -100,10 +103,11 @@
   --link: var(--violet-bright);
   --link-hover: var(--pink-bright);
 
-  /* ---- CTA text colour (R-A11Y-1 fix) ----
-     Dark ink on the pink→orange gradient: ink-on-pink 5.1:1, ink-on-orange 7.8:1.
-     (White would fail: 2.6:1 at the orange end.) */
-  --cta-text: var(--ink-950);
+  /* ---- CTA text colour (R-A11Y-1, revised) ----
+     White on the darkened pink→orange gradient (#d1005f → #c94f00): 5.4:1 at the pink end,
+     4.6:1 at the orange end, ~5.3:1 at the blend midpoint — all pass WCAG AA for normal
+     text (the CTA label is also bold). Matches the reference white-on-gradient look. */
+  --cta-text: var(--white);
 
   /* ---- Brighter daylight band (redesign) ----
      The reference cream/light sections (starting-point selector, the "digital world"

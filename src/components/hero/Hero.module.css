@@ -74,8 +74,11 @@
   gap: var(--space-4);
   margin-top: var(--space-8);
 }
-.reassurance {
+.explainer {
   margin-top: var(--space-5);
+}
+.reassurance {
+  margin-top: var(--space-4);
   max-width: var(--measure);
   font-size: var(--fs-sm);
   color: var(--text-3);

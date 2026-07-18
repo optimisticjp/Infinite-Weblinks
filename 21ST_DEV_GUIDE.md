@@ -36,7 +36,7 @@ default, not a locked foundation.
 | Theme | **CSS-variable tokens** in `src/styles/tokens/` (`colors`, `spacing`, `typography`, `effects`, `base`) + `src/styles/globals.css` | Tailwind theme + `globals.css` vars |
 | Components | `src/components/` — `brand/ builder/ chrome/ forms/ hero/ primitives/ routes/ sections/ seo/ troubleshooter/ viz/` | `src/components/ui`, `src/components/sections` |
 | Icons | **lucide-react** | lucide-react |
-| Animation | **GSAP** + **Motion** (`motion/react`) | Motion / framer-motion |
+| Animation | **GSAP** (single code-split runtime; `motion` removed) | Motion / framer-motion |
 | Utilities | plain CSS Modules; no `cn()` / `clsx` / `tailwind-merge` by default | `cn()` (clsx + tailwind-merge) |
 
 There is **no `cn()` helper and no `components.json`** in this project. Components that import
@@ -103,10 +103,11 @@ part of the toolchain and stay — this section is for the adapt-into-CSS-Module
    exist to manage Tailwind class strings — you don't need them on Path A. Replace conditional
    `cn()` class logic with CSS-Module class composition (e.g. `styles.card`, and toggle a
    `styles.active` class with a template literal or an array `.join(" ")`).
-3. **Avoid duplicate animation runtimes.** This project already ships **Motion**
-   (`motion/react`) and **GSAP**. If a component imports `framer-motion`, rewrite the import to
-   `motion/react` (same API) rather than adding a second runtime that does the same job — a
-   consistency call, not a ban on other libraries.
+3. **Avoid duplicate animation runtimes.** This project ships a single, code-split animation
+   runtime — **GSAP** (the previously-installed-but-unused `motion` package was removed). If a
+   component imports `framer-motion` / `motion/react`, port it to GSAP + the shared
+   `src/components/motion` / `src/lib/motion` helpers rather than adding a second runtime that
+   does the same job — a consistency call, not a ban on other libraries.
 4. **Install intentionally**, one line, and note it — then re-run `npm run build`. A dependency
    that breaks the build or balloons the bundle is a dependency to remove.
 

@@ -149,13 +149,21 @@
 .legal {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2) var(--space-5);
+  align-items: center;
+  /* Row gap 0: the 44px min-height on each link now provides vertical spacing, so the
+     previous 8px row gap would over-space the wrapped rows on mobile. Column gap kept. */
+  gap: 0 var(--space-4);
   list-style: none;
   margin: 0;
   padding: 0;
   margin-inline-start: auto;
 }
 .legalLink {
+  /* WCAG 2.5.8 target size: give the small legal links a real ≥44px touch/click target
+     without changing the visual type size or footer density. */
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target-min);
   font-size: var(--fs-xs);
   color: var(--text-muted);
 }

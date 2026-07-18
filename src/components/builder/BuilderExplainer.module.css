@@ -1,0 +1,135 @@
+/* BuilderExplainer — format/time/reassurance strip + honest plan-shape preview.
+   Designed for dark surfaces (hero, final CTA banner). Colours come from theme tokens. */
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.facts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+}
+
+.fact {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+
+.factIcon {
+  width: 18px;
+  height: 18px;
+  color: var(--cyan);
+  flex: none;
+}
+
+.troubleshoot {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.troubleshootLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--link);
+  font-weight: var(--fw-medium);
+  min-height: var(--target-min);
+  /* keep the inline link's hit area generous without breaking the sentence flow */
+  padding-block: 2px;
+}
+.troubleshootLink:hover {
+  color: var(--link-hover);
+}
+.troubleshootIcon {
+  width: 15px;
+  height: 15px;
+}
+
+/* ---- Plan-shape preview (structure only, not data) ---- */
+.preview {
+  margin: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--blur-panel));
+  max-width: 22rem;
+}
+
+.previewCap {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.previewRows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.previewRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.previewTier {
+  flex: none;
+  width: 3.2rem;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  color: var(--text-heading);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--tier) 55%, transparent);
+  background: color-mix(in srgb, var(--tier) 16%, transparent);
+  text-align: center;
+}
+
+.previewBars {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+}
+
+.previewBar {
+  height: 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tier) 40%, var(--surface-raised));
+}
+.previewBar:first-child {
+  flex: 2;
+}
+.previewBar:last-child {
+  flex: 1;
+  opacity: 0.6;
+}
+
+/* Banner variant centres the facts under the closing CTA. */
+.banner {
+  align-items: center;
+  text-align: center;
+}
+.banner .facts {
+  justify-content: center;
+}
+
+@media (max-width: 560px) {
+  .banner .preview {
+    max-width: 100%;
+  }
+}

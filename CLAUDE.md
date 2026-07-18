@@ -26,7 +26,7 @@ businesses plan, build and connect the right digital tools and services around t
 | Language | **TypeScript** (strict) |
 | UI runtime | **React 19** |
 | Styling | **CSS Modules** + a **CSS-variable design-token system** (see `src/styles/`) — the current default. Not Tailwind *today*; Tailwind, shadcn/ui, or 21st.dev may be introduced when a task justifies it (see [Technical Freedom](#technical-freedom)). |
-| Animation | **GSAP** (`gsap`) and **Motion** (`motion` / `motion/react`) |
+| Animation | **GSAP** (`gsap`) — the single motion runtime (the unused `motion`/`motion/react` package was removed; reintroduce only if a task justifies a second runtime) |
 | Icons | **lucide-react** |
 | Content | **Sanity** (`@sanity/client`, `@sanity/image-url`) — optional, flag-gated (see below); Studio lives in `studio/` |
 | Validation | **Zod** (`zod`) for form/input schemas |
@@ -230,9 +230,11 @@ This project **already ships GSAP, Motion, and lucide-react** and the design ref
 for rich, expressive motion — so **there are no bans on animation, client components,
 libraries, or visual effects**. Reach for the right tool:
 
-- **GSAP** for timeline-driven / scroll-choreographed sequences; **Motion** (`motion/react`)
-  for component-level animation and gesture/layout transitions. Prefer one primary runtime per
-  feature for consistency, but use both where each fits.
+- **GSAP** for timeline-driven / scroll-choreographed sequences and component-level animation —
+  it is now the single, code-split motion runtime (the previously-installed-but-unused `motion`
+  package was removed to avoid a duplicate runtime). Reach for the shared `Reveal`/motion helpers
+  in `src/components/motion` and `src/lib/motion`; reintroduce a second runtime only if a task
+  genuinely justifies it.
 - **lucide-react** is the default icon set; bring in others when a design genuinely needs them.
 - Advanced techniques — scroll choreography, SVG animation, masks, gradients, glass, canvas,
   WebGL/3D — are fair game **when they serve the design**.

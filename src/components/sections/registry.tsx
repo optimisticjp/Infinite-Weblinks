@@ -6,6 +6,7 @@ import { ConnectedSystemSection } from "./ConnectedSystemSection";
 import { CustomerJourneySection } from "./CustomerJourneySection";
 import { ConnectedExamplesSection } from "./ConnectedExamplesSection";
 import { AccountOwnershipSection } from "./AccountOwnershipSection";
+import { TrustMethodologySection } from "./TrustMethodologySection";
 import { StartingPointSelectorSection } from "./StartingPointSelectorSection";
 import { ServicesExplorerSection } from "./ServicesExplorerSection";
 import { ToolUniverseSection } from "./ToolUniverseSection";
@@ -38,6 +39,7 @@ const REGISTRY: Partial<Record<SectionType, SectionRenderer>> = {
   customerJourney: (id) => <CustomerJourneySection anchorId={id} />,
   connectedExamples: (id) => <ConnectedExamplesSection anchorId={id} />,
   accountOwnership: (id) => <AccountOwnershipSection anchorId={id} />,
+  trustMethodology: (id) => <TrustMethodologySection anchorId={id} />,
   startingPointSelector: (id) => <StartingPointSelectorSection anchorId={id} />,
   servicesExplorer: (id) => <ServicesExplorerSection anchorId={id} />,
   toolUniverse: (id) => <ToolUniverseSection anchorId={id} />,

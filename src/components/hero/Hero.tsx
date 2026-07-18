@@ -1,6 +1,7 @@
 import { ArrowRight, Compass, Sparkles } from "lucide-react";
 import { Button } from "@/components/primitives/Button";
 import { BrandLogo } from "@/components/brand/BrandLogo";
+import { BuilderExplainer } from "@/components/builder/BuilderExplainer";
 import type { HeroContent } from "@/lib/content/types";
 import { HeroUniverse } from "./HeroUniverse";
 import styles from "./Hero.module.css";
@@ -49,6 +50,8 @@ export function Hero({ hero }: { hero: HeroContent }) {
               {hero.secondaryCta.label}
             </Button>
           </div>
+
+          <BuilderExplainer variant="hero" className={styles.explainer} />
 
           <p className={styles.reassurance}>{hero.reassurance}</p>
 

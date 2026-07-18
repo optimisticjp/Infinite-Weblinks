@@ -1,0 +1,54 @@
+/* StickyMobileCta — fixed bottom conversion bar for the long mobile scroll.
+   See StickyMobileCta.tsx for the a11y + containing-block notes. */
+
+.bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 55; /* above content, below the mobile-nav modal overlay */
+  padding: var(--space-3) var(--space-4);
+  /* keep clear of the iOS/Android home indicator + gesture bar */
+  padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+  background: color-mix(in srgb, var(--ink-950) 84%, transparent);
+  backdrop-filter: blur(var(--blur-panel)) saturate(1.3);
+  border-top: 1px solid var(--border-1);
+  transform: translateY(130%);
+  transition: transform var(--dur-base) var(--ease-out);
+  pointer-events: none; /* hidden state must not block taps on content near the bottom */
+}
+
+.visible {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 52px;
+  border-radius: var(--radius-pill);
+  background: var(--grad-cta);
+  color: var(--white);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-md);
+  box-shadow: var(--glow-cta);
+}
+.cta:active {
+  transform: scale(0.99);
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Desktop: the header CTAs are always visible, so the sticky bar isn't needed. */
+@media (min-width: 1160px) {
+  .bar {
+    display: none;
+  }
+}

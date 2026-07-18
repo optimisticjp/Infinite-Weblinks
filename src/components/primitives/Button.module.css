@@ -62,16 +62,18 @@
 .primary:hover:not(:disabled) {
   background-position: 100% 50%;
   box-shadow:
-    0 14px 40px rgba(245, 25, 126, 0.5),
-    0 8px 22px rgba(255, 122, 24, 0.34);
+    0 14px 40px rgba(209, 0, 95, 0.52),
+    0 8px 22px rgba(201, 79, 0, 0.36);
 }
 
-/* Brand — tri-colour gradient, dark ink text. Same gradient-slide hover. */
+/* Brand — bright tri-colour gradient. Unlike the darkened CTA gradient, --grad-brand keeps
+   its bright #ff7a18 orange end (it's the decorative signature), where white would fail AA
+   (2.6:1). So this variant pins DARK ink text rather than following --cta-text (now white). */
 .brand {
   background-image: var(--grad-brand);
   background-size: 160% 100%;
   background-position: 0% 50%;
-  color: var(--cta-text);
+  color: var(--ink-950);
   box-shadow: var(--glow-violet);
 }
 .brand:hover:not(:disabled) {

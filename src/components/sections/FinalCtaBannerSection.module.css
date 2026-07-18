@@ -55,6 +55,12 @@
   align-items: center;
   gap: var(--space-5);
 }
+.explainer {
+  position: relative;
+  z-index: 1;
+  margin-top: var(--space-7);
+  align-items: center;
+}
 .email {
   display: inline-flex;
   align-items: center;

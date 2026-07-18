@@ -29,8 +29,9 @@ function classes(variant: Variant, size: Size, className?: string) {
 
 /**
  * Button / CTA. Renders a Next <Link> when `href` is set, otherwise a <button>.
- * The primary/brand gradient variants use DARK ink text (accessibility fix
- * R-A11Y-1) via the --cta-text token — white text fails contrast at the orange end.
+ * The primary CTA uses WHITE text on a darkened pink→orange gradient (#d1005f → #c94f00)
+ * via --cta-text — this matches the reference look and passes WCAG AA at both ends (5.4:1 /
+ * 4.6:1). The decorative `brand` variant keeps its bright tri-gradient and pins dark ink.
  */
 export function Button(props: LinkProps | ActionProps) {
   const { variant = "primary", size = "md", iconLeft, iconRight, className, children } = props;

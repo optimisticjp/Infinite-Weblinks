@@ -1,5 +1,6 @@
 import { SiteHeader } from "@/components/chrome/SiteHeader";
 import { SiteFooter } from "@/components/chrome/SiteFooter";
+import { StickyMobileCta } from "@/components/chrome/StickyMobileCta";
 import { getSiteChrome } from "@/lib/content";
 
 /**
@@ -17,6 +18,8 @@ export default async function MarketingLayout({ children }: { children: React.Re
       <SiteHeader nav={nav} />
       <main id="main">{children}</main>
       <SiteFooter footer={footer} />
+      {/* Rendered outside the header/nav so its backdrop-filter doesn't trap this fixed bar. */}
+      <StickyMobileCta />
     </>
   );
 }

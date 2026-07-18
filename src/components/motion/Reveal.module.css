@@ -1,0 +1,36 @@
+/* Reveal — transform-only scroll reveal. See Reveal.tsx for the a11y guarantees.
+   The base class is the COMPLETE state (no transform), so SSR / no-JS / reduced-motion all
+   render finished content. Only when the client sets data-animate does the pre-reveal
+   transform apply, and data-visible animates it home. */
+
+.reveal {
+  /* complete state — intentionally empty so the static render is final */
+}
+
+.reveal[data-animate="true"] {
+  transform: translate3d(0, var(--reveal-shift, 16px), 0);
+  transition: transform var(--dur-entrance, 720ms) var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: transform;
+}
+
+.reveal[data-animate="true"][data-visible="true"] {
+  transform: none;
+}
+
+/* Mobile: smaller shift, quicker settle — motion should be lighter on phones. */
+@media (max-width: 600px) {
+  .reveal[data-animate="true"] {
+    transform: translate3d(0, calc(var(--reveal-shift, 16px) * 0.6), 0);
+    transition-duration: var(--dur-slow, 480ms);
+  }
+}
+
+/* Belt-and-braces: even if the client mislabels, reduced-motion is always the complete state. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal[data-animate="true"],
+  .reveal[data-animate="true"][data-visible="true"] {
+    transform: none;
+    transition: none;
+  }
+}

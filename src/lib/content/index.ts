@@ -60,6 +60,7 @@ import type {
   Testimonial,
   Tool,
   ToolCategory,
+  TrustNarrative,
   ValueProp,
 } from "./types";
 
@@ -155,6 +156,10 @@ export async function getProcessSteps(): Promise<ProcessStep[]> {
 }
 export async function getValueProps(): Promise<ValueProp[]> {
   return [...data.valueProps];
+}
+/** Interim trust narrative (code-authoritative, always renders — never gated proof). */
+export async function getTrustNarrative(): Promise<TrustNarrative> {
+  return data.trustNarrative;
 }
 export async function getCustomerJourney(): Promise<CustomerJourneyStep[]> {
   return [...data.customerJourney].sort((a, b) => a.order - b.order);
@@ -342,6 +347,7 @@ export function getHomepageSections(): SectionConfig[] {
     { type: "servicesExplorer", enabled: true, anchorId: "services" }, // router #2 — services constellation (ref 12)
     { type: "deliveryModels", enabled: true, anchorId: "ways-of-working" }, // cream — ways of working (ref 01)
     { type: "accountOwnership", enabled: true, anchorId: "ownership" }, // you own it (ref 13)
+    { type: "trustMethodology", enabled: true, anchorId: "how-we-work" }, // interim honest trust: method + standards (bright)
     { type: "caseStudyShowcase", enabled: true, anchorId: "case-studies" }, // proof — status-gated (null today)
     { type: "testimonialWall", enabled: true, anchorId: "testimonials" }, // proof — status-gated (null today)
     { type: "learningResources", enabled: true, anchorId: "learn" }, // cream — practical guides

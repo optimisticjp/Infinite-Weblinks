@@ -20,6 +20,7 @@ export { valueProps } from "./value-props";
 export { customerJourney } from "./customer-journey";
 export { connectedExamples } from "./connected-examples";
 export { accountOwnership } from "./account-ownership";
+export { trustNarrative } from "./trust";
 export { troubleshooterProblems } from "./troubleshooter";
 export { faqs } from "./faqs";
 export { learnArticles } from "./learn";

@@ -15,8 +15,8 @@
   --glow-lime: 0 0 32px rgba(52, 211, 153, 0.5);
   --glow-blue: 0 0 32px rgba(59, 130, 246, 0.5);
 
-  /* CTA button glow (pink→orange) */
-  --glow-cta: 0 10px 30px rgba(245, 25, 126, 0.4), 0 6px 18px rgba(255, 122, 24, 0.28);
+  /* CTA button glow — retuned to the darkened white-text gradient (#d1005f → #c94f00) */
+  --glow-cta: 0 10px 30px rgba(209, 0, 95, 0.42), 0 6px 18px rgba(201, 79, 0, 0.3);
 
   /* Inner highlight for glass panels */
   --inset-hairline: inset 0 1px 0 rgba(255, 255, 255, 0.06);

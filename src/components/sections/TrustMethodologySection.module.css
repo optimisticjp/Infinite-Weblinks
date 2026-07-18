@@ -1,0 +1,157 @@
+/* TrustMethodologySection — "How we work" on the bright daylight band.
+   Interim honest trust layer: a connected method rail + a standards grid. Light theme,
+   glow-free (daylight is what makes the dark sections read as dark). */
+
+.section {
+  /* space handled by iw-section; nothing extra needed */
+}
+
+/* ---- Method rail (numbered, connected — echoes the "connected system" motif) ---- */
+.steps {
+  position: relative;
+  list-style: none;
+  margin: clamp(2rem, 4vw, 3rem) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+}
+
+/* The connecting line runs behind the numbered nodes (the "everything connects" idea). */
+.steps::before {
+  content: "";
+  position: absolute;
+  top: 22px;
+  left: 6%;
+  right: 6%;
+  height: 2px;
+  background: var(--grad-spectrum);
+  opacity: 0.55;
+  border-radius: 999px;
+}
+
+.step {
+  position: relative;
+  padding-top: 0;
+}
+
+.stepNum {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 2px solid var(--step-accent, var(--violet));
+  color: var(--text-heading);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-sm);
+  box-shadow: 0 0 0 6px var(--surface);
+}
+.step:nth-child(1) {
+  --step-accent: var(--violet);
+}
+.step:nth-child(2) {
+  --step-accent: var(--pink);
+}
+.step:nth-child(3) {
+  --step-accent: var(--orange);
+}
+.step:nth-child(4) {
+  --step-accent: var(--cyan);
+}
+
+.stepTitle {
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  color: var(--text-heading);
+  line-height: 1.25;
+}
+
+.stepBody {
+  margin: 0;
+  color: var(--text-body);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+}
+
+/* ---- Standards grid ---- */
+.standards {
+  list-style: none;
+  margin: clamp(2.5rem, 5vw, 3.5rem) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-5);
+}
+
+.standard {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+  padding: var(--space-5);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+}
+
+.standardTitle {
+  margin: 0 0 var(--space-1);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-bold);
+  color: var(--text-heading);
+}
+
+.standardBody {
+  margin: 0;
+  color: var(--text-body);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+}
+
+/* ---- Reassurance + CTA ---- */
+.footerRow {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4) var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--hairline);
+}
+
+.reassurance {
+  margin: 0;
+  flex: 1 1 22rem;
+  max-width: 46ch;
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 860px) {
+  .steps {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-8) var(--space-6);
+  }
+  .steps::before {
+    display: none; /* the rail only reads horizontally; drop it when the grid wraps */
+  }
+}
+
+@media (max-width: 560px) {
+  .steps,
+  .standards {
+    grid-template-columns: 1fr;
+  }
+  .footerRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -451,3 +451,97 @@
   color: var(--text-heading);
   font-weight: var(--fw-semibold);
 }
+
+/* ---- Merged scope step + contact step (6-step flow) ---- */
+.scopeStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+.contactStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+.contactHint {
+  margin: 0 0 var(--space-4);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+}
+
+/* Folded "review" — a collapsible summary on the contact step, not its own step. */
+.reviewSummary {
+  margin-top: var(--space-5);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: 0 var(--space-4);
+}
+.reviewSummaryToggle {
+  cursor: pointer;
+  padding: var(--space-3) 0;
+  font-weight: var(--fw-semibold);
+  color: var(--text-heading);
+  min-height: var(--target-min);
+  display: flex;
+  align-items: center;
+}
+.reviewSummary[open] .reviewSummaryToggle {
+  border-bottom: 1px solid var(--hairline);
+  margin-bottom: var(--space-3);
+}
+
+/* ---- Live plan preview (earlier value: real Now/Next/Later before the email ask) ---- */
+.livePreview {
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  background: var(--surface-raised);
+}
+.livePreviewTitle {
+  margin: 0 0 var(--space-4);
+  font-weight: var(--fw-bold);
+  color: var(--text-heading);
+  font-size: var(--fs-md);
+}
+.livePreviewTiers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+}
+.livePreviewTier {
+  border-top: 3px solid var(--tier, var(--violet));
+  padding-top: var(--space-3);
+}
+.livePreviewTierLabel {
+  display: inline-block;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, var(--tier) 60%, var(--text-heading));
+  margin-bottom: var(--space-2);
+}
+.livePreviewItems {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.livePreviewItems li {
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+  line-height: 1.4;
+}
+
+@media (max-width: 560px) {
+  .livePreviewTiers {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+}

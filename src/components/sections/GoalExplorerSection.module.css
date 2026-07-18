@@ -189,6 +189,28 @@
   margin: 0;
 }
 
+/* Mobile: turn the goal cards into a swipeable horizontal scroller (ref 04) instead of a
+   tall stack — cuts a lot of mobile scroll height (brief §P2-01). Real links, keyboard-
+   reachable, non-autoplay; the next card peeking signals it scrolls. Contained overflow-x
+   (no negative-margin bleed) so the page itself never gains horizontal overflow. */
+@media (max-width: 600px) {
+  .rest {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: var(--space-3);
+    scrollbar-width: thin;
+  }
+  .card {
+    flex: 0 0 82%;
+    scroll-snap-align: start;
+  }
+  .cardLink {
+    padding: var(--space-5);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .featured:hover,
   .card:hover {

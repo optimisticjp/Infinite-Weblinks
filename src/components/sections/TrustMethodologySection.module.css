@@ -150,8 +150,22 @@
   .standards {
     grid-template-columns: 1fr;
   }
+  /* Mobile compression (brief §P2-01): tighten this section hard on phones. */
+  .steps {
+    margin-top: var(--space-6);
+    gap: var(--space-5);
+  }
+  .standards {
+    margin-top: var(--space-6);
+    gap: var(--space-3);
+  }
+  .standard {
+    padding: var(--space-4);
+  }
   .footerRow {
     flex-direction: column;
     align-items: flex-start;
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
   }
 }

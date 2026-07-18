@@ -1,6 +1,12 @@
 "use client";
 
-import { useLayoutEffect, useRef, type ElementType, type ReactNode } from "react";
+import {
+  useLayoutEffect,
+  useRef,
+  type CSSProperties,
+  type ElementType,
+  type ReactNode,
+} from "react";
 import { prefersReducedMotion } from "@/lib/motion/motion";
 import styles from "./Reveal.module.css";
 
@@ -9,6 +15,8 @@ type RevealProps = {
   /** Element to render (default div). Use "li"/"section" etc. to keep semantics correct. */
   as?: ElementType;
   className?: string;
+  /** Inline styles (e.g. a per-item --accent custom property) applied to the wrapper. */
+  style?: CSSProperties;
   /** Stagger delay in ms (for sequenced cards). */
   delay?: number;
   /** Vertical pre-reveal shift in px (transform only — never opacity, so text keeps full contrast). */
@@ -35,6 +43,7 @@ export function Reveal({
   children,
   as,
   className,
+  style,
   delay = 0,
   shift = 16,
   once = true,
@@ -82,7 +91,7 @@ export function Reveal({
   }, [delay, shift, once]);
 
   return (
-    <Tag ref={ref} className={[styles.reveal, className].filter(Boolean).join(" ")}>
+    <Tag ref={ref} style={style} className={[styles.reveal, className].filter(Boolean).join(" ")}>
       {children}
     </Tag>
   );

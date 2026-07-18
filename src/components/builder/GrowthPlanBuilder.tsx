@@ -6,10 +6,8 @@ import {
   TrendingUp,
   Target,
   Monitor,
-  Users,
-  Clock,
+  Layers,
   Mail,
-  Star,
   Check,
   ShieldCheck,
   ArrowRight,
@@ -24,9 +22,11 @@ import { GrowthPlanResult } from "./GrowthPlanResult";
 import { resolve } from "@/lib/growth-plan/engine";
 import { growthPlanRuleSet } from "@/lib/growth-plan/rules";
 import {
+  BUDGET_OPTIONS,
   ENGAGEMENT_OPTIONS,
   EXISTING_SETUP_OPTIONS,
   TIMELINE_OPTIONS,
+  type Budget,
   type Engagement,
   type ExistingSetup,
   type Timeline,
@@ -44,25 +44,26 @@ interface GrowthPlanBuilderProps {
   stages: GrowthStage[];
 }
 
+// Six steps (was eight): the four engine inputs, then one combined "scope" step
+// (engagement + timeline + an optional budget band), then contact. The old standalone
+// `timeline` and `review` steps are folded in — `review` becomes a compact summary shown on
+// the contact step, and an earlier live plan preview appears once the engine inputs are set,
+// so the visitor sees value before the email ask (review §6, brief §P2-03/§D-04).
 type StepId =
   | "businessType"
   | "currentStage"
   | "mainGoal"
   | "existingSetup"
-  | "engagement"
-  | "timeline"
-  | "contact"
-  | "review";
+  | "scope"
+  | "contact";
 
 const STEP_ORDER: StepId[] = [
   "businessType",
   "currentStage",
   "mainGoal",
   "existingSetup",
-  "engagement",
-  "timeline",
+  "scope",
   "contact",
-  "review",
 ];
 
 const STEP_TITLES: Record<StepId, string> = {
@@ -70,10 +71,8 @@ const STEP_TITLES: Record<StepId, string> = {
   currentStage: "Where are you right now?",
   mainGoal: "What's your main goal?",
   existingSetup: "What do you already have in place?",
-  engagement: "How much are you looking to take on?",
-  timeline: "What's your timeline?",
-  contact: "How can we reach you?",
-  review: "Review your answers",
+  scope: "How much are you looking to take on?",
+  contact: "See your plan and get a copy by email",
 };
 
 /** Short labels for the stepper + live tracker (the question above stays the long form). */
@@ -82,10 +81,8 @@ const STEP_SHORT: Record<StepId, string> = {
   currentStage: "Stage",
   mainGoal: "Goal",
   existingSetup: "Current setup",
-  engagement: "Engagement",
-  timeline: "Timeline",
-  contact: "Details",
-  review: "Your plan",
+  scope: "Scope",
+  contact: "Your plan",
 };
 
 const STEP_SUBTITLE: Record<StepId, string> = {
@@ -93,10 +90,8 @@ const STEP_SUBTITLE: Record<StepId, string> = {
   currentStage: "This helps us pitch advice at the right level.",
   mainGoal: "Pick the outcome that matters most right now.",
   existingSetup: "Tell us what you already have running.",
-  engagement: "There's no wrong answer — it just shapes the plan.",
-  timeline: "So we know how to sequence things.",
-  contact: "So we can send your plan and follow up.",
-  review: "Check everything looks right before we build it.",
+  scope: "Scope, timing and — if you like — a rough budget band. Budget is optional.",
+  contact: "Your plan is shown here now. Add your details to get a copy and a follow-up.",
 };
 
 const STEP_ICON: Record<StepId, LucideIcon> = {
@@ -104,10 +99,8 @@ const STEP_ICON: Record<StepId, LucideIcon> = {
   currentStage: TrendingUp,
   mainGoal: Target,
   existingSetup: Monitor,
-  engagement: Users,
-  timeline: Clock,
+  scope: Layers,
   contact: Mail,
-  review: Star,
 };
 
 const STEP_COLOR: Record<StepId, string> = {
@@ -115,10 +108,8 @@ const STEP_COLOR: Record<StepId, string> = {
   currentStage: "var(--pink)",
   mainGoal: "var(--orange)",
   existingSetup: "var(--cyan)",
-  engagement: "var(--lime)",
-  timeline: "var(--blue)",
+  scope: "var(--lime)",
   contact: "var(--violet-bright)",
-  review: "var(--pink-bright)",
 };
 
 type StepState = "done" | "current" | "pending";
@@ -136,6 +127,7 @@ interface FormState {
   existingSetup?: ExistingSetup;
   engagement?: Engagement;
   timeline?: Timeline;
+  budget?: Budget;
   name: string;
   email: string;
   message: string;
@@ -148,6 +140,7 @@ const initialState: FormState = {
   existingSetup: undefined,
   engagement: undefined,
   timeline: undefined,
+  budget: undefined,
   name: "",
   email: "",
   message: "",
@@ -181,10 +174,9 @@ function validateStep(step: StepId, form: FormState, meta: StepMeta): string | n
     case "existingSetup":
       if (!form.existingSetup) return "Please choose the option that fits best.";
       return null;
-    case "engagement":
-      if (!form.engagement) return "Please choose an option.";
-      return null;
-    case "timeline":
+    case "scope":
+      // Engagement + timeline are required; budget is intentionally optional (skippable).
+      if (!form.engagement) return "Please choose how much you're looking to take on.";
       if (!form.timeline) return "Please choose your timeline.";
       return null;
     case "contact":
@@ -260,6 +252,52 @@ function OptionGroup({
   );
 }
 
+const PREVIEW_TIERS: { key: "startHere" | "connectNext" | "addLater"; label: string; accent: string }[] = [
+  { key: "startHere", label: "Now", accent: "var(--lime)" },
+  { key: "connectNext", label: "Next", accent: "var(--cyan)" },
+  { key: "addLater", label: "Later", accent: "var(--violet)" },
+];
+
+/**
+ * LivePlanPreview — the earlier, real "plan taking shape" (brief §P2-03/§REF-09/§REF-14).
+ * Renders the SAME deterministic recommendation the server will recompute, as a prioritised
+ * Now / Next / Later summary, so the visitor sees genuine value before the contact/email ask.
+ * This is real recommendation data (never fabricated) — the full result view adds the rest.
+ */
+function LivePlanPreview({
+  result,
+  heading = "Your plan so far",
+}: {
+  result: GrowthPlanResultData;
+  heading?: string;
+}) {
+  return (
+    <div className={styles.livePreview} role="group" aria-label={heading}>
+      <p className={styles.livePreviewTitle}>{heading}</p>
+      <ol className={styles.livePreviewTiers}>
+        {PREVIEW_TIERS.map((tier) => {
+          const items = result[tier.key];
+          if (!items || items.length === 0) return null;
+          return (
+            <li
+              key={tier.key}
+              className={styles.livePreviewTier}
+              style={{ ["--tier" as string]: tier.accent }}
+            >
+              <span className={styles.livePreviewTierLabel}>{tier.label}</span>
+              <ul className={styles.livePreviewItems}>
+                {items.slice(0, 3).map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+}
+
 /**
  * Growth Plan Builder — guided multi-step form (contracts/growth-plan-rules.md /
  * forms-and-email.md). It is a form backed by the reviewed rules engine, NOT a free AI
@@ -303,11 +341,30 @@ export function GrowthPlanBuilder({ businessTypes, goals, stages }: GrowthPlanBu
   );
   const engagementOptions = useMemo<Option[]>(() => ENGAGEMENT_OPTIONS.map((v) => ({ value: v, label: v })), []);
   const timelineOptions = useMemo<Option[]>(() => TIMELINE_OPTIONS.map((v) => ({ value: v, label: v })), []);
+  const budgetOptions = useMemo<Option[]>(() => BUDGET_OPTIONS.map((v) => ({ value: v, label: v })), []);
 
   const stepMeta: StepMeta = { businessTypeOptions, stageOptions, goalOptions };
   const step = STEP_ORDER[stepIndex];
   const totalSteps = STEP_ORDER.length;
-  const isLastInputStep = step === "review";
+  const isLastInputStep = step === "contact";
+
+  // Earlier value: once the four engine inputs are set, compute the SAME deterministic plan
+  // the server will recompute, so a live preview can appear before the contact/email ask
+  // (review §6, brief §P2-03/§REF-09/§REF-14). engagement/timeline/budget don't affect it.
+  const previewResult = useMemo<GrowthPlanResultData | null>(() => {
+    if (!form.businessType || !form.currentStage || !form.mainGoal || !form.existingSetup) {
+      return null;
+    }
+    return resolve(
+      {
+        businessType: form.businessType,
+        currentStage: form.currentStage,
+        mainGoal: form.mainGoal,
+        existingSetup: form.existingSetup,
+      },
+      growthPlanRuleSet,
+    );
+  }, [form.businessType, form.currentStage, form.mainGoal, form.existingSetup]);
 
   // Record the mount time (for the human-timing anti-bot check) once, after first
   // render rather than during it.
@@ -354,7 +411,7 @@ export function GrowthPlanBuilder({ businessTypes, goals, stages }: GrowthPlanBu
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (step !== "review") return;
+    if (step !== "contact") return;
 
     const elapsedMs = Date.now() - mountedAt.current;
     const candidate = {
@@ -364,6 +421,7 @@ export function GrowthPlanBuilder({ businessTypes, goals, stages }: GrowthPlanBu
       existingSetup: form.existingSetup,
       engagement: form.engagement,
       timeline: form.timeline,
+      budget: form.budget,
       name: form.name,
       email: form.email,
       message: form.message.trim() ? form.message : undefined,
@@ -573,122 +631,134 @@ export function GrowthPlanBuilder({ businessTypes, goals, stages }: GrowthPlanBu
                 error={stepError}
               />
             )}
-            {step === "engagement" && (
-              <OptionGroup
-                legend="Engagement preference"
-                name="engagement"
-                options={engagementOptions}
-                value={form.engagement}
-                onChange={(v) => update("engagement", v as Engagement)}
-                error={stepError}
-              />
-            )}
-            {step === "timeline" && (
-              <OptionGroup
-                legend="Timeline"
-                name="timeline"
-                options={timelineOptions}
-                value={form.timeline}
-                onChange={(v) => update("timeline", v as Timeline)}
-                error={stepError}
-              />
+            {step === "scope" && (
+              <div className={styles.scopeStack}>
+                <OptionGroup
+                  legend="How much are you looking to take on?"
+                  name="engagement"
+                  options={engagementOptions}
+                  value={form.engagement}
+                  onChange={(v) => update("engagement", v as Engagement)}
+                  error={stepError && !form.engagement ? stepError : null}
+                />
+                <OptionGroup
+                  legend="What's your timeline?"
+                  name="timeline"
+                  options={timelineOptions}
+                  value={form.timeline}
+                  onChange={(v) => update("timeline", v as Timeline)}
+                  error={stepError && form.engagement && !form.timeline ? stepError : null}
+                />
+                <OptionGroup
+                  legend="Rough budget band (optional — you can skip this)"
+                  name="budget"
+                  options={budgetOptions}
+                  value={form.budget}
+                  onChange={(v) => update("budget", v as Budget)}
+                />
+                {previewResult ? <LivePlanPreview result={previewResult} /> : null}
+              </div>
             )}
             {step === "contact" && (
-              <fieldset className={styles.fieldset}>
-                <legend className={styles.legend}>Contact details</legend>
-                <div className={styles.contactGrid}>
-                  <FormField label="Your name" required>
-                    {(controlProps) => (
-                      <input
-                        {...controlProps}
-                        type="text"
-                        className={formFieldStyles.control}
-                        value={form.name}
-                        onChange={(e) => update("name", e.target.value)}
-                        autoComplete="name"
-                      />
-                    )}
-                  </FormField>
-                  <FormField label="Email address" required hint="We'll reply here, never shared or sold.">
-                    {(controlProps) => (
-                      <input
-                        {...controlProps}
-                        type="email"
-                        className={formFieldStyles.control}
-                        value={form.email}
-                        onChange={(e) => update("email", e.target.value)}
-                        autoComplete="email"
-                      />
-                    )}
-                  </FormField>
-                  <FormField label="Anything else? (optional)" hint="Up to 2000 characters.">
-                    {(controlProps) => (
-                      <textarea
-                        {...controlProps}
-                        className={formFieldStyles.control}
-                        value={form.message}
-                        onChange={(e) => update("message", e.target.value)}
-                        rows={4}
-                      />
-                    )}
-                  </FormField>
-                </div>
-                {stepError ? (
-                  <p className={styles.fieldError} role="alert">
-                    {stepError}
-                  </p>
+              <div className={styles.contactStack}>
+                {previewResult ? (
+                  <LivePlanPreview result={previewResult} heading="Your plan is ready" />
                 ) : null}
-              </fieldset>
-            )}
-            {step === "review" && (
-              <fieldset className={styles.fieldset}>
-                <legend className={styles.legend}>Review your answers</legend>
-                <dl className={styles.reviewList}>
-                  <div>
-                    <dt>Business type</dt>
-                    <dd>{businessTypeOptions.find((o) => o.value === form.businessType)?.label ?? "—"}</dd>
+                <fieldset className={styles.fieldset}>
+                  <legend className={styles.legend}>Get your plan by email</legend>
+                  <p className={styles.contactHint}>
+                    Your plan is shown above. Add your details and we&apos;ll email you a copy and a
+                    practical next step. Your email is never shared or sold.
+                  </p>
+                  <div className={styles.contactGrid}>
+                    <FormField label="Your name" required>
+                      {(controlProps) => (
+                        <input
+                          {...controlProps}
+                          type="text"
+                          className={formFieldStyles.control}
+                          value={form.name}
+                          onChange={(e) => update("name", e.target.value)}
+                          autoComplete="name"
+                        />
+                      )}
+                    </FormField>
+                    <FormField label="Email address" required hint="We'll reply here, never shared or sold.">
+                      {(controlProps) => (
+                        <input
+                          {...controlProps}
+                          type="email"
+                          className={formFieldStyles.control}
+                          value={form.email}
+                          onChange={(e) => update("email", e.target.value)}
+                          autoComplete="email"
+                        />
+                      )}
+                    </FormField>
+                    <FormField label="Anything else? (optional)" hint="Up to 2000 characters.">
+                      {(controlProps) => (
+                        <textarea
+                          {...controlProps}
+                          className={formFieldStyles.control}
+                          value={form.message}
+                          onChange={(e) => update("message", e.target.value)}
+                          rows={4}
+                        />
+                      )}
+                    </FormField>
                   </div>
-                  <div>
-                    <dt>Current stage</dt>
-                    <dd>{stageOptions.find((o) => o.value === form.currentStage)?.label ?? "—"}</dd>
-                  </div>
-                  <div>
-                    <dt>Main goal</dt>
-                    <dd>{goalOptions.find((o) => o.value === form.mainGoal)?.label ?? "—"}</dd>
-                  </div>
-                  <div>
-                    <dt>Existing setup</dt>
-                    <dd>{form.existingSetup ?? "—"}</dd>
-                  </div>
-                  <div>
-                    <dt>Engagement</dt>
-                    <dd>{form.engagement ?? "—"}</dd>
-                  </div>
-                  <div>
-                    <dt>Timeline</dt>
-                    <dd>{form.timeline ?? "—"}</dd>
-                  </div>
-                  <div>
-                    <dt>Name</dt>
-                    <dd>{form.name || "—"}</dd>
-                  </div>
-                  <div>
-                    <dt>Email</dt>
-                    <dd>{form.email || "—"}</dd>
-                  </div>
-                </dl>
+                  {stepError ? (
+                    <p className={styles.fieldError} role="alert">
+                      {stepError}
+                    </p>
+                  ) : null}
 
-                <TurnstileField
-                  onToken={setTurnstileToken}
-                  onSkipped={() => setTurnstileSkipped(true)}
-                />
-                {turnstileSkipped ? (
-                  <p className={styles.emptyNote}>
-                    Human verification isn&apos;t active in this preview — your submission is still checked
-                    server-side.
-                  </p>
-                ) : null}
-              </fieldset>
+                  <details className={styles.reviewSummary}>
+                    <summary className={styles.reviewSummaryToggle}>Review your answers</summary>
+                    <dl className={styles.reviewList}>
+                      <div>
+                        <dt>Business type</dt>
+                        <dd>{businessTypeOptions.find((o) => o.value === form.businessType)?.label ?? "—"}</dd>
+                      </div>
+                      <div>
+                        <dt>Current stage</dt>
+                        <dd>{stageOptions.find((o) => o.value === form.currentStage)?.label ?? "—"}</dd>
+                      </div>
+                      <div>
+                        <dt>Main goal</dt>
+                        <dd>{goalOptions.find((o) => o.value === form.mainGoal)?.label ?? "—"}</dd>
+                      </div>
+                      <div>
+                        <dt>Existing setup</dt>
+                        <dd>{form.existingSetup ?? "—"}</dd>
+                      </div>
+                      <div>
+                        <dt>Scope</dt>
+                        <dd>{form.engagement ?? "—"}</dd>
+                      </div>
+                      <div>
+                        <dt>Timeline</dt>
+                        <dd>{form.timeline ?? "—"}</dd>
+                      </div>
+                      <div>
+                        <dt>Budget band</dt>
+                        <dd>{form.budget ?? "Not specified"}</dd>
+                      </div>
+                    </dl>
+                  </details>
+
+                  <TurnstileField
+                    onToken={setTurnstileToken}
+                    onSkipped={() => setTurnstileSkipped(true)}
+                  />
+                  {turnstileSkipped ? (
+                    <p className={styles.emptyNote}>
+                      Human verification isn&apos;t active in this preview — your submission is still
+                      checked server-side.
+                    </p>
+                  ) : null}
+                </fieldset>
+              </div>
             )}
           </div>
 
@@ -706,7 +776,7 @@ export function GrowthPlanBuilder({ businessTypes, goals, stages }: GrowthPlanBu
               </Button>
             ) : (
               <Button type="submit" variant="primary" aria-busy={status === "submitting"} disabled={status === "submitting"}>
-                {status === "submitting" ? "Sending…" : "Get my growth plan"}
+                {status === "submitting" ? "Sending…" : "Email me my plan"}
               </Button>
             )}
           </div>

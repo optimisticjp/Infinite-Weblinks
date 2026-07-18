@@ -297,10 +297,13 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
                     <li key={item.label} className={styles.navItem}>
                       <Link
                         href={item.href}
-                        className={`${styles.navLink} ${isCurrent ? styles.navLinkActive : ""}`}
+                        className={`${styles.navLink} ${styles.navLinkDirect} ${isCurrent ? styles.navLinkActive : ""}`}
                         aria-current={isCurrent ? "page" : undefined}
                       >
                         {item.label}
+                        {/* Direct-link cue: unlike the menu items (down chevron), these route
+                            straight to a page. Makes the nav asymmetry intentional (ref P2-06). */}
+                        <ArrowUpRight className={styles.navLinkArrow} aria-hidden="true" />
                       </Link>
                     </li>
                   );

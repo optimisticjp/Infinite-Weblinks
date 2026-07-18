@@ -127,6 +127,7 @@ export async function POST(req: Request) {
     existingSetup: values.existingSetup,
     engagement: values.engagement,
     timeline: values.timeline,
+    budget: values.budget ?? "Not specified",
     message: values.message ?? "",
     recommendationSummary: formatRecommendationForEmail(result),
     matchedRuleId: result.matchedRuleId,

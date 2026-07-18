@@ -5,6 +5,7 @@
  */
 import { z } from "zod";
 import {
+  BUDGET_OPTIONS,
   ENGAGEMENT_OPTIONS,
   EXISTING_SETUP_OPTIONS,
   TIMELINE_OPTIONS,
@@ -107,6 +108,9 @@ export const growthPlanSchema = z.object({
   existingSetup: z.enum(EXISTING_SETUP_OPTIONS, "Please choose the option that fits best."),
   engagement: z.enum(ENGAGEMENT_OPTIONS, "Please choose an option."),
   timeline: z.enum(TIMELINE_OPTIONS, "Please choose your timeline."),
+  // Optional investment band — honest qualification, no amounts, never blocks submission
+  // and never influences the recommendation (brief §P2-04, D-02).
+  budget: z.enum(BUDGET_OPTIONS).optional(),
   name: nameSchema,
   email: emailSchema,
   message: z.string().trim().max(2000, "Message must be 2000 characters or fewer.").optional(),

@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { ArrowRight, Star } from "lucide-react";
 import { Button } from "@/components/primitives/Button";
-import { Icon } from "@/components/primitives/Icon";
-import { IconTile } from "@/components/primitives/IconTile";
 import { SectionHeader } from "@/components/primitives/SectionHeader";
+import { GoalScene } from "@/components/viz/GoalScene";
+import { Reveal } from "@/components/motion/Reveal";
 import { getGoals } from "@/lib/content";
 import styles from "./GoalExplorerSection.module.css";
 
@@ -57,9 +57,7 @@ export async function GoalExplorerSection({ anchorId }: { anchorId?: string }) {
                 Featured
               </span>
             </span>
-            <IconTile color={featured.color} variant="filled" size={64} className={styles.featuredIcon}>
-              <Icon name={featured.icon} />
-            </IconTile>
+            <GoalScene icon={featured.icon} color={featured.color} size="featured" />
             <h3 className={styles.featuredTitle}>{featured.title}</h3>
             <p className={styles.featuredOutcome}>{featured.outcome}</p>
             <span className={styles.featuredCta}>
@@ -70,7 +68,13 @@ export async function GoalExplorerSection({ anchorId }: { anchorId?: string }) {
 
           <ul className={styles.rest}>
             {rest.map((g, i) => (
-              <li key={g.slug} className={styles.card} style={{ ["--accent" as string]: g.color }}>
+              <Reveal
+                as="li"
+                key={g.slug}
+                className={styles.card}
+                delay={Math.min(i, 5) * 55}
+                style={{ ["--accent" as string]: g.color }}
+              >
                 <Link href={`/growth-plan?goal=${g.slug}`} className={styles.cardLink}>
                   <span className={styles.cardTop}>
                     <span className={styles.index} aria-hidden="true">
@@ -78,13 +82,11 @@ export async function GoalExplorerSection({ anchorId }: { anchorId?: string }) {
                     </span>
                     <ArrowRight className={styles.cardArrow} aria-hidden="true" size={18} />
                   </span>
-                  <IconTile color={g.color} variant="outline" size={52}>
-                    <Icon name={g.icon} />
-                  </IconTile>
+                  <GoalScene icon={g.icon} color={g.color} size="compact" />
                   <h3 className={styles.title}>{g.title}</h3>
                   <p className={styles.outcome}>{g.outcome}</p>
                 </Link>
-              </li>
+              </Reveal>
             ))}
           </ul>
         </div>

@@ -39,3 +39,15 @@
   /* Sticky header height (used for scroll-padding so focus is never obscured — WCAG 2.4.11) */
   --header-h: 72px;
 }
+
+/* Mobile compression (brief §P2-01): tighten the vertical section rhythm on phones so the
+   homepage scrolls in fewer screens, without changing the desktop composition. The clamp
+   floors above are 64/48/96px; on phones we go tighter still. */
+@media (max-width: 600px) {
+  :root {
+    --section-y-tight: 30px;
+    --section-y: 40px;
+    --section-y-loose: 52px;
+    --gutter: clamp(16px, 5vw, 24px);
+  }
+}

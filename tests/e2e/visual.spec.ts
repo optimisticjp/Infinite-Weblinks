@@ -37,6 +37,23 @@ const OUT = path.resolve("review-artifacts/visual");
 test.describe("visual regression / breakpoints", () => {
   test.skip(!process.env.RUN_VISUAL, "on-demand: set RUN_VISUAL=1 to capture screenshots");
 
+  test("homepage section heights @ 390px", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    const rows = await page.evaluate(() =>
+      [...(document.querySelector("main")?.children ?? [])].map((s) => ({
+        id: (s as HTMLElement).id || "(none)",
+        h: Math.round(s.getBoundingClientRect().height),
+      })),
+    );
+    // eslint-disable-next-line no-console
+    for (const r of rows) console.log(`SECTION ${String(r.h).padStart(5)}px #${r.id}`);
+    const total = rows.reduce((a, b) => a + b.h, 0);
+    // eslint-disable-next-line no-console
+    console.log(`SECTION TOTAL ${total}px = ${(total / 844).toFixed(1)} screens`);
+  });
+
   test.beforeAll(() => {
     mkdirSync(OUT, { recursive: true });
   });
@@ -56,6 +73,12 @@ test.describe("visual regression / breakpoints", () => {
           () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
         );
         expect(overflow, `horizontal overflow at ${width}px`).toBeLessThanOrEqual(1);
+
+        // Height / viewport-screen measurement (evidence for the mobile-compression target).
+        const height = await page.evaluate(() => document.body.scrollHeight);
+        const vh = 844; // reference mobile viewport height used in the review
+        // eslint-disable-next-line no-console
+        console.log(`MEASURE ${route} @ ${width}px: height=${height}px screens@844=${(height / vh).toFixed(1)}`);
 
         await page.screenshot({ path: path.join(OUT, `${slug}.png`), fullPage: true });
 

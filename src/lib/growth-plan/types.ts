@@ -23,6 +23,21 @@ export const TIMELINE_OPTIONS = [
 ] as const;
 export type Timeline = (typeof TIMELINE_OPTIONS)[number];
 
+/**
+ * OPTIONAL investment band (review §6, brief §P2-04, D-02). An honest qualification signal
+ * with NO published prices and NO invented amounts — just a comfort band the visitor can skip.
+ * It never influences the deterministic recommendation (like engagement/timeline, it is only
+ * collected and forwarded to the team), so "no aggressive budget qualification" still holds.
+ */
+export const BUDGET_OPTIONS = [
+  "Just exploring for now",
+  "A focused starter project",
+  "A few connected projects",
+  "An ongoing growth programme",
+  "Not sure yet — help me work it out",
+] as const;
+export type Budget = (typeof BUDGET_OPTIONS)[number];
+
 export const EXISTING_SETUP_OPTIONS = [
   "Nothing built yet",
   "I have a website or store",
@@ -33,7 +48,9 @@ export const EXISTING_SETUP_OPTIONS = [
 ] as const;
 export type ExistingSetup = (typeof EXISTING_SETUP_OPTIONS)[number];
 
-/** Inputs collected by the guided form. Every field optional so partial states resolve. */
+/** Inputs collected by the guided form. Every field optional so partial states resolve.
+ * NOTE: only businessType/currentStage/mainGoal/existingSetup influence the recommendation
+ * (see engine.ts). engagement/timeline/budget are collected + forwarded to the team only. */
 export interface GrowthPlanInput {
   businessType?: string; // businessType slug
   currentStage?: string; // growth-stage slug
@@ -41,6 +58,7 @@ export interface GrowthPlanInput {
   existingSetup?: ExistingSetup;
   engagement?: Engagement;
   timeline?: Timeline;
+  budget?: Budget;
 }
 
 /** The structured recommendation (brief §15) — the only thing shown to the visitor. */

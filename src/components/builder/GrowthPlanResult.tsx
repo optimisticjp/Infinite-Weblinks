@@ -21,10 +21,16 @@ type ListKey =
   | "exampleTools"
   | "expectedOutcomes";
 
-const GROUPS: { key: ListKey; title: string; color: string }[] = [
-  { key: "startHere", title: "Start here", color: "var(--violet)" },
-  { key: "connectNext", title: "Connect next", color: "var(--cyan)" },
-  { key: "addLater", title: "Add later", color: "var(--orange)" },
+/** The prioritised plan: Now / Next / Later (ref 14). These are the actionable tiers, given
+ * a distinct, sequenced treatment — real recommendation data only, no projected outcomes. */
+const PRIORITY: { key: ListKey; tier: string; title: string; accent: string }[] = [
+  { key: "startHere", tier: "Now", title: "Start here", accent: "var(--lime)" },
+  { key: "connectNext", tier: "Next", title: "Connect next", accent: "var(--cyan)" },
+  { key: "addLater", tier: "Later", title: "Add later", accent: "var(--violet)" },
+];
+
+/** Supporting detail — rendered below the prioritised plan, as a calmer card grid. */
+const SUPPORTING: { key: ListKey; title: string; color: string }[] = [
   { key: "relevantCapabilities", title: "Relevant capabilities", color: "var(--lime)" },
   { key: "exampleTools", title: "Example tools we can connect", color: "var(--blue)" },
   { key: "expectedOutcomes", title: "Expected outcomes", color: "var(--pink)" },
@@ -45,8 +51,39 @@ export function GrowthPlanResult({ result, onBuildAgain, className }: GrowthPlan
         intro="A guided first read of your situation — illustrative, not a guarantee. Talk it through with us any time."
       />
 
+      <ol className={styles.priority}>
+        {PRIORITY.map((group, i) => {
+          const items = result[group.key];
+          if (!items || items.length === 0) return null;
+          return (
+            <li
+              key={group.key}
+              className={styles.tierCard}
+              style={{ ["--tier" as string]: group.accent }}
+            >
+              <p className={styles.tierHead}>
+                <span className={styles.tierBadge}>{group.tier}</span>
+                <span className={styles.tierTitle}>{group.title}</span>
+                <span className={styles.tierStep} aria-hidden="true">
+                  {i + 1}
+                </span>
+              </p>
+              <ul className={styles.list}>
+                {items.map((item) => (
+                  <li key={item}>
+                    <Badge color={group.accent} variant="soft">
+                      {item}
+                    </Badge>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          );
+        })}
+      </ol>
+
       <div className={styles.grid}>
-        {GROUPS.map((group) => {
+        {SUPPORTING.map((group) => {
           const items = result[group.key];
           if (!items || items.length === 0) return null;
           return (

@@ -73,3 +73,57 @@
   flex-wrap: wrap;
   gap: var(--space-4);
 }
+
+/* ---- Prioritised plan: Now / Next / Later (ref 14) ---- */
+.priority {
+  list-style: none;
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+}
+.tierCard {
+  position: relative;
+  border: 1px solid var(--hairline-strong);
+  border-top: 3px solid var(--tier, var(--violet));
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  background: var(--surface-raised);
+  box-shadow: 0 0 28px -18px var(--tier);
+}
+.tierHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-4);
+}
+.tierBadge {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-heading);
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--tier) 55%, transparent);
+  background: color-mix(in srgb, var(--tier) 16%, transparent);
+}
+.tierTitle {
+  font-weight: var(--fw-semibold);
+  color: var(--text-heading);
+  font-size: var(--fs-sm);
+}
+.tierStep {
+  margin-left: auto;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  color: color-mix(in srgb, var(--tier) 45%, transparent);
+  line-height: 1;
+}
+
+@media (max-width: 640px) {
+  .priority {
+    grid-template-columns: 1fr;
+  }
+}

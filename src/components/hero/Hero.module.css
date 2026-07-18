@@ -11,9 +11,12 @@
   inset: -12% -6% 20% 30%;
   pointer-events: none;
   z-index: 0;
+  /* Turned up toward the references' hotter ambient lighting (review §13), still disciplined —
+     the infinity mark stays the one bright focal element; these are soft supporting halos. */
   background:
-    radial-gradient(44% 40% at 74% 40%, rgba(168, 85, 247, 0.2), transparent 70%),
-    radial-gradient(40% 36% at 86% 64%, rgba(245, 25, 126, 0.12), transparent 72%);
+    radial-gradient(46% 42% at 74% 40%, rgba(168, 85, 247, 0.26), transparent 70%),
+    radial-gradient(42% 38% at 86% 64%, rgba(245, 25, 126, 0.16), transparent 72%),
+    radial-gradient(34% 30% at 62% 78%, rgba(34, 211, 238, 0.1), transparent 74%);
 }
 
 .grid {

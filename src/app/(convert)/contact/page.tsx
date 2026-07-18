@@ -77,14 +77,18 @@ const TRUST: { icon: LucideIcon; label: string; color: string }[] = [
   { icon: HeartHandshake, label: "No pressure, no obligation", color: "var(--pink)" },
 ];
 
-/* Decorative globe pins (desktop only). Percent coordinates within the visual box. */
-const PINS: { label: string; color: string; x: number; y: number }[] = [
-  { label: "Canada", color: "var(--violet)", x: 13, y: 55 },
-  { label: "UK", color: "var(--cyan)", x: 40, y: 45 },
-  { label: "Europe", color: "var(--violet-bright)", x: 55, y: 63 },
-  { label: "US", color: "var(--pink)", x: 20, y: 77 },
-  { label: "India", color: "var(--orange)", x: 80, y: 45 },
-  { label: "Australia", color: "var(--blue)", x: 70, y: 89 },
+/* Decorative connection nodes on the globe (desktop only). Percent coordinates within the
+   visual box. Deliberately UNLABELLED and NON-GEOGRAPHIC: the business's operating geography
+   is not confirmed, so this scene must never imply specific service locations (brief
+   §P3-03/§D-05, review §7: "location pins only for confirmed locations" / "do not infer
+   locations from decorative reference pins"). They read as a connected, luminous globe only. */
+const NODES: { color: string; x: number; y: number }[] = [
+  { color: "var(--violet)", x: 13, y: 55 },
+  { color: "var(--cyan)", x: 40, y: 45 },
+  { color: "var(--violet-bright)", x: 55, y: 63 },
+  { color: "var(--pink)", x: 20, y: 77 },
+  { color: "var(--orange)", x: 80, y: 45 },
+  { color: "var(--blue)", x: 70, y: 89 },
 ];
 const HUB = { x: 80, y: 15 };
 
@@ -262,12 +266,12 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
                   <stop offset="100%" stopColor="rgba(255,122,24,0.0)" />
                 </linearGradient>
               </defs>
-              {PINS.map((p) => {
+              {NODES.map((p) => {
                 const cx = (HUB.x + p.x) / 2;
                 const cy = Math.min(HUB.y, p.y) + Math.abs(p.y - HUB.y) * 0.15;
                 return (
                   <path
-                    key={p.label}
+                    key={`${p.x}-${p.y}`}
                     d={`M ${HUB.x} ${HUB.y} Q ${cx} ${cy} ${p.x} ${p.y}`}
                     fill="none"
                     stroke="url(#contactArc)"
@@ -281,18 +285,17 @@ export default async function ContactPage({ searchParams }: ContactPageProps) {
               <InfinityMark size={96} />
             </span>
             <ul className={styles.pins}>
-              {PINS.map((pin) => (
+              {NODES.map((node) => (
                 <li
-                  key={pin.label}
+                  key={`${node.x}-${node.y}`}
                   className={styles.pin}
                   style={{
-                    left: `${pin.x}%`,
-                    top: `${pin.y}%`,
-                    ["--pin-color" as string]: pin.color,
+                    left: `${node.x}%`,
+                    top: `${node.y}%`,
+                    ["--pin-color" as string]: node.color,
                   }}
                 >
                   <span className={styles.pinDot} />
-                  <span className={styles.pinLabel}>{pin.label}</span>
                 </li>
               ))}
             </ul>

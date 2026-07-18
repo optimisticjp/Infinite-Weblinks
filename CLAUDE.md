@@ -2,8 +2,16 @@
 
 Guidance for Claude Code working in this repository. This is an **existing production
 project**, not a starter template. The website already exists — build on it, refine it, and
-extend it. Do not scaffold a second app, and do not replace the current site wholesale
-unless a specification explicitly calls for it.
+extend it. Optimize for the requested result: keep what works, and change what a better
+result clearly justifies. Don't scaffold a redundant second app or throw away working work
+for no gain, but a wholesale rework **is** on the table when the task genuinely calls for it —
+explain a major architectural change briefly, then proceed.
+
+This guidance is **capability-first**: Claude has broad freedom to use any relevant installed
+skills, tools, libraries, components, frameworks, dependencies, agents, and workflows to
+produce the best result. The rules here are **outcome-based** (what must be true of the
+result) rather than blanket bans on tools. The governing source is
+[`.specify/memory/constitution.md`](.specify/memory/constitution.md); this file applies it.
 
 **Infinite Weblinks** is the marketing website for a Digital Growth Partner that helps
 businesses plan, build and connect the right digital tools and services around their goals.
@@ -17,7 +25,7 @@ businesses plan, build and connect the right digital tools and services around t
 | Framework | **Next.js 16** — App Router, `src/` directory, import alias `@/*` → `src/*` |
 | Language | **TypeScript** (strict) |
 | UI runtime | **React 19** |
-| Styling | **CSS Modules** + a **CSS-variable design-token system** (see `src/styles/`). **No Tailwind.** |
+| Styling | **CSS Modules** + a **CSS-variable design-token system** (see `src/styles/`) — the current default. Not Tailwind *today*; Tailwind, shadcn/ui, or 21st.dev may be introduced when a task justifies it (see [Technical Freedom](#technical-freedom)). |
 | Animation | **GSAP** (`gsap`) and **Motion** (`motion` / `motion/react`) |
 | Icons | **lucide-react** |
 | Content | **Sanity** (`@sanity/client`, `@sanity/image-url`) — optional, flag-gated (see below); Studio lives in `studio/` |
@@ -27,10 +35,13 @@ businesses plan, build and connect the right digital tools and services around t
 | Hosting | **OpenNext** (`@opennextjs/cloudflare`) on **Cloudflare Workers** (Wrangler) |
 | Package manager | **npm** · Node **≥ 20.9** |
 
-> **Important:** this project uses **CSS Modules and CSS-variable tokens, not Tailwind**, and
-> shadcn/ui is **not** initialized (there is no `components.json` and no Tailwind config). Do
-> not claim otherwise, and do not silently convert the project to Tailwind. See
-> [shadcn / 21st.dev](#shadcn--21stdev-components) below for how to use those skills anyway.
+> **Current state (factual, not a ban):** as of today this project styles with **CSS Modules
+> and CSS-variable tokens**, and shadcn/ui is **not yet initialized** (there is no
+> `components.json` and no Tailwind config). Describe the stack accurately — don't claim
+> Tailwind is present when it isn't. But this is the *starting point*, not a locked
+> foundation: introducing Tailwind, initializing shadcn, or pulling in 21st.dev components is
+> allowed when it produces a better result. See [shadcn / 21st.dev](#shadcn--21stdev-components)
+> and [Technical Freedom](#technical-freedom) below.
 
 ### Content model — Sanity is flag-gated
 
@@ -46,7 +57,7 @@ placeholder-only inventory — never put real secrets there.
 
 ```bash
 npm ci             # install exactly from package-lock.json (preferred in CI/web)
-npm run dev        # dev server — ONLY when the user explicitly asks to run it
+npm run dev        # dev/preview server — fine to run temporarily to verify a change; stop it after
 npm run build      # Next.js production build (webpack)
 npm run start      # serve the production build (needed before e2e)
 npm run lint       # ESLint (eslint .)
@@ -60,8 +71,9 @@ npm run cf:deploy  # cf build + DEPLOY — never run without explicit permission
 npm run seed:export# export reviewed Sanity seed content
 ```
 
-Do **not** run `npm run cf:deploy` or start a persistent `npm run dev` server unless the user
-explicitly asks.
+Temporary dev/preview servers (`npm run dev`, `npm run cf:preview`) are fine for verifying
+work — **stop them after verification**. `npm run cf:deploy` deploys to production and
+therefore **requires explicit user authorization** (see [Actions & Authorization](#actions--authorization)).
 
 ---
 
@@ -109,12 +121,17 @@ This repo ships **322 skills** under `.claude/skills/` — **311** curated third
 the **10-skill GitHub Spec Kit** workflow, and the **1 official shadcn/ui** skill. They are
 available to every Claude Code session run inside this repo.
 
-### Selective skill activation (do not activate everything)
+### Capability-first skill use
 
-Read the task first, then invoke only the skills that are **directly relevant**. Activating
-unrelated skills wastes context and degrades output. Invoke a skill by typing `/skill-name`.
+**Automatically select and use any skills directly relevant to the task, and combine multiple
+skills when that produces a better result.** Skills are tools, not gated actions — you do
+**not** need permission merely to use one. Invoke a skill by typing `/skill-name`.
 
-Skills to reach for on this project, by dimension:
+The one limit is **relevance, not permission**: don't activate unrelated skills just to
+increase the count or pad a response — that wastes context and degrades output. Pick the
+skills that help; use as many of them as genuinely help.
+
+Skills to reach for on this project, by dimension (combine freely):
 
 | Dimension | Skills |
 |---|---|
@@ -129,15 +146,17 @@ Skills to reach for on this project, by dimension:
 | Spec workflow | the 10 **`speckit-*`** skills (see below) |
 
 Data-heavy/scientific skills (`scanpy`, `rdkit`, `qiskit`, `pytorch-lightning`, …) exist in
-the set but are **not relevant** to this marketing site — do not invoke them for web work.
+the set but are simply **not relevant** to a marketing site — skip them for web work on
+relevance grounds (not because any tool is banned).
 
 ---
 
 ## GitHub Spec Kit Workflow
 
 The official [GitHub Spec Kit](https://github.com/github/spec-kit) is installed as **10
-`speckit-*` skills**. Spec Kit is the **default workflow** for new production features,
-significant changes, and any work with meaningful ambiguity.
+`speckit-*` skills**. Use the **full** Spec Kit workflow when it adds value — new production
+features, significant changes, and work with meaningful ambiguity. Use a **lighter** workflow
+when the task is already clear; don't force a long planning cycle onto small or obvious work.
 
 ### Default sequence
 
@@ -161,46 +180,47 @@ There is also `/speckit-taskstoissues` to turn tasks into GitHub issues.
 
 **Rules**
 
-- Very small, low-risk changes (a one-line copy fix) may use a leaner workflow — a full
-  spec-and-plan cycle is not required.
-- **Never run `/speckit-implement` on an ambiguous or unplanned feature.** Implementation
-  must not begin before the spec and plan are sufficiently clear.
-- Select supporting skills during the relevant Spec Kit stages, not all at once.
+- **Right-size the process.** Small, low-risk, or already-clear changes (a one-line copy fix,
+  a doc update) use a leaner workflow — a full spec-and-plan cycle is not required and should
+  not be forced.
+- **Don't run `/speckit-implement` on an ambiguous or unplanned feature.** For real features,
+  implementation should not begin before the spec and plan are sufficiently clear.
+- Bring in supporting skills at the stages where they help — and combine them freely.
 
 ### The Project Constitution
 
-`.specify/memory/constitution.md` is the **governing source of project principles** (spec
-before code; mobile-first; performance; deliberate design; selective skill activation;
-human-sounding content; SEO, accessibility and security as part of the build; test important
-behavior; the Spec Kit workflow; efficient context; preview without deployment; and a
-verified Definition of Done). Every plan must pass its Constitution Check; documented
-exceptions go in the plan's Complexity Tracking.
+`.specify/memory/constitution.md` (v2.0.0) is the **governing source of project principles**
+(spec before code, right-sized; mobile-first; performance as a validation outcome; deliberate
+design; capability-first skill use; human-sounding content; SEO, accessibility and security as
+part of the build; test important behavior; the right-sized Spec Kit workflow; efficient
+context; preview without deployment; a verified Definition of Done; and **technical freedom,
+outcome-bound**). The principles are outcome-based, not blanket tool bans. Every plan must
+pass its Constitution Check; documented exceptions go in the plan's Complexity Tracking.
 
 ---
 
 ## shadcn / 21st.dev Components
 
 The **official shadcn skill is installed** at `.claude/skills/shadcn/` (and mirrored at
-`.agents/skills/shadcn/`), tracked in `skills-lock.json`. **shadcn is not initialized in this
-project** — there is no `components.json` and no Tailwind, because Infinite Weblinks uses **CSS
-Modules and CSS-variable tokens**.
+`.agents/skills/shadcn/`), tracked in `skills-lock.json`. Today the project uses **CSS Modules
+and CSS-variable tokens** and shadcn is **not yet initialized** (no `components.json`, no
+Tailwind). Both of the following paths are fully available — pick the one that produces the
+better result:
 
-You may still use the shadcn and 21st.dev skills to:
+1. **Adapt into the existing system.** Use shadcn/21st.dev components as structure and
+   composition references and translate their Tailwind classes into this repo's CSS Modules +
+   tokens (in `src/styles/`). `21ST_DEV_GUIDE.md` walks through this. This is often the lowest-
+   friction path for a single component and keeps one styling system.
+2. **Introduce Tailwind / initialize shadcn / add 21st.dev components directly.** When a task
+   genuinely benefits — e.g. you're bringing in many components, or shadcn's primitives are the
+   right foundation for the work — you may add Tailwind and run `shadcn init`. Reconcile it with
+   the existing CSS-variable tokens and CSP rather than blindly replacing the design foundation,
+   briefly explain the choice, then proceed. This no longer requires a separate approval step.
 
-- **research** component patterns and composition,
-- **inspect** registry components (`npx shadcn@latest search <query>`, `--dry-run` / `--view`),
-- **adapt component ideas** into this project's CSS-Modules + token system, and
-- **initialize shadcn** *only if a future specification explicitly requires it*.
-
-Because shadcn/21st.dev components ship as Tailwind classes, adapting them here means
-translating their structure into CSS Modules and this repo's CSS-variable tokens (in
-`src/styles/`) — not pasting Tailwind utilities. `21ST_DEV_GUIDE.md` describes the general
-import-and-adapt workflow; read a component top-to-bottom before using it, strip effects you
-don't need, and keep the effects that serve the design.
-
-> **Any Tailwind adoption or shadcn initialization is a separate proposal.** If a spec calls
-> for it, present it on its own with an impact report before changing the project's styling
-> foundation. Do not convert to Tailwind as a side effect of importing a component.
+Either way: use the shadcn/21st.dev skills to **research** patterns and **inspect** registry
+components (`npx shadcn@latest search <query>`, `--view`, `--dry-run`), and **read every
+component top-to-bottom** before using it — keep the effects that serve the design, drop the
+ones that don't.
 
 ---
 
@@ -220,8 +240,41 @@ libraries, or visual effects**. Reach for the right tool:
   require them. Prefer Server Components where suitable and push `"use client"` toward the
   smallest sensible boundary — as a preference, not a hard rule.
 
-Claude **may use any suitable skill, component source, or library** when the specification
-justifies it. Do not make a build visually minimal just to hit a metric — hit the metric.
+Claude **may use any suitable skill, component source, or library** when the task justifies
+it. Do not make a build visually minimal just to hit a metric — hit the metric.
+
+---
+
+## Technical Freedom
+
+Constitution Principle XV, applied here: **the result leads, not the current stack.** When a
+task justifies it, Claude may use or introduce any of the following (and anything comparable)
+without asking permission first:
+
+- **Tailwind**, **shadcn/ui**, **21st.dev components**, or keep **CSS Modules** — whichever
+  serves the work
+- **new npm packages**, and removal of ones that no longer earn their weight
+- **client components** and **server components** — pick per need
+- **GSAP**, **Motion**, **Three.js / WebGL / canvas / shaders / SVG**
+- **external component sources**, **new architecture or refactors**
+- any suitable **framework, service, API, database, testing tool, or build tool**
+
+Guidance for using that freedom well:
+
+- **Preserve the current stack when it's the best choice; change it when a better result
+  clearly justifies the change.** Don't keep something merely because it already exists, and
+  don't churn the foundation for novelty.
+- **Optimize for the requested result, not for minimal diff.** A larger, correct change beats a
+  small one that under-delivers.
+- **Explain major architectural choices briefly, then proceed** — a sentence or two on why, not
+  a permission request. Reach for [`AskUserQuestion`] only when missing information could
+  *materially* change the product; normal implementation decisions don't need sign-off.
+- **Freedom is outcome-bound.** It never overrides the
+  [Non-Negotiable Quality Outcomes](#non-negotiable-quality-outcomes) below — mobile,
+  performance, accessibility, security, SEO, correctness, maintainability, and secret
+  protection still hold, whatever tools you use.
+
+[`AskUserQuestion`]: #working-style
 
 ---
 
@@ -265,7 +318,11 @@ requirements, not creative limits. Every change must deliver them, whatever tool
 
 ## Working Style
 
-- **Ask essential questions only** — 1–3 clarifying questions before a large task, then begin.
+- **Ask only when it matters** — raise a question only when missing information could
+  *materially* change the product; then proceed. Don't ask permission for normal
+  implementation decisions or merely to use a skill/tool/library.
+- **Bias to working software** — prefer verified, working results over rigid process. Explain a
+  major architectural choice briefly, then act on it.
 - **Plan before large edits** — for anything touching more than a couple of files or adding a
   feature, produce a brief plan (files, approach, order) first; use Spec Kit for real features.
 - **TDD when practical** — for logic-heavy code (form validation, data transforms, adapters),
@@ -277,16 +334,67 @@ requirements, not creative limits. Every change must deliver them, whatever tool
 
 ---
 
-## What Not To Do
+## Actions & Authorization
+
+This is a **repository-control clarification, not a technical restriction** — it does not
+narrow the technical or creative freedom above. It only separates routine work from actions
+that change shared, published, or production state.
+
+As part of normal work, and **without asking permission first**, Claude may:
+
+- create task branches
+- edit files
+- add or remove dependencies
+- run temporary development or preview servers (stopping them after verification)
+- run migrations in **safe development / throwaway** environments
+- run lint, typecheck, tests, and builds
+- commit changes
+- push **task** branches
+- open and update pull requests
+
+**Explicit user authorization is required** before any of the following:
+
+- **Merging a pull request**
+- **Pushing directly to `main`** or another protected branch
+- **Force-pushing**
+- **Rewriting published Git history** (rebasing/amending commits already pushed and shared)
+- **Deleting remote branches**
+- **Production deployment** (e.g. `npm run cf:deploy`)
+- **Destructive changes to production data**
+- **Creating paid resources or incurring charges**
+- **Exposing, rotating, or transferring secrets**
+- **Deleting important remote resources** (repositories, branches with unmerged work,
+  releases, remote environments)
+
+**Major foundation changes** — replacing the framework, CMS, database, hosting platform, or
+primary styling system — **remain allowed when genuinely justified** (see
+[Technical Freedom](#technical-freedom)) and do **not** require permission merely because they
+are large. When you make one, **document the reason, expected impact, migration path, and
+rollback path in the pull request.**
+
+**External services** may be integrated in code, but Claude must **not** create accounts,
+accept paid plans, transmit real user data, or incur charges without explicit authorization.
+
+When unsure whether an action crosses one of these lines, ask via [`AskUserQuestion`].
+
+---
+
+## Guardrails (the few real limits)
+
+These are the outcome- and safety-based limits — not tool bans:
 
 - Do **not** modify files inside `.claude/skills/` — they are upstream skill definitions.
-- Do **not** convert the project to Tailwind or initialize shadcn without an explicit,
-  separately-proposed spec + impact report.
-- Do **not** replace or overwrite the existing website wholesale unless a spec requires it.
-- Do **not** run `npm run cf:deploy`, start a persistent `npm run dev`, or commit/push unless
-  the user explicitly asks.
-- Do **not** invoke skills speculatively to pad responses — only when they meaningfully help.
-- Do **not** put real secrets in `.env.example` (names + placeholders only).
+- Do **not** deploy to production, make destructive production-data changes, rotate/expose
+  secrets, incur charges, or delete important remote resources **without explicit
+  authorization** (see [Actions & Authorization](#actions--authorization)).
+- Do **not** rework the site wholesale *for no benefit* — a large change is welcome when it
+  produces a clearly better result, and wasteful when it doesn't. Optimize for the result.
+- Do **not** invoke unrelated skills to pad responses — use the ones that genuinely help
+  (combining freely), and skip the rest on relevance grounds.
+- Do **not** put real secrets in `.env.example` (names + placeholders only), and keep secrets
+  out of the client bundle.
+- Do **not** ship a change that regresses the [Non-Negotiable Quality Outcomes](#non-negotiable-quality-outcomes)
+  (mobile, performance, accessibility, security, SEO, correctness) — freedom is outcome-bound.
 
 ---
 
@@ -300,6 +408,7 @@ Some installed skills need setup or external services before they can run:
   keys / env vars configured per project before use.
 - **Claude Mem advanced tools** (memory-server skills) — require a running Docker container /
   MCP server.
-- **Scientific & data skills** — irrelevant to this marketing site; do not invoke for web work.
+- **Scientific & data skills** — not relevant to this marketing site; skip them for web work on
+  relevance grounds (they aren't banned, they just don't apply).
 
 See `CLAUDE_SKILLS_REPORT.md` for the full installation record and skill inventory.

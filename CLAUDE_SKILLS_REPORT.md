@@ -1,5 +1,14 @@
 # Claude Code Skills & Spec Kit — Installation Record
 
+> **Historical record (2026-07-17).** This file documents the *installation event* and the
+> project's state at that time. It is **not** current policy. Since then the AI guidance has
+> moved to a **capability-first, outcome-based** stance (constitution **v2.0.0**): Tailwind,
+> shadcn/ui, 21st.dev, new dependencies, and architectural changes are allowed when they produce
+> a better result — no separate spec + impact report is required to adopt them. Where statements
+> below describe Tailwind/shadcn as gated behind a separate proposal, treat the current
+> [`CLAUDE.md`](CLAUDE.md), [`.specify/memory/constitution.md`](.specify/memory/constitution.md),
+> and [`21ST_DEV_GUIDE.md`](21ST_DEV_GUIDE.md) as authoritative.
+
 This document records the installation of the Claude Code skill infrastructure and GitHub
 Spec Kit into **Infinite Weblinks**, copied from the master template.
 

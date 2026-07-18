@@ -1,20 +1,30 @@
 # Using 21st.dev / shadcn Components in Infinite Weblinks
 
 [21st.dev](https://21st.dev) and [shadcn/ui](https://ui.shadcn.com) are marketplaces of React
-UI components. They ship as **Tailwind-classed** components — but **Infinite Weblinks does not
-use Tailwind**. This project styles with **CSS Modules** and a **CSS-variable design-token
-system** (`src/styles/`), and shadcn is **not initialized** (there is no `components.json`).
+UI components. They ship as **Tailwind-classed** components. As of today, Infinite Weblinks
+styles with **CSS Modules** and a **CSS-variable design-token system** (`src/styles/`), and
+shadcn is **not yet initialized** (there is no `components.json`) — but that's the current
+default, not a locked foundation.
 
-That does **not** put these component sources off-limits. They are excellent *structure and
-composition* references. The workflow here is: take the component's markup and behavior, then
-**translate its Tailwind utilities into CSS Modules + this repo's design tokens** — rather than
-pasting Tailwind classes. This guide is that repeatable, clean adaptation workflow.
+**You have two fully-supported paths. Pick the one that produces the better result:**
+
+- **Path A — Adapt into the existing system.** Take the component's markup and behavior and
+  **translate its Tailwind utilities into CSS Modules + this repo's design tokens**. Best when
+  you want one or a few components and prefer to keep a single styling system. This guide's
+  §3–§6 walk through it.
+- **Path B — Adopt Tailwind / initialize shadcn / add 21st.dev components directly.** When the
+  task genuinely benefits — bringing in many components, or building on shadcn's primitives —
+  you may add Tailwind and run `shadcn init`. This is a deliberate choice you can make and act
+  on (briefly explain why, then proceed); it is **not** gated behind a separate approval step.
+  Reconcile it with the existing CSS-variable tokens and the site's CSP rather than blindly
+  replacing the design foundation. See §7.
 
 > **Golden rule:** paste nothing you haven't read. Treat every external component as a draft to
 > adapt — substantially rewrite, combine, or extend it — not a black box to trust.
 
-> **Do not assume Tailwind is installed.** It isn't. Don't add `className="flex gap-4 ..."`
-> Tailwind utilities to this codebase; they won't do anything. Translate them (see §4).
+> **Know which path you're on.** On Path A, don't add `className="flex gap-4 ..."` Tailwind
+> utilities — they do nothing until Tailwind is installed; translate them (see §4). On Path B,
+> install Tailwind first, then the utilities work as written.
 
 ---
 
@@ -40,11 +50,11 @@ There is **no `cn()` helper and no `components.json`** in this project. Componen
    that matches the *structure* you need (navbar, hero, pricing, testimonial grid, etc.).
    Prioritize structure and interaction logic over decoration — you will re-skin it with this
    project's tokens anyway.
-2. Prefer components that are **token-friendly and light on dependencies**. Be skeptical of
-   ones that lead with heavy motion, parallax, cursor followers, or WebGL. If the *content* is
-   what you need, keep the markup and drop the spectacle (see §5) — unless the design references
-   genuinely call for that effect, in which case implement it with the animation runtimes this
-   project already ships (GSAP / Motion).
+2. Choose by **what serves the design**. Heavy motion, parallax, cursor followers, WebGL, and
+   3D are all fair game **when the direction calls for them** (Principle XV). What to drop is
+   *incidental* spectacle that doesn't earn its place (see §5) — not effects by category. Every
+   dependency a component drags in should earn its weight in the result; the ones that don't,
+   remove.
 3. Remember the visual direction: dark, space-inspired, neon-lit, glowing gradients, premium
    cards, subtle glass. Choose components you can bend toward that, and **preserve the existing
    design system** — don't import a look that fights the tokens.
@@ -55,11 +65,11 @@ There is **no `cn()` helper and no `components.json`** in this project. Componen
 
 You will usually have either a **CLI command** or a **raw source snippet**.
 
-### CLI commands (research / inspect — do not initialize shadcn)
+### CLI commands (research, inspect — and add, once initialized)
 
 `npx shadcn@latest add "<url>"` and similar commands assume an initialized shadcn project
-(Tailwind + `components.json`). **This project is not initialized**, so do not run `add` to
-write files into the tree. Instead use the CLI to **research and inspect**:
+(Tailwind + `components.json`). Until you initialize (Path B), use the CLI to **research and
+inspect** — running `add` before init won't wire up correctly:
 
 ```bash
 npx shadcn@latest search <query>          # discover registry components
@@ -67,7 +77,9 @@ npx shadcn@latest view <component>        # read its source/metadata
 npx shadcn@latest add <component> --dry-run   # see what it *would* write, without writing
 ```
 
-Read the output, then hand-port the parts you want into a CSS-Modules component (§4).
+On **Path A**, read the output and hand-port the parts you want into a CSS-Modules component
+(§4). On **Path B**, once you've run `shadcn init`, `npx shadcn@latest add <component>` writes
+components into the tree directly — that's expected and fine.
 
 ### Raw source
 
@@ -78,19 +90,23 @@ and hard-coded colors.
 
 ---
 
-## 3. Inspect dependencies
+## 3. Inspect dependencies (Path A)
 
-Before accepting new packages, find out exactly what the component pulls in.
+Before accepting new packages, find out exactly what the component pulls in. (On **Path B**,
+where you've installed Tailwind and initialized shadcn, `clsx` / `tailwind-merge` / `cn()` are
+part of the toolchain and stay — this section is for the adapt-into-CSS-Modules path.)
 
 1. **Scan the imports.** Anything not from `react`, `next/*`, `@/*`, `lucide-react`,
-   `motion/react`, or `gsap` is a **new dependency** to evaluate.
+   `motion/react`, or `gsap` is a **new dependency** to evaluate — keep it if it earns its
+   weight, drop it if it doesn't.
 2. **Drop Tailwind-only helpers.** `clsx` / `tailwind-merge` / `class-variance-authority`
-   exist to manage Tailwind class strings — you don't need them here. Replace conditional
+   exist to manage Tailwind class strings — you don't need them on Path A. Replace conditional
    `cn()` class logic with CSS-Module class composition (e.g. `styles.card`, and toggle a
    `styles.active` class with a template literal or an array `.join(" ")`).
-3. **Watch for duplicate animation libraries.** This project standardizes on **Motion**
+3. **Avoid duplicate animation runtimes.** This project already ships **Motion**
    (`motion/react`) and **GSAP**. If a component imports `framer-motion`, rewrite the import to
-   `motion/react` (same API) rather than adding a second runtime.
+   `motion/react` (same API) rather than adding a second runtime that does the same job — a
+   consistency call, not a ban on other libraries.
 4. **Install intentionally**, one line, and note it — then re-run `npm run build`. A dependency
    that breaks the build or balloons the bundle is a dependency to remove.
 
@@ -197,20 +213,25 @@ Only when these are green is the ported component ready to keep.
 
 ---
 
-## Initializing Tailwind or shadcn later (separate, deliberate proposal)
+## Path B — Adopting Tailwind or initializing shadcn (a deliberate choice you can make)
 
-Nothing here forecloses adopting Tailwind or initializing shadcn **if a future specification
-justifies it**. But that is a **foundation change**, not a side effect of importing one
-component. If a spec calls for it:
+Adopting Tailwind or initializing shadcn is fully allowed when it produces a better result —
+it's a **foundation choice**, so make it deliberately rather than by accident. When you take
+this path:
 
-1. Propose it on its own with an **impact report** (bundle, tokens, migration surface,
-   interaction with the existing CSS-Modules system and CSP).
-2. Get it approved as its own change.
-3. Only then run `shadcn init` / add Tailwind — and reconcile it with the existing token system
-   rather than replacing the design foundation wholesale.
+1. **Decide it on purpose, and say why in a sentence or two** (e.g. "adding shadcn because this
+   feature pulls in a dozen registry components and its primitives are the right base"). This
+   does not require a separate approval cycle — explain, then proceed.
+2. **Consider the impact as you go** — bundle size, how Tailwind's theme maps onto the existing
+   CSS-variable tokens, the migration surface, and the site's CSP. Note anything significant in
+   your change summary.
+3. **Run `shadcn init` / add Tailwind, and reconcile with the existing token system** — map
+   Tailwind's theme to `src/styles/tokens/` so the two systems share one source of truth, rather
+   than replacing the design foundation wholesale for no reason.
 
-Until then: **use these component sources as references, and adapt them into CSS Modules +
-tokens.** Do not convert the project to Tailwind as a byproduct of a component import.
+If you only need one or a few components and don't want a second styling system, **Path A**
+(adapt into CSS Modules + tokens) is usually the lower-friction choice — but either path is
+legitimate. Let the result decide.
 
 ---
 

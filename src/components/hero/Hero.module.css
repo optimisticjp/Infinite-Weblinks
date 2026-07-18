@@ -147,14 +147,55 @@
   color: var(--text-3);
   max-width: none;
 }
+/* Marquee viewport: clips the wide track so the page never gains horizontal overflow, with a
+   soft edge fade so logos enter/leave gracefully. */
+.railViewport {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.railTrack {
+  display: flex;
+  width: max-content;
+  animation: railScroll 38s linear infinite;
+}
+.railViewport:hover .railTrack,
+.railViewport:focus-within .railTrack {
+  animation-play-state: paused;
+}
+@keyframes railScroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
 .railList {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-4) var(--space-6);
-  list-style: none;
-  margin: 0;
+  gap: var(--space-8);
+  margin: 0 var(--space-8) 0 0; /* trailing gap folds into group width → seamless -50% loop */
   padding: 0;
+  list-style: none;
+  flex: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .railTrack {
+    animation: none;
+    width: 100%;
+  }
+  /* Static readable rail — drop the duplicate so nothing is doubled visually. */
+  .railList[aria-hidden="true"] {
+    display: none;
+  }
+  .railList {
+    flex-wrap: wrap;
+    margin-right: 0;
+  }
 }
 .railItem {
   display: inline-flex;
@@ -186,9 +227,5 @@
   }
   .railLabel {
     flex: 0 0 auto;
-  }
-  .railList {
-    flex: 1 1 auto;
-    justify-content: flex-end;
   }
 }

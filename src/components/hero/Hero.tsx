@@ -84,13 +84,27 @@ function PlatformRail({ platforms }: { platforms: HeroContent["platforms"] }) {
     <div className={styles.railWrap}>
       <div className={`iw-container iw-container--wide ${styles.rail}`}>
         <p className={styles.railLabel}>Works with the tools your business already uses.</p>
-        <ul className={styles.railList} aria-label="Example tools we can connect">
-          {platforms.map((p) => (
-            <li key={p.slug} className={styles.railItem}>
-              <BrandLogo slug={p.slug} name={p.name} />
-            </li>
-          ))}
-        </ul>
+        {/* Slow, continuous marquee (brief §P5-05). The visible list is real, labelled text;
+            the second copy is aria-hidden so the seamless loop never double-reads to a screen
+            reader. Reduced-motion collapses to a single static rail. Pauses on hover/focus. */}
+        <div className={styles.railViewport}>
+          <div className={styles.railTrack}>
+            <ul className={styles.railList} aria-label="Example tools we can connect">
+              {platforms.map((p) => (
+                <li key={p.slug} className={styles.railItem}>
+                  <BrandLogo slug={p.slug} name={p.name} />
+                </li>
+              ))}
+            </ul>
+            <ul className={styles.railList} aria-hidden="true">
+              {platforms.map((p) => (
+                <li key={`dup-${p.slug}`} className={styles.railItem}>
+                  <BrandLogo slug={p.slug} name={p.name} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );

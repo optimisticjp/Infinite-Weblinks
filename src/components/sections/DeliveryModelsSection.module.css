@@ -6,8 +6,26 @@
   grid-template-columns: 1fr;
   gap: var(--space-5);
   list-style: none;
-  margin: clamp(32px, 5vw, 48px) 0 clamp(32px, 4vw, 48px);
+  margin: clamp(24px, 5vw, 48px) 0 clamp(24px, 4vw, 48px);
   padding: 0;
+}
+/* Mobile: swipeable scroller instead of a tall 4-card stack (brief §P2-01/§REF-01).
+   Contained overflow-x so the page itself never scrolls sideways. */
+@media (max-width: 600px) {
+  .grid {
+    grid-auto-flow: column;
+    grid-auto-columns: 82%;
+    grid-template-columns: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: var(--space-4);
+    padding-bottom: var(--space-3);
+  }
+  .card {
+    scroll-snap-align: start;
+    padding: var(--space-6);
+  }
 }
 .card {
   position: relative;

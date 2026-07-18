@@ -99,6 +99,30 @@ export function articleJsonLd(a: {
   };
 }
 
+/**
+ * Case-study schema. Modelled as an Article/CreativeWork about a real project — deliberately
+ * NO Review, AggregateRating, or fabricated metric fields (brief truth rules, review §7/§16).
+ * Only emitted for verified/readyToPublish case studies (the gate + 404 guarantee this), so a
+ * placeholder can never produce structured data. Metrics, when present, are real and are shown
+ * on-page as plain text, not encoded as ratings.
+ */
+export function caseStudyJsonLd(c: {
+  title: string;
+  description: string;
+  path: string;
+  client?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: c.title,
+    description: c.description,
+    url: canonical(c.path),
+    publisher: { ...ORG },
+    ...(c.client ? { about: c.client } : {}),
+  };
+}
+
 /** Only emit when the FAQ is actually rendered on the page (brief §21). */
 export function faqJsonLd(faqs: { question: string; answer: string }[]) {
   return {

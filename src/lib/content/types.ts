@@ -282,11 +282,22 @@ export interface LearnArticle extends Statused {
 }
 
 /* ------ proof (placeholder-gated — hidden until verified) ------ */
+/** A single, REAL, verifiable outcome. Never illustrative or fabricated (brief truth rules);
+ * only rendered for verified/readyToPublish case studies, and only emitted as plain display
+ * text — never as schema AggregateRating/Review. */
+export interface CaseStudyMetric {
+  label: string;
+  value: string;
+}
 export interface CaseStudy extends Statused {
   slug: string;
   title: string;
   client?: string;
   summary: string;
+  /** Optional richer write-up (paragraphs) for a real, verified case study. */
+  body?: string[];
+  /** Optional real, verifiable metrics. Empty/absent until genuine results exist. */
+  metrics?: CaseStudyMetric[];
 }
 export interface Testimonial extends Statused {
   quote: string;

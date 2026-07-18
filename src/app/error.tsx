@@ -23,7 +23,6 @@ export default function RouteError({
 }) {
   useEffect(() => {
     // Digest only — no message body, no PII.
-    // eslint-disable-next-line no-console
     console.error(`Unhandled route error${error?.digest ? ` (digest: ${error.digest})` : ""}`);
   }, [error]);
 

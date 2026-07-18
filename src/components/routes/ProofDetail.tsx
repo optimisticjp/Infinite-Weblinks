@@ -17,6 +17,8 @@ export function ProofDetail({
   path,
   summary,
   meta,
+  body,
+  metrics,
 }: {
   collectionName: string;
   collectionPath: string;
@@ -24,6 +26,10 @@ export function ProofDetail({
   path: string;
   summary: string;
   meta?: string;
+  /** Optional richer write-up for a real, verified case study. */
+  body?: string[];
+  /** Optional real, verifiable metrics (plain display, never fabricated). */
+  metrics?: { label: string; value: string }[];
 }) {
   return (
     <>
@@ -53,7 +59,25 @@ export function ProofDetail({
             {title} details
           </h2>
           {meta && <p className={styles.meta}>{meta}</p>}
-          <p className={styles.prose}>{summary}</p>
+          {metrics && metrics.length > 0 && (
+            <ul className={styles.metrics} aria-label="Results">
+              {metrics.map((m) => (
+                <li key={m.label} className={styles.metric}>
+                  <span className={styles.metricValue}>{m.value}</span>
+                  <span className={styles.metricLabel}>{m.label}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+          {body && body.length > 0 ? (
+            body.map((para, i) => (
+              <p key={i} className={styles.prose}>
+                {para}
+              </p>
+            ))
+          ) : (
+            <p className={styles.prose}>{summary}</p>
+          )}
         </div>
       </section>
     </>

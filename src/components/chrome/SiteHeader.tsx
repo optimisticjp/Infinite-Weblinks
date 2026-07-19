@@ -320,7 +320,9 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
                       type="button"
                       className={styles.navTrigger}
                       aria-expanded={isOpen}
-                      aria-controls={panelId}
+                      // Only reference the panel while it's actually in the DOM (it renders
+                      // only when open), so aria-controls never dangles at a missing id.
+                      aria-controls={isOpen ? panelId : undefined}
                       ref={(el) => {
                         triggerRefs.current[item.label] = el;
                       }}

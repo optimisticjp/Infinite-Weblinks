@@ -50,7 +50,7 @@
 .done .node {
   background: var(--domain-strategy);
   border-color: var(--domain-strategy);
-  color: #fff;
+  color: var(--white);
 }
 .current .node {
   border-color: var(--domain-strategy);

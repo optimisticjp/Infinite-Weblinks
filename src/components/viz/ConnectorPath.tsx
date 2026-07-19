@@ -28,9 +28,10 @@ type ConnectorPathProps = {
  * run along it. Purely decorative (aria-hidden). Guards that keep it honest and cheap:
  *  - the resting state is the fully-drawn path, so reduced-motion and no-JS both show the
  *    completed connection (only the draw-in and the sparks are gated behind a motion pref);
- *  - the draw only triggers once, when the element enters the viewport (IntersectionObserver);
- *  - the sparks are a short travelling dash on a single stroked path (animated dashoffset),
- *    so they follow the path at any scale and nothing re-rasterises per frame.
+ *  - the draw-in triggers once, when the element first enters the viewport, and stays drawn;
+ *  - the travelling spark (an animated dashoffset on a single stroked path) only runs while
+ *    the connector is on-screen — the observer stays live and pauses it when scrolled away,
+ *    so nothing keeps repainting off-screen.
  */
 export function ConnectorPath({
   d = "M0 12 C 22 2, 40 22, 62 12 S 92 8, 100 12",
@@ -50,11 +51,16 @@ export function ConnectorPath({
   useEffect(() => {
     const el = rootRef.current;
     if (!el || !draw || prefersReducedMotion()) return;
+    // Stay observing for the life of the element: the draw-in fires once (data-drawn, never
+    // unset), while the travelling spark only runs (data-running) while on-screen, so its
+    // per-frame dashoffset repaint is paused the moment the connector scrolls out of view.
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          el.dataset.inview = "true";
-          io.disconnect();
+          el.dataset.drawn = "true";
+          el.dataset.running = "true";
+        } else {
+          delete el.dataset.running;
         }
       },
       { threshold: 0.2 },

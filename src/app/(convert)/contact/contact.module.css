@@ -69,6 +69,12 @@
   background-position: 100% 50%;
   transform: translateY(-1px);
 }
+/* Keyboard focus ring at (0,2,0) so it wins over this button's own unconditional resting
+   glow (0,1,0), which shares specificity with the global :focus-visible rule and would
+   otherwise hide the ring on the mobile sticky CTA. Glow stays stacked under the ring. */
+.heroCta:focus-visible {
+  box-shadow: var(--ring), var(--glow-brand);
+}
 .heroCta svg {
   transition: transform var(--dur-fast) var(--ease-out);
 }

@@ -65,7 +65,9 @@
   box-shadow: 0 0 0 1px var(--opt-hue);
 }
 
-/* The real radio, visually hidden but focusable. Focus ring shows on the card. */
+/* The real radio, visually hidden but focusable. The focus ring frames the whole option
+   card (not just the small tick badge), so a low-vision keyboard user sees the ring around
+   the option they're actually on. */
 .input {
   position: absolute;
   opacity: 0;
@@ -73,8 +75,17 @@
   height: 1px;
   margin: 0;
 }
-.input:focus-visible + .check {
+.card:has(.input:focus-visible) {
   box-shadow: var(--ring);
+}
+.checked:has(.input:focus-visible) {
+  box-shadow: var(--ring), 0 0 0 1px var(--opt-hue);
+}
+/* Fallback for browsers without :has() — keep the ring on the tick badge. */
+@supports not (selector(:has(*))) {
+  .input:focus-visible + .check {
+    box-shadow: var(--ring);
+  }
 }
 
 .check {
@@ -99,7 +110,7 @@
 .checked .check {
   background: var(--opt-hue);
   border-color: var(--opt-hue);
-  color: #fff;
+  color: var(--white);
 }
 
 .icon {

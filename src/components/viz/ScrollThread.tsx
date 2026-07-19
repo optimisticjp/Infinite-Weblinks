@@ -13,18 +13,56 @@ export function ScrollThread({ hue, className }: { hue: string; className?: stri
   const fillRef = useRef<HTMLSpanElement | null>(null);
 
   useEffect(() => {
-    const update = () => {
-      const doc = document.documentElement;
-      const max = doc.scrollHeight - window.innerHeight;
+    // Desktop-only (the thread is display:none under 1024px). Attach the scroll work only
+    // when the media query matches, so phones never pay for a listener driving a hidden node.
+    const mq = window.matchMedia("(min-width: 1024px)");
+    let raf = 0;
+    let ticking = false;
+    // Cache the scrollable range and recompute it on resize only, never inside the scroll
+    // handler, so reading scrollHeight can't force a synchronous reflow on every scroll tick.
+    let max = 0;
+
+    const measure = () => {
+      max = document.documentElement.scrollHeight - window.innerHeight;
+    };
+    const apply = () => {
+      ticking = false;
       const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
       if (fillRef.current) fillRef.current.style.transform = `scaleY(${p})`;
     };
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      raf = requestAnimationFrame(apply);
+    };
+    const onResize = () => {
+      measure();
+      onScroll();
+    };
+
+    let attached = false;
+    const attach = () => {
+      if (attached) return;
+      attached = true;
+      measure();
+      apply();
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onResize);
+    };
+    const detach = () => {
+      if (!attached) return;
+      attached = false;
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      cancelAnimationFrame(raf);
+    };
+
+    const sync = () => (mq.matches ? attach() : detach());
+    sync();
+    mq.addEventListener("change", sync);
     return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
+      mq.removeEventListener("change", sync);
+      detach();
     };
   }, []);
 

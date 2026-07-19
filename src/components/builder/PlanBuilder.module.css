@@ -120,6 +120,18 @@
   max-width: 60ch;
 }
 
+/* Visible key for the "*" convention (required-ness is also set programmatically via the
+   native required attribute on each control). */
+.requiredNote {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+.requiredNote .req {
+  color: var(--danger);
+  font-weight: var(--fw-bold);
+}
+
 .emailGrid {
   display: grid;
   grid-template-columns: 1fr;

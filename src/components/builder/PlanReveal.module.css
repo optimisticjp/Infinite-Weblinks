@@ -1,0 +1,220 @@
+.wrap {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.head {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 60ch;
+}
+.eyebrow {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  background: var(--grad-constellation);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  width: fit-content;
+}
+.title {
+  margin: 0;
+  font-size: var(--fs-h2);
+  color: var(--text-heading);
+}
+.intro {
+  margin: 0;
+  font-size: var(--fs-lead);
+  color: var(--text-body);
+}
+
+.roadmapConn {
+  --conn-h: 26px;
+  max-width: 100%;
+}
+
+/* ---- Roadmap phases ---- */
+.roadmap {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-5);
+}
+@media (min-width: 900px) {
+  .roadmap {
+    grid-template-columns: repeat(3, 1fr);
+    align-items: start;
+  }
+}
+.phase {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(90% 70% at 0% 0%, color-mix(in srgb, var(--phase-hue) 12%, transparent), transparent 62%),
+    var(--surface-raised);
+  border: 1px solid var(--hairline);
+  border-top: 3px solid var(--phase-hue);
+}
+.featured {
+  box-shadow: 0 0 40px -22px var(--phase-hue);
+  border-color: color-mix(in srgb, var(--phase-hue) 34%, var(--hairline));
+}
+.phaseHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.phaseEyebrow {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  /* Mix the hue toward the heading ink so small text keeps AA contrast on light OR dark:
+     the ink is dark on the light plan surface and near-white on cosmic surfaces. */
+  color: color-mix(in srgb, var(--phase-hue) 42%, var(--text-heading));
+}
+.phaseTitle {
+  margin: 0;
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+}
+.phaseList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+.phaseItem {
+  position: relative;
+  padding-left: var(--space-5);
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+.phaseItem::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-pill);
+  background: var(--phase-hue);
+}
+.recommended {
+  display: block;
+  margin-bottom: 2px;
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--phase-hue) 48%, var(--text-heading));
+}
+
+/* ---- Detail (capabilities + tools) ---- */
+.detailGrid {
+  display: grid;
+  gap: var(--space-6);
+}
+@media (min-width: 760px) {
+  .detailGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.detail {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+.detailHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.detailTitle {
+  margin: 0;
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+}
+.chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.chip {
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--hairline-strong);
+  background: color-mix(in srgb, var(--domain-convert) 8%, var(--surface-raised));
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+.chipTool {
+  background: color-mix(in srgb, var(--domain-build) 8%, var(--surface-raised));
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-mono);
+}
+
+/* ---- Outcomes ---- */
+.outcomes {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--domain-retain) 8%, var(--surface-raised));
+  border: 1px solid color-mix(in srgb, var(--domain-retain) 26%, var(--hairline));
+}
+.outcomeList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+.outcome {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--fs-body);
+  color: var(--text-heading);
+}
+
+/* ---- How we help ---- */
+.howWeHelp {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--hairline-strong);
+  background: var(--surface-raised);
+}
+.howTitle {
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+}
+.howBody {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+  max-width: 68ch;
+}

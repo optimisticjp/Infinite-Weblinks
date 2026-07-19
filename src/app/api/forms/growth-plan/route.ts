@@ -22,7 +22,7 @@ import type { GrowthPlanResult } from "@/lib/growth-plan/types";
 /** Reject submissions completed faster than a human plausibly could. */
 const MIN_HUMAN_MS = 1500;
 
-const DELIVERY_UNAVAILABLE_MESSAGE = `Form delivery isn't configured on this preview yet — please email ${supportEmail} and we'll pick it up.`;
+const DELIVERY_UNAVAILABLE_MESSAGE = `Form delivery isn't set up on this preview yet. Please email ${supportEmail} and we'll pick it up.`;
 
 function formatRecommendationForEmail(result: GrowthPlanResult): string {
   const lines = [
@@ -117,16 +117,18 @@ export async function POST(req: Request) {
 
   const delivery = await forwardToFormspree("growth-plan", {
     formName: "Growth Plan Builder",
-    subject: `New Growth Plan enquiry — ${values.businessType} / ${values.mainGoal}`,
+    subject: `New Growth Plan enquiry: ${values.businessType} / ${values.mainGoal}`,
     name: values.name,
     email: values.email,
     replyTo: values.email,
     businessType: values.businessType,
-    currentStage: values.currentStage,
+    currentStage: values.currentStage ?? "",
     mainGoal: values.mainGoal,
     existingSetup: values.existingSetup,
     engagement: values.engagement,
     timeline: values.timeline,
+    company: values.company ?? "",
+    website: values.website ?? "",
     message: values.message ?? "",
     recommendationSummary: formatRecommendationForEmail(result),
     matchedRuleId: result.matchedRuleId,
@@ -137,7 +139,7 @@ export async function POST(req: Request) {
       {
         ok: false,
         code: "delivery-failed",
-        message: `We couldn't send your enquiry just now — please email ${supportEmail} directly and we'll pick it up.`,
+        message: `We couldn't send your enquiry just now. Please email ${supportEmail} directly and we'll pick it up.`,
       },
       { status: 502 },
     );

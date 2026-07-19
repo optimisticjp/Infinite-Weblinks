@@ -1,0 +1,143 @@
+.fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.legend {
+  padding: 0;
+  margin-bottom: var(--space-4);
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+@media (min-width: 560px) {
+  .cols2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cols3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (min-width: 880px) {
+  .cols3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-height: var(--target-min);
+  padding: var(--space-4) var(--space-5);
+  padding-right: var(--space-8);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+  border: 1.5px solid var(--hairline-strong);
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+.card:hover {
+  border-color: color-mix(in srgb, var(--opt-hue) 55%, var(--hairline-strong));
+  transform: translateY(-1px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .card:hover {
+    transform: none;
+  }
+}
+.checked {
+  border-color: var(--opt-hue);
+  background: color-mix(in srgb, var(--opt-hue) 10%, var(--surface-raised));
+  box-shadow: 0 0 0 1px var(--opt-hue);
+}
+
+/* The real radio, visually hidden but focusable. Focus ring shows on the card. */
+.input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+}
+.input:focus-visible + .check {
+  box-shadow: var(--ring);
+}
+
+.check {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--hairline-strong);
+  background: transparent;
+  color: transparent;
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.checked .check {
+  background: var(--opt-hue);
+  border-color: var(--opt-hue);
+  color: #fff;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--opt-hue) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--opt-hue) 32%, transparent);
+  color: color-mix(in srgb, var(--opt-hue) 74%, var(--text-heading));
+}
+.icon :global(svg) {
+  width: 18px;
+  height: 18px;
+}
+
+.text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.label {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-semibold);
+  color: var(--text-heading);
+  line-height: var(--lh-snug);
+}
+.description {
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+
+.error {
+  margin: var(--space-3) 0 0;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--danger);
+}

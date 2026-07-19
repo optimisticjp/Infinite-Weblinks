@@ -1,0 +1,106 @@
+.stepper {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.step {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 1 1 0;
+  min-width: 0;
+}
+/* Connector line to the next step. */
+.step:not(:last-child)::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 2px;
+  min-width: 12px;
+  border-radius: var(--radius-pill);
+  background: var(--hairline-strong);
+}
+.done:not(:last-child)::after {
+  background: var(--domain-strategy);
+}
+
+.node {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  border: 1.5px solid var(--hairline-strong);
+  color: var(--text-muted);
+  background: transparent;
+  transition:
+    background var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out);
+}
+.done .node {
+  background: var(--domain-strategy);
+  border-color: var(--domain-strategy);
+  color: #fff;
+}
+.current .node {
+  border-color: var(--domain-strategy);
+  color: var(--text-heading);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--domain-strategy) 22%, transparent);
+}
+
+.label {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+}
+.stepNum {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-mono);
+  color: var(--text-muted);
+}
+.stepName {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.current .stepName,
+.done .stepName {
+  color: var(--text-heading);
+}
+
+/* Hide long labels on cramped widths; keep the numbered nodes + connectors. */
+@media (max-width: 720px) {
+  .label {
+    display: none;
+  }
+  .current .label {
+    display: grid;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    white-space: nowrap;
+  }
+  .step {
+    flex: 0 0 auto;
+  }
+  .step:not(:last-child) {
+    flex: 1 1 auto;
+  }
+  .stepper {
+    padding-bottom: var(--space-6); /* room for the current label below the dots */
+  }
+}

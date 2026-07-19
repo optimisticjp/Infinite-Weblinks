@@ -51,7 +51,9 @@
   bottom: var(--space-3);
   padding: 2px 6px;
   border-radius: var(--radius-xs);
-  background: color-mix(in srgb, var(--space-navy) 55%, transparent);
+  /* Surface-relative backing so the muted counter text keeps contrast on both the deep
+     cosmic input (dark) and the light form surface (near-white). */
+  background: color-mix(in srgb, var(--surface-input, var(--surface-raised)) 88%, transparent);
   font-family: var(--font-mono);
   font-size: var(--fs-mono);
   letter-spacing: var(--ls-mono);

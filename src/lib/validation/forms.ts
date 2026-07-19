@@ -118,13 +118,18 @@ export type ContactFormValues = z.infer<typeof contactSchema>;
 
 export const growthPlanSchema = z.object({
   businessType: slugSchema("a business type"),
-  currentStage: slugSchema("your current stage"),
   mainGoal: slugSchema("a main goal"),
   existingSetup: z.enum(EXISTING_SETUP_OPTIONS, "Please choose the option that fits best."),
   engagement: z.enum(ENGAGEMENT_OPTIONS, "Please choose an option."),
   timeline: z.enum(TIMELINE_OPTIONS, "Please choose your timeline."),
+  // Optional context. The plan's rules never branch on current stage (the plan derives the
+  // recommended stage instead), so it is only ever forwarded, never required.
+  currentStage: optionalSlugSchema("your current stage"),
   name: nameSchema,
   email: emailSchema,
+  // Optional light contact details captured on the plan screen, so we can send the plan.
+  company: z.string().trim().max(120, "Business name must be 120 characters or fewer.").optional(),
+  website: websiteSchema,
   message: z.string().trim().max(2000, "Message must be 2000 characters or fewer.").optional(),
   _gotcha: honeypotSchema,
   turnstileToken: turnstileTokenSchema,

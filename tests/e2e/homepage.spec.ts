@@ -39,47 +39,33 @@ test.describe("Homepage opening", () => {
     ).toBeVisible();
   });
 
-  // Redesign guard: the homepage was recomposed to the reference plan's *focused growth
-  // narrative* — one beat per idea in a strict dark/light alternation, with the redundant
-  // re-tellings (a second/third journey, a third router, a duplicate ownership statement)
-  // removed from the homepage (they live on their dedicated inner pages). The spine renders
-  // in the approved order and the de-duplicated sections don't appear.
-  test("renders the focused homepage spine in order, with de-duplicated sections absent", async ({
-    page,
-  }) => {
+  // Constellation rebrand: the homepage spine is the flagship narrative — hero → the digital
+  // world today → start with your goal → the connected growth journey → one system not silos
+  // → customer journey → services constellation → four ways we deliver → ownership → honest
+  // expectations → resources → final CTA. This asserts the section spine renders in that order.
+  test("renders the Constellation homepage spine in order", async ({ page }) => {
     await page.goto("/");
     const ids = await page.evaluate(() =>
       [...document.querySelectorAll("section[id]")].map((s) => s.id),
     );
     const spine = [
-      "goals", // router #1 — by goal
-      "how-it-connects", // the one connected-system explanation
-      "services", // router #2 — services
-      "ways-of-working", // ways of working
+      "goals", // router — start with your goal
+      "growth-journey", // the 8-stage connected journey
+      "how-it-connects", // one system, not silos
+      "customer-journey", // the connected story, made concrete
+      "services", // services constellation
+      "ways-of-working", // four ways we deliver
       "ownership", // you own it
-      "learn", // practical guides
+      "honest", // honest expectations
+      "learn", // resources teaser
       "get-started", // final CTA
     ];
     expect(
       ids.filter((id) => spine.includes(id)),
       "homepage spine present and in order",
     ).toEqual(spine);
-    // Removed from the homepage (de-duplication): the second/third journey diagrams
-    // (growth-journey, customer-journey), the third router (where-you-are), the examples
-    // grid and the why-us block — plus the inner-page-only anchors (tool universe, process
-    // steps, delivery deep-anchors, FAQ, the old startingPointSelector "start").
-    for (const gone of [
-      "growth-journey",
-      "customer-journey",
-      "where-you-are",
-      "examples",
-      "why-us",
-      "start",
-      "tools",
-      "how-we-deliver",
-      "process",
-      "faq",
-    ]) {
+    // Inner-page-only anchors that must not leak onto the homepage.
+    for (const gone of ["where-you-are", "examples", "why-us", "start", "tools", "how-we-deliver", "process", "faq"]) {
       expect(ids, `#${gone} should not be on the homepage`).not.toContain(gone);
     }
   });

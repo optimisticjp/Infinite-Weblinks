@@ -1,0 +1,105 @@
+.flow {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+
+.node {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(100% 90% at 0% 0%, color-mix(in srgb, var(--node-hue) 14%, transparent), transparent 60%),
+    var(--surface-raised);
+  border: 1px solid var(--hairline);
+  border-top: 3px solid var(--node-hue);
+}
+.nodeTitle {
+  margin: var(--space-1) 0 0;
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+}
+.nodeBlurb {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+}
+.chip {
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  border: 1px solid color-mix(in srgb, var(--node-hue) 40%, transparent);
+  background: color-mix(in srgb, var(--node-hue) 12%, transparent);
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  color: color-mix(in srgb, var(--node-hue) 82%, white 12%);
+}
+
+/* Connectors run between the cards on desktop; on mobile the stacked, accent-topped cards
+   read as the sequence on their own, so the horizontal connectors are hidden. */
+.connItem {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .flow {
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr auto;
+    align-items: stretch;
+  }
+  .node {
+    align-content: start;
+  }
+  .connItem {
+    display: grid;
+    place-items: center;
+    align-self: center;
+    width: clamp(24px, 3vw, 64px);
+  }
+  .conn {
+    --conn-h: 24px;
+    width: 100%;
+  }
+}
+
+.loopNote {
+  margin: var(--space-6) 0 0;
+  max-width: 60ch;
+  font-size: var(--fs-lead);
+  color: var(--text-body);
+}
+
+.floats {
+  margin-top: var(--space-10);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+}
+.floats > * {
+  animation: floatDrift 6s var(--ease-in-out) infinite;
+  animation-delay: var(--d, 0s);
+}
+@keyframes floatDrift {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .floats > * {
+    animation: none;
+  }
+}

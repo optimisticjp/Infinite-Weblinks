@@ -1,0 +1,25 @@
+.rails {
+  margin-top: var(--space-12);
+  display: grid;
+  gap: var(--space-4);
+}
+.railsLabel {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.railsList {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.ctas {
+  margin-top: var(--space-10);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}

@@ -1,0 +1,469 @@
+/* ============================================================
+   ServiceDomainTemplate — one hue (var(--hue), set per element) recolours
+   the whole page. Dark cosmic surfaces with one light "what you get" breather.
+   ============================================================ */
+
+/* Domain-hue eyebrow that stays AA on both dark and light surfaces (mix toward the
+   section's heading ink, which is light on cosmic and dark on the breather). */
+.eyebrow {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--hue) 55%, var(--text-heading));
+  width: fit-content;
+}
+
+.sectionHead {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-10);
+  max-width: 60ch;
+}
+.sectionTitle {
+  margin: 0;
+  font-size: var(--fs-h2);
+  color: var(--text-heading);
+}
+.sectionLead {
+  margin: 0;
+  font-size: var(--fs-lead);
+  color: var(--text-body);
+  max-width: 56ch;
+}
+
+.badgeKey {
+  margin-right: 4px;
+}
+
+/* ============ Hero ============ */
+.hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.heroInner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-10);
+  align-items: center;
+}
+@media (min-width: 960px) {
+  .heroInner {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: clamp(40px, 5vw, 80px);
+  }
+}
+.heroCopy {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+}
+.heroTitleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+.heroOrb {
+  flex: none;
+}
+.heading {
+  margin: 0;
+  font-size: var(--fs-h1);
+}
+.definition {
+  margin: 0;
+  font-size: var(--fs-lead);
+  color: var(--text-body);
+  max-width: 52ch;
+}
+.heroCtas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+.marker {
+  margin-top: var(--space-2);
+}
+
+.heroVisual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 260px;
+}
+.heroBigOrb {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+}
+.heroBigOrb::before {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  z-index: -1;
+  border-radius: var(--radius-pill);
+  background: radial-gradient(circle, color-mix(in srgb, var(--hue) 30%, transparent), transparent 68%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .heroBigOrb {
+    animation: domainFloat 6s var(--ease-in-out) infinite;
+  }
+}
+.heroFloat {
+  position: absolute;
+  right: 2%;
+  bottom: 6%;
+}
+@keyframes domainFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+@media (max-width: 640px) {
+  .heroVisual {
+    min-height: 0;
+  }
+  .heroFloat {
+    display: none;
+  }
+  .heroBigOrb {
+    transform: scale(0.8);
+  }
+}
+
+/* ============ What you get (light breather) ============ */
+.outcomeGrid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+@media (min-width: 720px) {
+  .outcomeGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+  }
+}
+.outcomeCard {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(100% 90% at 0% 0%, color-mix(in srgb, var(--hue) 12%, transparent), transparent 60%),
+    var(--surface-raised);
+  border: 1px solid var(--hairline);
+  border-top: 3px solid var(--hue);
+}
+.outcomeTitle {
+  margin: var(--space-1) 0 0;
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+}
+.outcomeBody {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+
+/* ============ Catalog ============ */
+.catalog {
+  position: relative;
+  overflow: hidden;
+}
+.catalogInner {
+  position: relative;
+  z-index: 1;
+}
+.clusters {
+  display: grid;
+  gap: var(--space-12);
+}
+.cluster {
+  display: grid;
+  gap: var(--space-6);
+}
+.clusterHead {
+  display: grid;
+  gap: var(--space-2);
+  max-width: 52ch;
+}
+.clusterHeading {
+  margin: 0;
+  font-size: var(--fs-h3);
+  color: var(--text-heading);
+}
+.clusterIntro {
+  margin: 0;
+  font-size: var(--fs-body);
+  color: var(--text-body);
+}
+.soloWrap {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+.badgeKey {
+  margin-right: 4px;
+}
+
+/* ============ How this connects ============ */
+.flow {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.flowStart {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--hue) 12%, var(--surface-raised));
+  border: 1px solid color-mix(in srgb, var(--hue) 34%, var(--hairline));
+  flex: none;
+}
+.flowStartLabel {
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+}
+.flowConn {
+  display: none;
+}
+.flowNode {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--hue);
+}
+.flowNodeText {
+  display: grid;
+  gap: 1px;
+}
+.flowNodeLabel {
+  font-weight: var(--fw-bold);
+  color: var(--text-heading);
+}
+.flowNodeBody {
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+@media (min-width: 900px) {
+  .flow {
+    flex-direction: row;
+    align-items: stretch;
+  }
+  .flowStart {
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+  }
+  .flowConn {
+    display: flex;
+    align-items: center;
+    flex: 1 1 auto;
+    min-width: 24px;
+  }
+  .flowConnPath {
+    --conn-h: 24px;
+    width: 100%;
+  }
+  .flowNode {
+    flex: 1 1 0;
+    flex-direction: column;
+    text-align: center;
+    border-left: none;
+    border-top: 3px solid var(--hue);
+  }
+  .flowNodeText {
+    justify-items: center;
+  }
+}
+
+/* ============ Who it's for ============ */
+.forWhoInner {
+  display: grid;
+  gap: var(--space-8);
+}
+@media (min-width: 900px) {
+  .forWhoInner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(40px, 5vw, 72px);
+    align-items: center;
+  }
+}
+.forWhoText {
+  display: grid;
+  gap: var(--space-3);
+}
+.whenList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+.whenItem {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-3);
+  align-items: start;
+  font-size: var(--fs-body);
+  color: var(--text-body);
+}
+.whenIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  margin-top: 1px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--hue) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--hue) 46%, transparent);
+  color: color-mix(in srgb, var(--hue) 70%, white 30%);
+}
+
+/* ============ Next step + next domain ============ */
+.next {
+  position: relative;
+  overflow: hidden;
+}
+.nextInner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: var(--space-8);
+}
+@media (min-width: 900px) {
+  .nextInner {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+    gap: clamp(32px, 4vw, 64px);
+    align-items: center;
+  }
+}
+.nextCta {
+  display: grid;
+  gap: var(--space-4);
+  align-content: start;
+}
+.nextTitle {
+  margin: 0;
+  font-size: var(--fs-h2);
+  color: var(--text-heading);
+  max-width: 20ch;
+}
+.nextBody {
+  margin: 0;
+  font-size: var(--fs-lead);
+  color: var(--text-body);
+  max-width: 52ch;
+}
+.nextActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4) var(--space-6);
+  margin-top: var(--space-1);
+}
+.viewAll {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--target-min);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--text-body);
+}
+.viewAll:hover {
+  color: var(--text-heading);
+}
+
+/* The next-domain card recolours to the NEXT domain's hue, so the constellation reads as
+   navigable. */
+.nextDomain {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-6);
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(90% 90% at 100% 0%, color-mix(in srgb, var(--hue) 20%, transparent), transparent 62%),
+    var(--surface-raised);
+  border: 1px solid color-mix(in srgb, var(--hue) 34%, var(--hairline));
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+.nextDomain:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--hue) 55%, transparent);
+  box-shadow: 0 0 40px -18px var(--hue);
+}
+.nextDomain:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nextDomain:hover {
+    transform: none;
+  }
+}
+.nextDomainKey {
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--hue) 58%, var(--text-heading));
+}
+.nextDomainName {
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: var(--fs-h3);
+  color: var(--text-heading);
+}
+.nextDomainGo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: color-mix(in srgb, var(--hue) 70%, white 30%);
+}
+.nextDomainGo svg {
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.nextDomain:hover .nextDomainGo svg {
+  transform: translate(2px, -2px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nextDomain:hover .nextDomainGo svg {
+    transform: none;
+  }
+}

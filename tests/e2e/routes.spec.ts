@@ -60,8 +60,11 @@ test.describe("listing & hub routes", () => {
     // A category page carries a breadcrumb, the primary CTA, and its services as anchored
     // blocks (the fold: every service is a section with an id, so the old URL lands on it).
     await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toBeVisible();
+    // The primary CTA is a growth-plan link; the label varies by template (the legacy
+    // category pages say "Build My Digital Growth Plan", the Constellation domain template
+    // says "Build my growth plan"), so match on the shared "growth plan" wording.
     await expect(
-      page.getByRole("main").getByRole("link", { name: /Build My Digital Growth Plan/i }).first(),
+      page.getByRole("main").getByRole("link", { name: /growth plan/i }).first(),
     ).toBeVisible();
     await expect(page.locator("main li[id]").first()).toBeAttached();
   });

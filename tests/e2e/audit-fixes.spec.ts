@@ -12,10 +12,8 @@ import { test, expect } from "@playwright/test";
 const RING_RGB = /168,\s*85,\s*247/;
 
 test.describe("keyboard focus ring survives on gradient CTAs", () => {
-  // Reduced motion disables the box-shadow transition, so the computed value is the settled
-  // focus state (not a mid-transition interpolation) — and confirms the ring under that pref.
-  test.use({ reducedMotion: "reduce" });
-
+  // The box-shadow transitions in over ~250ms, so each test polls the computed value until it
+  // settles to the ring rather than reading a mid-transition interpolation.
   test("home hero primary CTA shows the ring on focus (not just its resting glow)", async ({
     page,
   }) => {

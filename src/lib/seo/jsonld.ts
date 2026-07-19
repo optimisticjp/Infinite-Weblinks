@@ -82,20 +82,74 @@ export function serviceJsonLd(s: { name: string; description: string; path: stri
   };
 }
 
+/**
+ * Article / BlogPosting node. `type` selects the schema.org subtype ("Article" by default,
+ * "BlogPosting" for the blog). Author defaults to the Organization (these are house-written
+ * guides — no fabricated personal bylines). Only supplied dates/images are emitted.
+ */
 export function articleJsonLd(a: {
   title: string;
   description: string;
   path: string;
+  type?: "Article" | "BlogPosting";
   datePublished?: string;
+  dateModified?: string;
+  image?: string;
+  author?: string;
+}) {
+  const url = canonical(a.path);
+  return {
+    "@context": "https://schema.org",
+    "@type": a.type ?? "Article",
+    headline: a.title,
+    description: a.description,
+    url,
+    mainEntityOfPage: url,
+    inLanguage: "en-GB",
+    publisher: { ...ORG },
+    author: a.author ? { "@type": "Organization", name: a.author } : { ...ORG },
+    ...(a.datePublished ? { datePublished: a.datePublished } : {}),
+    ...(a.dateModified ? { dateModified: a.dateModified } : {}),
+    ...(a.image ? { image: a.image } : {}),
+  };
+}
+
+/** BlogPosting convenience wrapper over articleJsonLd for the learn/blog articles. */
+export function blogPostingJsonLd(a: {
+  title: string;
+  description: string;
+  path: string;
+  datePublished?: string;
+  dateModified?: string;
+  image?: string;
+  author?: string;
+}) {
+  return articleJsonLd({ ...a, type: "BlogPosting" });
+}
+
+/**
+ * HowTo node for step-based guides (each step a HowToStep). Only emit when the page actually
+ * presents ordered, followable steps — otherwise use Article. No fabricated times or costs.
+ */
+export function howToJsonLd(h: {
+  name: string;
+  description: string;
+  path: string;
+  steps: { name: string; text: string }[];
 }) {
   return {
     "@context": "https://schema.org",
-    "@type": "Article",
-    headline: a.title,
-    description: a.description,
-    url: canonical(a.path),
+    "@type": "HowTo",
+    name: h.name,
+    description: h.description,
+    url: canonical(h.path),
     publisher: { ...ORG },
-    ...(a.datePublished ? { datePublished: a.datePublished } : {}),
+    step: h.steps.map((s, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      name: s.name,
+      text: s.text,
+    })),
   };
 }
 

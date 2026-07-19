@@ -38,6 +38,7 @@ import type {
   BusinessType,
   CaseStudy,
   ConnectedExample,
+  CaseScenario,
   CrossCuttingSystem,
   CustomerJourneyStep,
   DeliveryModel,
@@ -161,6 +162,17 @@ export async function getCustomerJourney(): Promise<CustomerJourneyStep[]> {
 }
 export async function getConnectedExamples(): Promise<ConnectedExample[]> {
   return [...data.connectedExamples];
+}
+/**
+ * Worked example scenarios for /case-studies. Code-authoritative and not status-gated: they
+ * are illustrative examples (never real clients), so they always render, clearly labelled.
+ * Real verified client case studies come from getCaseStudies() and render unlabelled.
+ */
+export async function getCaseScenarios(): Promise<CaseScenario[]> {
+  return [...data.caseScenarios];
+}
+export async function getCaseScenario(slug: string): Promise<CaseScenario | undefined> {
+  return data.caseScenarios.find((c) => c.slug === slug);
 }
 export async function getAccountOwnership(): Promise<AccountOwnership> {
   return data.accountOwnership;

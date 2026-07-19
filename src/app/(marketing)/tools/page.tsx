@@ -1,31 +1,28 @@
 import type { Metadata } from "next";
-import { PageHero } from "@/components/routes/PageHero";
-import { IndexCard } from "@/components/routes/IndexCard";
-import { Button } from "@/components/primitives/Button";
+import { ArrowRight } from "lucide-react";
+import { CosmicPageHero } from "@/components/routes/CosmicPageHero";
+import { SectionShell } from "@/components/sections/SectionShell";
+import { BentoGrid } from "@/components/primitives/BentoGrid";
+import { BentoCard } from "@/components/primitives/BentoCard";
+import { GlowButton } from "@/components/primitives/GlowButton";
+import { NodeOrb } from "@/components/primitives/NodeOrb";
 import { Icon } from "@/components/primitives/Icon";
-import { IconTile } from "@/components/primitives/IconTile";
+import { FinalCtaBannerSection } from "@/components/sections/FinalCtaBannerSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getToolCategories, getTools } from "@/lib/content";
-import styles from "./tools.module.css";
 
 export const metadata: Metadata = pageMetadata({
   title: "Tools",
   description:
-    "Examples of the tools we can help you choose, configure and connect. We're not tied to any one platform and we don't sell software — you keep the account, the data, and the login.",
+    "The tool areas we help you choose, configure and connect, from websites and ecommerce to email, analytics and automation. More tools is not better: we set up a few that talk to each other cleanly, always in your name.",
   path: "/tools",
 });
 
 export default async function ToolsIndexPage() {
   const [categories, tools] = await Promise.all([getToolCategories(), getTools()]);
-
-  const grouped = categories
-    .map((category) => ({
-      category,
-      items: tools.filter((t) => t.categorySlug === category.slug),
-    }))
-    .filter((g) => g.items.length > 0);
+  const categoryBySlug = new Map(categories.map((c) => [c.slug, c] as const));
 
   return (
     <>
@@ -42,77 +39,63 @@ export default async function ToolsIndexPage() {
         ])}
       />
 
-      <PageHero
-        eyebrow="Tools"
-        title="Tools we can help you choose, configure and connect"
-        intro="These are examples of tools we can help you pick, set up, and connect to the rest of your system. We're not tied to any one platform, and we don't sell software — whatever we set up sits in your name."
+      <CosmicPageHero
+        id="tools-hero"
         breadcrumbs={[{ name: "Tools" }]}
+        eyebrow="Tools"
+        hue="var(--domain-build)"
+        title={
+          <>
+            Tools we help you choose, configure and <span className="iw-gradient-word">connect</span>
+          </>
+        }
+        lead="More tools is not better. We'd rather set up a few that talk to each other cleanly than a dozen that don't, and whatever we set up sits in your name. Here are the areas we help with."
+        actions={
+          <>
+            <GlowButton href="/growth-plan" size="lg" iconRight={<ArrowRight size={18} aria-hidden="true" />}>
+              Build my growth plan
+            </GlowButton>
+            <GlowButton href="#tool-areas" variant="ghost" size="lg">
+              Browse the areas
+            </GlowButton>
+          </>
+        }
         aside={
-          <p className={styles.note}>
-            More tools is not better — we set up a few that talk to each other cleanly, in your name.
-          </p>
+          <span aria-hidden="true">
+            <NodeOrb hue="var(--domain-build)" size={128} emphasis="bright">
+              <Icon name="wrench" />
+            </NodeOrb>
+          </span>
         }
       />
 
-      {grouped.map(({ category, items }, i) => {
-        const theme = i % 2 === 0 ? "theme-band" : "theme-dark";
-        const headingId = `cat-${category.slug}`;
-        return (
-          <section
-            key={category.slug}
-            id={category.slug}
-            className={`${theme} iw-section ${styles.catSection}`}
-            aria-labelledby={headingId}
-          >
-            <div className="iw-container">
-              <div className={styles.catHead}>
-                <IconTile color={category.color} variant="filled" size={52}>
-                  <Icon name={category.icon} />
-                </IconTile>
-                <div className={styles.catHeadText}>
-                  <h2 id={headingId} className={styles.catName}>
-                    {category.name}
-                  </h2>
-                  <p className={styles.catIntro}>{category.intro}</p>
-                </div>
-              </div>
+      <SectionShell
+        id="tool-areas"
+        eyebrow="The tool areas"
+        title="Ten areas, connected around your goals"
+        lead="Each area is a category of tools we help you pick and join up, not a product we sell. Open one to see what it does, when you might not need it yet, and example tools we can connect."
+        align="start"
+      >
+        <BentoGrid>
+          {tools.map((tool, i) => {
+            const category = categoryBySlug.get(tool.categorySlug);
+            return (
+              <BentoCard
+                key={tool.slug}
+                href={`/tools/${tool.slug}`}
+                hue={category?.color ?? "var(--domain-build)"}
+                icon={category?.icon ?? "wrench"}
+                index={String(i + 1).padStart(2, "0")}
+                title={tool.name}
+                blurb={tool.whatItDoes}
+                variant={i === 0 ? "featured" : "medium"}
+              />
+            );
+          })}
+        </BentoGrid>
+      </SectionShell>
 
-              <ul className={styles.grid}>
-                {items.map((tool) => (
-                  <li key={tool.slug}>
-                    <IndexCard
-                      href={`/tools/${tool.slug}`}
-                      title={tool.name}
-                      description={tool.whatItDoes}
-                      color={category.color}
-                      footer={
-                        tool.exampleTools.length > 0
-                          ? `Examples: ${tool.exampleTools.slice(0, 3).join(", ")}`
-                          : undefined
-                      }
-                    />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
-        );
-      })}
-
-      <section className="theme-dark iw-section" aria-label="Next steps">
-        <div className="iw-container">
-          <div className={styles.cta}>
-            <h2 className={styles.ctaTitle}>A stack that fits your goals, not a longer list</h2>
-            <p className={styles.ctaBody}>
-              The right tools depend on your size, budget, and what you&apos;re trying to do next. Tell us
-              your goals and we&apos;ll suggest a small, connected set — and set them up in your name.
-            </p>
-            <Button href="/growth-plan" variant="primary">
-              Build My Digital Growth Plan
-            </Button>
-          </div>
-        </div>
-      </section>
+      <FinalCtaBannerSection anchorId="get-started" />
     </>
   );
 }

@@ -376,6 +376,37 @@ export interface ConnectedExample {
   featured?: boolean;
 }
 
+/**
+ * Case scenario — a worked, illustrative example of how a connected system fits together for
+ * a kind of business. NOT a real client: every scenario is clearly labelled an example, and
+ * carries no client name, logo, testimonial, or invented numeric result. Results are stated
+ * only qualitatively. Real, verified client case studies use the status-gated `CaseStudy`
+ * type instead; when one exists it renders unlabelled alongside these.
+ */
+export interface CaseScenario {
+  slug: string;
+  /** The scenario title, framed as a situation not a client. */
+  title: string;
+  /** Who this pattern is for (e.g. "A local service business"). */
+  forWho: string;
+  /** One-line summary for the index card. */
+  summary: string;
+  /** Wayfinding hue token, e.g. "var(--domain-convert)". */
+  hue: string;
+  /** The starting situation / blocker. */
+  challenge: string;
+  /** The connected parts used, each tied to a domain hue (the "one system" story). */
+  approach: { label: string; detail: string; hue: string; icon: string }[];
+  /** What the work involved, as plain points. */
+  work: string[];
+  /** The qualitative outcome (no invented figures). */
+  outcome: string;
+  /** A qualitative result marker for the StatCard (e.g. { label: "Repeat orders", value: "Compounding" }). */
+  result: { label: string; value: string };
+  /** Service category slugs the scenario touches, for linking to the domain pages. */
+  categorySlugs: string[];
+}
+
 /* ------ account ownership (ref 13) — you own your digital world ------ */
 export interface OwnershipAsset {
   label: string;

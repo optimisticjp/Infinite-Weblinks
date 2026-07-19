@@ -1,0 +1,148 @@
+/* Case studies — index + case template. Illustrative example scenarios (clearly labelled),
+   built on the kit: node orbs, connectors and a floating result card. */
+
+/* ---- "Not a real client" notice, used prominently on index and every case page ---- */
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  max-width: 62ch;
+  margin: 0 0 var(--space-8);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in srgb, var(--domain-operate) 40%, var(--hairline));
+  background: color-mix(in srgb, var(--domain-operate) 8%, var(--surface-raised));
+}
+.noticeIcon {
+  flex: none;
+  margin-top: 2px;
+  color: color-mix(in srgb, var(--domain-operate) 60%, var(--text-heading));
+}
+.noticeText {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+.noticeText strong {
+  color: var(--text-heading);
+}
+
+/* Inline example tag on the case hero (sits by the eyebrow). */
+.exampleTag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 1px solid color-mix(in srgb, var(--domain-operate) 45%, transparent);
+  background: color-mix(in srgb, var(--domain-operate) 12%, transparent);
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--domain-operate) 55%, var(--text-heading));
+}
+
+/* ---- The connected approach: a flow of hue-tinted node orbs joined by connectors ---- */
+.flow {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+@media (min-width: 860px) {
+  .flow {
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    align-items: start;
+    gap: 0;
+  }
+}
+.node {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  padding: var(--space-2);
+}
+.nodeTitle {
+  margin: 0;
+  font-size: var(--fs-h5, var(--fs-body));
+  font-weight: var(--fw-bold);
+  color: var(--text-heading);
+}
+.nodeDetail {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+  max-width: 34ch;
+}
+.conn {
+  display: none;
+}
+@media (min-width: 860px) {
+  .conn {
+    display: block;
+    align-self: center;
+    padding: 0 var(--space-2);
+    min-width: 40px;
+  }
+}
+
+/* ---- Work list ---- */
+.workList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+  max-width: 60ch;
+}
+.workItem {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  font-size: var(--fs-body);
+  color: var(--text-body);
+}
+.workCheck {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  margin-top: 1px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--hue) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--hue) 45%, transparent);
+  color: color-mix(in srgb, var(--hue) 60%, var(--text-heading));
+}
+
+/* ---- Outcome: text + floating result card ---- */
+.outcomeGrid {
+  display: grid;
+  gap: var(--space-6);
+  align-items: center;
+}
+@media (min-width: 760px) {
+  .outcomeGrid {
+    grid-template-columns: 1.4fr 0.6fr;
+    gap: var(--space-8);
+  }
+}
+.outcomeText {
+  margin: 0;
+  font-size: var(--fs-lead);
+  color: var(--text-body);
+  max-width: 52ch;
+}
+.outcomeCard {
+  justify-self: start;
+}
+@media (min-width: 760px) {
+  .outcomeCard {
+    justify-self: center;
+  }
+}

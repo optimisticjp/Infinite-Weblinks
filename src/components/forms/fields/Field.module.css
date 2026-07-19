@@ -1,0 +1,63 @@
+/* Shared adornments for the Constellation field primitives. The control itself is styled by
+   FormField.module.css `.control`, which reads `--surface-input` from the section theme —
+   so on `.theme-cosmic` these inputs sit on the deep #241D40 well automatically. */
+
+.wrap {
+  position: relative;
+  display: block;
+}
+
+/* Leading glyph on the input's inner edge — decorative, muted, never the sole meaning. */
+.icon {
+  position: absolute;
+  left: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+.hasIcon {
+  padding-left: var(--space-10);
+}
+
+/* Native select: hide the default chevron, draw our own, leave room for both edges. */
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: var(--space-10);
+  cursor: pointer;
+}
+.chevron {
+  position: absolute;
+  right: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+/* An unchosen optional select reads as placeholder text until a real option is picked. */
+.placeholder {
+  color: var(--text-muted);
+}
+
+/* Textarea + live character counter. */
+.textareaWrap {
+  position: relative;
+  display: block;
+}
+.counter {
+  position: absolute;
+  right: var(--space-3);
+  bottom: var(--space-3);
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  background: color-mix(in srgb, var(--space-navy) 55%, transparent);
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+.counterFull {
+  color: var(--warning);
+}

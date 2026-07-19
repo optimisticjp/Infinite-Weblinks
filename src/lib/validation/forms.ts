@@ -24,10 +24,6 @@ const noHeaderInjection = <T extends z.ZodString>(schema: T, label: string) =>
     `${label} cannot contain line breaks, commas or semicolons.`,
   );
 
-/** Known contact subjects (includes the `?subject=growth-goals` deep-link target). */
-export const CONTACT_SUBJECTS = ["growth-goals", "general", "services"] as const;
-export type ContactSubject = (typeof CONTACT_SUBJECTS)[number];
-
 const nameSchema = noHeaderInjection(
   z
     .string()
@@ -43,7 +39,7 @@ const emailSchema = noHeaderInjection(
     .trim()
     .min(1, "Please enter your email address.")
     .max(254, "Email address is too long.")
-    .email("Please enter a valid email address."),
+    .email("That email address doesn't look right. Please check for a typo."),
   "Email address",
 );
 
@@ -57,6 +53,21 @@ const slugSchema = (label: string) =>
     .min(1, `Please choose ${label}.`)
     .max(80, `That ${label} value is too long.`)
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/i, `That ${label} value looks invalid.`);
+
+/** Optional slug — for the Contact form's context selects (business type / stage / goal),
+ * which are helpful-but-not-required. Accepts a valid slug, an empty string (the "not
+ * chosen" state some browsers may still submit) or omission; all three mean "no answer". */
+const optionalSlugSchema = (label: string) =>
+  z
+    .union([
+      z.literal(""),
+      z
+        .string()
+        .trim()
+        .max(80, `That ${label} value is too long.`)
+        .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/i, `That ${label} value looks invalid.`),
+    ])
+    .optional();
 
 /** Hidden anti-bot field (`_gotcha`). Must stay empty — any content trips a silent reject. */
 const honeypotSchema = z.string().max(0, "Leave this field empty.").optional();
@@ -86,14 +97,19 @@ const elapsedMsSchema = z.number().int().nonnegative().optional();
 export const contactSchema = z.object({
   name: nameSchema,
   email: emailSchema,
-  subject: z.enum(CONTACT_SUBJECTS, "Please choose a subject."),
   message: z
     .string()
     .trim()
-    .min(10, "Message must be at least 10 characters.")
-    .max(2000, "Message must be 2000 characters or fewer."),
-  company: z.string().trim().max(120, "Company must be 120 characters or fewer.").optional(),
+    .min(10, "Please add a little more detail (at least 10 characters).")
+    .max(1000, "Message must be 1000 characters or fewer."),
+  company: z.string().trim().max(120, "Business name must be 120 characters or fewer.").optional(),
   website: websiteSchema,
+  // Optional context — the visitor picks these to help us tailor the reply, so an unknown
+  // or missing value never blocks a genuine enquiry. Slug-shaped because they reference the
+  // same reviewed business-type / growth-stage / goal option sets the Growth Plan uses.
+  businessType: optionalSlugSchema("a business type"),
+  currentStage: optionalSlugSchema("your current stage"),
+  mainGoal: optionalSlugSchema("a main goal"),
   _gotcha: honeypotSchema,
   turnstileToken: turnstileTokenSchema,
   elapsedMs: elapsedMsSchema,

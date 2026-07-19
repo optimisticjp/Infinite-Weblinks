@@ -1,0 +1,59 @@
+.wrap {
+  display: block;
+  width: 100%;
+  height: var(--conn-h, 24px);
+  line-height: 0;
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.track {
+  stroke: var(--line-strong);
+  fill: none;
+}
+
+/* Lit path — resting state is fully drawn, so reduced-motion and no-JS show the completed
+   connection. Only when JS marks the element in-view (and motion is allowed) does it draw. */
+.lit {
+  fill: none;
+  opacity: 0.92;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lit {
+    stroke-dashoffset: 1;
+  }
+  .wrap[data-inview="true"] .lit {
+    animation: connDraw 0.9s var(--ease-out, ease) forwards;
+  }
+}
+@keyframes connDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Travelling spark — a short bright dash that runs along the path. Hidden at rest; only
+   shown + animated in-view under a motion preference. */
+.spark {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.95);
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .wrap[data-inview="true"] .spark {
+    opacity: 0.9;
+    animation: connSpark 3s linear infinite;
+  }
+}
+@keyframes connSpark {
+  to {
+    stroke-dashoffset: var(--spark-shift, -0.5);
+  }
+}

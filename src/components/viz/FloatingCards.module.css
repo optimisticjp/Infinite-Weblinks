@@ -1,0 +1,93 @@
+.card {
+  position: relative;
+  display: grid;
+  gap: 4px;
+  min-width: 132px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, var(--fc-hue) 30%, var(--glass-border));
+  box-shadow:
+    var(--glass-shadow),
+    0 0 24px -14px var(--fc-hue);
+  overflow: hidden;
+}
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: var(--fc-hue);
+  opacity: 0.9;
+}
+.dark {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--blur-panel));
+  color: var(--text-1);
+}
+.light {
+  background: var(--glass-bg-light);
+  color: var(--ink-900);
+}
+
+/* StatCard */
+.statValue {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--fw-black);
+  font-size: 1.5rem;
+  line-height: 1;
+  color: inherit;
+}
+.statLabel {
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: color-mix(in srgb, currentColor 70%, transparent);
+}
+.statTrend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 2px 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  color: var(--lime-bright);
+}
+
+/* ChartCard */
+.chartLabel {
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: color-mix(in srgb, currentColor 70%, transparent);
+}
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 40px;
+}
+.bar {
+  flex: 1;
+  min-width: 6px;
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(180deg, var(--fc-hue), color-mix(in srgb, var(--fc-hue) 30%, transparent));
+}
+
+/* MessageCard */
+.msgDot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--fc-hue);
+  box-shadow: 0 0 10px var(--fc-hue);
+}
+.msgTitle {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: inherit;
+}
+.msgBody {
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: color-mix(in srgb, currentColor 68%, transparent);
+}

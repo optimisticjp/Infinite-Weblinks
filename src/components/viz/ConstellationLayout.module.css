@@ -1,0 +1,175 @@
+.stage {
+  position: relative;
+  display: grid;
+  gap: var(--space-6);
+}
+
+/* Orbits + connection lines — desktop only. */
+.orbits {
+  display: none;
+}
+.orbit {
+  fill: none;
+  stroke: var(--orbit-stroke-strong);
+  stroke-width: 0.3;
+}
+.link {
+  stroke: var(--link-color);
+  stroke-width: 0.5;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+/* Central card. */
+.card {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(90% 90% at 50% 0%, color-mix(in srgb, var(--card-hue) 16%, transparent), transparent 62%),
+    var(--glass-bg);
+  border: 1px solid color-mix(in srgb, var(--card-hue) 34%, var(--glass-border));
+  box-shadow: var(--glow-panel);
+  backdrop-filter: blur(var(--blur-panel));
+}
+.cardEyebrow {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--card-hue) 72%, white 12%);
+}
+.cardTitle {
+  margin: 0;
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+}
+.cardBlurb {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+.cardList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.cardList li {
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--hairline-strong);
+  background: color-mix(in srgb, var(--card-hue) 10%, transparent);
+  font-size: var(--fs-xs);
+  color: var(--text-body);
+}
+.cardLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: color-mix(in srgb, var(--card-hue) 78%, white 22%);
+}
+
+/* Nodes: mobile = a horizontal chip row above the card. */
+.nodes {
+  order: -1;
+  list-style: none;
+  margin: 0;
+  padding: 0 0 var(--space-2);
+  display: flex;
+  gap: var(--space-3);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.node {
+  flex: none;
+}
+.nodeBtn {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  width: 84px;
+  padding: var(--space-2);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--text-body);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.nodeBtn:hover {
+  transform: translateY(-2px);
+}
+.nodeBtn:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nodeBtn:hover {
+    transform: none;
+  }
+}
+.nodeLabel {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-snug);
+  text-align: center;
+  color: var(--text-body);
+}
+.nodeBtn:not(.nodeBtnActive) {
+  opacity: 0.72;
+}
+.nodeBtnActive .nodeLabel {
+  color: var(--text-heading);
+}
+
+/* ---- Desktop orbit composition ---- */
+@media (min-width: 900px) {
+  .stage {
+    display: block;
+    position: relative;
+    height: clamp(540px, 46vw, 660px);
+    max-width: 900px;
+    margin-inline: auto;
+  }
+  .orbits {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .card {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(42%, 340px);
+    z-index: 2;
+  }
+  .nodes {
+    position: absolute;
+    inset: 0;
+    order: 0;
+    display: block;
+    overflow: visible;
+    padding: 0;
+    z-index: 3;
+  }
+  .node {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    transform: translate(-50%, -50%);
+  }
+  .nodeBtn {
+    width: 92px;
+  }
+}

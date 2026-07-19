@@ -1,0 +1,174 @@
+.root {
+  display: grid;
+  gap: var(--space-8);
+}
+
+/* ---- The stage row ---- */
+.track {
+  position: relative;
+}
+/* The connector behind the orbs. */
+.line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 26px; /* centre of a 52px orb */
+  height: 2px;
+  background: var(--line-strong);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.lineLit {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  background: var(--grad-spectrum);
+}
+/* Resting = fully lit, so reduced-motion / no-JS show the completed connection. */
+@media (prefers-reduced-motion: no-preference) {
+  .lineLit {
+    transform: scaleX(0);
+  }
+  .root[data-inview="true"] .lineLit {
+    animation: lineGrow 1.2s var(--ease-out) 0.15s forwards;
+  }
+}
+@keyframes lineGrow {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.stages {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0 0 var(--space-3);
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(120px, 1fr);
+  gap: var(--space-3);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+}
+@media (min-width: 900px) {
+  .stages {
+    grid-auto-columns: 1fr;
+    overflow-x: visible;
+  }
+}
+.stageItem {
+  scroll-snap-align: start;
+}
+
+.stageBtn {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-2) var(--space-1) var(--space-3);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--text-body);
+  text-align: center;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.stageBtn:hover {
+  transform: translateY(-2px);
+}
+.stageBtn:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+@media (prefers-reduced-motion: reduce) {
+  .stageBtn:hover {
+    transform: none;
+  }
+}
+
+.stageMeta {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+}
+.stageNum {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  color: color-mix(in srgb, var(--stage-hue) 78%, white 8%);
+}
+.stageName {
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
+  color: var(--text-body);
+}
+.stageBtnActive .stageName {
+  color: var(--text-heading);
+}
+/* Dim the non-selected orbs a touch so the active stage leads. */
+.stageBtn:not(.stageBtnActive) {
+  opacity: 0.74;
+}
+.stageBtn:not(.stageBtnActive):hover {
+  opacity: 1;
+}
+
+/* ---- Detail panel ---- */
+.panel {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  background:
+    radial-gradient(90% 120% at 0% 0%, color-mix(in srgb, var(--stage-hue) 14%, transparent), transparent 60%),
+    var(--surface-raised);
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--stage-hue);
+}
+.panelHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+.panelStep {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  color: var(--text-muted);
+}
+.panelName {
+  margin: 0;
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+}
+.panelSummary {
+  margin: 0;
+  font-size: var(--fs-body);
+  color: var(--text-body);
+}
+.panelDetail {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+.panelOutcome {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+.panelOutcomeLabel {
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--stage-hue) 72%, var(--text-muted));
+}

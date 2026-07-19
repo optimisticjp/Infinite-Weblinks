@@ -160,7 +160,7 @@ export const seedChrome: SiteChrome = {
   },
   footer: {
     supportEmail: "support@infiniteweblinks.com",
-    tagline: "Digital growth, built around your goals.",
+    tagline: "Connected systems. Smarter growth.",
     columns: [
       {
         heading: "Start here",

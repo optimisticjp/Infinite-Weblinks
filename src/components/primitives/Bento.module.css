@@ -132,6 +132,14 @@
   color: var(--text-body);
 }
 
+/* Badge slot (e.g. a delivery-model pill) under the copy on informational tiles. */
+.badgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
 .arrow {
   display: inline-flex;
   align-items: center;

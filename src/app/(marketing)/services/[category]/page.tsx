@@ -8,9 +8,11 @@ import { Button } from "@/components/primitives/Button";
 import { Icon } from "@/components/primitives/Icon";
 import { IconTile } from "@/components/primitives/IconTile";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { ServiceDomainTemplate } from "@/components/routes/ServiceDomainTemplate";
 import { breadcrumbJsonLd, itemListJsonLd, serviceJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
-import { getDeliveryModels, getGoals, getServiceCategories, getServices } from "@/lib/content";
+import { getDeliveryModels, getGoals, getServiceCategories, getServices, getStages } from "@/lib/content";
+import { getServiceDomainConfig } from "@/lib/services/domains";
 import styles from "./category.module.css";
 
 /**
@@ -48,11 +50,12 @@ export default async function ServiceCategoryPage({
   params: Promise<{ category: string }>;
 }) {
   const { category: slug } = await params;
-  const [categories, services, deliveryModels, goals] = await Promise.all([
+  const [categories, services, deliveryModels, goals, stages] = await Promise.all([
     getServiceCategories(),
     getServices(),
     getDeliveryModels(),
     getGoals(),
+    getStages(),
   ]);
 
   const category = categories.find((c) => c.slug === slug);
@@ -60,6 +63,7 @@ export default async function ServiceCategoryPage({
 
   const items = services.filter((s) => s.categorySlug === category.slug);
   const deliveryByKey = new Map(deliveryModels.map((d) => [d.key, d] as const));
+  const domainConfig = getServiceDomainConfig(slug);
 
   // Internal-linking preserved at the category level: the goals every service here helps
   // with, de-duplicated, so the ranking signal points at one strong page instead of many.
@@ -95,6 +99,16 @@ export default async function ServiceCategoryPage({
         />
       )}
 
+      {domainConfig ? (
+        <ServiceDomainTemplate
+          config={domainConfig}
+          category={category}
+          services={items}
+          deliveryModels={deliveryModels}
+          stages={stages}
+        />
+      ) : (
+        <>
       <PageHero
         eyebrow="Services"
         title={category.name}
@@ -189,6 +203,8 @@ export default async function ServiceCategoryPage({
           </div>
         </div>
       </section>
+        </>
+      )}
     </>
   );
 }

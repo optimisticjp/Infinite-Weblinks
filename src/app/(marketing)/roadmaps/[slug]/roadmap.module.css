@@ -1,66 +1,42 @@
-.layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 20rem;
-  gap: var(--space-8);
-  align-items: start;
-}
-
-.main {
-  min-width: 0;
-}
-
-.h2 {
-  font-size: var(--fs-h3);
-  color: var(--text-heading);
-  margin-bottom: var(--space-2);
-}
-.note {
-  color: var(--text-muted);
-  font-size: 0.95rem;
-  line-height: 1.55;
-  margin-bottom: var(--space-8);
-  max-width: 64ch;
-}
-
+/* Cosmic vertical timeline of roadmap phases. */
 .phases {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: var(--space-6);
+  gap: var(--space-8);
 }
 .phase {
   position: relative;
   display: grid;
-  grid-template-columns: 2.75rem minmax(0, 1fr);
-  gap: var(--space-4);
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: var(--space-5);
   align-items: start;
 }
-/* Connector line linking the phase numbers into a vertical timeline. */
+/* Connector line linking the phase orbs into a vertical timeline. */
 .phase:not(:last-child)::before {
   content: "";
   position: absolute;
-  left: calc(2.75rem / 2);
-  top: 2.75rem;
-  bottom: calc(var(--space-6) * -1);
+  left: 26px;
+  top: 56px;
+  bottom: calc(var(--space-8) * -1);
   width: 2px;
-  background: var(--hairline-strong);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--hue, var(--violet)) 45%, transparent),
+    var(--hairline)
+  );
   transform: translateX(-1px);
 }
-.num {
+.orb {
   position: relative;
   z-index: 1;
-  width: 2.75rem;
-  height: 2.75rem;
-  display: grid;
-  place-items: center;
-  border-radius: var(--radius-pill);
-  background: var(--surface-raised);
-  border: 1px solid var(--hairline-strong);
-  color: var(--text-heading);
-  font-family: var(--font-label);
-  font-weight: 700;
+}
+.num {
+  font-family: var(--font-mono);
+  font-weight: var(--fw-bold);
   font-size: 1.05rem;
+  color: var(--text-heading);
 }
 
 .phaseBody {
@@ -68,14 +44,14 @@
   padding-bottom: var(--space-2);
 }
 .phaseTitle {
+  margin: 0 0 var(--space-2);
   font-size: var(--fs-h4);
   color: var(--text-heading);
-  margin-bottom: var(--space-2);
 }
 .phaseSummary {
+  margin: 0 0 var(--space-4);
   color: var(--text-body);
-  line-height: 1.6;
-  margin-bottom: var(--space-4);
+  line-height: 1.65;
   max-width: 64ch;
 }
 
@@ -83,19 +59,19 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin-bottom: var(--space-4);
+  margin: 0 0 var(--space-4);
 }
 .metaLabel {
-  font-family: var(--font-label);
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
   text-transform: uppercase;
   color: var(--text-muted);
 }
 .stageLink {
   color: var(--link);
-  font-weight: 600;
+  font-weight: var(--fw-semibold);
 }
 .stageLink:hover {
   color: var(--link-hover);
@@ -117,79 +93,19 @@
 }
 .pill {
   display: inline-block;
-  padding: var(--space-1) var(--space-3);
+  padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-pill);
   background: var(--surface-raised);
   border: 1px solid var(--hairline);
   color: var(--text-body);
-  font-size: 0.85rem;
+  font-size: var(--fs-sm);
   transition: border-color var(--dur-fast) var(--ease-out);
 }
 .pill:hover {
-  border-color: var(--border-glow);
+  border-color: color-mix(in srgb, var(--hue, var(--violet)) 55%, var(--hairline));
   color: var(--text-heading);
 }
-
-.side {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-  position: sticky;
-  top: calc(var(--header-h) + var(--space-4));
-}
-.forCard {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-5);
-  border-radius: var(--radius-lg);
-  background: var(--surface-raised);
-  border: 1px solid var(--hairline);
-  transition:
-    border-color var(--dur-fast) var(--ease-out),
-    transform var(--dur-fast) var(--ease-out);
-}
-.forCard:hover {
-  border-color: var(--border-glow);
-  transform: translateY(-2px);
-}
-.forLabel {
-  font-family: var(--font-label);
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-.forName {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: var(--text-heading);
-}
-.forArrow {
-  width: 18px;
-  height: 18px;
-  flex: none;
-  color: var(--text-muted);
-}
-.forCard:hover .forArrow {
-  color: var(--link);
-}
-.forHint {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  line-height: 1.5;
-}
-
-@media (max-width: 900px) {
-  .layout {
-    grid-template-columns: 1fr;
-  }
-  .side {
-    position: static;
-  }
+.pill:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
 }

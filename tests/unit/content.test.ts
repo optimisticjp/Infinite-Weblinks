@@ -33,8 +33,8 @@ describe("content guardrails", () => {
     }
   });
 
-  it("primary CTA is email-led (Build My Digital Growth Plan → /growth-plan)", () => {
-    expect(seedHero.primaryCta.label).toBe("Build My Digital Growth Plan");
+  it("primary CTA is email-led (Build my growth plan → /growth-plan)", () => {
+    expect(seedHero.primaryCta.label).toBe("Build my growth plan");
     expect(seedHero.primaryCta.route).toBe("/growth-plan");
   });
 

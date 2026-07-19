@@ -7,9 +7,9 @@ test.describe("Homepage opening", () => {
     await expect(page).toHaveTitle(/Infinite Weblinks/);
     await expect(page.locator("h1")).toContainText("grow your business online");
     await expect(
-      page.getByRole("link", { name: "Build My Digital Growth Plan" }).first(),
+      page.getByRole("link", { name: "Build my growth plan" }).first(),
     ).toBeVisible();
-    await expect(page.getByRole("link", { name: "See How It All Works" }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "See how it all works" }).first()).toBeVisible();
   });
 
   test("lists the five connected domains as real text", async ({ page }) => {

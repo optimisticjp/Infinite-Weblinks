@@ -81,7 +81,7 @@ test.describe("how-it-works anchors resolve", () => {
 });
 
 test.describe("legal pages", () => {
-  for (const path of ["/privacy", "/cookies", "/terms", "/accessibility"]) {
+  for (const path of ["/privacy", "/cookies", "/terms", "/refunds", "/accessibility"]) {
     test(`${path} renders with the professional-review note`, async ({ page }) => {
       await page.goto(path);
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();

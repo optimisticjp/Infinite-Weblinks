@@ -42,7 +42,7 @@ export function ProofDetail({
         breadcrumbs={[{ name: collectionName, path: collectionPath }, { name: title }]}
         actions={
           <Button href="/growth-plan" variant="primary">
-            Build My Digital Growth Plan
+            Build my growth plan
           </Button>
         }
       />

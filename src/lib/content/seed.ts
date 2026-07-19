@@ -7,8 +7,8 @@ import type { EditorialSection, HeroContent, SiteChrome } from "./types";
  * exactly. No unverified metrics, testimonials, client names or phone numbers.
  */
 
-const BUILD_PLAN = { label: "Build My Digital Growth Plan", route: "/growth-plan", style: "primary" as const };
-const SEE_HOW = { label: "See How It All Works", route: "/how-it-works", style: "secondary" as const };
+const BUILD_PLAN = { label: "Build my growth plan", route: "/growth-plan", style: "primary" as const };
+const SEE_HOW = { label: "See how it all works", route: "/how-it-works", style: "secondary" as const };
 
 export const seedChrome: SiteChrome = {
   nav: {
@@ -136,6 +136,7 @@ export const seedChrome: SiteChrome = {
               items: [
                 { label: "Guides & articles", href: "/learn" },
                 { label: "How everything connects", href: "/how-it-works" },
+                { label: "Connected growth", href: "/connected-growth" },
               ],
             },
             {
@@ -149,7 +150,10 @@ export const seedChrome: SiteChrome = {
             },
             {
               heading: "Answers",
-              items: [{ label: "FAQ", href: "/faq" }],
+              items: [
+                { label: "FAQ", href: "/faq" },
+                { label: "How pricing works", href: "/pricing" },
+              ],
             },
           ],
         },
@@ -167,7 +171,8 @@ export const seedChrome: SiteChrome = {
         links: [
           { label: "How It Works", href: "/how-it-works" },
           { label: "Explore by goal", href: "/goals" },
-          { label: "Build My Growth Plan", href: "/growth-plan" },
+          { label: "How pricing works", href: "/pricing" },
+          { label: "Build my growth plan", href: "/growth-plan" },
           { label: "Growth Troubleshooter", href: "/troubleshooter" },
           { label: "Contact", href: "/contact" },
         ],
@@ -195,6 +200,7 @@ export const seedChrome: SiteChrome = {
         heading: "Company",
         links: [
           { label: "About Us", href: "/about" },
+          { label: "Account ownership", href: "/account-ownership" },
           { label: "Resources hub", href: "/resources" },
           { label: "Accessibility", href: "/accessibility" },
         ],
@@ -204,6 +210,7 @@ export const seedChrome: SiteChrome = {
       { label: "Privacy", href: "/privacy" },
       { label: "Cookies", href: "/cookies" },
       { label: "Terms", href: "/terms" },
+      { label: "Refunds", href: "/refunds" },
       { label: "Accessibility", href: "/accessibility" },
     ],
     // Hidden until a valid URL exists (brief §23) — none rendered at launch.

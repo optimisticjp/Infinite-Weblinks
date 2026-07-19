@@ -178,7 +178,7 @@
   font-family: var(--font-mono);
   font-weight: 700;
   font-size: 0.85rem;
-  color: #ffffff;
+  color: var(--white);
   background: var(--accent);
 }
 .checkText {

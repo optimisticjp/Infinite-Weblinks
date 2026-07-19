@@ -2,8 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
-import { PageHero } from "@/components/routes/PageHero";
-import { Button } from "@/components/primitives/Button";
+import { CosmicPageHero } from "@/components/routes/CosmicPageHero";
+import { SectionShell } from "@/components/sections/SectionShell";
+import { BentoGrid } from "@/components/primitives/BentoGrid";
+import { BentoCard } from "@/components/primitives/BentoCard";
+import { GlowButton } from "@/components/primitives/GlowButton";
+import { NodeOrb } from "@/components/primitives/NodeOrb";
+import { Icon } from "@/components/primitives/Icon";
+import { FinalCtaBannerSection } from "@/components/sections/FinalCtaBannerSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -53,6 +59,7 @@ export default async function RoadmapDetailPage({
   if (!roadmap) notFound();
 
   const businessType = businessTypes.find((b) => b.slug === roadmap.forBusinessTypeSlug);
+  const hue = businessType?.color ?? "var(--domain-operate)";
 
   const phases = roadmap.phases.map((phase, i) => {
     const stage = stages.find((st) => st.slug === phase.stageSlug);
@@ -81,99 +88,112 @@ export default async function RoadmapDetailPage({
         )}
       />
 
-      <PageHero
-        eyebrow="Suggested roadmap"
-        title={roadmap.name}
-        intro={roadmap.intro}
+      <CosmicPageHero
+        id="roadmap-hero"
         breadcrumbs={[{ name: "Roadmaps", path: "/roadmaps" }, { name: roadmap.name }]}
+        eyebrow="Suggested roadmap"
+        hue={hue}
+        title={roadmap.name}
+        lead={roadmap.intro}
         actions={
-          <Button href="/growth-plan" variant="primary">
-            Build My Digital Growth Plan
-          </Button>
+          <>
+            <GlowButton href="/growth-plan" size="lg" iconRight={<ArrowRight size={18} aria-hidden="true" />}>
+              Build my growth plan
+            </GlowButton>
+            <GlowButton href="/roadmaps" variant="ghost" size="lg">
+              All roadmaps
+            </GlowButton>
+          </>
+        }
+        aside={
+          <span aria-hidden="true">
+            <NodeOrb hue={hue} size={128} emphasis="bright">
+              <Icon name={businessType?.icon ?? "workflow"} />
+            </NodeOrb>
+          </span>
         }
       />
 
-      <section className="theme-band iw-section" aria-labelledby="roadmap-body-heading">
-        <div className="iw-container">
-          <div className={styles.layout}>
-            <div className={styles.main}>
-              <h2 id="roadmap-body-heading" className={styles.h2}>
-                How the phases fit together
-              </h2>
-              <p className={styles.note}>
-                A rough shape, not a fixed script — every plan is tailored to your specifics during
-                discovery.
-              </p>
+      {businessType && (
+        <SectionShell id="built-for" eyebrow="Who it's for" title="Built around this kind of business" align="start" spacing="tight">
+          <BentoGrid>
+            <BentoCard
+              href={`/business-types/${businessType.slug}`}
+              hue={hue}
+              icon={businessType.icon}
+              eyebrow="Built for"
+              title={businessType.name}
+              blurb={businessType.summary}
+              variant="featured"
+            />
+          </BentoGrid>
+        </SectionShell>
+      )}
 
-              <ol className={styles.phases}>
-                {phases.map((phase) => (
-                  <li key={phase.id} id={phase.id} className={styles.phase}>
-                    <span className={styles.num} aria-hidden="true">
-                      {phase.index}
-                    </span>
-                    <div className={styles.phaseBody}>
-                      <h3 className={styles.phaseTitle}>{phase.title}</h3>
-                      <p className={styles.phaseSummary}>{phase.summary}</p>
+      <SectionShell
+        id="phases"
+        eyebrow="The sequence"
+        title="How the phases fit together"
+        lead="A rough shape, not a fixed script. Every plan is tailored to your specifics during discovery."
+        align="start"
+      >
+        <ol className={styles.phases}>
+          {phases.map((phase) => (
+            <li key={phase.id} id={phase.id} className={styles.phase} style={{ ["--hue" as string]: hue }}>
+              <div className={styles.orb} aria-hidden="true">
+                <NodeOrb hue={hue} size={52} emphasis="bright">
+                  <span className={styles.num}>{phase.index}</span>
+                </NodeOrb>
+              </div>
+              <div className={styles.phaseBody}>
+                <h3 className={styles.phaseTitle}>{phase.title}</h3>
+                <p className={styles.phaseSummary}>{phase.summary}</p>
 
-                      {phase.stage && (
-                        <p className={styles.phaseStage}>
-                          <span className={styles.metaLabel}>Stage</span>
-                          <Link href={`/how-it-works#${phase.stage.slug}`} className={styles.stageLink}>
-                            {phase.stage.name}
+                {phase.stage && (
+                  <p className={styles.phaseStage}>
+                    <span className={styles.metaLabel}>Stage</span>
+                    <Link href={`/how-it-works#${phase.stage.slug}`} className={styles.stageLink}>
+                      {phase.stage.name}
+                    </Link>
+                  </p>
+                )}
+
+                {phase.phaseServices.length > 0 && (
+                  <div className={styles.linkGroup}>
+                    <span className={styles.metaLabel}>Services in this phase</span>
+                    <ul className={styles.linkList}>
+                      {phase.phaseServices.map((sv) => (
+                        <li key={sv.slug}>
+                          <Link href={`/services/${sv.categorySlug}#${sv.slug}`} className={styles.pill}>
+                            {sv.name}
                           </Link>
-                        </p>
-                      )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
-                      {phase.phaseServices.length > 0 && (
-                        <div className={styles.linkGroup}>
-                          <span className={styles.metaLabel}>Services in this phase</span>
-                          <ul className={styles.linkList}>
-                            {phase.phaseServices.map((sv) => (
-                              <li key={sv.slug}>
-                                <Link href={`/services/${sv.categorySlug}#${sv.slug}`} className={styles.pill}>
-                                  {sv.name}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
+                {phase.phaseGoals.length > 0 && (
+                  <div className={styles.linkGroup}>
+                    <span className={styles.metaLabel}>Goals this moves</span>
+                    <ul className={styles.linkList}>
+                      {phase.phaseGoals.map((go) => (
+                        <li key={go.slug}>
+                          <Link href={`/goals/${go.slug}`} className={styles.pill}>
+                            {go.title}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </li>
+          ))}
+        </ol>
+      </SectionShell>
 
-                      {phase.phaseGoals.length > 0 && (
-                        <div className={styles.linkGroup}>
-                          <span className={styles.metaLabel}>Goals this moves</span>
-                          <ul className={styles.linkList}>
-                            {phase.phaseGoals.map((go) => (
-                              <li key={go.slug}>
-                                <Link href={`/goals/${go.slug}`} className={styles.pill}>
-                                  {go.title}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </div>
-
-            <aside className={styles.side}>
-              {businessType && (
-                <Link href={`/business-types/${businessType.slug}`} className={styles.forCard}>
-                  <span className={styles.forLabel}>Built for</span>
-                  <span className={styles.forName}>
-                    {businessType.name}
-                    <ArrowRight className={styles.forArrow} aria-hidden="true" />
-                  </span>
-                  <span className={styles.forHint}>{businessType.summary}</span>
-                </Link>
-              )}
-            </aside>
-          </div>
-        </div>
-      </section>
+      <FinalCtaBannerSection anchorId="get-started" />
     </>
   );
 }

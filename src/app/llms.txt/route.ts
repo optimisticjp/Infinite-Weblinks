@@ -39,6 +39,7 @@ export async function GET() {
     `- Home: ${canonical("/")}`,
     `- How it works: ${canonical("/how-it-works")}`,
     `- Services: ${canonical("/services")}`,
+    `- How pricing works (no fixed price list; quoted to scope): ${canonical("/pricing")}`,
     `- Growth plan builder (free, no obligation): ${canonical("/growth-plan")}`,
     `- Learn (guides): ${canonical("/learn")}`,
     `- Tools we help choose and connect: ${canonical("/tools")}`,

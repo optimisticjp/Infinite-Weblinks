@@ -5,7 +5,7 @@ import type { StartingPoint } from "@/lib/content/types";
  * than one row, and that's normal. Guide's original CTA ("that's what the
  * discovery call is for") is superseded by the locked, email-led primary CTA.
  */
-const BUILD_PLAN_CTA = { label: "Build My Digital Growth Plan", route: "/growth-plan", style: "primary" as const };
+const BUILD_PLAN_CTA = { label: "Build my growth plan", route: "/growth-plan", style: "primary" as const };
 
 export const startingPoints: StartingPoint[] = [
   {

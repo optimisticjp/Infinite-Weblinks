@@ -111,7 +111,7 @@ export function GrowthTroubleshooter({ problems }: { problems: TroubleshooterPro
           </div>
           <div className={styles.focusCtas}>
             <Button href="/growth-plan" variant="primary" size="lg" iconRight={<ArrowRight aria-hidden="true" />}>
-              Build My Prioritised Growth Plan
+              Build my growth plan
             </Button>
             <Button href={`/how-it-works#${active.recommendedStageSlug}`} variant="text">
               See the connected stage →

@@ -63,7 +63,7 @@ export function FinalCtaBannerSection({ anchorId }: { anchorId?: string }) {
             size="lg"
             iconRight={<ArrowRight aria-hidden="true" />}
           >
-            Build My Digital Growth Plan
+            Build my growth plan
           </Button>
           <a className={styles.email} href={`mailto:${SUPPORT_EMAIL}`}>
             <Mail aria-hidden="true" className={styles.emailIcon} />

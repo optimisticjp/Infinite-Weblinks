@@ -78,7 +78,7 @@ export async function StartingPointSelectorSection({ anchorId }: { anchorId?: st
             size="lg"
             iconRight={<ArrowRight aria-hidden="true" size={18} />}
           >
-            Build My Digital Growth Plan
+            Build my growth plan
           </Button>
         </div>
       </div>

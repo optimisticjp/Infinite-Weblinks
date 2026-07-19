@@ -56,6 +56,6 @@ export const accountOwnership: AccountOwnership = {
     accent: "You keep control",
     post: " of it.",
   },
-  primaryCta: { label: "Build My Digital Growth Plan", route: "/growth-plan", style: "primary" },
+  primaryCta: { label: "Build my growth plan", route: "/growth-plan", style: "primary" },
   secondaryCta: { label: "See How We Work Together", route: "/how-it-works", style: "secondary" },
 };

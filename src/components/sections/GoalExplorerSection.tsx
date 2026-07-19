@@ -97,7 +97,7 @@ export async function GoalExplorerSection({ anchorId }: { anchorId?: string }) {
             size="md"
             iconRight={<ArrowRight aria-hidden="true" size={18} />}
           >
-            Build My Custom Growth Plan
+            Build my growth plan
           </Button>
         </div>
       </div>

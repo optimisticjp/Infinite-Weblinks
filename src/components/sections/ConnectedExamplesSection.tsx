@@ -82,7 +82,7 @@ export async function ConnectedExamplesSection({ anchorId }: { anchorId?: string
         <div className={styles.footer}>
           <p className={styles.footerNote}>You do not need everything at once — start where it counts, connect the rest as you grow.</p>
           <Button href="/growth-plan" variant="primary" size="lg" iconRight={<ArrowRight aria-hidden="true" />}>
-            Build My Prioritised Growth Plan
+            Build my growth plan
           </Button>
         </div>
       </div>

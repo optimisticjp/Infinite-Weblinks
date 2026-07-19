@@ -1,197 +1,147 @@
 import type { Metadata } from "next";
 import {
-  Briefcase,
-  Target,
-  Monitor,
-  Users,
-  Clock,
-  Compass,
-  GitBranch,
-  Layers,
-  Wrench,
-  Star,
+  ArrowDown,
   MapPin,
+  GitBranch,
   Boxes,
+  Wrench,
   ListChecks,
+  Users,
+  Check,
   type LucideIcon,
 } from "lucide-react";
-import { Card } from "@/components/primitives/Card";
-import { IconTile } from "@/components/primitives/IconTile";
+import { CosmicBackground } from "@/components/viz/CosmicBackground";
+import { ConnectorPath } from "@/components/viz/ConnectorPath";
 import { InfinityMark } from "@/components/brand/InfinityMark";
-import { GrowthPlanBuilder } from "@/components/builder/GrowthPlanBuilder";
+import { NodeOrb } from "@/components/primitives/NodeOrb";
+import { StatCard, ChartCard } from "@/components/viz/FloatingCards";
+import { PlanBuilder } from "@/components/builder/PlanBuilder";
 import { canonical } from "@/lib/seo/metadata";
-import { getBusinessTypes, getGoals, getStages } from "@/lib/content";
+import { getBusinessTypes, getGoals } from "@/lib/content";
 import styles from "./growth-plan.module.css";
 
 /**
- * /growth-plan — the site's primary CTA destination ("Build My Digital Growth Plan").
- * `noindex, follow` per the SEO spec: this conversion tool is kept out of the index, but
- * link equity still flows through it. A self-canonical keeps any tracking-param variants
- * consolidated onto the clean URL.
+ * /growth-plan — the Growth Plan Builder, the site's primary conversion tool. `noindex,
+ * follow` per the SEO spec: the tool is kept out of the index but link equity flows through
+ * it, and a self-canonical consolidates any tracking-param variants onto the clean URL.
  */
 export const metadata: Metadata = {
-  title: "Build My Digital Growth Plan",
+  title: "Build my growth plan",
   description:
-    "Answer a few guided questions about your business and get a structured starting point — what to build first, what to connect next, and what can wait.",
+    "Answer a few short questions and get a clear, honest starting plan for your business online: what to do first, what to connect next, and the tools that fit. No account needed.",
   robots: { index: false, follow: true },
   alternates: { canonical: canonical("/growth-plan") },
 };
 
-const STREAM_INPUTS: { label: string; icon: LucideIcon; color: string; y: number }[] = [
-  { label: "Business info", icon: Briefcase, color: "var(--violet)", y: 12 },
-  { label: "Goals", icon: Target, color: "var(--pink)", y: 31 },
-  { label: "Current setup", icon: Monitor, color: "var(--orange)", y: 50 },
-  { label: "Resources", icon: Users, color: "var(--lime)", y: 69 },
-  { label: "Timeline", icon: Clock, color: "var(--cyan)", y: 88 },
+/** What the plan will contain (shown in the hero preview card). */
+const PREVIEW: string[] = [
+  "A recommended starting point",
+  "A connected roadmap in phases",
+  "The services and ways we can deliver them",
+  "The right tools for your setup",
+  "An honest note on how we'd help",
 ];
 
-const PLAN_OUTPUTS: { label: string; icon: LucideIcon }[] = [
-  { label: "Strategy", icon: Compass },
-  { label: "Roadmap", icon: GitBranch },
-  { label: "Services", icon: Layers },
-  { label: "Tools", icon: Wrench },
-  { label: "Priorities", icon: Star },
-];
-
-const INCLUDES: { icon: LucideIcon; title: string; desc: string; color: string }[] = [
-  {
-    icon: MapPin,
-    title: "Recommended starting point",
-    desc: "A clear first step based on your goals.",
-    color: "var(--violet)",
-  },
-  {
-    icon: GitBranch,
-    title: "Connected roadmap",
-    desc: "A step-by-step plan aligned to growth.",
-    color: "var(--pink)",
-  },
-  {
-    icon: Boxes,
-    title: "Relevant services",
-    desc: "The services that move you forward.",
-    color: "var(--orange)",
-  },
-  {
-    icon: Wrench,
-    title: "Example tools",
-    desc: "Tools and platforms that fit your plan.",
-    color: "var(--yellow)",
-  },
-  {
-    icon: ListChecks,
-    title: "Priorities for later",
-    desc: "Smart sequencing for long-term results.",
-    color: "var(--lime)",
-  },
-  {
-    icon: Users,
-    title: "How we can help",
-    desc: "Flexible support at every stage.",
-    color: "var(--cyan)",
-  },
+const INCLUDES: { icon: LucideIcon; title: string; body: string; hue: string }[] = [
+  { icon: MapPin, title: "A starting point", body: "The stage that fits you now, and why it's the sensible place to begin.", hue: "var(--domain-strategy)" },
+  { icon: GitBranch, title: "A connected roadmap", body: "What to do first, what to connect next, and what can wait, in order.", hue: "var(--domain-discover)" },
+  { icon: Boxes, title: "Relevant services", body: "The services that move you forward, and the delivery model options for each.", hue: "var(--domain-convert)" },
+  { icon: Wrench, title: "The right tools", body: "Real tools that fit your setup, chosen to work together, never a random list.", hue: "var(--domain-build)" },
+  { icon: ListChecks, title: "Priorities for later", body: "What to add once the first steps are working, so effort compounds.", hue: "var(--domain-operate)" },
+  { icon: Users, title: "How we'd help", body: "A plain note on where we'd do the work and where you'd keep control.", hue: "var(--domain-retain)" },
 ];
 
 export default async function GrowthPlanPage() {
-  // getBusinessTypes / getGoals / getStages all exist in @/lib/content today (status-gated
-  // seed data), so the builder always has real options to render.
-  const [businessTypes, goals, stages] = await Promise.all([
-    getBusinessTypes(),
-    getGoals(),
-    getStages(),
-  ]);
+  const [businessTypes, goals] = await Promise.all([getBusinessTypes(), getGoals()]);
 
   return (
     <>
-      {/* ---- Hero: header + data-streams-into-plan visual ---- */}
-      <section className={`theme-dark iw-section ${styles.heroSection}`} aria-labelledby="growth-plan-heading">
-        <div className={`iw-container iw-container--wide ${styles.hero}`}>
-          <div className={styles.heroText}>
+      {/* ============ Hero ============ */}
+      <section className={`theme-cosmic iw-section ${styles.hero}`} aria-labelledby="gp-heading">
+        <CosmicBackground horizon />
+        <div className={`iw-container iw-container--wide ${styles.heroInner}`}>
+          <div className={styles.heroCopy}>
             <p className={styles.eyebrow}>Build your plan</p>
-            <h1 id="growth-plan-heading" className={styles.heading}>
-              Let&apos;s build your digital growth plan<span className={styles.dot}>.</span>
+            <h1 id="gp-heading" className={styles.heading}>
+              Build your growth plan, one <span className="iw-gradient-word">connected</span> step at a
+              time.
             </h1>
             <p className={styles.subhead}>
-              Answer a few clear questions and we&apos;ll show you a practical starting point based on
-              your goals and current setup.
+              Answer a few short questions and get a clear, honest starting plan. What to do first,
+              what connects next, and the tools that fit. No account needed, and the plan is yours to
+              keep.
             </p>
+            <ul className={styles.heroPoints}>
+              {["Takes a couple of minutes", "No sign-up, no cost", "Honest advice, not a sales pitch"].map(
+                (point, i) => (
+                  <li key={point} className={styles.heroPoint}>
+                    <NodeOrb
+                      hue={["var(--domain-strategy)", "var(--domain-discover)", "var(--domain-retain)"][i]}
+                      size={28}
+                    >
+                      <Check aria-hidden="true" strokeWidth={2.5} />
+                    </NodeOrb>
+                    {point}
+                  </li>
+                ),
+              )}
+            </ul>
+            <a href="#builder" className={styles.heroJump}>
+              Start with the first question
+              <ArrowDown size={18} aria-hidden="true" />
+            </a>
           </div>
 
-          <div className={styles.streams} aria-hidden="true">
-            <ul className={styles.streamList}>
-              {STREAM_INPUTS.map(({ label, icon: StreamIcon, color }) => (
-                <li key={label} className={styles.streamItem}>
-                  <IconTile size={40} color={color}>
-                    <StreamIcon aria-hidden="true" />
-                  </IconTile>
-                  <span className={styles.streamLabel}>{label}</span>
-                </li>
-              ))}
-            </ul>
-
-            <svg className={styles.streamLines} viewBox="0 0 100 100" preserveAspectRatio="none">
-              {STREAM_INPUTS.map(({ label, color, y }) => (
-                <path
-                  key={label}
-                  d={`M0 ${y} C 42 ${y}, 58 50, 100 50`}
-                  fill="none"
-                  stroke={color}
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                  opacity="0.72"
-                />
-              ))}
-            </svg>
-
-            <div className={styles.planCard}>
-              <p className={styles.planCardTitle}>Your growth plan</p>
-              <span className={styles.planMark}>
-                <InfinityMark size={76} />
-              </span>
-              <ul className={styles.planOutputs}>
-                {PLAN_OUTPUTS.map(({ label, icon: OutIcon }) => (
-                  <li key={label} className={styles.planOutput}>
-                    <OutIcon size={16} aria-hidden="true" className={styles.planOutputIcon} />
-                    <span>{label}</span>
+          <div className={styles.heroVisual} aria-hidden="true">
+            <ConnectorPath className={styles.heroTrail} dots={2} d="M0 20 C 30 20, 40 6, 70 6 S 100 6, 100 6" />
+            <div className={styles.previewCard}>
+              <div className={styles.previewHead}>
+                <InfinityMark size={44} luminous />
+                <span className={styles.previewTitle}>Your growth plan</span>
+              </div>
+              <ul className={styles.previewList}>
+                {PREVIEW.map((item, i) => (
+                  <li key={item} className={styles.previewItem} style={{ ["--i" as string]: `${i}` }}>
+                    <span className={styles.previewCheck}>
+                      <Check size={12} strokeWidth={3} aria-hidden="true" />
+                    </span>
+                    {item}
                   </li>
                 ))}
               </ul>
             </div>
+            <StatCard label="Repeat customers" value="Growing" hue="var(--domain-retain)" className={styles.floatA} />
+            <ChartCard label="What's working" hue="var(--domain-discover)" className={styles.floatB} />
           </div>
         </div>
       </section>
 
-      {/* ---- The builder, on a daylight panel ---- */}
-      <section className={`theme-dark ${styles.builderSection}`} aria-label="Growth plan builder">
+      {/* ============ The builder (light breather panel) ============ */}
+      <section id="builder" className={`theme-dark ${styles.builderSection}`} aria-label="Growth plan builder">
         <div className="iw-container iw-container--wide">
           <div className={`theme-band-bright ${styles.panel}`}>
-            <GrowthPlanBuilder businessTypes={businessTypes} goals={goals} stages={stages} />
+            <PlanBuilder businessTypes={businessTypes} goals={goals} />
           </div>
         </div>
       </section>
 
-      {/* ---- What your plan can include ---- */}
-      <section
-        className="theme-dark iw-section iw-section--tight"
-        aria-labelledby="growth-plan-includes-heading"
-      >
+      {/* ============ What your plan can include ============ */}
+      <section className="theme-cosmic iw-section iw-section--tight" aria-labelledby="gp-includes">
         <div className="iw-container iw-container--wide">
-          <div className={styles.includesHead}>
-            <h2 id="growth-plan-includes-heading" className={styles.includesTitle}>
+          <header className={styles.includesHead}>
+            <p className={styles.eyebrow}>What you get</p>
+            <h2 id="gp-includes" className={styles.includesTitle}>
               What your plan can include
             </h2>
-            <span className={styles.includesRule} aria-hidden="true" />
-          </div>
+          </header>
           <ul className={styles.includesGrid}>
-            {INCLUDES.map(({ icon: IncIcon, title, desc, color }) => (
-              <li key={title}>
-                <Card as="article" variant="raised" railed accent={color} className={styles.includeCard}>
-                  <IconTile size={44} color={color}>
-                    <IncIcon aria-hidden="true" />
-                  </IconTile>
-                  <h3 className={styles.includeTitle}>{title}</h3>
-                  <p className={styles.includeDesc}>{desc}</p>
-                </Card>
+            {INCLUDES.map(({ icon: Icon, title, body, hue }) => (
+              <li key={title} className={styles.includeCard} style={{ ["--inc-hue" as string]: hue }}>
+                <NodeOrb hue={hue} size={44}>
+                  <Icon aria-hidden="true" />
+                </NodeOrb>
+                <h3 className={styles.includeTitle}>{title}</h3>
+                <p className={styles.includeBody}>{body}</p>
               </li>
             ))}
           </ul>

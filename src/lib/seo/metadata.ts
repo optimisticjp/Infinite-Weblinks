@@ -18,21 +18,35 @@ export function pageMetadata(opts: {
   path?: string;
   noindex?: boolean;
   ogImage?: string;
+  /** When set, the page is an OpenGraph article (blog posts / guides) rather than a website. */
+  article?: { publishedTime?: string; modifiedTime?: string };
 }): Metadata {
   const url = canonical(opts.path ?? "/");
+  const openGraph: Metadata["openGraph"] = opts.article
+    ? {
+        title: opts.title,
+        description: opts.description,
+        url,
+        siteName: "Infinite Weblinks",
+        type: "article",
+        ...(opts.article.publishedTime ? { publishedTime: opts.article.publishedTime } : {}),
+        ...(opts.article.modifiedTime ? { modifiedTime: opts.article.modifiedTime } : {}),
+        ...(opts.ogImage ? { images: [{ url: opts.ogImage }] } : {}),
+      }
+    : {
+        title: opts.title,
+        description: opts.description,
+        url,
+        siteName: "Infinite Weblinks",
+        type: "website",
+        ...(opts.ogImage ? { images: [{ url: opts.ogImage }] } : {}),
+      };
   return {
     title: opts.title,
     description: opts.description,
     alternates: { canonical: url },
     robots: opts.noindex ? { index: false, follow: true } : { index: true, follow: true },
-    openGraph: {
-      title: opts.title,
-      description: opts.description,
-      url,
-      siteName: "Infinite Weblinks",
-      type: "website",
-      ...(opts.ogImage ? { images: [{ url: opts.ogImage }] } : {}),
-    },
+    openGraph,
     twitter: { card: "summary_large_image", title: opts.title, description: opts.description },
   };
 }

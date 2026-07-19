@@ -19,6 +19,7 @@ export { processSteps } from "./process";
 export { valueProps } from "./value-props";
 export { customerJourney } from "./customer-journey";
 export { connectedExamples } from "./connected-examples";
+export { caseScenarios } from "./case-scenarios";
 export { accountOwnership } from "./account-ownership";
 export { troubleshooterProblems } from "./troubleshooter";
 export { faqs } from "./faqs";

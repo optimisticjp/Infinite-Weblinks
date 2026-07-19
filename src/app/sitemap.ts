@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { canonical } from "@/lib/seo/metadata";
 import {
   getBusinessTypes,
+  getCaseScenarios,
   getCaseStudies,
   getExamples,
   getGoals,
@@ -37,6 +38,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/resources",
     "/faq",
     "/about",
+    "/connected-growth",
+    "/account-ownership",
+    "/case-studies",
     "/contact",
     "/privacy",
     "/cookies",
@@ -52,6 +56,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     businessTypes,
     startingPoints,
     goals,
+    caseScenarios,
     caseStudies,
     examples,
   ] = await Promise.all([
@@ -62,6 +67,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getBusinessTypes(),
     getStartingPoints(),
     getGoals(),
+    getCaseScenarios(),
     getCaseStudies(),
     getExamples(),
   ]);
@@ -76,11 +82,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...businessTypes.map((b) => `/business-types/${b.slug}`),
     ...startingPoints.map((p) => `/starting-points/${p.slug}`),
     ...goals.map((g) => `/goals/${g.slug}`),
-    // Proof routes are only listed once a record is Verified / Ready to Publish (the
-    // index route itself 404s while empty, so it must not appear until then either).
-    ...(caseStudies.length > 0
-      ? ["/case-studies", ...caseStudies.map((c) => `/case-studies/${c.slug}`)]
-      : []),
+    // Case-study detail pages: the illustrative example scenarios (always present, clearly
+    // labelled) plus any real verified case studies. The /case-studies index itself is a
+    // static path above (it always renders the scenarios).
+    ...caseScenarios.map((c) => `/case-studies/${c.slug}`),
+    ...caseStudies.map((c) => `/case-studies/${c.slug}`),
     ...(examples.length > 0 ? ["/examples", ...examples.map((e) => `/examples/${e.slug}`)] : []),
   ];
 

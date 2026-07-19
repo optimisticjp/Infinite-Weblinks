@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { CosmicBackground } from "@/components/viz/CosmicBackground";
 import { ConnectorPath } from "@/components/viz/ConnectorPath";
+import { InView } from "@/components/viz/InView";
 import { InfinityMark } from "@/components/brand/InfinityMark";
 import { NodeOrb } from "@/components/primitives/NodeOrb";
 import { StatCard, ChartCard } from "@/components/viz/FloatingCards";
@@ -110,8 +111,10 @@ export default async function GrowthPlanPage() {
                 ))}
               </ul>
             </div>
-            <StatCard label="Repeat customers" value="Growing" hue="var(--domain-retain)" className={styles.floatA} />
-            <ChartCard label="What's working" hue="var(--domain-discover)" className={styles.floatB} />
+            <InView className={styles.floatLayer} ariaHidden>
+              <StatCard label="Repeat customers" value="Growing" hue="var(--domain-retain)" className={styles.floatA} />
+              <ChartCard label="What's working" hue="var(--domain-discover)" className={styles.floatB} />
+            </InView>
           </div>
         </div>
       </section>

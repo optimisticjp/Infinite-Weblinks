@@ -20,7 +20,7 @@
 }
 .panelPromise {
   background:
-    radial-gradient(90% 60% at 100% 0%, rgba(139, 59, 255, 0.14), transparent 60%),
+    radial-gradient(90% 60% at 100% 0%, color-mix(in srgb, var(--domain-strategy) 14%, transparent), transparent 60%),
     var(--surface-raised);
   border-color: var(--hairline-strong);
 }

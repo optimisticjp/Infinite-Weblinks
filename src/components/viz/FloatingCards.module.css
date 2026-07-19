@@ -52,6 +52,12 @@
   font-size: var(--fs-mono);
   color: var(--lime-bright);
 }
+/* On the light tone the near-white background needs a darker green: bright lime on light
+   glass is well under AA, so mix toward the card's dark ink there (the dark tone keeps the
+   vibrant lime, which already passes on the dark glass). */
+.light .statTrend {
+  color: color-mix(in srgb, var(--lime-bright) 50%, var(--ink-900));
+}
 
 /* ChartCard */
 .chartLabel {

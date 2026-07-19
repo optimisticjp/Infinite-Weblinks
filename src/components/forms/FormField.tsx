@@ -65,8 +65,12 @@ export function FormField({
         "aria-invalid": error ? true : undefined,
         required,
       })}
+      {/* The error is connected to the control via aria-describedby, so it's read when the
+          field takes focus. It is NOT a role="alert" here: both forms that use this wrapper
+          render a single assertive error summary/notice on submit and move focus to it, so
+          per-field alerts would just clobber that one announcement with a competing burst. */}
       {error ? (
-        <p id={errorId} className={styles.error} role="alert">
+        <p id={errorId} className={styles.error}>
           {error}
         </p>
       ) : null}

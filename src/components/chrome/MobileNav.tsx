@@ -32,6 +32,22 @@ export function MobileNav({
     // Focus the close button once the dialog is mounted.
     const t = setTimeout(() => closeRef.current?.focus(), 0);
 
+    // Neutralise everything behind the dialog for assistive tech: aria-modal only guarantees
+    // the Tab-trap below, but some AT virtual-cursor/swipe navigation can still reach
+    // background content. The overlay is a sibling of the page landmarks (header/main/footer),
+    // so mark each sibling inert while open, then restore on close. The dialog itself uses
+    // plain <div>s (not header/footer elements), so nothing inside it is affected.
+    const overlay = dialogRef.current?.parentElement ?? null;
+    const inerted: HTMLElement[] = [];
+    if (overlay?.parentElement) {
+      for (const el of Array.from(overlay.parentElement.children)) {
+        if (el !== overlay && el instanceof HTMLElement && !el.hasAttribute("inert")) {
+          el.setAttribute("inert", "");
+          inerted.push(el);
+        }
+      }
+    }
+
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onClose();
@@ -59,6 +75,7 @@ export function MobileNav({
       clearTimeout(t);
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
+      inerted.forEach((el) => el.removeAttribute("inert"));
       restoreRef.current?.focus();
     };
   }, [open, onClose]);

@@ -104,7 +104,6 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-2);
-  will-change: transform, opacity;
 }
 .nodeTile {
   display: inline-flex;
@@ -166,7 +165,6 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-1);
-  will-change: transform, opacity;
 }
 .aiTile {
   display: inline-flex;
@@ -208,7 +206,6 @@
   -webkit-backdrop-filter: blur(var(--blur-panel));
   backdrop-filter: blur(var(--blur-panel));
   white-space: nowrap;
-  will-change: transform, opacity;
 }
 .cardIcon {
   width: 16px;

@@ -79,6 +79,17 @@
   }
 }
 
+/* Keyboard focus ring. Declared at (0,2,0) so it always beats .primary's unconditional
+   resting glow (0,1,0) — the same specificity as the global :focus-visible rule, which module
+   CSS loads after and would otherwise override, hiding the ring on the form submit buttons
+   and header CTAs. Primary keeps its glow stacked under the ring. */
+.btn:focus-visible {
+  box-shadow: var(--ring);
+}
+.primary:focus-visible {
+  box-shadow: var(--ring), var(--glow-brand);
+}
+
 .icon {
   display: inline-flex;
   align-items: center;

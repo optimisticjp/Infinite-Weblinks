@@ -171,10 +171,21 @@
   color: var(--lime-bright);
 }
 
+/* Overlay layer for the floating cards: absolute + inset:0 so it exactly covers the hero
+   visual without becoming a grid item (which would shift the preview card), while giving
+   InView a real box to observe so the drift pauses when the hero scrolls off-screen. */
+.floatLayer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
 .floatA,
 .floatB {
   position: absolute;
   z-index: 2;
+  /* Paused until the hero is in view (InView toggles data-inview); resting state is the 0%
+     keyframe, so no drift repaints off-screen. */
+  animation-play-state: paused;
 }
 .floatA {
   top: 4%;
@@ -185,6 +196,10 @@
   bottom: 2%;
   left: 0;
   animation: gpFloat 6s var(--ease-in-out) 1.2s infinite;
+}
+.floatLayer[data-inview="true"] .floatA,
+.floatLayer[data-inview="true"] .floatB {
+  animation-play-state: running;
 }
 @keyframes gpFloat {
   0%,

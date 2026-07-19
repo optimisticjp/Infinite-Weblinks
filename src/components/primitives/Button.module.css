@@ -112,6 +112,20 @@
   transform: none;
 }
 
+/* Keyboard focus ring. Declared here at (0,2,0) so it always beats a variant's unconditional
+   resting shadow (.primary/.brand set box-shadow at (0,1,0), the same specificity as the
+   global :focus-visible rule, and module CSS loads after it — so without this the ring is
+   hidden on the site's most-used CTAs). Primary/brand keep their glow stacked under the ring. */
+.btn:focus-visible {
+  box-shadow: var(--ring);
+}
+.primary:focus-visible {
+  box-shadow: var(--ring), var(--glow-cta);
+}
+.brand:focus-visible {
+  box-shadow: var(--ring), var(--glow-violet);
+}
+
 .icon {
   display: inline-flex;
   align-items: center;

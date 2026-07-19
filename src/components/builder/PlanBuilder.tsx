@@ -336,6 +336,10 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
                 </div>
               ) : null}
 
+              <p className={styles.requiredNote}>
+                Fields marked <span className={styles.req} aria-hidden="true">*</span> are required.
+              </p>
+
               <div className={styles.emailGrid}>
                 <TextField
                   id="gp-name"
@@ -456,10 +460,15 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
       <div className={styles.columns}>
         <div className={styles.main}>
           <div className={styles.stepHead}>
-            <p className={styles.stepMeta}>
+            {/* The visible counter is aria-hidden because its text is folded into the heading
+                below, so focus landing on the heading announces "Step N of M: <title>" once. */}
+            <p className={styles.stepMeta} aria-hidden="true">
               Step {stepIndex + 1} of {STEP_META.length}
             </p>
             <h2 className={styles.stepHeading} tabIndex={-1} ref={stepHeadingRef}>
+              <span className="iw-visually-hidden">
+                Step {stepIndex + 1} of {STEP_META.length}:{" "}
+              </span>
               {meta.title}
             </h2>
             <p className={styles.stepSubtitle}>{meta.subtitle}</p>

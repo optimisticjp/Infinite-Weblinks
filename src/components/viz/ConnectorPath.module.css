@@ -29,7 +29,7 @@
   .lit {
     stroke-dashoffset: 1;
   }
-  .wrap[data-inview="true"] .lit {
+  .wrap[data-drawn="true"] .lit {
     animation: connDraw 0.9s var(--ease-out, ease) forwards;
   }
 }
@@ -47,7 +47,7 @@
   opacity: 0;
 }
 @media (prefers-reduced-motion: no-preference) {
-  .wrap[data-inview="true"] .spark {
+  .wrap[data-running="true"] .spark {
     opacity: 0.9;
     animation: connSpark 3s linear infinite;
   }

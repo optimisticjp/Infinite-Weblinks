@@ -306,6 +306,10 @@ export function ContactForm({
         </div>
       ) : null}
 
+      <p className={styles.requiredNote}>
+        Fields marked <span className={styles.req} aria-hidden="true">*</span> are required.
+      </p>
+
       <div className={styles.grid}>
         <TextField
           id="contact-name"

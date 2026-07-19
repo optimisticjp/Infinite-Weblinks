@@ -3,6 +3,7 @@ import { SectionShell } from "@/components/sections/SectionShell";
 import { NodeOrb } from "@/components/primitives/NodeOrb";
 import { Icon } from "@/components/primitives/Icon";
 import { ConnectorPath } from "@/components/viz/ConnectorPath";
+import { InView } from "@/components/viz/InView";
 import { StatCard, ChartCard, MessageCard } from "@/components/viz/FloatingCards";
 import styles from "./OneSystemSection.module.css";
 
@@ -114,7 +115,7 @@ export function OneSystemSection() {
         strengthens every time round.
       </p>
 
-      <div className={styles.floats} aria-hidden="true">
+      <InView className={styles.floats} ariaHidden>
         <ChartCard label="Traffic to sales" hue="var(--domain-ai)" style={{ ["--d" as string]: "0s" }} />
         <StatCard
           label="Repeat customers"
@@ -129,7 +130,7 @@ export function OneSystemSection() {
           hue="var(--domain-convert)"
           style={{ ["--d" as string]: "0.6s" }}
         />
-      </div>
+      </InView>
     </SectionShell>
   );
 }

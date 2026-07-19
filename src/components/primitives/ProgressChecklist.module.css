@@ -37,7 +37,7 @@
   flex: none;
   border-radius: var(--radius-pill);
   border: 1.5px solid var(--hairline-strong);
-  color: #fff;
+  color: var(--white);
 }
 .done .marker {
   background: var(--domain-retain);
@@ -63,7 +63,9 @@
   color: var(--text-muted);
 }
 .done .status {
-  color: var(--domain-retain);
+  /* Mix toward the heading ink (like .current below) so the small status text keeps AA
+     contrast on any surface, instead of the raw hue which only passes on a dark panel. */
+  color: color-mix(in srgb, var(--domain-retain) 60%, var(--text-heading));
 }
 .current .status {
   color: color-mix(in srgb, var(--domain-strategy) 78%, var(--text-heading));

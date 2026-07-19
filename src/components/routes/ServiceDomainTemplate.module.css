@@ -34,10 +34,6 @@
   max-width: 56ch;
 }
 
-.badgeKey {
-  margin-right: 4px;
-}
-
 /* ============ Hero ============ */
 .hero {
   position: relative;
@@ -215,10 +211,6 @@
   margin: 0;
   padding: 0;
   display: block;
-}
-
-.badgeKey {
-  margin-right: 4px;
 }
 
 /* ============ How this connects ============ */

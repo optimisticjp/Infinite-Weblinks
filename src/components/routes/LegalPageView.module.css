@@ -1,22 +1,73 @@
-.updated {
-  font-family: var(--font-mono);
-  font-size: 0.82rem;
-  color: var(--text-muted);
-  margin-bottom: var(--space-5);
+/* Quiet dark reading surface for the legal pages: calm, legible, no starfield or globe. */
+.page {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
 }
 
+/* A single, very subtle top wash so the page isn't flat, without the full cosmic scene. */
+.wash {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 420px;
+  background: radial-gradient(
+    120% 100% at 50% -20%,
+    color-mix(in srgb, var(--violet) 16%, transparent),
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- Header ---- */
+.header {
+  max-width: 72ch;
+  margin-bottom: var(--space-10);
+}
+.eyebrow {
+  margin: var(--space-4) 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--violet-bright) 60%, var(--text-heading));
+}
+.title {
+  margin: 0;
+  font-size: var(--fs-h1);
+  color: var(--text-heading);
+  text-wrap: balance;
+}
+.intro {
+  margin: var(--space-4) 0 0;
+  font-size: var(--fs-lead);
+  color: var(--text-body);
+  max-width: 60ch;
+}
+.updated {
+  margin: var(--space-5) 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
 .reviewNote {
   display: flex;
   gap: var(--space-3);
   align-items: flex-start;
   max-width: 72ch;
-  margin-bottom: var(--space-8);
+  margin: var(--space-5) 0 0;
   padding: var(--space-4) var(--space-5);
   border-radius: var(--radius-md);
   background: var(--orange-soft);
   border: 1px solid color-mix(in srgb, var(--orange) 34%, transparent);
   color: var(--text-body);
-  font-size: 0.92rem;
+  font-size: var(--fs-sm);
   line-height: 1.5;
 }
 .reviewIcon {
@@ -27,25 +78,87 @@
   margin-top: 1px;
 }
 
+/* ---- Layout with TOC (long pages only) ---- */
+.layout {
+  display: grid;
+  gap: var(--space-8);
+}
+@media (min-width: 64rem) {
+  .layout {
+    grid-template-columns: 15rem minmax(0, 1fr);
+    gap: var(--space-12);
+    align-items: start;
+  }
+}
+
+.toc {
+  padding: var(--space-5);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+}
+@media (min-width: 64rem) {
+  .toc {
+    position: sticky;
+    top: calc(var(--header-h) + var(--space-4));
+  }
+}
+.tocTitle {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.tocList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-1);
+  counter-reset: toc;
+}
+.tocLink {
+  display: block;
+  padding: var(--space-2) 0;
+  color: var(--text-body);
+  font-size: var(--fs-sm);
+  line-height: 1.4;
+  text-decoration: none;
+  border-radius: var(--radius-xs);
+}
+.tocLink:hover {
+  color: var(--text-heading);
+}
+.tocLink:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+/* ---- Reading column ---- */
 .body {
-  max-width: 72ch;
+  max-width: 70ch;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-8);
 }
-
 .block {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
 }
-
 .blockHeading {
-  font-size: var(--fs-h4);
+  margin: 0;
+  font-size: var(--fs-h3);
   color: var(--text-heading);
+  text-wrap: balance;
 }
-
 .para {
+  margin: 0;
   color: var(--text-body);
-  line-height: 1.65;
+  font-size: var(--fs-body);
+  line-height: 1.7;
 }

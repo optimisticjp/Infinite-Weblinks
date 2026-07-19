@@ -210,6 +210,7 @@ export const seedChrome: SiteChrome = {
       { label: "Privacy", href: "/privacy" },
       { label: "Cookies", href: "/cookies" },
       { label: "Terms", href: "/terms" },
+      { label: "Refunds", href: "/refunds" },
       { label: "Accessibility", href: "/accessibility" },
     ],
     // Hidden until a valid URL exists (brief §23) — none rendered at launch.

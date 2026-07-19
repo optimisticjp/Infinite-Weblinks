@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
-import { PageHero } from "@/components/routes/PageHero";
-import { RelatedLinks } from "@/components/routes/RelatedLinks";
-import { Button } from "@/components/primitives/Button";
+import { CosmicPageHero } from "@/components/routes/CosmicPageHero";
+import { SectionShell } from "@/components/sections/SectionShell";
+import { BentoGrid } from "@/components/primitives/BentoGrid";
+import { BentoCard } from "@/components/primitives/BentoCard";
+import { GlowButton } from "@/components/primitives/GlowButton";
+import { NodeOrb } from "@/components/primitives/NodeOrb";
 import { Icon } from "@/components/primitives/Icon";
+import { FinalCtaBannerSection } from "@/components/sections/FinalCtaBannerSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -52,6 +55,8 @@ export default async function StartingPointDetailPage({
     .filter((sv): sv is NonNullable<typeof sv> => Boolean(sv))
     .map((sv) => ({ name: sv.name, href: `/services/${sv.categorySlug}#${sv.slug}`, hint: sv.plainDescription }));
 
+  const ctaVariant = startingPoint.cta.style === "primary" ? "primary" : "ghost";
+
   return (
     <>
       <JsonLd
@@ -62,65 +67,98 @@ export default async function StartingPointDetailPage({
         ])}
       />
 
-      <PageHero
+      <CosmicPageHero
+        id="starting-point-hero"
+        breadcrumbs={[{ name: "Goals", path: "/goals" }, { name: startingPoint.label }]}
         eyebrow="Where you're starting"
+        hue={startingPoint.color}
         title={startingPoint.label}
-        intro={startingPoint.situation}
-        breadcrumbs={[
-          { name: "Starting points", path: "/starting-points" },
-          { name: startingPoint.label },
-        ]}
-        aside={
-          <div
-            className={styles.iconBadge}
-            style={{ ["--accent" as string]: startingPoint.color }}
-            aria-hidden="true"
-          >
-            <Icon name={startingPoint.icon} className={styles.icon} />
-          </div>
-        }
+        lead={startingPoint.situation}
         actions={
-          <Button href={startingPoint.cta.route} variant={startingPoint.cta.style}>
-            {startingPoint.cta.label}
-          </Button>
+          <>
+            <GlowButton
+              href={startingPoint.cta.route}
+              variant={ctaVariant}
+              size="lg"
+              iconRight={<ArrowRight size={18} aria-hidden="true" />}
+            >
+              {startingPoint.cta.label}
+            </GlowButton>
+            <GlowButton href="/goals" variant="ghost" size="lg">
+              See all goals
+            </GlowButton>
+          </>
+        }
+        aside={
+          <span aria-hidden="true">
+            <NodeOrb hue={startingPoint.color} size={128} emphasis="bright">
+              <Icon name={startingPoint.icon} />
+            </NodeOrb>
+          </span>
         }
       />
 
-      <section className="theme-band iw-section" aria-labelledby="sp-body-heading">
-        <div className="iw-container">
-          <div className={styles.layout}>
-            <div className={styles.main}>
-              {stage && (
-                <Link
-                  href={`/how-it-works#${stage.slug}`}
-                  className={styles.stageCard}
-                  style={{ ["--accent" as string]: startingPoint.color }}
-                >
-                  <span className={styles.stageLabel}>Recommended starting stage</span>
-                  <span className={styles.stageName}>
-                    {stage.name}
-                    <ArrowRight className={styles.stageArrow} aria-hidden="true" />
-                  </span>
-                  <span className={styles.stageHint}>{stage.summary}</span>
-                </Link>
-              )}
+      {stage && (
+        <SectionShell
+          id="recommended-stage"
+          eyebrow="Recommended starting stage"
+          title="The best place to begin"
+          lead="Based on where you are now, this is the stage of the growth journey we'd start from."
+          align="start"
+          spacing="tight"
+        >
+          <BentoGrid>
+            <BentoCard
+              href={`/how-it-works#${stage.slug}`}
+              hue={startingPoint.color}
+              icon="compass"
+              eyebrow="Start here"
+              title={stage.name}
+              blurb={stage.summary}
+              variant="featured"
+            />
+          </BentoGrid>
+        </SectionShell>
+      )}
 
-              <h2 id="sp-body-heading" className={styles.h2}>
-                What we&apos;d recommend
-              </h2>
-              <p className={styles.prose}>{startingPoint.recommendation}</p>
-              <p className={styles.reassure}>
-                Most businesses sit in more than one situation at once, and that&apos;s normal. Your plan
-                is tailored to your specifics during discovery.
-              </p>
-            </div>
+      <SectionShell
+        id="recommendation"
+        eyebrow="What we'd recommend"
+        title="Our honest take on your next move"
+        align="start"
+      >
+        <p className={styles.prose}>{startingPoint.recommendation}</p>
+        <p className={styles.reassure}>
+          Most businesses sit in more than one situation at once, and that&apos;s normal. Your plan is
+          tailored to your specifics during discovery.
+        </p>
+      </SectionShell>
 
-            <aside className={styles.side}>
-              <RelatedLinks title="Services in this stage" links={stageServices} columns={1} />
-            </aside>
-          </div>
-        </div>
-      </section>
+      {stageServices.length > 0 && (
+        <SectionShell
+          id="stage-services"
+          eyebrow="Services in this stage"
+          title="What we'd likely work on first"
+          lead="Each links to where it sits in the service list. We'd connect the ones that move you forward."
+          align="start"
+        >
+          <BentoGrid>
+            {stageServices.map((sv, i) => (
+              <BentoCard
+                key={sv.href}
+                href={sv.href}
+                hue={startingPoint.color}
+                icon="link"
+                title={sv.name}
+                blurb={sv.hint}
+                variant={i === 0 ? "featured" : "compact"}
+              />
+            ))}
+          </BentoGrid>
+        </SectionShell>
+      )}
+
+      <FinalCtaBannerSection anchorId="get-started" />
     </>
   );
 }

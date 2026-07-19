@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { PageHero } from "@/components/routes/PageHero";
-import { RelatedLinks } from "@/components/routes/RelatedLinks";
-import { Button } from "@/components/primitives/Button";
+import { ArrowRight } from "lucide-react";
+import { CosmicPageHero } from "@/components/routes/CosmicPageHero";
+import { SectionShell } from "@/components/sections/SectionShell";
+import { BentoGrid } from "@/components/primitives/BentoGrid";
+import { BentoCard } from "@/components/primitives/BentoCard";
+import { GlowButton } from "@/components/primitives/GlowButton";
+import { NodeOrb } from "@/components/primitives/NodeOrb";
+import { Icon } from "@/components/primitives/Icon";
+import { FinalCtaBannerSection } from "@/components/sections/FinalCtaBannerSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -64,63 +70,126 @@ export default async function GoalDetailPage({
         ])}
       />
 
-      <PageHero
-        eyebrow={goal.audienceHint ?? "Goal"}
-        title={goal.title}
-        intro={goal.outcome}
+      <CosmicPageHero
+        id="goal-hero"
         breadcrumbs={[{ name: "Goals", path: "/goals" }, { name: goal.title }]}
-        accent={goal.color}
+        eyebrow={goal.audienceHint ?? "Goal"}
+        hue={goal.color}
+        title={goal.title}
+        lead={goal.outcome}
         actions={
-          <Button href="/growth-plan" variant="primary">
-            Build My Digital Growth Plan
-          </Button>
+          <>
+            <GlowButton
+              href={`/growth-plan?goal=${goal.slug}`}
+              size="lg"
+              iconRight={<ArrowRight size={18} aria-hidden="true" />}
+            >
+              Build my growth plan
+            </GlowButton>
+            <GlowButton href="/services" variant="ghost" size="lg">
+              Explore services
+            </GlowButton>
+          </>
+        }
+        aside={
+          <span aria-hidden="true">
+            <NodeOrb hue={goal.color} size={128} emphasis="bright">
+              <Icon name="target" />
+            </NodeOrb>
+          </span>
         }
       />
 
-      <section
-        className="theme-band iw-section"
-        aria-labelledby="goal-body-heading"
-        style={{ ["--accent" as string]: goal.color }}
+      <SectionShell
+        id="approach"
+        eyebrow="How we'd approach this"
+        title="From where you are to where you want to be"
+        lead="No two businesses are identical, so this is the shape of the work, not a fixed script. Your plan is tailored to your specifics during discovery."
+        align="start"
       >
-        <div className="iw-container">
-          <div className={styles.layout}>
-            <div className={styles.main}>
-              <h2 id="goal-body-heading" className={styles.h2}>
-                How we&apos;d approach this
-              </h2>
-              <ol className={styles.story}>
-                {story.map((part) => (
-                  <li key={part.label} className={styles.storyStep}>
-                    <span className={styles.storyLabel}>{part.label}</span>
-                    <p className={styles.storyBody}>{part.body}</p>
-                  </li>
-                ))}
-              </ol>
+        <BentoGrid>
+          {story.map((part, i) => (
+            <BentoCard
+              key={part.label}
+              hue={goal.color}
+              index={String(i + 1).padStart(2, "0")}
+              eyebrow="Step"
+              title={part.label}
+              blurb={part.body}
+              variant={i === 0 ? "featured" : "medium"}
+            />
+          ))}
+        </BentoGrid>
+      </SectionShell>
 
-              {goal.exampleTools.length > 0 && (
-                <div className={styles.tools}>
-                  <h3 className={styles.h3}>Example tools we can connect</h3>
-                  <p className={styles.toolsNote}>
-                    Example tools we can connect — set up in your name, never locked to us.
-                  </p>
-                  <ul className={styles.chips}>
-                    {goal.exampleTools.map((example) => (
-                      <li key={example} className={styles.chip}>
-                        {example}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
+      {goal.exampleTools.length > 0 && (
+        <SectionShell
+          id="tools"
+          eyebrow="Tools"
+          title="Example tools we can connect"
+          lead="Set up in your name, never locked to us. These are examples, not a fixed list; we pick what fits your size and budget."
+          align="start"
+          spacing="tight"
+        >
+          <ul className={styles.chips}>
+            {goal.exampleTools.map((example) => (
+              <li key={example} className={styles.chip}>
+                {example}
+              </li>
+            ))}
+          </ul>
+        </SectionShell>
+      )}
 
-            <aside className={styles.side}>
-              <RelatedLinks title="Services that help" links={relatedServices} columns={1} />
-              <RelatedLinks title="Where it fits" links={relatedStages} columns={1} />
-            </aside>
-          </div>
-        </div>
-      </section>
+      {relatedServices.length > 0 && (
+        <SectionShell
+          id="services"
+          eyebrow="Services that help"
+          title="The building blocks for this goal"
+          lead="Each links to where it sits in the service list. We connect the ones that matter, in the right order."
+          align="start"
+        >
+          <BentoGrid>
+            {relatedServices.map((sv, i) => (
+              <BentoCard
+                key={sv.href}
+                href={sv.href}
+                hue={goal.color}
+                icon="link"
+                title={sv.name}
+                blurb={sv.hint}
+                variant={i === 0 ? "featured" : "compact"}
+              />
+            ))}
+          </BentoGrid>
+        </SectionShell>
+      )}
+
+      {relatedStages.length > 0 && (
+        <SectionShell
+          id="where-it-fits"
+          eyebrow="Where it fits"
+          title="How this maps to the growth journey"
+          align="start"
+          spacing="tight"
+        >
+          <BentoGrid>
+            {relatedStages.map((st) => (
+              <BentoCard
+                key={st.href}
+                href={st.href}
+                hue={goal.color}
+                icon="compass"
+                title={st.name}
+                blurb={st.hint}
+                variant="compact"
+              />
+            ))}
+          </BentoGrid>
+        </SectionShell>
+      )}
+
+      <FinalCtaBannerSection anchorId="get-started" />
     </>
   );
 }

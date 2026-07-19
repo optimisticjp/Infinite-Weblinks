@@ -23,7 +23,7 @@ async function gotoHydrated(page: import("@playwright/test").Page, url = "/conta
   await page.goto(url);
   const message = page.getByLabel("Your message");
   await message.fill("x");
-  await expect(page.getByText("1 / 2000")).toBeVisible();
+  await expect(page.getByText("1 / 1000")).toBeVisible();
   await message.fill("");
 }
 
@@ -40,7 +40,9 @@ test.describe("contact page", () => {
     await expect(page.getByLabel("Email")).toBeVisible();
     await expect(page.getByLabel("Business name")).toBeVisible();
     await expect(page.getByLabel("Website")).toBeVisible();
-    await expect(page.getByLabel("How can we help?")).toBeVisible();
+    await expect(page.getByLabel("Business type")).toBeVisible();
+    await expect(page.getByLabel("Where you are now")).toBeVisible();
+    await expect(page.getByLabel("Your main goal")).toBeVisible();
     await expect(page.getByLabel("Your message")).toBeVisible();
 
     // The support-email fallback is always visible (never hidden behind a failure state).
@@ -92,9 +94,9 @@ test.describe("contact page", () => {
     await expect(notice).toContainText(/support@infiniteweblinks\.com/);
   });
 
-  test("honours the ?subject= deep link", async ({ page }) => {
-    await page.goto("/contact?subject=growth-goals");
-    await expect(page.getByLabel("How can we help?")).toHaveValue("growth-goals");
+  test("prefills the main goal from a ?goal= deep link", async ({ page }) => {
+    await page.goto("/contact?goal=get-found-on-google");
+    await expect(page.getByLabel("Your main goal")).toHaveValue("get-found-on-google");
   });
 
   test("no serious or critical accessibility violations", async ({ page }) => {

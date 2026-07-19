@@ -1,0 +1,41 @@
+.orb {
+  --orb-size: 46px;
+  --orb-hue: var(--domain-strategy);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--orb-size);
+  height: var(--orb-size);
+  flex: none;
+  border-radius: var(--radius-orb);
+  color: color-mix(in srgb, var(--orb-hue) 82%, white 18%);
+  /* Glossy sphere: a top highlight over the tinted body, ringed by the hue. */
+  background:
+    radial-gradient(60% 60% at 32% 26%, rgba(255, 255, 255, 0.32), transparent 60%),
+    radial-gradient(120% 120% at 50% 120%, color-mix(in srgb, var(--orb-hue) 34%, transparent), transparent 70%),
+    color-mix(in srgb, var(--orb-hue) 16%, var(--space-surface));
+  border: 1px solid color-mix(in srgb, var(--orb-hue) 50%, transparent);
+  box-shadow:
+    var(--inset-hairline),
+    inset 0 -6px 12px -8px color-mix(in srgb, var(--orb-hue) 60%, transparent);
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+
+.orb > :global(svg) {
+  width: 48%;
+  height: 48%;
+}
+
+.soft {
+  box-shadow:
+    var(--inset-hairline),
+    var(--glow-orb-soft);
+}
+.bright {
+  box-shadow:
+    var(--inset-hairline),
+    var(--glow-orb);
+}

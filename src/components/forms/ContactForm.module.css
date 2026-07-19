@@ -30,59 +30,7 @@
   grid-column: 1 / -1;
 }
 
-/* Input adornments — a muted glyph on the leading edge of each control. Decorative:
-   colour comes from the field's own state, never the sole carrier of meaning. */
-.inputWrap {
-  position: relative;
-  display: block;
-}
-.inputIcon {
-  position: absolute;
-  left: var(--space-4);
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-muted);
-  pointer-events: none;
-}
-.hasIcon {
-  padding-left: var(--space-10);
-}
-
-/* Native select — custom chevron, left glyph, room for both. */
-.select {
-  appearance: none;
-  -webkit-appearance: none;
-  padding-right: var(--space-10);
-  cursor: pointer;
-}
-.selectChevron {
-  position: absolute;
-  right: var(--space-4);
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-muted);
-  pointer-events: none;
-}
-
-/* Message textarea + live character counter. */
-.textareaWrap {
-  position: relative;
-  display: block;
-}
-.counter {
-  position: absolute;
-  right: var(--space-3);
-  bottom: var(--space-3);
-  font-family: var(--font-mono);
-  font-size: var(--fs-mono);
-  letter-spacing: var(--ls-mono);
-  color: var(--text-muted);
-  pointer-events: none;
-}
-.counterFull {
-  color: var(--warning);
-}
-
+/* ---- Error summary ---- */
 .errorSummary {
   padding: var(--space-5);
   border: 1px solid var(--danger);
@@ -125,24 +73,55 @@
   outline: none;
 }
 
-/* Success state — a proper confirmation panel, not just a one-line banner. */
+/* ---- Success state ---- */
 .success {
   display: grid;
-  justify-items: start;
+  justify-items: center;
+  text-align: center;
   gap: var(--space-3);
-  padding: var(--space-6);
+  padding: var(--space-8) var(--space-6);
   border-radius: var(--radius-lg);
-  border: 1px solid color-mix(in srgb, var(--lime) 45%, var(--hairline-strong));
-  background: color-mix(in srgb, var(--lime) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--domain-retain) 40%, var(--hairline-strong));
+  background:
+    radial-gradient(80% 60% at 50% 0%, color-mix(in srgb, var(--domain-strategy) 16%, transparent), transparent 70%),
+    color-mix(in srgb, var(--domain-retain) 8%, transparent);
   outline: none;
 }
-.successIcon {
-  display: inline-flex;
-  color: var(--lime);
+.successVisual {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 100%;
+  max-width: 220px;
+  margin-bottom: var(--space-2);
 }
-.successIcon svg {
-  width: 34px;
-  height: 34px;
+.successConnector {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+/* Connector "completing" animation — the two strands draw in toward the mark. Resting
+   state is fully drawn (dashoffset 0), so reduced-motion and no-JS both show the completed
+   connection; only the draw-in is gated behind a motion preference. */
+.successLine {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .successLine {
+    stroke-dashoffset: 1;
+    animation: connectorDraw 0.7s var(--ease-out) 0.1s forwards;
+  }
+}
+@keyframes connectorDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.successMark {
+  position: relative;
+  z-index: 1;
 }
 .successTitle {
   margin: 0;
@@ -153,10 +132,12 @@
   margin: 0;
   font-size: var(--fs-sm);
   color: var(--text-body);
+  max-width: 44ch;
 }
 .successLinks {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: var(--space-2) var(--space-5);
   margin-top: var(--space-1);
 }
@@ -174,17 +155,12 @@
   color: var(--text-muted);
 }
 
+/* ---- Actions ---- */
 .actions {
   display: grid;
   gap: var(--space-3);
   justify-items: center;
 }
-
-/* Full-width primary CTA — the one bright element inside the form card. */
-.submit {
-  width: 100%;
-}
-
 .reassure {
   margin: 0;
   display: inline-flex;
@@ -196,9 +172,8 @@
 }
 .reassureIcon {
   flex: none;
-  color: var(--lime);
+  color: var(--domain-retain);
 }
-
 .consent {
   margin: 0;
   max-width: 46ch;
@@ -212,7 +187,6 @@
   text-decoration: underline;
   text-underline-offset: 2px;
 }
-
 .fallback {
   margin: 0;
   font-size: var(--fs-sm);
@@ -225,7 +199,6 @@
   gap: var(--space-1);
   font-weight: var(--fw-semibold);
 }
-
 .mailIcon {
   flex: none;
 }

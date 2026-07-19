@@ -28,3 +28,32 @@
   filter: blur(2px);
   pointer-events: none;
 }
+
+/* Luminous (hero) — a wider, brighter bloom that softly pulses. The resting state is the
+   full, complete bloom, so reduced-motion users and any no-animation fallback see the
+   final lit mark; only the pulse itself is gated behind a motion preference. */
+.luminous::before {
+  inset: -60% -34%;
+  background: radial-gradient(
+    52% 62% at 50% 50%,
+    rgba(245, 25, 126, 0.42),
+    rgba(139, 59, 255, 0.22) 46%,
+    transparent 72%
+  );
+}
+@media (prefers-reduced-motion: no-preference) {
+  .luminous::before {
+    animation: markGlowPulse 4.6s var(--ease-in-out) infinite;
+  }
+}
+@keyframes markGlowPulse {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(0.97);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.07);
+  }
+}

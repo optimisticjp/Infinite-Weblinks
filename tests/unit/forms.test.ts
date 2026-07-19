@@ -6,7 +6,6 @@ describe("contactSchema", () => {
   const base = {
     name: "Jordan Rivers",
     email: "jordan@example.com",
-    subject: "general" as const,
     message: "I'd like to talk about your services please.",
   };
 
@@ -43,21 +42,38 @@ describe("contactSchema", () => {
     expect(contactSchema.safeParse({ ...base, name: "Jordan\nRivers" }).success).toBe(false);
   });
 
-  it("rejects an unknown subject", () => {
-    expect(contactSchema.safeParse({ ...base, subject: "not-a-real-subject" }).success).toBe(false);
-  });
-
   it("rejects a message under 10 characters", () => {
     expect(contactSchema.safeParse({ ...base, message: "short" }).success).toBe(false);
   });
 
-  it("rejects a message over 2000 characters", () => {
-    expect(contactSchema.safeParse({ ...base, message: "a".repeat(2001) }).success).toBe(false);
+  it("rejects a message over 1000 characters", () => {
+    expect(contactSchema.safeParse({ ...base, message: "a".repeat(1001) }).success).toBe(false);
   });
 
-  it("accepts a message at the boundary lengths (10 and 2000 chars)", () => {
+  it("accepts a message at the boundary lengths (10 and 1000 chars)", () => {
     expect(contactSchema.safeParse({ ...base, message: "a".repeat(10) }).success).toBe(true);
-    expect(contactSchema.safeParse({ ...base, message: "a".repeat(2000) }).success).toBe(true);
+    expect(contactSchema.safeParse({ ...base, message: "a".repeat(1000) }).success).toBe(true);
+  });
+
+  it("accepts optional business-type / stage / goal slugs", () => {
+    expect(
+      contactSchema.safeParse({
+        ...base,
+        businessType: "ecommerce",
+        currentStage: "get-discovered",
+        mainGoal: "turn-visitors-into-buyers",
+      }).success,
+    ).toBe(true);
+  });
+
+  it("treats an empty or missing context select as 'no answer'", () => {
+    expect(contactSchema.safeParse({ ...base, businessType: "" }).success).toBe(true);
+    expect(contactSchema.safeParse({ ...base, mainGoal: undefined }).success).toBe(true);
+    expect(contactSchema.safeParse(base).success).toBe(true);
+  });
+
+  it("rejects a malformed context slug", () => {
+    expect(contactSchema.safeParse({ ...base, mainGoal: "Not A Slug!" }).success).toBe(false);
   });
 
   it("rejects a filled honeypot", () => {

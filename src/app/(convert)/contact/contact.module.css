@@ -1,66 +1,13 @@
 /* ============================================================
-   Contact page — hero+form, expectations, reasons, ownership,
-   alternative paths, closing CTA. Mobile is designed first, then
-   the two-column composition is layered on at >=1000px.
+   Contact page — Constellation system. Mobile is designed first,
+   then the two-column cosmic hero is layered on at >=1000px.
    ============================================================ */
-
-/* ---- Shared section heads ---- */
-.eyebrow {
-  margin: 0;
-  font-family: var(--font-label);
-  font-size: var(--fs-eyebrow);
-  font-weight: var(--fw-semibold);
-  letter-spacing: var(--ls-eyebrow);
-  text-transform: uppercase;
-  color: var(--pink-bright);
-}
-.eyebrowInk {
-  margin: 0;
-  font-family: var(--font-label);
-  font-size: var(--fs-eyebrow);
-  font-weight: var(--fw-bold);
-  letter-spacing: var(--ls-eyebrow);
-  text-transform: uppercase;
-  color: var(--violet-deep);
-}
-
-.sectionHead {
-  max-width: 62ch;
-  margin: 0 auto var(--space-12);
-  display: grid;
-  gap: var(--space-4);
-  text-align: center;
-  justify-items: center;
-}
-.sectionTitle {
-  margin: 0;
-  font-size: var(--fs-h2);
-}
-.sectionLead {
-  margin: 0;
-  font-size: var(--fs-lead);
-  color: var(--text-body);
-  max-width: 56ch;
-}
 
 /* ============ Hero ============ */
 .hero {
-  position: relative;
-  overflow: hidden;
-}
-.heroGlow {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(60% 55% at 78% 8%, rgba(168, 85, 247, 0.22), transparent 70%),
-    radial-gradient(55% 45% at 10% 30%, rgba(245, 25, 126, 0.14), transparent 72%),
-    radial-gradient(70% 60% at 50% 108%, rgba(59, 130, 246, 0.16), transparent 70%);
+  isolation: isolate;
 }
 .heroInner {
-  position: relative;
-  z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-10);
@@ -72,8 +19,18 @@
   gap: var(--space-5);
   align-content: start;
 }
-.formCol {
-  min-width: 0;
+.eyebrow {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  background: var(--grad-constellation);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  width: fit-content;
 }
 .heading {
   margin: 0;
@@ -87,8 +44,7 @@
   max-width: 52ch;
 }
 
-/* Mobile primary CTA — a clear full-width jump to the form. Hidden once the form sits
-   alongside the intro on desktop. */
+/* Mobile-only jump to the form; hidden once the form sits alongside the intro. */
 .heroCta {
   display: inline-flex;
   align-items: center;
@@ -96,16 +52,21 @@
   gap: var(--space-2);
   min-height: var(--target-min);
   padding: var(--space-3) var(--space-6);
-  border-radius: var(--radius-md);
-  background: var(--grad-cta);
+  border-radius: var(--radius-pill);
+  background-image: var(--grad-constellation);
+  background-size: 160% 100%;
+  background-position: 32% 50%;
   color: var(--cta-text);
   font-weight: var(--fw-bold);
-  box-shadow: var(--glow-cta);
+  box-shadow: var(--glow-brand);
   width: 100%;
-  transition: transform var(--dur-fast) var(--ease-out);
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    background-position var(--dur-base) var(--ease-out);
 }
 .heroCta:hover {
   color: var(--cta-text);
+  background-position: 100% 50%;
   transform: translateY(-1px);
 }
 .heroCta svg {
@@ -114,11 +75,23 @@
 .heroCta:hover svg {
   transform: translateX(3px);
 }
+@media (prefers-reduced-motion: reduce) {
+  .heroCta:hover {
+    transform: none;
+  }
+  .heroCta:hover svg {
+    transform: none;
+  }
+}
 
-/* ---- Form column ---- */
+/* ---- Form card ---- */
+.formCol {
+  min-width: 0;
+}
 .formCard {
   width: 100%;
   align-self: start;
+  box-shadow: var(--glow-panel);
 }
 .formHead {
   display: grid;
@@ -143,7 +116,7 @@
   width: 56px;
   height: 3px;
   border-radius: var(--radius-pill);
-  background: var(--grad-cta);
+  background: var(--grad-constellation);
 }
 
 /* ---- Trust list ---- */
@@ -165,7 +138,7 @@
   color: var(--text-body);
 }
 
-/* ---- Decorative connected globe (desktop only) ---- */
+/* ---- Coded connected globe (desktop only) ---- */
 .visual {
   display: none;
 }
@@ -173,7 +146,7 @@
 /* ============ Desktop hero composition ============ */
 @media (min-width: 1000px) {
   .heroInner {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 33rem);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 34rem);
     grid-template-areas:
       "intro  form"
       "trust  form"
@@ -209,8 +182,10 @@
     display: block;
     position: relative;
     min-height: clamp(300px, 26vw, 400px);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-panel);
     overflow: hidden;
+    border: 1px solid var(--hairline);
+    background: color-mix(in srgb, var(--space-surface) 60%, transparent);
   }
   .visualArcs {
     position: absolute;
@@ -218,6 +193,12 @@
     width: 100%;
     height: 100%;
     z-index: 1;
+  }
+  .visualArc {
+    stroke: var(--arc-color);
+    opacity: 0.6;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
   }
   .visualMark {
     position: absolute;
@@ -246,7 +227,7 @@
     height: 11px;
     border-radius: var(--radius-pill);
     background: var(--pin-color);
-    box-shadow: 0 0 12px color-mix(in srgb, var(--pin-color) 60%, transparent);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--pin-color) 65%, transparent);
   }
   .pinLabel {
     font-family: var(--font-label);
@@ -259,17 +240,27 @@
   }
 }
 
-/* ============ What happens next (bright band) ============ */
-.nextInner {
-  display: grid;
-  gap: var(--space-10);
+/* Connector-draw: arcs draw toward the hub. Resting = drawn, so reduced-motion and no-JS
+   show the completed connection; only the draw-in is behind a motion preference. */
+@media (min-width: 1000px) and (prefers-reduced-motion: no-preference) {
+  .visualArc {
+    stroke-dashoffset: 1;
+    animation: contactArcDraw 1.1s var(--ease-out) 0.2s forwards;
+  }
 }
+@keyframes contactArcDraw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ============ What happens next ============ */
 .steps {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: var(--space-6);
+  gap: var(--space-5);
   counter-reset: step;
 }
 @media (min-width: 800px) {
@@ -298,22 +289,8 @@
   font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: var(--fw-black);
-  color: color-mix(in srgb, var(--accent) 40%, transparent);
+  color: color-mix(in srgb, var(--accent) 45%, transparent);
   line-height: 1;
-}
-.stepIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 46px;
-  height: 46px;
-  border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
-  color: var(--accent);
-}
-.stepIcon svg {
-  width: 22px;
-  height: 22px;
 }
 .stepTitle {
   margin: 0;
@@ -325,151 +302,8 @@
   font-size: var(--fs-sm);
   color: var(--text-body);
 }
-.nextNote {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
-  max-width: 68ch;
-  margin: 0 auto;
-  padding: var(--space-5) var(--space-6);
-  border-radius: var(--radius-lg);
-  background: var(--surface-raised);
-  border: 1px solid var(--hairline-strong);
-  font-size: var(--fs-body);
-  font-weight: var(--fw-medium);
-  color: var(--text-heading);
-  text-align: left;
-}
-.nextNoteIcon {
-  flex: none;
-  margin-top: 2px;
-  color: var(--violet-deep);
-}
 
-/* ============ Reasons ============ */
-.reasonGrid {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-5);
-}
-@media (min-width: 620px) {
-  .reasonGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (min-width: 960px) {
-  .reasonGrid {
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-6);
-  }
-}
-.reasonCard {
-  height: 100%;
-  display: grid;
-  gap: var(--space-3);
-  align-content: start;
-}
-.reasonTitle {
-  margin: 0;
-  font-size: var(--fs-h4);
-  color: var(--text-heading);
-}
-.reasonBody {
-  margin: 0;
-  font-size: var(--fs-sm);
-  color: var(--text-body);
-}
-
-/* ============ Ownership ============ */
-.ownInner {
-  display: grid;
-  gap: var(--space-10);
-  align-items: center;
-}
-@media (min-width: 900px) {
-  .ownInner {
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-    gap: clamp(40px, 5vw, 72px);
-  }
-}
-.ownText {
-  display: grid;
-  gap: var(--space-4);
-  align-content: start;
-}
-.ownText .sectionTitle,
-.ownText .sectionLead {
-  text-align: left;
-  max-width: 44ch;
-}
-.ownReassure {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin: var(--space-1) 0 0;
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-semibold);
-  color: var(--lime-bright);
-}
-.ownReassure svg {
-  flex: none;
-}
-.ownCard {
-  width: 100%;
-}
-.ownCardLabel {
-  margin: 0 0 var(--space-4);
-  font-family: var(--font-label);
-  font-size: var(--fs-eyebrow);
-  font-weight: var(--fw-semibold);
-  letter-spacing: var(--ls-eyebrow);
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-.ownList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-3);
-}
-@media (min-width: 480px) {
-  .ownList {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-3) var(--space-5);
-  }
-}
-.ownItem {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-medium);
-  color: var(--text-body);
-}
-.ownIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  flex: none;
-  border-radius: var(--radius-sm);
-  background: var(--violet-soft);
-  color: var(--violet-bright);
-  border: 1px solid var(--hairline);
-}
-
-/* ============ Alternative paths ============ */
-.altTitle {
-  margin: 0;
-  font-size: var(--fs-h3);
-  color: var(--text-heading);
-}
+/* ============ Other ways to reach us ============ */
 .altGrid {
   list-style: none;
   margin: 0;
@@ -478,9 +312,10 @@
   grid-template-columns: 1fr;
   gap: var(--space-5);
 }
-@media (min-width: 760px) {
+@media (min-width: 720px) {
   .altGrid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
   }
 }
 .altCard {
@@ -489,23 +324,12 @@
   gap: var(--space-3);
   align-content: start;
 }
-.altIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
-  color: var(--accent);
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
-}
-.altCardTitle {
+.altTitle {
   margin: 0;
   font-size: var(--fs-h4);
   color: var(--text-heading);
 }
-.altCardBody {
+.altBody {
   margin: 0;
   font-size: var(--fs-sm);
   color: var(--text-body);
@@ -518,76 +342,39 @@
   font-size: var(--fs-sm);
   font-weight: var(--fw-semibold);
   color: var(--link);
+  word-break: break-word;
 }
 .altLink svg {
+  flex: none;
   transition: transform var(--dur-fast) var(--ease-out);
 }
 .altCard:hover .altLink svg {
   transform: translate(2px, -2px);
 }
+@media (prefers-reduced-motion: reduce) {
+  .altCard:hover .altLink svg {
+    transform: none;
+  }
+}
 
-/* ============ Closing CTA ============ */
-.close {
-  position: relative;
-  overflow: hidden;
-  text-align: center;
-}
-.closeGlobe {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-.closeInner {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  justify-items: center;
-  gap: var(--space-5);
-}
-.closeMark {
-  margin-bottom: var(--space-2);
-}
-.closeTitle {
-  margin: 0;
-  font-size: var(--fs-h2);
-  max-width: 20ch;
-}
-.closeLead {
-  margin: 0;
-  font-size: var(--fs-lead);
-  color: var(--text-body);
-  max-width: 52ch;
-}
-.closeActions {
+.closingNote {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-4) var(--space-6);
-  margin-top: var(--space-2);
-}
-.closeSecondary {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-height: var(--target-min);
+  align-items: flex-start;
+  gap: var(--space-3);
+  max-width: 64ch;
+  margin: var(--space-10) auto 0;
+  padding: var(--space-5) var(--space-6);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline-strong);
   font-size: var(--fs-sm);
-  font-weight: var(--fw-semibold);
   color: var(--text-body);
+  text-align: left;
 }
-.closeSecondary:hover {
-  color: var(--text-heading);
-}
-.closeEmail {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: var(--fs-mono);
-  letter-spacing: var(--ls-mono);
-  color: var(--text-muted);
+.closingIcon {
+  flex: none;
+  margin-top: 2px;
+  color: var(--domain-retain);
 }
 
 @media (max-width: 600px) {

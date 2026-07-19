@@ -7,15 +7,15 @@ import { rateLimit } from "@/lib/forms/rate-limit-adapter";
 import { deliveryEnabled, supportEmail } from "@/lib/forms/config";
 
 /**
- * POST /api/forms/contact — Contact form submission ("Ask Our Team" / "Send Us Your
- * Goals", including the `?subject=growth-goals` deep link). Same defence-in-depth flow
- * as the Growth Plan route (contracts/forms-and-email.md); never claims success when
- * nothing was actually delivered.
+ * POST /api/forms/contact — Contact form submission ("Send us your goals"). The visitor
+ * sends their details and message, with optional business-type / stage / goal context to
+ * help us tailor the reply. Same defence-in-depth flow as the Growth Plan route
+ * (contracts/forms-and-email.md); never claims success when nothing was actually delivered.
  */
 
 const MIN_HUMAN_MS = 1500;
 
-const DELIVERY_UNAVAILABLE_MESSAGE = `Form delivery isn't configured on this preview yet — please email ${supportEmail} and we'll pick it up.`;
+const DELIVERY_UNAVAILABLE_MESSAGE = `Form delivery isn't set up on this preview yet. Please email ${supportEmail} and we'll pick it up.`;
 
 export async function POST(req: Request) {
   let body: unknown;
@@ -83,13 +83,15 @@ export async function POST(req: Request) {
 
   const delivery = await forwardToFormspree("contact", {
     formName: "Contact",
-    subject: `New contact — ${values.subject}`,
-    subjectSlug: values.subject,
+    subject: values.mainGoal ? `New contact enquiry: ${values.mainGoal}` : "New contact enquiry",
     name: values.name,
     email: values.email,
     replyTo: values.email,
     company: values.company ?? "",
     website: values.website ?? "",
+    businessType: values.businessType ?? "",
+    currentStage: values.currentStage ?? "",
+    mainGoal: values.mainGoal ?? "",
     message: values.message,
   });
 
@@ -98,7 +100,7 @@ export async function POST(req: Request) {
       {
         ok: false,
         code: "delivery-failed",
-        message: `We couldn't send your message just now — please email ${supportEmail} directly and we'll pick it up.`,
+        message: `We couldn't send your message just now. Please email ${supportEmail} directly and we'll pick it up.`,
       },
       { status: 502 },
     );

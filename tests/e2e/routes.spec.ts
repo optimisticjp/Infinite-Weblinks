@@ -158,13 +158,26 @@ test.describe("404", () => {
 });
 
 test.describe("proof stays hidden until verified", () => {
-  // No proof record is Verified/Ready-to-Publish, so these must all 404 (index + detail).
-  for (const path of ["/case-studies", "/examples", "/case-studies/anything", "/examples/anything"]) {
+  // The gated PROOF system (real client work) stays hidden: no CaseStudy/Example record is
+  // Verified/Ready-to-Publish, so /examples and any unknown detail slug 404. /case-studies now
+  // renders illustrative EXAMPLE scenarios (clearly labelled, not real clients), so it is a
+  // live page — but an unknown case slug still 404s.
+  for (const path of ["/examples", "/examples/anything", "/case-studies/anything"]) {
     test(`${path} returns 404`, async ({ page }) => {
       const res = await page.goto(path);
       expect(res?.status()).toBe(404);
     });
   }
+
+  test("/case-studies renders labelled example scenarios (not real proof)", async ({ page }) => {
+    const res = await page.goto("/case-studies");
+    expect(res?.status()).toBeLessThan(400);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+    // The honesty label must be present so examples are never mistaken for real clients.
+    await expect(page.getByText(/not real clients/i).first()).toBeVisible();
+    // Cards link through to a case detail page.
+    await expect(page.locator('main a[href^="/case-studies/"]').first()).toBeVisible();
+  });
 });
 
 test.describe("accessibility of key templates", () => {

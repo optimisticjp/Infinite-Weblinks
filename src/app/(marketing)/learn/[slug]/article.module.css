@@ -1,60 +1,169 @@
+/* Article reading view — a calm, single-column layout tuned for legibility. The title header
+   sits on the cosmic surface with a very subtle glow; the body is a quiet dark reading
+   surface with bright text at a comfortable ~66ch measure. */
+
+.article {
+  display: block;
+}
+
+/* Narrow reading container, overriding the wide site container for a comfortable measure. */
+.narrow {
+  max-width: 44rem;
+}
+
+/* ---- Header ---- */
+.header {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.headerInner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: var(--space-4);
+}
+.eyebrow {
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--hue) 55%, var(--text-heading));
+  width: fit-content;
+}
+.title {
+  margin: 0;
+  font-size: var(--fs-h1);
+  color: var(--text-heading);
+  text-wrap: balance;
+  max-width: 20ch;
+}
 .meta {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  margin: var(--space-2) 0 0;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
 }
 .metaItem {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  color: var(--text-muted);
-  font-size: 0.9rem;
 }
 .metaIcon {
-  width: 16px;
-  height: 16px;
-  flex: none;
+  width: 15px;
+  height: 15px;
+  color: color-mix(in srgb, var(--hue) 55%, var(--text-heading));
+}
+
+/* ---- Body ---- */
+.body {
+  /* Quiet dark reading surface — the calm canvas, no animated background competing with text. */
+  background: var(--surface-page, var(--space-navy));
+}
+.standfirst {
+  margin: 0 0 var(--space-6);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-snug, 1.4);
+  color: var(--text-heading);
+  font-weight: var(--fw-medium);
+  max-width: 42ch;
+}
+
+/* Prose: bright body text, generous line height, ~66ch measure. Styles the full set of
+   long-form elements so richer content renders correctly if the model gains it later. */
+.prose {
+  color: var(--text-body);
+  font-size: var(--fs-body);
+  line-height: var(--lh-relaxed, 1.75);
+}
+.prose > * {
+  max-width: 66ch;
+}
+.prose p {
+  margin: 0 0 var(--space-5);
+}
+.prose h2 {
+  margin: var(--space-9) 0 var(--space-3);
+  font-size: var(--fs-h3);
+  color: var(--text-heading);
+  scroll-margin-top: calc(var(--header-h) + var(--space-4));
+}
+.prose h3 {
+  margin: var(--space-7) 0 var(--space-2);
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+}
+.prose ul,
+.prose ol {
+  margin: 0 0 var(--space-5);
+  padding-left: var(--space-6);
+  display: grid;
+  gap: var(--space-2);
+}
+.prose blockquote {
+  margin: var(--space-6) 0;
+  padding: var(--space-2) 0 var(--space-2) var(--space-5);
+  border-left: 3px solid color-mix(in srgb, var(--hue) 60%, var(--hairline-strong));
+  color: var(--text-heading);
+  font-size: var(--fs-lead);
+  font-style: normal;
+}
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  padding: 0.1em 0.35em;
+  border-radius: var(--radius-xs);
+  background: var(--surface-raised);
+}
+.prose pre {
+  margin: 0 0 var(--space-5);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--hairline);
+  background: var(--surface-raised);
+  overflow-x: auto;
+}
+.prose pre code {
+  padding: 0;
+  background: none;
+}
+.prose a {
+  color: var(--link);
+  text-underline-offset: 2px;
+}
+.prose figure {
+  margin: var(--space-6) 0;
+}
+.prose figcaption {
+  margin-top: var(--space-2);
+  font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 
-.prose {
-  max-width: 72ch;
+/* ---- Byline ---- */
+.byline {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-9) 0 0;
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--hairline);
+  max-width: 66ch;
 }
-.prose p {
-  color: var(--text-body);
-  font-size: 1.05rem;
-  line-height: 1.75;
+.bylineText {
+  display: grid;
+  gap: 2px;
 }
-
-.related {
-  margin-top: var(--space-12);
-  max-width: 72ch;
+.bylineName {
+  font-weight: var(--fw-bold);
+  color: var(--text-heading);
 }
-
-.closing {
-  margin-top: var(--space-12);
-  max-width: 72ch;
-  padding: var(--space-8);
-  border-radius: var(--radius-lg);
-  background: var(--surface-raised);
-  border: 1px solid var(--hairline);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-4);
-}
-.closingText {
-  color: var(--text-body);
-  font-size: var(--fs-lead);
-  line-height: 1.55;
-}
-
-@media (max-width: 900px) {
-  .meta {
-    align-items: flex-start;
-  }
+.bylineRole {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
 }

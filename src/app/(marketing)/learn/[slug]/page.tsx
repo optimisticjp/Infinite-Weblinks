@@ -1,14 +1,21 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Clock } from "lucide-react";
-import { PageHero } from "@/components/routes/PageHero";
-import { RelatedLinks } from "@/components/routes/RelatedLinks";
-import { Button } from "@/components/primitives/Button";
+import { Breadcrumbs } from "@/components/primitives/Breadcrumbs";
+import { BentoGrid } from "@/components/primitives/BentoGrid";
+import { BentoCard } from "@/components/primitives/BentoCard";
+import { InfinityMark } from "@/components/brand/InfinityMark";
+import { ScrollThread } from "@/components/viz/ScrollThread";
+import { CosmicBackground } from "@/components/viz/CosmicBackground";
+import { SectionShell } from "@/components/sections/SectionShell";
+import { FinalCtaBannerSection } from "@/components/sections/FinalCtaBannerSection";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { articleJsonLd, breadcrumbJsonLd } from "@/lib/seo/jsonld";
+import { blogPostingJsonLd, breadcrumbJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getGoals, getLearnArticle, getLearnArticles } from "@/lib/content";
 import styles from "./article.module.css";
+
+const HUE = "var(--domain-discover)";
 
 export async function generateStaticParams() {
   const articles = await getLearnArticles();
@@ -27,13 +34,8 @@ export async function generateMetadata({
     title: article.title,
     description: article.excerpt,
     path: `/learn/${article.slug}`,
+    article: article.publishedAt ? { publishedTime: article.publishedAt } : {},
   });
-}
-
-function formatDate(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 }
 
 export default async function LearnArticlePage({
@@ -42,18 +44,25 @@ export default async function LearnArticlePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [article, goals] = await Promise.all([getLearnArticle(slug), getGoals()]);
+  const [article, articles, goals] = await Promise.all([
+    getLearnArticle(slug),
+    getLearnArticles(),
+    getGoals(),
+  ]);
   if (!article) notFound();
 
-  const relatedGoals = (article.relatedGoalSlugs ?? [])
-    .map((s) => goals.find((g) => g.slug === s))
-    .filter((g): g is NonNullable<typeof g> => Boolean(g))
-    .map((g) => ({ name: g.title, href: `/goals/${g.slug}`, hint: g.outcome }));
+  const goalBySlug = new Map(goals.map((g) => [g.slug, g] as const));
+  const relatedGoal = article.relatedGoalSlugs?.map((s) => goalBySlug.get(s)).find(Boolean);
+  const tag = relatedGoal ? relatedGoal.title : "Guide";
+
+  // Up to three other guides, so the read ends with somewhere to go next.
+  const related = articles.filter((a) => a.slug !== article.slug).slice(0, 3);
 
   return (
     <>
+      <ScrollThread hue={HUE} />
       <JsonLd
-        data={articleJsonLd({
+        data={blogPostingJsonLd({
           title: article.title,
           description: article.excerpt,
           path: `/learn/${article.slug}`,
@@ -68,62 +77,74 @@ export default async function LearnArticlePage({
         ])}
       />
 
-      <PageHero
-        eyebrow="Learn"
-        title={article.title}
-        intro={article.excerpt}
-        breadcrumbs={[{ name: "Learn", path: "/learn" }, { name: article.title }]}
-        aside={
-          (article.readMinutes || article.publishedAt) && (
+      <article className={styles.article} style={{ ["--hue" as string]: HUE }}>
+        <header className={`theme-cosmic iw-section iw-section--tight ${styles.header}`}>
+          <CosmicBackground />
+          <div className={`iw-container ${styles.narrow} ${styles.headerInner}`}>
+            <Breadcrumbs trail={[{ name: "Learn", path: "/learn" }, { name: article.title }]} />
+            <p className={styles.eyebrow}>{tag}</p>
+            <h1 className={styles.title}>{article.title}</h1>
             <div className={styles.meta}>
-              {article.readMinutes && (
+              {article.readMinutes ? (
                 <span className={styles.metaItem}>
                   <Clock className={styles.metaIcon} aria-hidden="true" />
                   {article.readMinutes} min read
                 </span>
-              )}
-              {article.publishedAt && (
-                <time className={styles.metaItem} dateTime={article.publishedAt}>
-                  {formatDate(article.publishedAt)}
-                </time>
-              )}
+              ) : null}
+              <span className={styles.metaItem}>By Infinite Weblinks</span>
             </div>
-          )
-        }
-        actions={
-          <Button href="/growth-plan" variant="primary">
-            Build My Digital Growth Plan
-          </Button>
-        }
-      />
+          </div>
+        </header>
 
-      <section className="theme-band iw-section" aria-labelledby="article-body-heading">
-        <div className="iw-container">
-          <h2 id="article-body-heading" className="iw-visually-hidden">
-            {article.title}
-          </h2>
-          <article className={styles.prose}>
-            {article.body.map((para, i) => (
-              <p key={i}>{para}</p>
-            ))}
-          </article>
-
-          {relatedGoals.length > 0 && (
-            <div className={styles.related}>
-              <RelatedLinks title="Related goals" links={relatedGoals} columns={2} />
+        <div className={`theme-cosmic iw-section ${styles.body}`}>
+          <div className={`iw-container ${styles.narrow}`}>
+            <p className={styles.standfirst}>{article.excerpt}</p>
+            <div className={styles.prose}>
+              {article.body.map((para, i) => (
+                <p key={i}>{para}</p>
+              ))}
             </div>
-          )}
 
-          <div className={styles.closing}>
-            <p className={styles.closingText}>
-              Want this mapped to your own situation? We&apos;ll turn it into a clear, tailored plan.
-            </p>
-            <Button href="/growth-plan" variant="primary">
-              Build My Digital Growth Plan
-            </Button>
+            <div className={styles.byline}>
+              <InfinityMark size={40} glow aria-hidden="true" />
+              <span className={styles.bylineText}>
+                <span className={styles.bylineName}>Infinite Weblinks</span>
+                <span className={styles.bylineRole}>Your digital growth partner</span>
+              </span>
+            </div>
           </div>
         </div>
-      </section>
+      </article>
+
+      {related.length > 0 ? (
+        <SectionShell
+          id="related"
+          eyebrow="Keep reading"
+          title="More on connected growth"
+          align="start"
+        >
+          <BentoGrid>
+            {related.map((a) => {
+              const g = a.relatedGoalSlugs?.map((s) => goalBySlug.get(s)).find(Boolean);
+              const read = a.readMinutes ? `${a.readMinutes} min read` : "Guide";
+              return (
+                <BentoCard
+                  key={a.slug}
+                  href={`/learn/${a.slug}`}
+                  hue={g ? g.color : HUE}
+                  icon="book-open"
+                  eyebrow={`${g ? g.title : "Guide"} · ${read}`}
+                  title={a.title}
+                  blurb={a.excerpt}
+                  variant="medium"
+                />
+              );
+            })}
+          </BentoGrid>
+        </SectionShell>
+      ) : null}
+
+      <FinalCtaBannerSection anchorId="get-started" />
     </>
   );
 }

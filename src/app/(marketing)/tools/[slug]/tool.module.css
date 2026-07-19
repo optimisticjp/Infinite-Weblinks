@@ -1,132 +1,141 @@
-.ownAside {
-  text-align: right;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--space-1);
-  max-width: 18rem;
-}
-.ownTitle {
-  font-family: var(--font-label);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-heading);
-}
-.ownBody {
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  line-height: 1.5;
-}
-
-.layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 20rem;
-  gap: var(--space-8);
-  align-items: start;
-}
-
-.main {
-  min-width: 0;
-}
-
-.h2 {
-  font-size: var(--fs-h3);
-  color: var(--text-heading);
-  margin-bottom: var(--space-4);
-}
-.h3 {
-  font-size: var(--fs-h4);
-  color: var(--text-heading);
-}
+/* Tool detail — an answer-oriented mini-page. Structured short fields, clean headings for
+   long-tail search, no long-form body. */
 
 .lead {
-  margin: 0 0 var(--space-8);
-  color: var(--text-body);
+  margin: 0 0 var(--space-6);
   font-size: var(--fs-lead);
-  line-height: 1.6;
-  max-width: 68ch;
+  color: var(--text-body);
+  max-width: 60ch;
 }
 
+/* "When you might not need this yet" — an honest callout, tinted in the domain hue. */
 .callout {
-  display: flex;
-  gap: var(--space-3);
-  align-items: flex-start;
-  margin: 0 0 var(--space-8);
+  margin: var(--space-6) 0 0;
   padding: var(--space-5);
-  border-radius: var(--radius-md);
-  background: var(--surface-raised);
-  border: 1px solid var(--hairline);
-  border-left: 3px solid var(--orange);
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in srgb, var(--hue) 30%, var(--hairline));
+  background: color-mix(in srgb, var(--hue) 8%, var(--surface-raised));
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-3);
+  align-items: start;
+  max-width: 60ch;
 }
 .calloutIcon {
-  width: 22px;
-  height: 22px;
-  flex: none;
-  color: var(--orange);
+  color: color-mix(in srgb, var(--hue) 60%, var(--text-heading));
   margin-top: 2px;
 }
 .calloutLabel {
-  font-family: var(--font-label);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--orange);
-  margin-bottom: var(--space-2);
+  margin: 0 0 2px;
+  font-weight: var(--fw-bold);
+  color: var(--text-heading);
 }
 .calloutBody {
+  margin: 0;
   color: var(--text-body);
-  line-height: 1.6;
 }
 
-.tools {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+/* Example tools we can connect — plain-text chips, never products/partners/endorsements. */
+.chipsBlock {
+  margin: var(--space-8) 0 0;
 }
-.toolsNote {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  line-height: 1.55;
-  max-width: 62ch;
+.chipsLabel {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--hue) 55%, var(--text-heading));
 }
 .chips {
   list-style: none;
-  margin: var(--space-2) 0 0;
+  margin: 0;
   padding: 0;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
 }
 .chip {
-  padding: var(--space-1) var(--space-3);
+  padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-pill);
-  background: var(--surface-raised);
   border: 1px solid var(--hairline-strong);
+  background: var(--surface-raised);
+  font-size: var(--fs-sm);
   color: var(--text-body);
-  font-size: 0.85rem;
-  font-family: var(--font-mono);
 }
 
-.side {
+/* Small "in your name" reassurance strip. */
+.ownership {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-  position: sticky;
-  top: calc(var(--header-h) + var(--space-4));
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-8) 0 0;
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--hairline);
+  background: color-mix(in srgb, var(--domain-retain) 6%, var(--surface-raised));
+  max-width: 60ch;
+}
+.ownershipIcon {
+  color: color-mix(in srgb, var(--domain-retain) 55%, var(--text-heading));
+  flex: none;
+}
+.ownershipText {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-body);
 }
 
-@media (max-width: 900px) {
-  .layout {
-    grid-template-columns: 1fr;
+/* Facet rows (where it fits / who it suits) — simple labelled link lists. */
+.facets {
+  display: grid;
+  gap: var(--space-6);
+  margin-top: var(--space-4);
+}
+@media (min-width: 720px) {
+  .facets {
+    grid-template-columns: 1fr 1fr;
   }
-  .side {
-    position: static;
-  }
-  .ownAside {
-    align-items: flex-start;
-    text-align: left;
-  }
+}
+.facet {
+  display: grid;
+  gap: var(--space-3);
+}
+.facetLabel {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.facetList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.facetLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 40px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--hairline-strong);
+  background: var(--surface-raised);
+  color: var(--text-heading);
+  font-size: var(--fs-sm);
+  text-decoration: none;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out);
+}
+.facetLink:hover {
+  border-color: var(--border-glow);
+  background: var(--surface-hover);
 }

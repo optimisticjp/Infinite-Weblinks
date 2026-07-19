@@ -82,7 +82,7 @@ export default async function GoalsPage() {
         eyebrow="By goal"
         title={
           <>
-            Pick the <span className="iw-gradient-word">outcome</span> you're after
+            Pick the <span className="iw-gradient-word">outcome</span> you&apos;re after
           </>
         }
         lead="Each goal opens a short, honest read of what it takes, the services that help, and where it fits in the journey."

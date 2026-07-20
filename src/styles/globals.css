@@ -5,3 +5,7 @@
 @import "./tokens/effects.css";
 @import "./tokens/constellation.css";
 @import "./tokens/base.css";
+/* V2 foundation ("Clear Systems") — additive, opt-in. Adds --v2-* tokens and the
+   .theme-light / .theme-light-alt / .theme-night classes. Imported LAST so its
+   theme-scoped overrides win inside V2 surfaces; legacy routes are untouched. */
+@import "./tokens/v2.css";

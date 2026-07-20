@@ -1,0 +1,210 @@
+/* ============================================================
+   V2 FOUNDATION TOKENS — "Clear Systems"  (Stripe ~70% / Clay ~30%)
+   Approved: docs/design/v2-design-spec.md  ·  Phase 1 (foundation + canary)
+
+   COMPATIBILITY-FIRST & ADDITIVE. This file only:
+     1. adds NEW `--v2-*` primitive tokens under :root, and
+     2. adds THREE opt-in theme classes (.theme-light / .theme-light-alt /
+        .theme-night) that map the EXISTING semantic tokens components already
+        read (--surface, --text-heading, --hairline, --shadow-*, --ring, …).
+   It does NOT redefine the :root dark defaults, the `body`, or any legacy
+   theme class (.theme-dark / .theme-band / .theme-band-bright / .theme-statement
+   / .theme-cosmic), so every untouched route renders exactly as before. A page
+   or section becomes V2 only by explicitly opting into a `.theme-*` class here.
+
+   Legacy tokens (--glow-*, --grad-spectrum/path/constellation, constellation.css,
+   the dark :root surface defaults) are DEPRECATED for V2 but intentionally
+   RETAINED this phase — their physical removal is the final convergence phase,
+   after every consumer has migrated.
+
+   All contrast pairs below were measured (WCAG 2.2 AA): body text ≥ 4.5:1,
+   large/UI/non-text ≥ 3:1. See the Phase 1 implementation report.
+   ============================================================ */
+
+:root {
+  /* ---- Paper / neutral surfaces (light) ---- */
+  --v2-paper: #ffffff; /* base light canvas */
+  --v2-paper-2: #f6f7f9; /* alternating band / subtle raised */
+  --v2-paper-3: #eef1f5; /* deeper alt / grouped fill */
+
+  /* ---- Ink / text on light (cool near-navy) ---- */
+  --v2-ink-strong: #0a1f3c; /* headings — 16.5:1 on paper */
+  --v2-ink-body: #38415a; /* body — 10.1:1 on paper */
+  --v2-ink-muted: #5f6b85; /* secondary/captions — 5.35:1 on paper (≥4.5 on paper-2/3) */
+  --v2-ink-faint: #767e93; /* DECORATIVE / disabled only — 4.06:1 on paper; never body copy */
+
+  /* ---- Night (reserved dark signature surfaces only) ---- */
+  --v2-night-950: #0a1124; /* signature dark base */
+  --v2-night-900: #111a33; /* raised on night */
+  --v2-night-800: #1b2547; /* input / raised-2 on night */
+  --v2-on-night: #f4f7ff; /* headings on night — 17.5:1 */
+  --v2-on-night-muted: #b9c2da; /* body on night — 10.5:1 */
+
+  /* ---- Lines & boundaries ---- */
+  --v2-line: rgba(10, 31, 60, 0.12); /* DECORATIVE hairline / divider (separator only, no min) */
+  --v2-line-strong: #7d8698; /* FUNCTIONAL boundary (input/control edge) — 3.66:1 on paper */
+  --v2-line-night: rgba(255, 255, 255, 0.14); /* decorative hairline on night */
+  --v2-line-night-strong: rgba(255, 255, 255, 0.34); /* functional boundary on night — 3.07:1 */
+
+  /* ---- Brand (one accent doing the CTA/link/focus work) ---- */
+  --v2-brand: #5b3df5; /* primary actions, links, focus — 6.12:1 on paper */
+  --v2-brand-strong: #4a2fd6; /* hover / active — 7.87:1 on paper */
+  --v2-brand-tint: #eeeafe; /* soft brand surface (selected states) */
+  --v2-on-brand: #ffffff; /* text/icon on a brand fill — 6.12:1 on brand */
+
+  /* ---- The single restrained two-colour signature gradient ----
+     Decision 2: ONLY for selected primary CTAs / rare signature moments.
+     Ordinary cards, icons, headings and backgrounds must NOT use it.
+     (White foreground text on this gradient stays ≥ 4.5:1 across both stops.) */
+  --v2-grad-signature: linear-gradient(120deg, #6d3bff 0%, #f5197e 100%);
+
+  /* ---- Domain wayfinding — 7 service "worlds", each with 3 roles ----
+     -ink  : text/icon on white or the matching tint (all measured ≥ 4.5:1)
+     -tint : soft surface fill
+     -line : accent rail / left border (= the ink, used as non-text ≥ 3:1) */
+  --v2-domain-strategy-ink: #6d28d9;  --v2-domain-strategy-tint: #f1ecfe;  --v2-domain-strategy-line: #6d28d9;
+  --v2-domain-build-ink: #1d4ed8;     --v2-domain-build-tint: #e8effd;     --v2-domain-build-line: #1d4ed8;
+  --v2-domain-discover-ink: #0e7490;  --v2-domain-discover-tint: #e2f5fa;  --v2-domain-discover-line: #0e7490;
+  --v2-domain-convert-ink: #be185d;   --v2-domain-convert-tint: #fdeaf1;   --v2-domain-convert-line: #be185d;
+  --v2-domain-operate-ink: #c2410c;   --v2-domain-operate-tint: #fdeee3;   --v2-domain-operate-line: #c2410c;
+  --v2-domain-retain-ink: #127a39;    --v2-domain-retain-tint: #e7f6ec;    --v2-domain-retain-line: #127a39;
+  --v2-domain-ai-ink: #0f766e;        --v2-domain-ai-tint: #e3f4f2;        --v2-domain-ai-line: #0f766e;
+
+  /* ---- Status (ink on white AND on its own tint both ≥ 4.5:1) ---- */
+  --v2-success: #127a39;  --v2-success-tint: #e7f6ec;
+  --v2-warning: #9a4a07;  --v2-warning-tint: #fdeee3;
+  --v2-danger: #be123c;   --v2-danger-tint: #fdeaef;
+  --v2-info: #1d4ed8;     --v2-info-tint: #e8effd;
+
+  /* ---- Elevation — soft neutral shadows REPLACE colour glows ---- */
+  --v2-shadow-xs: 0 1px 2px rgba(10, 31, 60, 0.06);
+  --v2-shadow-sm: 0 1px 3px rgba(10, 31, 60, 0.08), 0 1px 2px rgba(10, 31, 60, 0.06);
+  --v2-shadow-md: 0 4px 12px rgba(10, 31, 60, 0.08), 0 2px 4px rgba(10, 31, 60, 0.06);
+  --v2-shadow-lg: 0 12px 32px rgba(10, 31, 60, 0.1), 0 4px 8px rgba(10, 31, 60, 0.06);
+  --v2-shadow-card-hover: 0 16px 40px rgba(10, 31, 60, 0.12);
+
+  /* ---- Radii (Clay-warm, Stripe-restrained) ---- */
+  --v2-radius-sm: 8px; /* inputs, buttons, chips */
+  --v2-radius-md: 12px; /* small cards, tiles */
+  --v2-radius-lg: 16px; /* cards */
+  --v2-radius-xl: 24px; /* panels, featured bento */
+  --v2-radius-pill: 999px;
+
+  /* ---- Focus ring — brand, with a surface-coloured gap so it detaches from
+     the element and keeps ≥ 3:1 against the light/night page (WCAG 2.2 2.4.11/1.4.11). */
+  --v2-ring: 0 0 0 2px var(--surface), 0 0 0 4px var(--v2-brand);
+
+  /* ---- Typography usage (families/scale reused from typography.css) ----
+     V2 lowers the display/heading weight from the site-wide 800 "black" to a
+     more Stripe-like 700, so hierarchy comes from size + space, not heaviness. */
+  --v2-fw-display: 700;
+  --v2-fw-heading: 700;
+  --v2-fw-body: var(--fw-regular);
+  --v2-fs-display: clamp(2.25rem, 5vw, 3.75rem); /* restrained hero display (below --fs-display) */
+
+  /* ---- Motion & rhythm — REUSED unchanged from effects.css / spacing.css ----
+     Aliased here only so the V2 layer is self-documenting. Do not fork these. */
+  --v2-ease-out: var(--ease-out);
+  --v2-ease-in-out: var(--ease-in-out);
+  --v2-dur-fast: var(--dur-fast);
+  --v2-dur-base: var(--dur-base);
+  --v2-dur-entrance: var(--dur-entrance);
+  --v2-section-y: var(--section-y);
+  --v2-section-y-tight: var(--section-y-tight);
+  --v2-container: var(--container);
+}
+
+/* ============================================================
+   V2 THEME CLASSES — opt-in surfaces. Each sets the SAME semantic token
+   names the shared components already consume, so any nested component
+   re-themes automatically (no component edits required to go light).
+   ============================================================ */
+
+/* Light — the V2 default surface (near-white). */
+.theme-light {
+  color-scheme: light;
+  --surface: var(--v2-paper);
+  --surface-raised: var(--v2-paper); /* card = paper + hairline + soft shadow, not a grey fill */
+  --surface-input: #ffffff;
+  --surface-hover: rgba(10, 31, 60, 0.05);
+  --text-heading: var(--v2-ink-strong);
+  --text-body: var(--v2-ink-body);
+  --text-muted: var(--v2-ink-muted);
+  --hairline: var(--v2-line);
+  --hairline-strong: var(--v2-line-strong);
+  --link: var(--v2-brand);
+  --link-hover: var(--v2-brand-strong);
+  --cta-text: var(--v2-on-brand);
+  /* elevation → soft neutral (overrides the dark effects.css values within this scope) */
+  --shadow-sm: var(--v2-shadow-sm);
+  --shadow-md: var(--v2-shadow-md);
+  --shadow-lg: var(--v2-shadow-lg);
+  --shadow-card: var(--v2-shadow-md);
+  --ring: var(--v2-ring);
+  /* expose the brand primitives for V2-native components */
+  --brand: var(--v2-brand);
+  --brand-strong: var(--v2-brand-strong);
+  background-color: var(--surface);
+  color: var(--text-body);
+}
+
+/* Light-alt — the alternating band (paper-2); cards go pure white to lift. */
+.theme-light-alt {
+  color-scheme: light;
+  --surface: var(--v2-paper-2);
+  --surface-raised: var(--v2-paper);
+  --surface-input: #ffffff;
+  --surface-hover: rgba(10, 31, 60, 0.05);
+  --text-heading: var(--v2-ink-strong);
+  --text-body: var(--v2-ink-body);
+  --text-muted: var(--v2-ink-muted);
+  --hairline: var(--v2-line);
+  --hairline-strong: var(--v2-line-strong);
+  --link: var(--v2-brand);
+  --link-hover: var(--v2-brand-strong);
+  --cta-text: var(--v2-on-brand);
+  --shadow-sm: var(--v2-shadow-sm);
+  --shadow-md: var(--v2-shadow-md);
+  --shadow-lg: var(--v2-shadow-lg);
+  --shadow-card: var(--v2-shadow-md);
+  --ring: var(--v2-ring);
+  --brand: var(--v2-brand);
+  --brand-strong: var(--v2-brand-strong);
+  background-color: var(--surface);
+  color: var(--text-body);
+}
+
+/* Night — reserved dark signature surface (final CTA, one meaningful dark
+   section). Never a default fallback. */
+.theme-night {
+  color-scheme: dark;
+  --surface: var(--v2-night-950);
+  --surface-raised: var(--v2-night-900);
+  --surface-input: var(--v2-night-800);
+  --surface-hover: rgba(255, 255, 255, 0.08);
+  --text-heading: var(--v2-on-night);
+  --text-body: var(--v2-on-night-muted);
+  --text-muted: var(--v2-on-night-muted);
+  --hairline: var(--v2-line-night);
+  --hairline-strong: var(--v2-line-night-strong);
+  --link: #cdbcff;
+  --link-hover: #ffffff;
+  --cta-text: var(--v2-on-brand);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.55);
+  --shadow-card: 0 18px 44px rgba(0, 0, 0, 0.5);
+  --ring: var(--v2-ring);
+  --brand: var(--v2-brand);
+  --brand-strong: var(--v2-brand-strong);
+  background-color: var(--surface);
+  color: var(--text-body);
+}
+
+/* Typography usage — restrained heading weight, scoped to V2 surfaces only so
+   untouched routes keep the site-wide 800 "black" display weight. */
+.theme-light :is(h1, h2, h3, h4),
+.theme-light-alt :is(h1, h2, h3, h4),
+.theme-night :is(h1, h2, h3, h4) {
+  font-weight: var(--v2-fw-heading);
+}

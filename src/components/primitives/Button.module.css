@@ -188,6 +188,23 @@
   font-weight: var(--fw-semibold);
 }
 
+/* V2 pointer targets — larger than the legacy sizes (legacy sm stays 40px off V2 surfaces). */
+:global(.theme-light) .sm,
+:global(.theme-light-alt) .sm,
+:global(.theme-night) .sm {
+  min-height: 44px;
+}
+:global(.theme-light) .md,
+:global(.theme-light-alt) .md,
+:global(.theme-night) .md {
+  min-height: 46px;
+}
+:global(.theme-light) .lg,
+:global(.theme-light-alt) .lg,
+:global(.theme-night) .lg {
+  min-height: 52px;
+}
+
 /* primary → solid brand fill, neutral shadow, no glow, no moving gradient */
 :global(.theme-light) .primary,
 :global(.theme-light-alt) .primary,
@@ -241,7 +258,39 @@
   text-decoration-thickness: 1.5px;
 }
 
-/* V2 hover lift respects reduced motion */
+/* ---- V2 hover gating (A3) ----
+   The legacy .md/.lg:hover lift + iconRight nudge apply globally (touch included). On V2
+   surfaces, first NEUTRALISE them (so touch devices get no sticky hover), then RE-ENABLE the
+   approved lift only for genuine hover pointers. Touch still gets the :active pressed state. */
+:global(.theme-light) .md:hover:not(:disabled),
+:global(.theme-light-alt) .md:hover:not(:disabled),
+:global(.theme-night) .md:hover:not(:disabled),
+:global(.theme-light) .lg:hover:not(:disabled),
+:global(.theme-light-alt) .lg:hover:not(:disabled),
+:global(.theme-night) .lg:hover:not(:disabled) {
+  transform: none;
+}
+:global(.theme-light) .btn:hover:not(:disabled) .iconRight,
+:global(.theme-light-alt) .btn:hover:not(:disabled) .iconRight,
+:global(.theme-night) .btn:hover:not(:disabled) .iconRight {
+  transform: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  :global(.theme-light) .md:hover:not(:disabled),
+  :global(.theme-light-alt) .md:hover:not(:disabled),
+  :global(.theme-night) .md:hover:not(:disabled),
+  :global(.theme-light) .lg:hover:not(:disabled),
+  :global(.theme-light-alt) .lg:hover:not(:disabled),
+  :global(.theme-night) .lg:hover:not(:disabled) {
+    transform: translateY(-2px);
+  }
+  :global(.theme-light) .btn:hover:not(:disabled) .iconRight,
+  :global(.theme-light-alt) .btn:hover:not(:disabled) .iconRight,
+  :global(.theme-night) .btn:hover:not(:disabled) .iconRight {
+    transform: translateX(3px);
+  }
+}
+/* Reduced motion wins over the hover re-enable (declared last). */
 @media (prefers-reduced-motion: reduce) {
   :global(.theme-light) .md:hover:not(:disabled),
   :global(.theme-light-alt) .md:hover:not(:disabled),

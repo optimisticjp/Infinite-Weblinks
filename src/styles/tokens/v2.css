@@ -39,6 +39,7 @@
   --v2-night-800: #1b2547; /* input / raised-2 on night */
   --v2-on-night: #f4f7ff; /* headings on night — 17.5:1 */
   --v2-on-night-muted: #b9c2da; /* body on night — 10.5:1 */
+  --v2-link-night: #cdbcff; /* links + accent text/icons on night — 10.9:1 on night-950 (measured) */
 
   /* ---- Lines & boundaries ---- */
   --v2-line: rgba(10, 31, 60, 0.12); /* DECORATIVE hairline / divider (separator only, no min) */
@@ -191,7 +192,7 @@
   --text-muted: var(--v2-on-night-muted);
   --hairline: var(--v2-line-night);
   --hairline-strong: var(--v2-line-night-strong);
-  --link: #cdbcff;
+  --link: var(--v2-link-night);
   --link-hover: #ffffff;
   --cta-text: var(--v2-on-brand);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);

@@ -23,12 +23,12 @@
   box-shadow: var(--v2-ring);
 }
 
-/* Sizes — md is the 44px normal target; sm (40px) is a dense variant (≥ WCAG 2.2 24px min). */
+/* Sizes — square (aspect-ratio: 1). sm 44 · md 48 · lg 52; all ≥ the 44px normal target. */
 .sm {
-  width: 40px;
+  width: 44px;
 }
 .md {
-  width: var(--target-min);
+  width: 48px;
 }
 .lg {
   width: 52px;
@@ -63,7 +63,7 @@
   color: var(--text-heading);
 }
 
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .primary:hover:not(:disabled) {
     background: var(--v2-brand-strong);
   }

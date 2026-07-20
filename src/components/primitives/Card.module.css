@@ -86,7 +86,7 @@
   --text-muted: var(--v2-on-night-muted);
   --hairline: var(--v2-line-night);
   --hairline-strong: var(--v2-line-night-strong);
-  --link: #cdbcff;
+  --link: var(--v2-link-night);
   background: var(--v2-night-950);
   border: 1px solid var(--v2-line-night);
   color: var(--v2-on-night-muted);
@@ -103,7 +103,7 @@
   border-color: var(--hairline-strong);
   box-shadow: var(--v2-shadow-card-hover);
 }
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   :global(.theme-light) .interactive:hover,
   :global(.theme-light-alt) .interactive:hover,
   :global(.theme-night) .interactive:hover {

@@ -219,7 +219,7 @@
   border: 1px solid var(--hairline-strong);
   color: var(--bento-hue);
 }
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   :global(.theme-light) .card:hover,
   :global(.theme-light-alt) .card:hover,
   :global(.theme-night) .card:hover {
@@ -233,5 +233,32 @@
   :global(.theme-light-alt) .card:hover,
   :global(.theme-night) .card:hover {
     transform: none;
+  }
+}
+
+/* ---- Night BentoCard (A5) ---- The caller's `hue` is a domain ink measured for LIGHT
+   surfaces, so on night it must not be used as visible text/icon. Re-map every visible
+   element (eyebrow, index, icon tile, arrow, accent rail) to the accessible night accent
+   token. The domain hue survives only as non-text decoration. Declared after the general
+   V2 block so it wins on `.theme-night`. */
+:global(.theme-night) .eyebrow,
+:global(.theme-night) .index {
+  color: var(--v2-link-night);
+}
+:global(.theme-night) .iconV2 {
+  background: color-mix(in srgb, var(--v2-link-night) 16%, var(--surface));
+  color: var(--v2-link-night);
+}
+:global(.theme-night) .arrow {
+  background: color-mix(in srgb, var(--v2-link-night) 14%, var(--surface));
+  border-color: var(--hairline-strong);
+  color: var(--v2-link-night);
+}
+:global(.theme-night) .card::before {
+  background: var(--v2-link-night);
+}
+@media (hover: hover) and (pointer: fine) {
+  :global(.theme-night) .card:hover {
+    border-color: color-mix(in srgb, var(--v2-link-night) 40%, transparent);
   }
 }

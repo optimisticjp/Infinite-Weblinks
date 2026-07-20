@@ -23,7 +23,7 @@
   outline: none;
   box-shadow: var(--v2-ring);
 }
-@media (hover: hover) {
+@media (hover: hover) and (pointer: fine) {
   .chip:not(.selected):hover {
     border-color: var(--v2-line-strong);
     background: var(--surface-hover);

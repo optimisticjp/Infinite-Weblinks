@@ -16,8 +16,6 @@ type BaseProps = {
   size?: Size;
   iconLeft?: ReactNode;
   iconRight?: ReactNode;
-  /** Action-button only: shows a spinner, sets aria-busy, and disables the control. */
-  loading?: boolean;
   className?: string;
   children: ReactNode;
 };
@@ -29,6 +27,11 @@ type LinkProps = BaseProps & {
 
 type ActionProps = BaseProps & {
   href?: undefined;
+  /**
+   * Action-button only: shows a spinner, sets aria-busy, disables the control, and hides both
+   * optional icons. Intentionally NOT available on the link form (a link cannot be "busy").
+   */
+  loading?: boolean;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 function classes(variant: Variant, size: Size, loading: boolean, className?: string) {
@@ -46,18 +49,10 @@ function classes(variant: Variant, size: Size, loading: boolean, className?: str
  * are restrained. Legacy surfaces keep the existing gradient CTA appearance unchanged.
  */
 export function Button(props: LinkProps | ActionProps) {
-  const {
-    variant = "primary",
-    size = "md",
-    iconLeft,
-    iconRight,
-    loading = false,
-    className,
-    children,
-  } = props;
+  const { variant = "primary", size = "md", iconLeft, iconRight, className, children } = props;
 
   const isLink = "href" in props && props.href !== undefined;
-  const showLoading = loading && !isLink;
+  const showLoading = !isLink && (props as ActionProps).loading === true;
 
   const inner = (
     <>
@@ -68,7 +63,7 @@ export function Button(props: LinkProps | ActionProps) {
         </span>
       ) : null}
       <span className={styles.label}>{children}</span>
-      {iconRight ? (
+      {iconRight && !showLoading ? (
         <span className={`${styles.icon} ${styles.iconRight}`} aria-hidden="true">
           {iconRight}
         </span>

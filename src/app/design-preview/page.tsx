@@ -53,7 +53,8 @@ export default function DesignPreviewPage() {
         <span className={styles.bannerTag}>Internal · noindex</span>
         <span>
           V2 “Clear Systems” component preview — not a production page. Examples use the real
-          primitives; contrast is verified by tests/unit/v2-contrast.test.ts (WCAG 2.2 AA).
+          primitives; contrast is verified by tests/unit/v2-contrast.test.ts (WCAG 2.2 AA).{" "}
+          <a href="/design-preview/shells">Page shells preview →</a>
         </span>
       </div>
 

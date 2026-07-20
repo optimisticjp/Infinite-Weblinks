@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
-import { CosmicPageHero } from "@/components/routes/CosmicPageHero";
-import { GlowButton } from "@/components/primitives/GlowButton";
-import { NodeOrb } from "@/components/primitives/NodeOrb";
-import { Icon } from "@/components/primitives/Icon";
+import { PageHeader } from "@/components/routes/PageHeader";
+import { SectionShell } from "@/components/sections/SectionShell";
+import { Button } from "@/components/primitives/Button";
 import { FaqAccordion, type FaqGroup } from "@/components/routes/FaqAccordion";
-import { FinalCtaBannerSection } from "@/components/sections/FinalCtaBannerSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd, faqJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getFaqs } from "@/lib/content";
+import styles from "./faq.module.css";
 
 export const metadata: Metadata = pageMetadata({
   title: "FAQ",
@@ -19,14 +18,15 @@ export const metadata: Metadata = pageMetadata({
 });
 
 // Category order + wayfinding hue. Categories come from faqs.ts; anything unmapped falls to
-// a neutral hue and sorts last, so adding a category never breaks the page.
+// a neutral hue and sorts last, so adding a category never breaks the page. V2 canary: the
+// hues are the accessible V2 domain inks (measured for light surfaces).
 const CATEGORY_ORDER = ["Getting started", "How we work", "Pricing", "Timelines", "Ownership"];
 const CATEGORY_HUE: Record<string, string> = {
-  "Getting started": "var(--domain-strategy)",
-  "How we work": "var(--domain-build)",
-  Pricing: "var(--domain-convert)",
-  Timelines: "var(--domain-operate)",
-  Ownership: "var(--domain-retain)",
+  "Getting started": "var(--v2-domain-strategy-ink)",
+  "How we work": "var(--v2-domain-build-ink)",
+  Pricing: "var(--v2-domain-convert-ink)",
+  Timelines: "var(--v2-domain-operate-ink)",
+  Ownership: "var(--v2-domain-retain-ink)",
 };
 
 export default async function FaqPage() {
@@ -42,7 +42,7 @@ export default async function FaqPage() {
   });
   const groups: FaqGroup[] = labels.map((label) => ({
     label,
-    hue: CATEGORY_HUE[label] ?? "var(--domain-ai)",
+    hue: CATEGORY_HUE[label] ?? "var(--v2-domain-ai-ink)",
     items: faqs
       .filter((f) => (f.category ?? "More questions") === label)
       .map((f) => ({ slug: f.slug, question: f.question, answer: f.answer })),
@@ -61,7 +61,7 @@ export default async function FaqPage() {
         <JsonLd data={faqJsonLd(faqs.map((f) => ({ question: f.question, answer: f.answer })))} />
       )}
 
-      <CosmicPageHero
+      <PageHeader
         id="faq-hero"
         breadcrumbs={[{ name: "FAQ" }]}
         eyebrow="FAQ"
@@ -69,30 +69,38 @@ export default async function FaqPage() {
         lead="The questions we hear most often, with straight answers on how we work, what it costs, how long things take, and who owns everything. If yours isn't here, ask us and we'll cover it."
         actions={
           <>
-            <GlowButton href="/growth-plan" size="lg" iconRight={<ArrowRight size={18} aria-hidden="true" />}>
+            <Button href="/growth-plan" iconRight={<ArrowRight size={18} aria-hidden="true" />}>
               Build my growth plan
-            </GlowButton>
-            <GlowButton href="/contact" variant="ghost" size="lg">
+            </Button>
+            <Button href="/contact" variant="secondary">
               Ask a question
-            </GlowButton>
+            </Button>
           </>
         }
-        aside={
-          <span aria-hidden="true">
-            <NodeOrb hue="var(--violet)" size={128} emphasis="bright">
-              <Icon name="message-square" />
-            </NodeOrb>
-          </span>
-        }
+        trustNote="No sales pressure."
       />
 
-      <section id="faq" className="theme-cosmic iw-section" aria-label="Questions by topic">
-        <div className="iw-container">
-          <FaqAccordion groups={groups} />
-        </div>
-      </section>
+      <SectionShell surface="alt" id="faq" ariaLabel="Questions by topic">
+        <FaqAccordion groups={groups} />
+      </SectionShell>
 
-      <FinalCtaBannerSection anchorId="get-started" />
+      {/* Restrained final CTA — reserved .theme-night band, no cosmic decoration. */}
+      <SectionShell
+        surface="night"
+        id="get-started"
+        title="Still have a question?"
+        lead="Get a plan built around your goals, or just ask us directly — no obligation."
+        align="center"
+      >
+        <div className={styles.ctaActions}>
+          <Button href="/growth-plan" variant="signature" size="lg">
+            Build my growth plan
+          </Button>
+          <Button href="/contact" variant="secondary" size="lg">
+            Ask a question
+          </Button>
+        </div>
+      </SectionShell>
     </>
   );
 }

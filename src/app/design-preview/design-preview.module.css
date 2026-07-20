@@ -29,6 +29,11 @@
   text-transform: uppercase;
   color: var(--v2-warning);
 }
+/* Links in the banner text block must be distinguishable without colour (WCAG 1.4.1). */
+.banner a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 
 .section {
   padding-block: var(--section-y-tight);

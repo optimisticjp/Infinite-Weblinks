@@ -6,15 +6,28 @@ import { usePathname, useRouter } from "next/navigation";
 import { ArrowUpRight, ChevronDown, ChevronRight, Compass, Menu } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/primitives/Button";
+import { IconButton } from "@/components/primitives/IconButton";
 import { Icon } from "@/components/primitives/Icon";
 import type { NavItem, SiteNav } from "@/lib/content/types";
 import { MobileNav } from "./MobileNav";
 import styles from "./SiteHeader.module.css";
 
-/** Per-column accent, cycled — matches the four-phase colour story in the reference
-    mega-menu (build → discover → convert → operate). Decorative only; the promo CTA
-    owns the panel's one bright element (the light budget). */
-const MEGA_COL_ACCENTS = ["var(--blue)", "var(--violet)", "var(--pink)", "var(--orange)"];
+/** Per-column wayfinding accent, cycled — V2 domain inks (build → discover → convert →
+    operate). Decorative only; used for the flat link-icon tiles. */
+const MEGA_COL_ACCENTS = [
+  "var(--v2-domain-build-ink)",
+  "var(--v2-domain-discover-ink)",
+  "var(--v2-domain-convert-ink)",
+  "var(--v2-domain-operate-ink)",
+];
+
+/** True when the current route belongs to a mega-menu section (its hub or any of its links). */
+function isSectionCurrent(item: NavItem, pathname: string): boolean {
+  const inHref = (href: string) =>
+    pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
+  if (inHref(item.href)) return true;
+  return (item.megaMenu?.columns ?? []).some((c) => c.items.some((l) => inHref(l.href)));
+}
 
 type Pt = { x: number; y: number };
 
@@ -147,7 +160,9 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
   // Detect hover capability (never UA sniffing). Governs whether a trigger opens
   // on hover and navigates on click, or acts as tap-to-open / tap-again-to-navigate.
   useEffect(() => {
-    const mq = window.matchMedia("(hover: hover)");
+    // Require BOTH a hover-capable AND a fine pointer, so coarse hybrid devices (a touch
+    // laptop reporting one hover input) aren't treated as desktop hover devices.
+    const mq = window.matchMedia("(hover: hover) and (pointer: fine)");
     const sync = (matches: boolean) => setHoverCapable(matches);
     sync(mq.matches);
     const onChange = (e: MediaQueryListEvent) => sync(e.matches);
@@ -198,7 +213,7 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
 
   return (
     <>
-      <header className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
+      <header className={`theme-light ${styles.header} ${scrolled ? styles.scrolled : ""}`}>
         <div className={`iw-container iw-container--wide ${styles.bar}`}>
           <Logo href="/" size={28} className={styles.logo} />
 
@@ -306,6 +321,7 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
                   );
                 }
                 const panelId = `mega-${item.label.replace(/\s+/g, "-").toLowerCase()}`;
+                const sectionCurrent = isSectionCurrent(item, pathname);
                 return (
                   <li
                     key={item.label}
@@ -318,7 +334,10 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
                   >
                     <button
                       type="button"
-                      className={styles.navTrigger}
+                      className={`${styles.navTrigger} ${sectionCurrent ? styles.navTriggerActive : ""}`}
+                      // Section wayfinding for AT — the current route lives under this
+                      // menu; the visible cue is the indicator bar, not colour alone.
+                      aria-current={sectionCurrent ? "true" : undefined}
                       aria-expanded={isOpen}
                       // Only reference the panel while it's actually in the DOM (it renders
                       // only when open), so aria-controls never dangles at a missing id.
@@ -390,16 +409,16 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
                 </Button>
               ))}
             </div>
-            <button
-              type="button"
-              className={styles.menuButton}
-              aria-expanded={mobileOpen}
-              aria-controls="mobile-nav"
-              onClick={() => setMobileOpen(true)}
-            >
-              <Menu aria-hidden="true" />
-              <span className="iw-visually-hidden">Open menu</span>
-            </button>
+            <span className={styles.menuButtonSlot}>
+              <IconButton
+                label="Open menu"
+                icon={<Menu aria-hidden="true" />}
+                appearance="secondary"
+                aria-expanded={mobileOpen}
+                aria-controls="mobile-nav"
+                onClick={() => setMobileOpen(true)}
+              />
+            </span>
           </div>
         </div>
       </header>

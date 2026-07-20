@@ -1,17 +1,21 @@
+/* SiteHeader — V2 light chrome. The <header> carries `.theme-light`, so this module reads
+   the V2 semantic tokens only (no --ink-*, --text-1..4, --border-*, --grad-*, --glow-*,
+   --glass-*, backdrop-filter, or raw colours). */
 .header {
   position: sticky;
   top: 0;
   z-index: 100;
-  color: var(--text-2);
-  background: color-mix(in srgb, var(--ink-950) 62%, transparent);
-  backdrop-filter: blur(var(--blur-panel)) saturate(1.4);
-  -webkit-backdrop-filter: blur(var(--blur-panel)) saturate(1.4);
-  border-bottom: 1px solid var(--border-1);
-  transition: background-color var(--dur-base) var(--ease-out);
+  background: var(--surface);
+  color: var(--text-body);
+  border-bottom: 1px solid var(--hairline);
+  transition:
+    box-shadow var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out);
 }
+/* Restrained neutral shadow only after scrolling. */
 .scrolled {
-  background: color-mix(in srgb, var(--ink-950) 84%, transparent);
-  border-bottom-color: var(--border-2);
+  border-bottom-color: var(--hairline-strong);
+  box-shadow: var(--v2-shadow-sm);
 }
 
 .bar {
@@ -21,9 +25,6 @@
   gap: var(--space-4);
   height: var(--header-h);
 }
-/* Very narrow phones (~320px): the wordmark + gap + 44px menu button can just exceed the
-   content box and push 2–3px past the viewport. Tightening the single gap here keeps the
-   compact header overflow-free at 320px without touching the normal/desktop layout. */
 @media (max-width: 400px) {
   .bar {
     gap: var(--space-2);
@@ -31,8 +32,13 @@
 }
 
 .logo {
-  color: var(--text-1);
+  color: var(--text-heading); /* dark-ink wordmark on the light header */
   flex: none;
+}
+.logo:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+  border-radius: var(--v2-radius-sm);
 }
 
 /* ---- Desktop nav ---- */
@@ -42,7 +48,7 @@
 }
 .navList {
   display: flex;
-  align-items: center; /* items centred within the full-height nav */
+  align-items: center;
   height: 100%;
   gap: var(--space-1);
   list-style: none;
@@ -54,15 +60,16 @@
 }
 .navLink,
 .navTrigger {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 var(--space-3);
   border: 0;
-  border-radius: var(--radius-md);
+  border-radius: var(--v2-radius-sm);
   background: transparent;
-  color: var(--text-2);
+  color: var(--text-body);
   font-family: var(--font-body);
   font-size: var(--fs-sm);
   font-weight: var(--fw-semibold);
@@ -72,43 +79,55 @@
     color var(--dur-fast) var(--ease-out),
     background-color var(--dur-fast) var(--ease-out);
 }
-.navLink:hover,
-.navTrigger:hover,
+.navLink:focus-visible,
+.navTrigger:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+/* Open trigger always reads as active; hover is a fine-pointer enhancement. */
 .navTrigger[aria-expanded="true"] {
-  color: var(--text-1);
-  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-heading);
+  background: var(--surface-hover);
 }
-/* Current-page indicator on the simple nav links — a short accent underline plus a
-   brighter label, so a visitor can see where they are. Not colour-only: the label also
-   brightens to full strength. */
-.navLinkActive {
-  color: var(--text-1);
+@media (hover: hover) and (pointer: fine) {
+  .navLink:hover,
+  .navTrigger:hover {
+    color: var(--text-heading);
+    background: var(--surface-hover);
+  }
 }
-.navLinkActive::after {
+/* Current state — brighter ink PLUS a short solid brand indicator bar (not colour-only). */
+.navLinkActive,
+.navTriggerActive {
+  color: var(--text-heading);
+}
+.navLinkActive::after,
+.navTriggerActive::after {
   content: "";
   position: absolute;
   left: var(--space-3);
   right: var(--space-3);
   bottom: 6px;
   height: 2px;
-  border-radius: var(--radius-pill);
-  background: var(--grad-cta);
-}
-.navLink {
-  position: relative;
+  border-radius: var(--v2-radius-pill);
+  background: var(--v2-brand);
 }
 .chevron {
   width: 16px;
   height: 16px;
-  margin-block-start: -1px; /* seat it on the cap height, not the line-box centre */
-  color: var(--text-3); /* its own colour, dimmer than the text-2 label — reads as a mark, not punctuation */
+  margin-block-start: -1px;
+  color: var(--text-muted);
   transition:
     transform var(--dur-base) var(--ease-out),
     color var(--dur-fast) var(--ease-out);
 }
-.navTrigger:hover .chevron,
 .navTrigger[aria-expanded="true"] .chevron {
-  color: var(--text-1); /* full strength alongside the label on hover/open */
+  color: var(--text-heading);
+}
+@media (hover: hover) and (pointer: fine) {
+  .navTrigger:hover .chevron {
+    color: var(--text-heading);
+  }
 }
 .chevron[data-open="true"] {
   transform: rotate(180deg);
@@ -121,7 +140,6 @@
   gap: var(--space-3);
   flex: none;
 }
-/* CTAs hidden on small screens (the mobile menu carries them); shown at desktop. */
 .ctaGroup {
   display: none;
   align-items: center;
@@ -130,24 +148,9 @@
 .secondaryCta {
   display: none;
 }
-.menuButton {
+/* The menu button (an IconButton) lives in a slot the breakpoints show/hide. */
+.menuButtonSlot {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--target-min);
-  height: var(--target-min);
-  border: 1px solid var(--border-2);
-  border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text-1);
-  cursor: pointer;
-}
-.menuButton:hover {
-  background: rgba(255, 255, 255, 0.09);
-}
-.menuButton > svg {
-  width: 22px;
-  height: 22px;
 }
 
 /* ---- Mega-menu panel ---- */
@@ -156,25 +159,16 @@
   top: 100%;
   left: 0;
   right: 0;
-  /* Near-opaque so the hero behind never bleeds through the link columns; the blur adds
-     the glass depth without sacrificing legibility. */
-  background: color-mix(in srgb, var(--ink-900) 99%, transparent);
-  backdrop-filter: blur(calc(var(--blur-panel) + 8px)) saturate(1.4);
-  -webkit-backdrop-filter: blur(calc(var(--blur-panel) + 8px)) saturate(1.4);
-  border-bottom: 1px solid var(--border-2);
-  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
-  box-shadow: var(--shadow-lg), var(--inset-hairline);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-top: 0;
+  border-radius: 0 0 var(--v2-radius-xl) var(--v2-radius-xl);
+  box-shadow: var(--v2-shadow-lg);
+  /* Fit within the viewport below the header; scroll internally if content is taller. */
+  max-height: calc(100dvh - var(--header-h));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   animation: megaIn var(--dur-base) var(--ease-out);
-}
-/* A single hairline of brand light along the top edge — echoes the reference's lit
-   panel border without spending a glow (it is a 1px line, not a field). */
-.megaPanel::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 1px;
-  background: var(--grad-path);
-  opacity: 0.55;
 }
 @keyframes megaIn {
   from {
@@ -184,6 +178,11 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .megaPanel {
+    animation: none;
   }
 }
 .megaInner {
@@ -205,7 +204,7 @@
   font-size: var(--fs-mono);
   letter-spacing: var(--ls-mono);
   text-transform: uppercase;
-  color: var(--text-3);
+  color: var(--text-muted);
   margin: 0 0 var(--space-3);
 }
 .megaLinks {
@@ -221,16 +220,23 @@
   gap: var(--space-3);
   min-height: var(--target-min);
   padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
-  color: var(--text-2);
+  border-radius: var(--v2-radius-md);
+  color: var(--text-body);
   transition:
     background-color var(--dur-fast) var(--ease-out),
     color var(--dur-fast) var(--ease-out);
 }
-.megaLink:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text-1);
+.megaLink:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
 }
+@media (hover: hover) and (pointer: fine) {
+  .megaLink:hover {
+    background: var(--surface-hover);
+    color: var(--text-heading);
+  }
+}
+/* Flat IconTile-style link icon — a tinted tile, no glow. */
 .megaLinkIcon {
   display: inline-flex;
   align-items: center;
@@ -238,17 +244,10 @@
   width: 34px;
   height: 34px;
   flex: none;
-  border-radius: var(--radius-sm);
-  color: var(--col-accent, var(--violet));
-  background: color-mix(in srgb, var(--col-accent, var(--violet)) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--col-accent, var(--violet)) 32%, transparent);
-  transition:
-    background-color var(--dur-fast) var(--ease-out),
-    border-color var(--dur-fast) var(--ease-out);
-}
-.megaLink:hover .megaLinkIcon {
-  background: color-mix(in srgb, var(--col-accent, var(--violet)) 20%, transparent);
-  border-color: color-mix(in srgb, var(--col-accent, var(--violet)) 52%, transparent);
+  border-radius: var(--v2-radius-md);
+  color: var(--col-accent, var(--v2-brand));
+  background: color-mix(in srgb, var(--col-accent, var(--v2-brand)) 12%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--col-accent, var(--v2-brand)) 26%, transparent);
 }
 .megaLinkIcon > svg {
   width: 18px;
@@ -262,72 +261,69 @@
   display: block;
   font-weight: var(--fw-semibold);
   font-size: var(--fs-sm);
-  color: var(--text-1);
+  color: var(--text-heading);
   line-height: var(--lh-snug);
 }
 .megaLinkDesc {
   display: block;
   font-size: var(--fs-xs);
-  color: var(--text-3);
+  color: var(--text-muted);
   margin-top: 2px;
 }
 .megaLinkChevron {
   width: 16px;
   height: 16px;
   flex: none;
-  color: var(--text-4);
+  color: var(--text-muted);
   opacity: 0;
   transform: translateX(-4px);
   transition:
     opacity var(--dur-fast) var(--ease-out),
-    transform var(--dur-fast) var(--ease-out),
-    color var(--dur-fast) var(--ease-out);
+    transform var(--dur-fast) var(--ease-out);
 }
-.megaLink:hover .megaLinkChevron {
-  opacity: 1;
-  transform: translateX(0);
-  color: var(--text-2);
+@media (hover: hover) and (pointer: fine) {
+  .megaLink:hover .megaLinkChevron {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
-/* ---- Promo panel (the panel's one bright element: the gradient CTA) ---- */
+/* ---- Promo panel: a compact tinted Card (no glow, no glass, no radial gradient) ---- */
 .megaPromo {
   align-self: stretch;
   display: flex;
   flex-direction: column;
   padding: var(--space-6);
-  border-radius: var(--radius-lg);
-  background:
-    radial-gradient(120% 80% at 50% -10%, rgba(168, 85, 247, 0.18), transparent 70%),
-    color-mix(in srgb, var(--ink-800) 68%, transparent);
-  border: 1px solid var(--border-2);
+  border-radius: var(--v2-radius-lg);
+  background: color-mix(in srgb, var(--v2-brand) 6%, var(--surface));
+  border: 1px solid var(--hairline-strong);
 }
 .megaPromoGlyph {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   margin-bottom: var(--space-4);
-  border-radius: var(--radius-pill);
-  color: var(--violet-bright);
-  border: 1px solid color-mix(in srgb, var(--violet) 40%, transparent);
-  background: radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.22), transparent 70%);
-  box-shadow: var(--glow-node-soft);
+  border-radius: var(--v2-radius-md);
+  color: var(--v2-brand);
+  background: var(--v2-brand-tint);
+  border: 1px solid color-mix(in srgb, var(--v2-brand) 24%, transparent);
 }
 .megaPromoGlyph > svg {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
 }
 .megaPromoHeading {
   font-family: var(--font-display);
-  font-weight: var(--fw-bold);
+  font-weight: var(--v2-fw-heading);
   font-size: var(--fs-h4);
-  color: var(--text-1);
+  color: var(--text-heading);
   margin: 0 0 var(--space-2);
 }
 .megaPromoBody {
   font-size: var(--fs-sm);
-  color: var(--text-2);
+  color: var(--text-body);
   margin: 0 0 var(--space-5);
 }
 .megaPromoActions {
@@ -343,47 +339,42 @@
   gap: var(--space-1);
   font-size: var(--fs-sm);
   font-weight: var(--fw-semibold);
-  color: var(--text-1);
+  color: var(--link);
+  border-radius: var(--v2-radius-sm);
+}
+.megaPromoLink:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
 }
 .megaPromoLink > svg {
   width: 15px;
   height: 15px;
   transition: transform var(--dur-fast) var(--ease-out);
 }
-.megaPromoLink:hover {
-  color: var(--link-hover);
-}
-.megaPromoLink:hover > svg {
-  transform: translateX(3px);
+@media (hover: hover) and (pointer: fine) {
+  .megaPromoLink:hover {
+    color: var(--link-hover);
+  }
+  .megaPromoLink:hover > svg {
+    transform: translateX(3px);
+  }
 }
 
 /* ---- Breakpoints ----
-   Thresholds account for the wide container's responsive gutter (up to 64px/side, added
-   by the alignment fix): the desktop nav + CTAs only appear where they fit inside the
-   centred grid without pushing past it (verified: the full nav overflowed at 1080px and
-   the 2nd CTA at 1280px once the gutter was applied). Below each threshold the
-   full-screen mobile nav carries the same links and CTAs.
-   < 1160px  : compact header (logo + hamburger).
-   ≥ 1160px  : desktop nav + primary CTA (mega-menus enabled).
-   ≥ 1400px  : the secondary CTA joins as well. */
+   < 1160px : compact header (logo + hamburger).
+   ≥ 1160px : desktop nav + primary CTA (mega-menus enabled).
+   ≥ 1400px : the secondary CTA joins. */
 @media (min-width: 1160px) {
   .desktopNav {
-    /* Stretch to the full header height so the trigger, the gap below it, and the
-       panel (at top:100% of the 72px header) are one continuous hover region — no
-       dead band where the pointer hits the header and fires a spurious mouseleave
-       mid-reach. .navList centres the items inside that full height, so the visual
-       is unchanged; only the hit area grows. See CLAUDE.md "Hover is not state". */
     display: flex;
     align-self: stretch;
   }
-  .menuButton {
+  .menuButtonSlot {
     display: none;
   }
   .ctaGroup {
     display: flex;
   }
-  /* Reserve the 300px promo column ONLY when there's a promo to fill it. Solutions,
-     Services and Resources have none, so they keep the full width for their links. */
   .megaInnerPromo {
     grid-template-columns: minmax(0, 1fr) 300px;
   }

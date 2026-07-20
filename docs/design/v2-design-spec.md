@@ -1,10 +1,11 @@
 # Infinite Weblinks — V2 Design Specification
 
-**Status:** Draft for review · **Type:** Design-definition (no implementation)
+**Status:** Approved for phased implementation · **Type:** Design-definition + phased build
 **Branch:** `claude/infinite-weblinks-v2-design-yb1yi3`
+**Approved decisions:** §15 (locked) · **Phase 1 implemented:** token foundation (`src/styles/tokens/v2.css`), theme classes, legal canary, design preview — see `docs/design/phase-1-implementation-report.md`
 **Author role:** Principal product designer · design-system architect · senior frontend engineer · conversion strategist · accessibility reviewer
 
-> This document defines the target for a V2 redesign of the Infinite Weblinks marketing site. It is a **specification only** — no application code, components, routes, or dependencies are changed by this document. Nothing here is implemented until this spec is reviewed and approved. It is written in the Spec Kit `specify → clarify → plan` frame and draws on the `frontend-design`, `ui-ux-pro-max`, `design-system` and `cro` skills.
+> This document defines the target for a V2 redesign of the Infinite Weblinks marketing site. The direction and the §15 decisions are **approved for phased implementation**. Implementation is **strictly phased and compatibility-first**: Phase 1 (this pass) adds an additive V2 foundation and migrates only a canary; it changes no APIs, forms, business logic, content data, SEO behaviour or route URLs, and removes no legacy tokens or components. It is written in the Spec Kit `specify → clarify → plan → tasks → implement` frame and draws on the `frontend-design`, `ui-ux-pro-max`, `design-system`, `accessibility` and `cro` skills.
 >
 > **The new direction, in one line:** ~70% Stripe (structure, restraint, product clarity, typographic confidence) + ~30% Clay (colour, bento composition, friendly character), rendered as **original Infinite Weblinks branding** — light-first, product-forward, accessible and conversion-focused. **The current cosmic/galaxy system is not the target.**
 
@@ -96,7 +97,7 @@ Infinite Weblinks helps owners see their digital growth as one connected system 
 7. **Restraint in motion.** Motion is functional and quiet (entrance reveals, hover feedback, progress). No ambient loops, no continuous rotation, no parallax on content. Reduced-motion is a first-class, complete static state.
 8. **Structure over spectacle for conversion.** Every section that asks for action states the value plainly and offers exactly one primary action. The primary CTA ("Build my growth plan") is the most legible element on the page.
 9. **Mobile is designed, not shrunk.** Layouts are composed mobile-first; a device that can't hover or fit a diagram still gets a first-class, non-overflowing experience (§10).
-10. **Accessibility and security are acceptance criteria, not polish.** WCAG 2.1 AA, keyboard operability, honest form handling, and the existing CSP hold for every new surface (§12).
+10. **Accessibility and security are acceptance criteria, not polish.** WCAG 2.2 AA, keyboard operability, honest form handling, and the existing CSP hold for every new surface (§12).
 11. **Token-driven, not ad hoc.** Every colour, space, radius, shadow, and duration comes from a token. No hardcoded `--ink-*`, `rgba(...)`, or hex in components (the current chrome/viz violations are fixed, not extended).
 12. **Refactor, don't rewrite.** Keep the token contract, the a11y patterns, the form security, and the working primitives. Change the *skin and composition*, preserve the *architecture*.
 
@@ -396,9 +397,10 @@ Motion is **functional and quiet**. It confirms, guides, and reveals — it neve
 
 Every V2 change must pass these before it's "done" (extends the constitution's Definition of Done; the current suite already enforces much of it).
 
-### Accessibility (WCAG 2.1 AA baseline)
-- **Contrast:** body text ≥ 4.5:1, large/UI text & meaningful non-text ≥ 3:1, on **every** surface (light default + reserved dark). All proposed tokens (§5) re-verified at lock. No meaning conveyed by colour alone (status words accompany status colour — keep the existing pattern in `ProgressChecklist`/`Stepper`).
-- **Keyboard:** all interactive elements operable and in logical order; visible focus (`--ring`) on every focusable; mega-menu, mobile dialog, accordions, tabbed timelines, forms fully keyboard-operable; Esc closes overlays and restores focus (already implemented — preserve).
+### Accessibility (WCAG 2.2 AA baseline — decision 10)
+Explicitly in scope for every V2 surface: visible & unobscured focus (2.4.11/2.4.12), minimum target sizes (2.5.8, `--target-min: 44px`), focus restoration on overlay close, complete reduced-motion static states, full keyboard operation, screen-reader alternatives for every diagram, and no colour-only meaning.
+- **Contrast:** body text ≥ 4.5:1, large/UI text & meaningful non-text ≥ 3:1, on **every** surface (light default + reserved dark). **All V2 tokens measured at lock — see the Phase 1 report; all pass.** No meaning conveyed by colour alone (status words accompany status colour — keep the existing pattern in `ProgressChecklist`/`Stepper`).
+- **Keyboard & focus:** all interactive elements operable and in logical order; visible, **unobscured** focus (the V2 `--ring` uses a surface-coloured gap + brand ring, ≥ 3:1 on light and night); mega-menu, mobile dialog, accordions, tabbed timelines, forms fully keyboard-operable; Esc closes overlays and restores focus (already implemented — preserve). Sticky-header offset (`scroll-padding-top`) keeps focused anchors unobscured (2.4.12).
 - **Structure & SR:** one `<h1>` per page (server-rendered), correct heading order, landmarks (`header`/`main`/`footer`/`nav`), skip link, `aria-current`, breadcrumb + JSON-LD, meaningful `alt`, decorative visuals `aria-hidden`. Diagrams expose a text alternative (`role="img"`+label or a real list).
 - **Forms:** labels, `aria-describedby`, error summary with focus management, honest states, no colour-only errors (all present in `FormField`/`ContactForm` — keep).
 - **Motion:** `prefers-reduced-motion` fully honoured (complete static states).
@@ -459,20 +461,23 @@ Delete temporary token aliases; remove dead CSS; extend unit/e2e coverage for ne
 
 ---
 
-## 15. Questions that genuinely require a product decision
+## 15. Resolved product decisions (approved — locked)
 
-These change the *product*, not just implementation — needed before/at Phase 0 sign-off.
+The following are the approved answers to the original open questions. They govern every subsequent phase.
 
-1. **Reference set (blocking token lock).** `docs/design-references/` is empty in the repo. Can you supply the actual V2 reference images/boards? Without them the §5 hues, radii, and shadow depths are informed proposals, not locked values.
-2. **Brand mark & the 5-stop gradient.** The infinity mark's identity gradient (`BrandSprite`: cyan→blue→violet→pink→orange) is the current brand's signature. Keep it as the *logo's* one flourish on light, restrain it to 2 stops, or make the mark monochrome/solid? (Affects brand recognition vs. Stripe restraint.)
-3. **Where does dark survive?** The spec reserves dark for: (a) the final-CTA band (recommended), (b) optionally the homepage hero, (c) optionally the footer, (d) optionally the 404. Which of these do you want dark? (Recommend: final CTA yes; hero light; footer light; 404 light.)
-4. **Homepage length & what to cut.** §9 trims 12 sections to ~9 and removes the services-constellation and (optionally) the learn strip from the homepage. Agree with the cuts, or must specific sections stay above the fold?
-5. **Pricing model exposure.** `/pricing` today explains *how pricing works* (no tiers/numbers). Does V2 keep the "how it works" framing, or introduce concrete tiers/packages (which would need a `PricingCard` primitive and changes the CRO flow)?
-6. **Primary conversion goal & CTA hierarchy.** Confirm "Build my growth plan" (`/growth-plan`) remains the single primary CTA sitewide, with "Contact" secondary — or should some pages lead with contact/booking? (Drives every section's action.)
-7. **Duplicate router resolution.** Confirm we keep the **bento** variants (`GoalBentoSection`, `ServicesConstellationSection`→light grid) and retire the **explorer** variants (`GoalExplorerSection`, `ServicesExplorerSection`) — or the reverse.
-8. **Sanity go-live.** Does V2 stay on local seed content (`NEXT_PUBLIC_SANITY_LIVE_CONTENT_ENABLED=false`), or is enabling live CMS reads in scope? (Affects whether proof sections get real content to design around.)
-9. **Tailwind/shadcn adoption (technical, but product-visible in timeline).** `CLAUDE.md`/constitution permit introducing Tailwind + shadcn. Recommendation: **stay on CSS Modules + tokens** — the token contract is the redesign's biggest asset and a light re-skin doesn't justify a styling-system migration. Confirm, or do you want shadcn primitives introduced during V2?
+1. **Visual references.** The supplied concepts are references for *component variety, bento layouts, card types, icon systems, information architecture, branded colour continuity, and product/system mockups* — **not** an instruction to preserve full-screen galaxies, giant globes, repeated constellation backgrounds, excessive neon bloom, oversized cinematic illustrations, or every section filling the viewport. The V2 target remains **~70% Stripe** (structure, restraint, product clarity) **+ ~30% Clay** (colour, bento, warmth) as **original Infinite Weblinks identity**. The §5 token values are **the initial approved values**, to be reviewed visually via the foundation preview before wider migration. *(Phase 1 locks them; all measured AA-compliant.)*
+2. **Brand mark & gradients.** **Keep** the existing multicolour gradient **inside** the infinity logo mark (`BrandSprite` `#iw-grad`). **Outside** the logo: retire the 5-stop spectrum; permit **one restrained two-colour signature gradient** (`--v2-grad-signature`, violet→pink) used **only** for selected primary CTAs or rare signature moments. Ordinary cards, icons, headings and backgrounds must **not** use rainbow gradients.
+3. **Dark surfaces (approved strategy).** Homepage hero **light**; final CTA **dark**; footer **light**; 404/error **light**; long-form & legal **light**. **One additional dark signature section** is allowed *only* when it communicates a meaningful product idea. **Dark is never the default fallback.**
+4. **Homepage.** Approve the ~9-section structure (§9). Remove/relocate: `ServicesConstellationSection` off the homepage, the homepage learning-resources strip, duplicate goal/service routers, and oversized customer-journey visuals off the homepage. Dedicated **service, learn and connected-growth routes are kept.**
+5. **Pricing.** **Do not invent prices, tiers or ranges.** Keep the existing *"how pricing works"* positioning. A `PricingCard`/`EngagementCard` may be built **later** for one-off project · ongoing support · managed delivery · specialist engagement, using labels like **"Custom quote"** until truthful, business-approved figures exist.
+6. **CTA hierarchy.** Default sitewide **primary CTA: "Build my growth plan."** Secondary is contextual (commonly *See how it works* / *Explore services* / *Contact us*). On the contact page, **the contact-form submission is the primary action.**
+7. **Duplicate components.** **Keep the bento-based route components; retire the older explorer variants** during the later migration phase. **Cosmic terminology must not survive** in renamed V2 components — e.g. `ServicesConstellationSection` → **`ServicesBentoSection`** (or `ServicesGridSection`); no "cosmic/constellation/universe/galaxy" names on components that are no longer cosmic.
+8. **Sanity.** **Keep local seed content** as the active source during V2. Enabling live Sanity content is **out of scope** for this redesign phase.
+9. **Styling technology.** **Keep CSS Modules + CSS custom properties + the existing Next.js architecture + Server Components by default.** Do **not** introduce Tailwind, shadcn, a second styling framework, or a general component dependency merely to reproduce components the repo already supports.
+10. **Accessibility standard.** Target is **WCAG 2.2 AA** (was 2.1). The existing contract holds and explicitly includes visible/unobscured focus, minimum target sizes, focus restoration, reduced-motion static states, keyboard operation, screen-reader alternatives for diagrams, and no colour-only meaning.
+
+> **Implementation namespacing note.** During the phased migration the V2 primitives ship under a `--v2-*` namespace (`src/styles/tokens/v2.css`) so they never collide with legacy tokens and can be reviewed/rolled back in isolation. They are mapped onto the existing semantic token names (`--surface`, `--text-heading`, `--ring`, …) inside `.theme-light` / `.theme-light-alt` / `.theme-night`. At the final convergence phase — once every consumer has migrated and the legacy layer is deleted — the `--v2-` primitives are promoted to the canonical names used in §5.
 
 ---
 
-*End of specification. Awaiting review and approval before any implementation (Phase 0 → 1).*
+*Specification approved for phased implementation. Phase 1 (foundation + canary) is implemented on this branch; see `docs/design/phase-1-implementation-report.md`. Phases 2+ remain gated on review of the foundation preview.*

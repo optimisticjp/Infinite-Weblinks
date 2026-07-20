@@ -1,39 +1,49 @@
 import type { Metadata } from "next";
-import { Badge } from "@/components/primitives/Badge";
+import { ArrowRight, Plus, Search, Settings, X, Download } from "lucide-react";
 import { SectionHeader } from "@/components/primitives/SectionHeader";
 import { Icon } from "@/components/primitives/Icon";
+import { Button } from "@/components/primitives/Button";
+import { IconButton } from "@/components/primitives/IconButton";
+import { Badge } from "@/components/primitives/Badge";
+import { Chip } from "@/components/primitives/Chip";
+import { DeliveryModelBadge } from "@/components/primitives/DeliveryModelBadge";
+import { FilterChip } from "@/components/primitives/FilterChip";
+import { IconTile } from "@/components/primitives/IconTile";
+import { Card } from "@/components/primitives/Card";
+import { BentoGrid } from "@/components/primitives/BentoGrid";
+import { BentoCard } from "@/components/primitives/BentoCard";
+import { FilterChipDemo } from "./FilterChipDemo";
 import styles from "./design-preview.module.css";
 
 /**
- * INTERNAL V2 foundation preview — TEMPORARY.
+ * INTERNAL V2 component + foundation preview — TEMPORARY.
  *
- * A visual board for the "Clear Systems" (Stripe ~70% / Clay ~30%) V2 foundation:
- * light / light-alt / night surfaces, type, colour, borders, shadows, radii, button
- * visual targets, badges/chips, icon tiles, cards, form fields, focus + status states,
- * and section spacing. It opts into the V2 themes explicitly and is excluded from the
- * sitemap and nav. Not the final component library. Remove before production
- * (see docs/design/phase-1-implementation-report.md).
+ * The single source of truth for the V2 primitives: every component example below uses the
+ * real production component (Button, IconButton, Badge, Chip, FilterChip, DeliveryModelBadge,
+ * IconTile, Card, BentoCard/BentoGrid) on the V2 light surface. noindex/nofollow, excluded
+ * from sitemap + nav, exactly one <h1>. Not a Storybook or a marketing page. Remove before
+ * production (see docs/design/phase-2a-implementation-report.md).
  */
 export const metadata: Metadata = {
-  title: "V2 Foundation Preview (internal)",
+  title: "V2 Foundation & Components Preview (internal)",
   robots: { index: false, follow: false },
 };
 
 const DOMAINS = [
-  { key: "strategy", label: "Strategy", icon: "compass", ratio: "7.10:1 / 6.15:1" },
-  { key: "build", label: "Build & Launch", icon: "monitor", ratio: "6.70:1 / 5.81:1" },
-  { key: "discover", label: "Get Discovered", icon: "search", ratio: "5.36:1 / 4.76:1" },
-  { key: "convert", label: "Convert", icon: "git-branch", ratio: "6.04:1 / 5.24:1" },
-  { key: "operate", label: "Deliver & Operate", icon: "settings", ratio: "5.18:1 / 4.57:1" },
-  { key: "retain", label: "Retain", icon: "heart", ratio: "5.43:1 / 4.86:1" },
-  { key: "ai", label: "AI & Data", icon: "zap", ratio: "5.47:1 / 4.82:1" },
+  { key: "strategy", label: "Strategy", icon: "compass" },
+  { key: "build", label: "Build & Launch", icon: "monitor" },
+  { key: "discover", label: "Get Discovered", icon: "search" },
+  { key: "convert", label: "Convert", icon: "git-branch" },
+  { key: "operate", label: "Deliver & Operate", icon: "settings" },
+  { key: "retain", label: "Retain", icon: "heart" },
+  { key: "ai", label: "AI & Data", icon: "zap" },
 ] as const;
 
 const STATUSES = [
-  { key: "success", label: "Success", icon: "check", ratio: "5.43:1 / 4.86:1" },
-  { key: "warning", label: "Warning", icon: "shield", ratio: "6.26:1 / 5.52:1" },
-  { key: "danger", label: "Danger", icon: "help-circle", ratio: "6.29:1 / 5.44:1" },
-  { key: "info", label: "Information", icon: "sparkles", ratio: "6.70:1 / 5.81:1" },
+  { key: "success", label: "Success", icon: "check" },
+  { key: "warning", label: "Warning", icon: "shield" },
+  { key: "danger", label: "Danger", icon: "help-circle" },
+  { key: "info", label: "Information", icon: "sparkles" },
 ] as const;
 
 export default function DesignPreviewPage() {
@@ -42,19 +52,19 @@ export default function DesignPreviewPage() {
       <div className={styles.banner}>
         <span className={styles.bannerTag}>Internal · noindex</span>
         <span>
-          V2 “Clear Systems” foundation preview — not a production page. Visual board only; contrast
-          ratios shown are measured (WCAG 2.2 AA).
+          V2 “Clear Systems” component preview — not a production page. Examples use the real
+          primitives; contrast is verified by tests/unit/v2-contrast.test.ts (WCAG 2.2 AA).
         </span>
       </div>
 
       <div className="iw-container">
-        {/* 1 · Intro */}
+        {/* 1 · Intro (the one document H1) */}
         <section className={styles.section}>
           <SectionHeader
             as="h1"
-            eyebrow="V2 Foundation · Phase 1"
-            title="Clear Systems — light-first foundation"
-            intro="Stripe-style structure and restraint (~70%) warmed with Clay colour, bento and character (~30%), as original Infinite Weblinks identity. Everything below reads the semantic theme tokens, so components re-theme by wrapper class alone."
+            eyebrow="V2 Foundation · Phase 2A"
+            title="Clear Systems — core primitives"
+            intro="Stripe-style structure and restraint (~70%) warmed with Clay colour, bento and character (~30%), as original Infinite Weblinks identity. Every example uses the production component; V2 styling activates only inside the V2 theme surfaces."
           />
         </section>
 
@@ -62,44 +72,63 @@ export default function DesignPreviewPage() {
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Surfaces</h2>
           <div className={styles.gridWide}>
-            <div className={`theme-light ${styles.card}`}>
+            <div className={`theme-light ${styles.surfacePanel}`}>
               <span className={styles.cardTitle}>theme-light</span>
               <span className={styles.cardBody}>Base near-white canvas (paper). Default V2 surface.</span>
+              <div className={styles.row}>
+                <Button size="sm">Primary</Button>
+                <Button variant="secondary" size="sm">
+                  Secondary
+                </Button>
+              </div>
             </div>
-            <div className={`theme-light-alt ${styles.card}`}>
+            <div className={`theme-light-alt ${styles.surfacePanel}`}>
               <span className={styles.cardTitle}>theme-light-alt</span>
-              <span className={styles.cardBody}>Alternating band (paper-2); cards lift to pure white.</span>
+              <span className={styles.cardBody}>Alternating band (paper-2); raised cards lift to white.</span>
+              <div className={styles.row}>
+                <Button size="sm">Primary</Button>
+                <Button variant="ghost" size="sm">
+                  Ghost
+                </Button>
+              </div>
             </div>
-            <div className={`theme-night ${styles.card}`}>
+            <div className={`theme-night ${styles.surfacePanel}`}>
               <span className={styles.cardTitle}>theme-night</span>
-              <span className={styles.cardBody}>Reserved dark signature surface — final CTA, one meaningful section. Never a fallback.</span>
+              <span className={styles.cardBody}>Reserved dark signature surface — never a fallback.</span>
+              <div className={styles.row}>
+                <Button variant="signature" size="sm">
+                  Signature
+                </Button>
+                <Button variant="secondary" size="sm">
+                  Secondary
+                </Button>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* 3 · Typography */}
+        {/* 3 · Typography (non-semantic specimens — one document H1 only) */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Typography</h2>
           <div className={styles.typeRow}>
             <span className={styles.typeLabel}>Display · Sora 700</span>
-            <span className={styles.display}>Digital growth, built around your goals</span>
+            <p className={styles.display} style={{ margin: 0 }}>
+              Digital growth, built around your goals
+            </p>
           </div>
-          <div className={styles.typeRow}>
-            <span className={styles.typeLabel}>H1</span>
-            <h1 style={{ margin: 0 }}>A smarter way to plan and grow</h1>
-          </div>
-          <div className={styles.typeRow}>
-            <span className={styles.typeLabel}>H2</span>
-            <h2 style={{ margin: 0 }}>One connected system, in the right order</h2>
-          </div>
-          <div className={styles.typeRow}>
-            <span className={styles.typeLabel}>H3</span>
-            <h3 style={{ margin: 0 }}>Start where you are</h3>
-          </div>
-          <div className={styles.typeRow}>
-            <span className={styles.typeLabel}>H4</span>
-            <h4 style={{ margin: 0 }}>What you get</h4>
-          </div>
+          {[
+            ["H1", styles.h1Sample, "A smarter way to plan and grow"],
+            ["H2", styles.h2Sample, "One connected system, in the right order"],
+            ["H3", styles.h3Sample, "Start where you are"],
+            ["H4", styles.h4Sample, "What you get"],
+          ].map(([label, cls, text]) => (
+            <div key={label} className={styles.typeRow}>
+              <span className={styles.typeLabel}>{label} (visual sample — not a document heading)</span>
+              <p className={cls} style={{ margin: 0 }}>
+                {text}
+              </p>
+            </div>
+          ))}
           <div className={styles.typeRow}>
             <span className={styles.typeLabel}>Lead</span>
             <p className={styles.lead}>
@@ -122,15 +151,9 @@ export default function DesignPreviewPage() {
             <span className={styles.typeLabel}>Mono / eyebrow</span>
             <span className={styles.mono}>THE CONNECTED PICTURE</span>
           </div>
-          <div className={styles.typeRow}>
-            <span className={styles.typeLabel}>Link · 6.12:1</span>
-            <span>
-              <a className={styles.link} href="#main">Build my growth plan</a>
-            </span>
-          </div>
         </section>
 
-        {/* 4 · Brand & domain colour */}
+        {/* 4 · Colour */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Colour</h2>
           <p className={styles.subTitle}>Brand</p>
@@ -139,7 +162,7 @@ export default function DesignPreviewPage() {
               { name: "brand", v: "var(--v2-brand)", note: "6.12:1 vs white" },
               { name: "brand-strong", v: "var(--v2-brand-strong)", note: "7.87:1 vs white" },
               { name: "brand-tint", v: "var(--v2-brand-tint)", note: "selected surface" },
-              { name: "signature grad", v: "var(--v2-grad-signature)", note: "CTAs / rare only" },
+              { name: "signature grad", v: "var(--v2-grad-signature)", note: "CTAs only · min 5.44:1" },
             ].map((s) => (
               <div key={s.name} className={styles.swatch}>
                 <div className={styles.swatchChip} style={{ background: s.v }} />
@@ -150,72 +173,48 @@ export default function DesignPreviewPage() {
               </div>
             ))}
           </div>
-
-          <p className={styles.subTitle}>Domain wayfinding (ink on white / on tint)</p>
+          <p className={styles.subTitle}>Domain wayfinding (ink on its tint)</p>
           <div className={styles.grid}>
             {DOMAINS.map((d) => (
               <div key={d.key} className={styles.swatch}>
                 <div
                   className={styles.swatchChip}
-                  style={{ background: `var(--v2-domain-${d.key}-tint)` }}
+                  style={{ background: `var(--v2-domain-${d.key}-tint)`, display: "grid", placeItems: "center" }}
                 >
-                  <div style={{ display: "grid", placeItems: "center", height: "100%" }}>
-                    <span
-                      style={{
-                        color: `var(--v2-domain-${d.key}-ink)`,
-                        fontWeight: 700,
-                        fontSize: "var(--fs-sm)",
-                      }}
-                    >
-                      {d.label}
-                    </span>
-                  </div>
+                  <span style={{ color: `var(--v2-domain-${d.key}-ink)`, fontWeight: 700, fontSize: "var(--fs-sm)" }}>
+                    {d.label}
+                  </span>
                 </div>
                 <div className={styles.swatchMeta}>
                   <span className={styles.swatchName}>domain-{d.key}</span>
-                  <span className={styles.swatchNote}>{d.ratio}</span>
+                  <span className={styles.swatchNote}>ink ≥ 4.5:1 on tint</span>
                 </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* 5 · Borders */}
+        {/* 5 · Borders + 6 · Elevation + 7 · Radii */}
         <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Borders</h2>
+          <h2 className={styles.sectionTitle}>Borders, elevation &amp; radii</h2>
+          <p className={styles.subTitle}>Borders</p>
           <div className={styles.grid}>
-            <div className={styles.card} style={{ border: "1px solid var(--hairline)" }}>
-              <span className={styles.cardTitle}>hairline</span>
-              <span className={styles.cardBody}>Decorative divider (separator only).</span>
+            <div className={styles.borderTile} style={{ border: "1px solid var(--hairline)" }}>
+              hairline
             </div>
-            <div className={styles.card} style={{ border: "1px solid var(--hairline-strong)" }}>
-              <span className={styles.cardTitle}>hairline-strong · 3.66:1</span>
-              <span className={styles.cardBody}>Functional boundary — input / control edge.</span>
+            <div className={styles.borderTile} style={{ border: "1px solid var(--hairline-strong)" }}>
+              hairline-strong · 3.66:1
             </div>
           </div>
-        </section>
-
-        {/* 6 · Shadows */}
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Elevation (neutral shadows, no glow)</h2>
+          <p className={styles.subTitle}>Elevation (neutral shadows, no glow)</p>
           <div className={styles.grid}>
-            {[
-              ["xs", "var(--v2-shadow-xs)"],
-              ["sm", "var(--v2-shadow-sm)"],
-              ["md", "var(--v2-shadow-md)"],
-              ["lg", "var(--v2-shadow-lg)"],
-              ["card-hover", "var(--v2-shadow-card-hover)"],
-            ].map(([n, v]) => (
-              <div key={n} className={styles.shadowTile} style={{ boxShadow: v }}>
+            {["xs", "sm", "md", "lg", "card-hover"].map((n) => (
+              <div key={n} className={styles.shadowTile} style={{ boxShadow: `var(--v2-shadow-${n})` }}>
                 shadow-{n}
               </div>
             ))}
           </div>
-        </section>
-
-        {/* 7 · Radii */}
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Radii</h2>
+          <p className={styles.subTitle}>Radii</p>
           <div className={styles.grid}>
             {[
               ["sm 8", "var(--v2-radius-sm)"],
@@ -231,73 +230,142 @@ export default function DesignPreviewPage() {
           </div>
         </section>
 
-        {/* 8 · Buttons (visual targets) */}
+        {/* 8 · Buttons */}
         <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Buttons (V2 visual targets)</h2>
-          <div className={styles.btnRow}>
-            <button type="button" className={`${styles.btn} ${styles.btnPrimary}`}>
-              Build my growth plan
-            </button>
-            <button type="button" className={`${styles.btn} ${styles.btnSecondary}`}>
-              See how it works
-            </button>
-            <button type="button" className={`${styles.btn} ${styles.btnGhost}`}>
-              Explore services
-            </button>
-            <button type="button" className={`${styles.btn} ${styles.btnText}`}>
-              Contact us →
-            </button>
-            <button type="button" className={`${styles.btn} ${styles.btnSignature}`}>
-              Signature CTA
-            </button>
+          <h2 className={styles.sectionTitle}>Button</h2>
+          <p className={styles.subTitle}>Variants (md)</p>
+          <div className={styles.row}>
+            <Button variant="primary">Build my growth plan</Button>
+            <Button variant="signature">Signature CTA</Button>
+            <Button variant="secondary">See how it works</Button>
+            <Button variant="ghost">Explore services</Button>
+            <Button variant="text">Contact us</Button>
           </div>
-          <p className={styles.muted} style={{ marginTop: "var(--space-4)" }}>
-            Tab to any control to see the V2 focus ring (surface-gap + brand ring, ≥ 3:1).
-          </p>
+          <p className={styles.subTitle}>Sizes</p>
+          <div className={styles.row}>
+            <Button size="sm">Small</Button>
+            <Button size="md">Medium</Button>
+            <Button size="lg">Large</Button>
+          </div>
+          <p className={styles.subTitle}>Icons, link vs button, disabled &amp; loading</p>
+          <div className={styles.row}>
+            <Button iconLeft={<Plus size={16} />}>Icon left</Button>
+            <Button variant="secondary" iconRight={<ArrowRight size={16} />}>
+              Icon right
+            </Button>
+            <Button href="#main">Rendered as a link</Button>
+            <Button disabled>Disabled</Button>
+            <Button loading>Saving…</Button>
+          </div>
+          <p className={styles.subTitle}>IconButton (appearance × size, button + link)</p>
+          <div className={styles.row}>
+            <IconButton label="Search" icon={<Search />} appearance="primary" size="sm" />
+            <IconButton label="Search" icon={<Search />} appearance="primary" size="md" />
+            <IconButton label="Search" icon={<Search />} appearance="primary" size="lg" />
+            <IconButton label="Settings" icon={<Settings />} appearance="secondary" />
+            <IconButton label="Dismiss" icon={<X />} appearance="ghost" />
+            <IconButton label="Download the guide" icon={<Download />} appearance="secondary" href="#main" />
+          </div>
         </section>
 
         {/* 9 · Badges & chips */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Badges &amp; chips</h2>
-          <div className={styles.btnRow}>
-            <Badge color="var(--v2-domain-strategy-ink)">We Do the Work</Badge>
-            <Badge color="var(--v2-domain-build-ink)">We Bring an Expert</Badge>
-            <Badge color="var(--v2-domain-operate-ink)" variant="outline">
-              We Run It
+          <p className={styles.subTitle}>Badge tones</p>
+          <div className={styles.row}>
+            <Badge tone="neutral">Neutral</Badge>
+            <Badge tone="brand">Brand</Badge>
+            <Badge tone="domain" color="var(--v2-domain-discover-ink)">
+              Domain
             </Badge>
-            <Badge color="var(--v2-domain-retain-ink)" variant="outline">
-              You Run It
-            </Badge>
+            <Badge tone="success">Verified</Badge>
+            <Badge tone="warning">Draft</Badge>
+            <Badge tone="danger">Blocked</Badge>
+            <Badge tone="information">Info</Badge>
+            <Badge variant="outline">Outline</Badge>
           </div>
-          <div className={styles.btnRow} style={{ marginTop: "var(--space-4)" }}>
-            <span className={styles.chip}>
-              <Icon name="check" /> Custom quote
-            </span>
-            <span className={styles.chip}>
-              <Icon name="link" /> Connected
-            </span>
-            <span className={styles.chip}>
-              <Icon name="shield" /> You own it
-            </span>
+          <p className={styles.subTitle}>Delivery-model badges</p>
+          <div className={styles.row}>
+            <DeliveryModelBadge model="we-do" />
+            <DeliveryModelBadge model="we-expert" />
+            <DeliveryModelBadge model="we-run" />
+            <DeliveryModelBadge model="you-run" />
+          </div>
+          <p className={styles.subTitle}>Chips (static) &amp; FilterChips (toggle — aria-pressed)</p>
+          <div className={styles.row}>
+            <Chip icon={<Icon name="check" />}>Custom quote</Chip>
+            <Chip icon={<Icon name="link" />}>Connected</Chip>
+            <Chip icon={<Icon name="shield" />}>You own it</Chip>
+          </div>
+          <div className={styles.row} style={{ marginTop: "var(--space-4)" }}>
+            <FilterChip selected>Selected (static)</FilterChip>
+            <FilterChip>Unselected (static)</FilterChip>
+          </div>
+          <div className={styles.row} style={{ marginTop: "var(--space-4)" }}>
+            <FilterChipDemo />
           </div>
         </section>
 
         {/* 10 · Icon tiles */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Icon tiles (flat)</h2>
+          <p className={styles.subTitle}>Tones (md)</p>
           <div className={styles.tileRow}>
+            <div className={styles.tileCell}>
+              <IconTile color="var(--v2-ink-muted)">
+                <Icon name="folder" />
+              </IconTile>
+              <span className={styles.tileCaption}>neutral</span>
+            </div>
+            <div className={styles.tileCell}>
+              <IconTile color="var(--v2-brand)">
+                <Icon name="sparkles" />
+              </IconTile>
+              <span className={styles.tileCaption}>brand</span>
+            </div>
             {DOMAINS.map((d) => (
-              <span
-                key={d.key}
-                className={styles.tile}
-                style={{
-                  ["--tile-tint" as string]: `var(--v2-domain-${d.key}-tint)`,
-                  ["--tile-ink" as string]: `var(--v2-domain-${d.key}-ink)`,
-                }}
-              >
-                <Icon name={d.icon} />
-              </span>
+              <div key={d.key} className={styles.tileCell}>
+                <IconTile color={`var(--v2-domain-${d.key}-ink)`}>
+                  <Icon name={d.icon} />
+                </IconTile>
+                <span className={styles.tileCaption}>{d.key}</span>
+              </div>
             ))}
+          </div>
+          <p className={styles.subTitle}>Status tones &amp; sizes (sm / md / lg) &amp; filled</p>
+          <div className={styles.tileRow}>
+            {STATUSES.map((s) => (
+              <div key={s.key} className={styles.tileCell}>
+                <IconTile color={`var(--v2-${s.key})`}>
+                  <Icon name={s.icon} />
+                </IconTile>
+                <span className={styles.tileCaption}>{s.key}</span>
+              </div>
+            ))}
+            <div className={styles.tileCell}>
+              <IconTile color="var(--v2-domain-strategy-ink)" size="sm">
+                <Icon name="compass" />
+              </IconTile>
+              <span className={styles.tileCaption}>sm</span>
+            </div>
+            <div className={styles.tileCell}>
+              <IconTile color="var(--v2-domain-strategy-ink)" size="md">
+                <Icon name="compass" />
+              </IconTile>
+              <span className={styles.tileCaption}>md</span>
+            </div>
+            <div className={styles.tileCell}>
+              <IconTile color="var(--v2-domain-strategy-ink)" size="lg">
+                <Icon name="compass" />
+              </IconTile>
+              <span className={styles.tileCaption}>lg</span>
+            </div>
+            <div className={styles.tileCell}>
+              <IconTile color="var(--v2-domain-convert-ink)" variant="filled">
+                <Icon name="git-branch" />
+              </IconTile>
+              <span className={styles.tileCaption}>filled</span>
+            </div>
           </div>
         </section>
 
@@ -305,25 +373,86 @@ export default function DesignPreviewPage() {
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Card surfaces</h2>
           <div className={styles.gridWide}>
-            <div className={styles.card}>
-              <span className={styles.cardTitle}>Raised card</span>
-              <span className={styles.cardBody}>Paper + hairline + soft shadow. The default panel.</span>
-            </div>
-            <div className={`${styles.card} ${styles.cardInteractive}`}>
-              <span className={styles.cardTitle}>Interactive</span>
-              <span className={styles.cardBody}>Hover lifts with a neutral shadow — no colour glow.</span>
-            </div>
-            <div
-              className={`${styles.card} ${styles.cardFeatured} ${styles.cardInteractive}`}
-              style={{ ["--card-line" as string]: "var(--v2-domain-convert-line)" }}
-            >
-              <span className={styles.cardTitle}>Featured bento tile</span>
-              <span className={styles.cardBody}>One domain accent rail. Clay warmth, Stripe restraint.</span>
-            </div>
+            <Card variant="plain">
+              <span className={styles.cardTitle}>Plain</span>
+              <span className={styles.cardBody}>No border or shadow — a padded grouping block.</span>
+            </Card>
+            <Card variant="raised">
+              <span className={styles.cardTitle}>Raised</span>
+              <span className={styles.cardBody}>Paper + hairline + soft neutral shadow. The default panel.</span>
+            </Card>
+            <Card variant="outlined">
+              <span className={styles.cardTitle}>Outlined</span>
+              <span className={styles.cardBody}>Crisp functional border, no shadow.</span>
+            </Card>
+            <Card variant="tinted" accent="var(--v2-domain-convert-ink)" railed>
+              <span className={styles.cardTitle}>Tinted + accent rail</span>
+              <span className={styles.cardBody}>One domain accent as a soft tint and a top rail.</span>
+            </Card>
+            <Card as="article" variant="raised" interactive accent="var(--v2-domain-build-ink)">
+              <span className={styles.cardTitle}>
+                <a href="#main">Interactive (valid link, focus-within lift)</a>
+              </span>
+              <span className={styles.cardBody}>Hover/focus lifts ≤ 2px with a neutral shadow — no glow.</span>
+            </Card>
+            <Card variant="night">
+              <span className={styles.cardTitle}>Night</span>
+              <span className={styles.cardBody}>Self-contained dark card for a signature moment.</span>
+            </Card>
           </div>
         </section>
 
-        {/* 12 · Form fields */}
+        {/* 12 · Bento */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Bento (featured / medium / compact · linked + informational)</h2>
+          <BentoGrid>
+            <BentoCard
+              variant="featured"
+              hue="var(--v2-domain-strategy-ink)"
+              icon="compass"
+              eyebrow="Start here"
+              title="Explore by goal"
+              blurb="Pick where you want to grow and we map the smallest next step."
+              href="#main"
+              badge={<DeliveryModelBadge model="we-do" />}
+            />
+            <BentoCard
+              variant="medium"
+              hue="var(--v2-domain-build-ink)"
+              icon="monitor"
+              title="Websites & Development"
+              blurb="A fast, owned foundation that everything else connects to."
+              href="#main"
+            />
+            <BentoCard
+              variant="medium"
+              hue="var(--v2-domain-discover-ink)"
+              icon="search"
+              title="SEO & Content"
+              blurb="Be found by the people already looking for you."
+              href="#main"
+            />
+            <BentoCard
+              variant="compact"
+              hue="var(--v2-domain-operate-ink)"
+              icon="settings"
+              index="01"
+              eyebrow="Informational"
+              title="Deliver & Operate"
+              blurb="Non-linked tile (no corner arrow, not a single destination)."
+            />
+            <BentoCard
+              variant="compact"
+              hue="var(--v2-domain-retain-ink)"
+              icon="heart"
+              title="Retain"
+              blurb="Turn first orders into repeat customers."
+              href="#main"
+            />
+          </BentoGrid>
+        </section>
+
+        {/* 13 · Form fields */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Form-field surfaces &amp; focus</h2>
           <div className={styles.gridWide}>
@@ -343,10 +472,6 @@ export default function DesignPreviewPage() {
               </select>
             </label>
             <label className={styles.field}>
-              <span className={styles.fieldLabel}>Anything else?</span>
-              <textarea className={styles.control} rows={3} placeholder="Tell us about your goals" />
-            </label>
-            <label className={styles.field}>
               <span className={styles.fieldLabel}>Email (error state)</span>
               <input
                 className={`${styles.control} ${styles.controlError}`}
@@ -362,7 +487,7 @@ export default function DesignPreviewPage() {
           </div>
         </section>
 
-        {/* 13 · Status states */}
+        {/* 14 · Status states */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>Status states</h2>
           <div className={styles.gridWide}>
@@ -377,33 +502,10 @@ export default function DesignPreviewPage() {
               >
                 <Icon name={s.icon} className={styles.noteIcon} />
                 <span>
-                  <strong>{s.label}.</strong> Colour on white / on its own tint measures {s.ratio}.
+                  <strong>{s.label}.</strong> Colour on white and on its own tint both measure ≥ 4.5:1.
                 </span>
               </div>
             ))}
-          </div>
-        </section>
-
-        {/* 14 · Night surface in context */}
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>Night surface in context</h2>
-          <div className={`theme-night ${styles.nightBlock}`}>
-            <h3 style={{ marginTop: 0 }}>Start where you are</h3>
-            <p className={styles.body} style={{ marginBottom: "var(--space-5)" }}>
-              The reserved dark signature moment — final CTA or one meaningful product idea. Text and
-              links stay ≥ 4.5:1; the ring adapts to the dark surface.
-            </p>
-            <div className={styles.btnRow}>
-              <button type="button" className={`${styles.btn} ${styles.btnSignature}`}>
-                Build my growth plan
-              </button>
-              <button type="button" className={`${styles.btn} ${styles.btnSecondary}`}>
-                See how it works
-              </button>
-              <a className={styles.link} href="#main">
-                A link on night
-              </a>
-            </div>
           </div>
         </section>
 

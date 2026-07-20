@@ -1,0 +1,47 @@
+/* FilterChip — toggleable filter button (V2). */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 36px;
+  padding: var(--space-1) var(--space-4);
+  border-radius: var(--v2-radius-pill);
+  border: 1px solid var(--hairline-strong);
+  background: var(--surface-raised);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  line-height: 1.3;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out);
+}
+.chip:focus-visible {
+  outline: none;
+  box-shadow: var(--v2-ring);
+}
+@media (hover: hover) {
+  .chip:not(.selected):hover {
+    border-color: var(--v2-line-strong);
+    background: var(--surface-hover);
+  }
+}
+.selected {
+  background: var(--v2-brand-tint);
+  border-color: var(--v2-brand);
+  color: var(--v2-brand-strong);
+}
+/* The check occupies a fixed slot so selecting doesn't shift the label. */
+.check {
+  display: inline-grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+}
+.check :global(svg) {
+  width: 14px;
+  height: 14px;
+}

@@ -1,0 +1,76 @@
+/* IconButton — square icon-only control (V2). No legacy equivalent; V2 tokens throughout. */
+.iconBtn {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  aspect-ratio: 1;
+  border: 1px solid transparent;
+  border-radius: var(--v2-radius-sm);
+  color: var(--text-heading);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+.iconBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.iconBtn:focus-visible {
+  outline: none;
+  box-shadow: var(--v2-ring);
+}
+
+/* Sizes — md is the 44px normal target; sm (40px) is a dense variant (≥ WCAG 2.2 24px min). */
+.sm {
+  width: 40px;
+}
+.md {
+  width: var(--target-min);
+}
+.lg {
+  width: 52px;
+}
+.glyph {
+  display: inline-flex;
+}
+.sm .glyph :global(svg) {
+  width: 18px;
+  height: 18px;
+}
+.md .glyph :global(svg) {
+  width: 20px;
+  height: 20px;
+}
+.lg .glyph :global(svg) {
+  width: 24px;
+  height: 24px;
+}
+
+/* Appearances */
+.primary {
+  background: var(--v2-brand);
+  color: var(--v2-on-brand);
+  box-shadow: var(--v2-shadow-sm);
+}
+.secondary {
+  border-color: var(--v2-line-strong);
+  color: var(--text-heading);
+}
+.ghost {
+  color: var(--text-heading);
+}
+
+@media (hover: hover) {
+  .primary:hover:not(:disabled) {
+    background: var(--v2-brand-strong);
+  }
+  .secondary:hover:not(:disabled) {
+    background: var(--surface-hover);
+  }
+  .ghost:hover:not(:disabled) {
+    background: var(--surface-hover);
+  }
+}

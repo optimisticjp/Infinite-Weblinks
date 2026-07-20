@@ -26,6 +26,11 @@ function classes(variant: Variant, size: Size, block: boolean, className?: strin
 }
 
 /**
+ * @deprecated V2 (Phase 2A): superseded by `Button` (variants `primary` / `signature`).
+ * Retained unchanged for its ~28 legacy Constellation consumers; do not use in new V2 code
+ * and do not migrate its current consumers in this phase. Scheduled for removal at
+ * convergence once all consumers move to `Button`.
+ *
  * GlowButton — the Constellation CTA. `primary` fills with the brand gradient
  * (violet → pink → orange) over DARK ink and carries a soft coloured glow that deepens on
  * hover; `ghost` is the quiet secondary (hairline, section text colour). Dark ink follows

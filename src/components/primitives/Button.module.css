@@ -136,3 +136,124 @@
 .btn:hover:not(:disabled) .iconRight {
   transform: translateX(3px);
 }
+
+/* Signature — the single two-colour brand gradient (verified white contrast, min 5.44:1).
+   New variant with no legacy equivalent; static gradient, neutral shadow, no glow. */
+.signature {
+  background-image: var(--v2-grad-signature);
+  color: var(--v2-on-brand);
+  box-shadow: var(--v2-shadow-sm);
+}
+.signature:hover:not(:disabled) {
+  box-shadow: var(--v2-shadow-md);
+}
+.signature:focus-visible {
+  box-shadow: var(--ring);
+}
+
+/* Loading — action buttons only (aria-busy + disabled set in the component). */
+.loading {
+  cursor: progress;
+}
+.spinner {
+  width: 1em;
+  height: 1em;
+  flex: none;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, currentColor 32%, transparent);
+  border-top-color: currentColor;
+  animation: btnSpin 0.7s linear infinite;
+}
+@keyframes btnSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   V2 overrides — ACTIVE ONLY inside .theme-light / .theme-light-alt / .theme-night.
+   Legacy surfaces (theme-dark/band/cosmic and the raw page) are untouched above.
+   Rules use semantic + --v2-* tokens, so one triple-scoped rule adapts to all three
+   V2 surfaces. Higher specificity (theme class + variant) beats the legacy rules.
+   ============================================================ */
+:global(.theme-light) .btn,
+:global(.theme-light-alt) .btn,
+:global(.theme-night) .btn {
+  border-radius: var(--v2-radius-sm); /* rounded-rect, not pill */
+  font-weight: var(--fw-semibold);
+}
+
+/* primary → solid brand fill, neutral shadow, no glow, no moving gradient */
+:global(.theme-light) .primary,
+:global(.theme-light-alt) .primary,
+:global(.theme-night) .primary {
+  background-image: none;
+  background-color: var(--v2-brand);
+  color: var(--v2-on-brand);
+  box-shadow: var(--v2-shadow-sm);
+}
+:global(.theme-light) .primary:hover:not(:disabled),
+:global(.theme-light-alt) .primary:hover:not(:disabled),
+:global(.theme-night) .primary:hover:not(:disabled) {
+  background-color: var(--v2-brand-strong);
+  box-shadow: var(--v2-shadow-md);
+}
+:global(.theme-light) .primary:focus-visible,
+:global(.theme-light-alt) .primary:focus-visible,
+:global(.theme-night) .primary:focus-visible,
+:global(.theme-light) .brand:focus-visible,
+:global(.theme-light-alt) .brand:focus-visible,
+:global(.theme-night) .brand:focus-visible {
+  box-shadow: var(--ring); /* ring only — drop the legacy neon glow */
+}
+
+/* secondary → functional border, restrained neutral hover (not the violet border-glow) */
+:global(.theme-light) .secondary:hover:not(:disabled),
+:global(.theme-light-alt) .secondary:hover:not(:disabled),
+:global(.theme-night) .secondary:hover:not(:disabled) {
+  border-color: var(--v2-line-strong);
+  background: var(--surface-hover);
+}
+
+/* ghost → no resting fill, subtle hover surface, no shadow/glow */
+:global(.theme-light) .ghost,
+:global(.theme-light-alt) .ghost,
+:global(.theme-night) .ghost {
+  background: transparent;
+}
+:global(.theme-light) .ghost:hover:not(:disabled),
+:global(.theme-light-alt) .ghost:hover:not(:disabled),
+:global(.theme-night) .ghost:hover:not(:disabled) {
+  background: var(--surface-hover);
+}
+
+/* text → unmistakable link treatment (underline) */
+:global(.theme-light) .text,
+:global(.theme-light-alt) .text,
+:global(.theme-night) .text {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+
+/* V2 hover lift respects reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  :global(.theme-light) .md:hover:not(:disabled),
+  :global(.theme-light-alt) .md:hover:not(:disabled),
+  :global(.theme-night) .md:hover:not(:disabled),
+  :global(.theme-light) .lg:hover:not(:disabled),
+  :global(.theme-light-alt) .lg:hover:not(:disabled),
+  :global(.theme-night) .lg:hover:not(:disabled) {
+    transform: none;
+  }
+  :global(.theme-light) .btn:hover:not(:disabled) .iconRight,
+  :global(.theme-light-alt) .btn:hover:not(:disabled) .iconRight,
+  :global(.theme-night) .btn:hover:not(:disabled) .iconRight {
+    transform: none;
+  }
+}

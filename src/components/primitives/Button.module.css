@@ -186,6 +186,11 @@
 :global(.theme-night) .btn {
   border-radius: var(--v2-radius-sm); /* rounded-rect, not pill */
   font-weight: var(--fw-semibold);
+  /* At large text sizes / 200% zoom, let long labels wrap and never exceed the container
+     (prevents horizontal overflow instead of a nowrap button pushing past the viewport). */
+  white-space: normal;
+  text-align: center;
+  max-width: 100%;
 }
 
 /* V2 pointer targets — larger than the legacy sizes (legacy sm stays 40px off V2 surfaces). */

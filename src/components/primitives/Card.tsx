@@ -1,16 +1,25 @@
 import type { ReactNode } from "react";
 import styles from "./Card.module.css";
 
+/**
+ * Card variants.
+ * V2 set: plain · raised · outlined · tinted · night (+ the `interactive` modifier below).
+ * `glass` is DEPRECATED for V2 (backdrop-blur glass panel) — retained ONLY for its one
+ * legacy consumer (the contact page); do not use it on V2 surfaces.
+ * `outline` is the legacy translucent outline; V2 code should prefer `outlined`.
+ */
+type Variant = "raised" | "glass" | "outline" | "plain" | "outlined" | "tinted" | "night";
+
 type CardProps = {
   children: ReactNode;
-  /** Accent used for the top rail, number badge and hover glow. */
+  /** Accent used for the top rail, number badge, and (V2) the `tinted` surface. */
   accent?: string;
-  variant?: "raised" | "glass" | "outline";
+  variant?: Variant;
   /** Adds a colour-coded top rail (3px) in the accent. */
   railed?: boolean;
   /** Optional ordinal badge (01, 02…) shown top-left. */
   index?: string;
-  /** Lifts on hover — for interactive/linked cards. */
+  /** Lifts on hover — for genuinely interactive/linked cards (needs a nested link/button). */
   interactive?: boolean;
   className?: string;
   style?: React.CSSProperties;
@@ -18,9 +27,10 @@ type CardProps = {
 };
 
 /**
- * Card — the recurring premium panel: generous radius, hairline border, optional accent
- * rail and ordinal badge. Colours come from the enclosing section theme tokens, so it
- * reads correctly on dark and daylight surfaces. Padding is always ≥ radius + 12px.
+ * Card — the recurring panel: generous radius, hairline border, optional accent rail and
+ * ordinal badge. Colours come from the enclosing theme tokens, so it reads correctly on dark,
+ * daylight and the V2 surfaces. On V2 surfaces the interactive hover is a soft neutral lift
+ * (≤ 2px) with focus-within parity — no coloured glow. Padding is always ≥ radius + 12px.
  */
 export function Card({
   children,

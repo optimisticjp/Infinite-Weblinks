@@ -63,3 +63,59 @@
     transform: none;
   }
 }
+
+/* ---- V2 variants (additive; new class names, no legacy overlap) ---- */
+.plain {
+  background: transparent;
+}
+.outlined {
+  background: var(--surface);
+  border: 1px solid var(--hairline-strong);
+}
+.tinted {
+  background: color-mix(in srgb, var(--card-accent) 10%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--card-accent) 22%, transparent);
+}
+/* Night — a self-contained dark card that works on any surface (sets the semantic tokens
+   its children read, mirroring .theme-night). */
+.night {
+  --surface: var(--v2-night-950);
+  --surface-raised: var(--v2-night-900);
+  --text-heading: var(--v2-on-night);
+  --text-body: var(--v2-on-night-muted);
+  --text-muted: var(--v2-on-night-muted);
+  --hairline: var(--v2-line-night);
+  --hairline-strong: var(--v2-line-night-strong);
+  --link: #cdbcff;
+  background: var(--v2-night-950);
+  border: 1px solid var(--v2-line-night);
+  color: var(--v2-on-night-muted);
+}
+
+/* ============================================================
+   V2 interactive hover — ACTIVE ONLY inside .theme-light / -alt / .theme-night.
+   Soft neutral lift (≤ 2px), neutral shadow (no coloured glow), with focus-within parity.
+   Legacy interactive glow above is untouched.
+   ============================================================ */
+:global(.theme-light) .interactive:focus-within,
+:global(.theme-light-alt) .interactive:focus-within,
+:global(.theme-night) .interactive:focus-within {
+  border-color: var(--hairline-strong);
+  box-shadow: var(--v2-shadow-card-hover);
+}
+@media (hover: hover) {
+  :global(.theme-light) .interactive:hover,
+  :global(.theme-light-alt) .interactive:hover,
+  :global(.theme-night) .interactive:hover {
+    transform: translateY(-2px);
+    border-color: var(--hairline-strong);
+    box-shadow: var(--v2-shadow-card-hover);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :global(.theme-light) .interactive:hover,
+  :global(.theme-light-alt) .interactive:hover,
+  :global(.theme-night) .interactive:hover {
+    transform: none;
+  }
+}

@@ -161,3 +161,77 @@
     transform: none;
   }
 }
+
+/* Flat V2 icon tile — hidden by default (legacy shows the NodeOrb). */
+.iconV2 {
+  display: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--v2-radius-md);
+  background: color-mix(in srgb, var(--bento-hue) 14%, var(--surface));
+  color: var(--bento-hue);
+}
+.iconV2 :global(svg) {
+  width: 22px;
+  height: 22px;
+}
+.featured .iconV2 {
+  width: 54px;
+  height: 54px;
+}
+
+/* ============================================================
+   V2 rendering — ACTIVE ONLY inside .theme-light / -alt / .theme-night.
+   Flat light tile (no radial hue wash, no glow), one accent rail, ≤2px neutral hover.
+   The NodeOrb is hidden and replaced by the flat .iconV2. Legacy surfaces are untouched.
+   ============================================================ */
+:global(.theme-light) .orbLegacy,
+:global(.theme-light-alt) .orbLegacy,
+:global(.theme-night) .orbLegacy {
+  display: none;
+}
+:global(.theme-light) .iconV2,
+:global(.theme-light-alt) .iconV2,
+:global(.theme-night) .iconV2 {
+  display: inline-grid;
+}
+:global(.theme-light) .card,
+:global(.theme-light-alt) .card,
+:global(.theme-night) .card {
+  background: var(--surface-raised); /* drop the radial hue wash */
+  box-shadow: var(--v2-shadow-sm);
+}
+:global(.theme-light) .eyebrow,
+:global(.theme-light-alt) .eyebrow,
+:global(.theme-night) .eyebrow {
+  color: var(--bento-hue); /* accessible domain ink on V2 surfaces */
+}
+:global(.theme-light) .index,
+:global(.theme-light-alt) .index,
+:global(.theme-night) .index {
+  color: var(--bento-hue);
+}
+:global(.theme-light) .arrow,
+:global(.theme-light-alt) .arrow,
+:global(.theme-night) .arrow {
+  background: color-mix(in srgb, var(--bento-hue) 12%, var(--surface));
+  border: 1px solid var(--hairline-strong);
+  color: var(--bento-hue);
+}
+@media (hover: hover) {
+  :global(.theme-light) .card:hover,
+  :global(.theme-light-alt) .card:hover,
+  :global(.theme-night) .card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--bento-hue) 40%, transparent);
+    box-shadow: var(--v2-shadow-card-hover);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :global(.theme-light) .card:hover,
+  :global(.theme-light-alt) .card:hover,
+  :global(.theme-night) .card:hover {
+    transform: none;
+  }
+}

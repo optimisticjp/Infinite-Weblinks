@@ -28,11 +28,17 @@ type BentoCardProps = {
 };
 
 /**
- * BentoCard — a domain-tinted bento tile: an optional numbered badge and node-orb icon, an
- * eyebrow, a title, a one-line blurb, and an optional badge (e.g. a delivery model). When
- * `href` is set the whole tile is one link with a corner arrow (a single tab stop, named by
- * its heading); without `href` it is an informational tile (and can carry an `id` anchor).
- * Hover lifts and adds a coloured glow; reduced motion drops the lift.
+ * BentoCard — a domain-tinted bento tile: an optional numbered badge and icon, an eyebrow, a
+ * title, a one-line blurb, and an optional badge (e.g. a delivery model). When `href` is set
+ * the whole tile is one link with a corner arrow (a single tab stop, named by its heading);
+ * without `href` it is an informational tile (and can carry an `id` anchor).
+ *
+ * Icon rendering: on legacy surfaces the glossy NodeOrb is shown (unchanged). On V2 surfaces
+ * (.theme-light / -alt / .theme-night) the NodeOrb is hidden by CSS and a FLAT tinted tile is
+ * shown instead — so the V2 rendering carries no visible NodeOrb, and no glow/starfield. For
+ * V2 use, pass an accessible domain ink as `hue` (e.g. "var(--v2-domain-strategy-ink)").
+ * Legacy hover lifts with a coloured glow; V2 hover is a ≤2px neutral lift; reduced motion
+ * drops the lift.
  */
 export function BentoCard({
   title,
@@ -51,13 +57,22 @@ export function BentoCard({
     <>
       <span className={styles.top}>
         {icon ? (
-          <NodeOrb
-            hue={hue}
-            size={variant === "featured" ? 54 : 44}
-            emphasis={variant === "featured" ? "bright" : "soft"}
-          >
-            <Icon name={icon} />
-          </NodeOrb>
+          <>
+            {/* Legacy: glossy NodeOrb (hidden on V2 surfaces via CSS). */}
+            <span className={styles.orbLegacy}>
+              <NodeOrb
+                hue={hue}
+                size={variant === "featured" ? 54 : 44}
+                emphasis={variant === "featured" ? "bright" : "soft"}
+              >
+                <Icon name={icon} />
+              </NodeOrb>
+            </span>
+            {/* V2: flat tinted tile (hidden on legacy surfaces via CSS). */}
+            <span className={styles.iconV2} aria-hidden="true">
+              <Icon name={icon} />
+            </span>
+          </>
         ) : (
           <span />
         )}

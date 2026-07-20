@@ -18,11 +18,14 @@ function slugify(heading: string): string {
  * Content is status-gated, code-authoritative seed data; if a page isn't renderable it 404s
  * rather than showing an empty shell.
  *
- * These are deliberately a QUIET reading surface, not the full cosmic kit: a calm dark band
- * (no starfield or globe), a comfortable measure, and a clear heading hierarchy, so long legal
- * copy stays legible. On longer pages a sticky table of contents rides alongside the text. The
- * `reviewNote` is surfaced as a visible editorial notice so the draft wording is never mistaken
- * for finalised legal terms.
+ * These are deliberately a QUIET reading surface: the V2 "Clear Systems" light band
+ * (`.theme-light`, no starfield, globe or decorative wash), a comfortable measure, and a
+ * clear heading hierarchy, so long legal copy stays legible. On longer pages a sticky table
+ * of contents rides alongside the text. The `reviewNote` is surfaced as a visible editorial
+ * notice so the draft wording is never mistaken for finalised legal terms.
+ *
+ * V2 Phase 1 canary: this shared template is the first surface migrated to the light system;
+ * chrome (header/footer) is migrated in a later phase.
  */
 export async function LegalPageView({ slug }: { slug: string }) {
   const page = await getLegalPage(slug);
@@ -34,8 +37,7 @@ export async function LegalPageView({ slug }: { slug: string }) {
   const showToc = toc.length >= 4;
 
   return (
-    <section className={`theme-cosmic iw-section ${styles.page}`} aria-labelledby="legal-heading">
-      <div className={styles.wash} aria-hidden="true" />
+    <section className={`theme-light iw-section ${styles.page}`} aria-labelledby="legal-heading">
       <div className={`iw-container ${styles.container}`}>
         <header className={styles.header}>
           <Breadcrumbs trail={[{ name: page.title }]} />

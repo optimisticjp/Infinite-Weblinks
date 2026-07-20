@@ -1,0 +1,376 @@
+/* ============================================================
+   Internal V2 foundation preview — TEMPORARY. Remove before production.
+   Uses only token references (no raw hex), demonstrating the "Clear Systems"
+   foundation on .theme-light / .theme-light-alt / .theme-night surfaces.
+   This is a visual foundation board, not the final component library.
+   ============================================================ */
+
+.wrap {
+  min-height: 100dvh;
+}
+
+/* Internal banner so this is never mistaken for a shipping page. */
+.banner {
+  background: var(--v2-warning-tint);
+  border-bottom: 1px solid color-mix(in srgb, var(--v2-warning) 34%, transparent);
+  color: var(--v2-ink-body);
+  padding: var(--space-3) var(--gutter);
+  font-size: var(--fs-sm);
+  display: flex;
+  gap: var(--space-3);
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.bannerTag {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--v2-warning);
+}
+
+.section {
+  padding-block: var(--section-y-tight);
+}
+.section + .section {
+  border-top: 1px solid var(--hairline);
+}
+.sectionTitle {
+  font-size: var(--fs-h3);
+  color: var(--text-heading);
+  margin-bottom: var(--space-6);
+}
+.subTitle {
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: var(--space-8) 0 var(--space-4);
+}
+
+/* generic responsive grids — no horizontal overflow at any width */
+.grid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+}
+.gridWide {
+  display: grid;
+  gap: var(--space-6);
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+}
+
+/* ---- Swatches ---- */
+.swatch {
+  border: 1px solid var(--hairline);
+  border-radius: var(--v2-radius-md);
+  overflow: hidden;
+  background: var(--surface-raised);
+}
+.swatchChip {
+  height: 68px;
+}
+.swatchMeta {
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.swatchName {
+  font-size: var(--fs-sm);
+  color: var(--text-heading);
+  font-weight: var(--fw-semibold);
+}
+.swatchNote {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+/* ---- Type specimens ---- */
+.typeRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-block: var(--space-3);
+  border-bottom: 1px solid var(--hairline);
+}
+.typeLabel {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+.display {
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-display);
+  font-size: var(--v2-fs-display);
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+  color: var(--text-heading);
+}
+.lead {
+  font-size: var(--fs-lead);
+  color: var(--text-body);
+  max-width: var(--measure);
+}
+.body {
+  color: var(--text-body);
+  max-width: var(--measure);
+}
+.muted {
+  color: var(--text-muted);
+}
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: var(--ls-mono);
+  color: var(--text-muted);
+}
+.link {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.link:hover {
+  color: var(--link-hover);
+}
+
+/* ---- Buttons (V2 visual TARGETS — not the shipped Button yet) ---- */
+.btnRow {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  align-items: center;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--target-min);
+  padding: 0 var(--space-5);
+  border-radius: var(--v2-radius-sm);
+  border: 1px solid transparent;
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+.btnPrimary {
+  background: var(--v2-brand);
+  color: var(--v2-on-brand);
+}
+.btnPrimary:hover {
+  background: var(--v2-brand-strong);
+}
+.btnSecondary {
+  background: transparent;
+  color: var(--text-heading);
+  border-color: var(--hairline-strong);
+}
+.btnSecondary:hover {
+  background: var(--surface-hover);
+}
+.btnGhost {
+  background: transparent;
+  color: var(--text-heading);
+}
+.btnGhost:hover {
+  background: var(--surface-hover);
+}
+.btnText {
+  background: transparent;
+  color: var(--link);
+  min-height: auto;
+  padding: var(--space-2) var(--space-1);
+  border-radius: var(--v2-radius-sm);
+}
+.btnText:hover {
+  color: var(--link-hover);
+}
+/* the ONE signature gradient — selected primary CTAs / rare moments only */
+.btnSignature {
+  background: var(--v2-grad-signature);
+  color: var(--v2-on-brand);
+}
+
+/* ---- Chips ---- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--v2-radius-pill);
+  border: 1px solid var(--hairline-strong);
+  background: var(--surface-raised);
+  color: var(--text-body);
+  font-size: var(--fs-sm);
+}
+
+/* ---- Icon tiles (flat V2 treatment) ---- */
+.tileRow {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.tile {
+  display: inline-grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--v2-radius-md);
+  background: var(--tile-tint);
+  color: var(--tile-ink);
+}
+.tile svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* ---- Cards ---- */
+.card {
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  border-radius: var(--v2-radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  transition:
+    box-shadow var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out);
+}
+.cardInteractive:hover {
+  box-shadow: var(--v2-shadow-card-hover);
+  transform: translateY(-2px);
+}
+.cardFeatured {
+  border-left: 3px solid var(--card-line);
+}
+.cardTitle {
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+}
+.cardBody {
+  color: var(--text-body);
+  font-size: var(--fs-sm);
+}
+
+/* ---- Shadow demo ---- */
+.shadowTile {
+  height: 96px;
+  border-radius: var(--v2-radius-lg);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+}
+
+/* ---- Radius demo ---- */
+.radiusTile {
+  height: 84px;
+  background: var(--v2-brand-tint);
+  border: 1px solid color-mix(in srgb, var(--v2-brand) 24%, transparent);
+  display: grid;
+  place-items: center;
+  color: var(--v2-domain-strategy-ink);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+}
+
+/* ---- Form fields ---- */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: 24rem;
+}
+.fieldLabel {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--text-heading);
+}
+.control {
+  width: 100%;
+  min-height: var(--target-min);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--v2-radius-sm);
+  border: 1px solid var(--hairline-strong);
+  background: var(--surface-input);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+}
+.control::placeholder {
+  color: var(--text-muted);
+}
+.control:focus-visible {
+  outline: none;
+  border-color: var(--v2-brand);
+  box-shadow: var(--ring);
+}
+.controlError {
+  border-color: var(--v2-danger);
+}
+.fieldError {
+  font-size: var(--fs-sm);
+  color: var(--v2-danger);
+}
+
+/* ---- Status notes ---- */
+.note {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--v2-radius-md);
+  background: var(--note-tint);
+  border: 1px solid color-mix(in srgb, var(--note-ink) 34%, transparent);
+  color: var(--text-body);
+  font-size: var(--fs-sm);
+}
+.noteIcon {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  color: var(--note-ink);
+  margin-top: 1px;
+}
+
+/* ---- Spacing demo ---- */
+.spaceRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-2);
+}
+.spaceBar {
+  height: 16px;
+  background: var(--v2-brand);
+  border-radius: var(--v2-radius-sm);
+}
+.spaceLabel {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+/* night block keeps its own padded container */
+.nightBlock {
+  border-radius: var(--v2-radius-xl);
+  padding: var(--space-8);
+  margin-top: var(--space-4);
+}

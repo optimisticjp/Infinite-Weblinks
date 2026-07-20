@@ -146,6 +146,21 @@ describe("V2 status colours (on white + on own tint)", () => {
   }
 });
 
+describe("V2 night accent (theme-night links + BentoCard night treatment)", () => {
+  const linkNight = tok("--v2-link-night");
+  // Mix the night accent over the night surface the way Bento.module.css builds the night
+  // icon-tile background: color-mix(link-night 16%, night-950).
+  const mixNight = (fg: RGB, p: number): RGB =>
+    fg.map((c, i) => Math.round(c * p + NIGHT950[i] * (1 - p))) as RGB;
+
+  it("link-night as text/icon on night-950 ≥ 4.5", () =>
+    expect(contrast(linkNight, NIGHT950)).toBeGreaterThanOrEqual(AA));
+  it("link-night as text/icon on night-900 ≥ 4.5", () =>
+    expect(contrast(linkNight, NIGHT900)).toBeGreaterThanOrEqual(AA));
+  it("link-night glyph on its 16% night icon-tile ≥ 3 (non-text)", () =>
+    expect(contrast(linkNight, mixNight(linkNight, 0.16))).toBeGreaterThanOrEqual(NON_TEXT));
+});
+
 describe("V2 functional borders + focus indicator (non-text ≥ 3)", () => {
   it("functional border (line-strong) on paper ≥ 3", () =>
     expect(contrast(tok("--v2-line-strong"), PAPER)).toBeGreaterThanOrEqual(NON_TEXT));

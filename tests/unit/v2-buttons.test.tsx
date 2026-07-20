@@ -63,9 +63,9 @@ describe("Button", () => {
     expect(screen.getByTestId("R")).toBeInTheDocument();
   });
 
-  it("loading sets aria-busy, disables, and shows a spinner (icon suppressed)", () => {
+  it("loading sets aria-busy, disables, and hides BOTH icons", () => {
     render(
-      <Button loading iconLeft={<span data-testid="L" />}>
+      <Button loading iconLeft={<span data-testid="L" />} iconRight={<span data-testid="R" />}>
         Save
       </Button>,
     );
@@ -73,6 +73,19 @@ describe("Button", () => {
     expect(el).toBeDisabled();
     expect(el).toHaveAttribute("aria-busy", "true");
     expect(screen.queryByTestId("L")).toBeNull();
+    expect(screen.queryByTestId("R")).toBeNull();
+  });
+
+  it("does not accept `loading` on the link form at the type level", () => {
+    render(
+      // @ts-expect-error - `loading` is action-button-only and must not be allowed on a link
+      <Button href="/x" loading>
+        Link
+      </Button>,
+    );
+    // Runtime: a link ignores loading (never busy).
+    const el = screen.getByRole("link", { name: "Link" });
+    expect(el).not.toHaveAttribute("aria-busy");
   });
 
   it("applies variant and size classes", () => {

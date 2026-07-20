@@ -55,8 +55,12 @@
   /* ---- The single restrained two-colour signature gradient ----
      Decision 2: ONLY for selected primary CTAs / rare signature moments.
      Ordinary cards, icons, headings and backgrounds must NOT use it.
-     (White foreground text on this gradient stays ≥ 4.5:1 across both stops.) */
-  --v2-grad-signature: linear-gradient(120deg, #6d3bff 0%, #f5197e 100%);
+     White foreground stays ≥ 4.5:1 across the WHOLE gradient — sampled at 11 points,
+     measured minimum 5.44:1 (the old #f5197e magenta stop was only 3.95:1). Dark ink is
+     NOT an option: it fails against the violet endpoint. Verified by tests/unit/v2-contrast.test.ts. */
+  --v2-grad-signature: linear-gradient(120deg, #6d3bff 0%, #cc1466 100%);
+  --v2-grad-signature-from: #6d3bff; /* endpoints exposed so tests read the real stops */
+  --v2-grad-signature-to: #cc1466;
 
   /* ---- Domain wayfinding — 7 service "worlds", each with 3 roles ----
      -ink  : text/icon on white or the matching tint (all measured ≥ 4.5:1)

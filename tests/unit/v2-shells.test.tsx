@@ -109,6 +109,35 @@ describe("SectionShell", () => {
     expect(screen.queryByTestId("cosmic-bg")).toBeNull();
   });
 
+  it("gives multiple untitled-id titled shells UNIQUE heading ids, each referenced by aria-labelledby", () => {
+    const { container } = render(
+      <div>
+        <SectionShell surface="light" title="One">a</SectionShell>
+        <SectionShell surface="light" title="Two">b</SectionShell>
+        <SectionShell surface="alt" title="Three">c</SectionShell>
+      </div>,
+    );
+    const ids: string[] = [];
+    container.querySelectorAll("section").forEach((sec) => {
+      const labelledby = sec.getAttribute("aria-labelledby");
+      expect(labelledby).toBeTruthy();
+      // aria-labelledby references a heading that exists inside that section
+      expect(sec.querySelector(`[id="${labelledby}"]`)).not.toBeNull();
+      ids.push(labelledby as string);
+    });
+    expect(ids).toHaveLength(3);
+    expect(new Set(ids).size).toBe(3); // all unique — no "section-title" collisions
+  });
+
+  it("uses a readable ${id}-title heading id when an explicit id is given", () => {
+    const { container } = render(
+      <SectionShell surface="light" id="areas" title="Areas">
+        x
+      </SectionShell>,
+    );
+    expect(container.querySelector("section")!.getAttribute("aria-labelledby")).toBe("areas-title");
+  });
+
   it("uses a plain (non-gradient) eyebrow on V2 surfaces and the gradient eyebrow on legacy", () => {
     const v2 = render(
       <SectionShell surface="light" eyebrow="Kicker" title="T">

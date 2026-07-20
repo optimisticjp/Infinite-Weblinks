@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useId, type ReactNode } from "react";
 import { CosmicBackground } from "@/components/viz/CosmicBackground";
 import styles from "./SectionShell.module.css";
 
@@ -78,7 +78,12 @@ export function SectionShell({
   contentClassName,
 }: SectionShellProps) {
   const isV2 = surface !== "legacy";
-  const headingId = title ? (id ? `${id}-title` : "section-title") : undefined;
+  // Stable, unique heading id via useId (SSR/hydration-safe, never derived from title
+  // content). An explicit `id` still yields a readable `${id}-title`; without one, several
+  // untitled shells on a page never collide. useId's colons are stripped so the value is a
+  // valid CSS/aria id fragment.
+  const reactId = useId().replace(/:/g, "");
+  const headingId = title ? (id ? `${id}-title` : `section-${reactId}-title`) : undefined;
   const Heading = (titleLevel === 1 ? "h1" : "h2") as "h1" | "h2";
 
   const sectionClass = [

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ChevronDown, Mail, X } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/primitives/Button";
@@ -24,6 +25,16 @@ export function MobileNav({
   const closeRef = useRef<HTMLButtonElement | null>(null);
   const restoreRef = useRef<HTMLElement | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const pathname = usePathname();
+
+  const inSection = (href: string) =>
+    pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
+
+  // Reset any stale expanded accordion state once the drawer is closed.
+  useEffect(() => {
+    /* eslint-disable-next-line react-hooks/set-state-in-effect */
+    if (!open) setExpanded(null);
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -93,14 +104,12 @@ export function MobileNav({
     <div className={styles.overlay}>
       <div
         id="mobile-nav"
-        className={styles.dialog}
+        className={`theme-light ${styles.dialog}`}
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label="Site menu"
       >
-        <div className={styles.glow} aria-hidden="true" />
-
         <div className={styles.dialogHead}>
           <Logo href="/" size={26} label="Infinite Weblinks — home" />
           <button type="button" className={styles.close} ref={closeRef} onClick={onClose}>
@@ -113,9 +122,15 @@ export function MobileNav({
           <ul className={styles.list}>
             {nav.primary.map((item) => {
               if (!item.megaMenu) {
+                const current = pathname === item.href;
                 return (
                   <li key={item.label}>
-                    <Link href={item.href} className={styles.topLink} onClick={onClose}>
+                    <Link
+                      href={item.href}
+                      className={`${styles.topLink} ${current ? styles.topLinkActive : ""}`}
+                      aria-current={current ? "page" : undefined}
+                      onClick={onClose}
+                    >
                       {item.label}
                     </Link>
                   </li>
@@ -123,11 +138,15 @@ export function MobileNav({
               }
               const isOpen = expanded === item.label;
               const panelId = `m-${item.label.replace(/\s+/g, "-").toLowerCase()}`;
+              const sectionCurrent =
+                inSection(item.href) ||
+                item.megaMenu.columns.some((c) => c.items.some((l) => inSection(l.href)));
               return (
                 <li key={item.label} className={styles.group}>
                   <button
                     type="button"
-                    className={styles.groupTrigger}
+                    className={`${styles.groupTrigger} ${sectionCurrent ? styles.groupTriggerActive : ""}`}
+                    aria-current={sectionCurrent ? "true" : undefined}
                     aria-expanded={isOpen}
                     aria-controls={panelId}
                     onClick={() => setExpanded(isOpen ? null : item.label)}
@@ -137,25 +156,38 @@ export function MobileNav({
                   </button>
                   {isOpen && (
                     <div id={panelId} className={styles.panel}>
-                      <Link href={item.href} className={styles.overviewLink} onClick={onClose}>
+                      <Link
+                        href={item.href}
+                        className={styles.overviewLink}
+                        aria-current={pathname === item.href ? "page" : undefined}
+                        onClick={onClose}
+                      >
                         All {item.label}
                       </Link>
                       {item.megaMenu.columns.map((col) => (
                         <div key={col.heading} className={styles.panelCol}>
                           <p className={styles.panelHeading}>{col.heading}</p>
                           <ul className={styles.panelLinks}>
-                            {col.items.map((link) => (
-                              <li key={link.label + link.href}>
-                                <Link href={link.href} className={styles.subLink} onClick={onClose}>
-                                  {link.icon ? (
-                                    <span className={styles.subIcon} aria-hidden="true">
-                                      <Icon name={link.icon} />
-                                    </span>
-                                  ) : null}
-                                  <span className={styles.subLabel}>{link.label}</span>
-                                </Link>
-                              </li>
-                            ))}
+                            {col.items.map((link) => {
+                              const subCurrent = pathname === link.href;
+                              return (
+                                <li key={link.label + link.href}>
+                                  <Link
+                                    href={link.href}
+                                    className={`${styles.subLink} ${subCurrent ? styles.subLinkActive : ""}`}
+                                    aria-current={subCurrent ? "page" : undefined}
+                                    onClick={onClose}
+                                  >
+                                    {link.icon ? (
+                                      <span className={styles.subIcon} aria-hidden="true">
+                                        <Icon name={link.icon} />
+                                      </span>
+                                    ) : null}
+                                    <span className={styles.subLabel}>{link.label}</span>
+                                  </Link>
+                                </li>
+                              );
+                            })}
                           </ul>
                         </div>
                       ))}

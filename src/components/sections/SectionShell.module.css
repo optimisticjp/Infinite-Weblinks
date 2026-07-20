@@ -1,5 +1,9 @@
 .section {
   position: relative;
+}
+/* Legacy only — clips the absolutely-positioned CosmicBackground to the section. V2 surfaces
+   don't clip, so nothing (e.g. a focus ring near the edge) is hidden. */
+.legacyClip {
   overflow: hidden;
 }
 
@@ -35,6 +39,17 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* V2 eyebrow — plain accent, no gradient text. */
+.eyebrowV2 {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--link);
 }
 
 .title {

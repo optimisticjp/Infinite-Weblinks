@@ -59,6 +59,13 @@ const V2_DETAIL_MODULES = [
   "../../src/app/(marketing)/roadmaps/[slug]/roadmap.module.css",
   "../../src/app/(marketing)/learn/[slug]/article.module.css",
   "../../src/app/(marketing)/case-studies/case.module.css",
+  // Phase 2H §I: the goal/business-type detail components and both rewritten detail modules.
+  "../../src/components/routes/GoalPath.module.css",
+  "../../src/components/cards/GoalCard.module.css",
+  "../../src/components/cards/ServiceCard.module.css",
+  "../../src/components/cards/JourneyStageCard.module.css",
+  "../../src/app/(marketing)/goals/[slug]/goal.module.css",
+  "../../src/app/(marketing)/business-types/[slug]/business-type.module.css",
 ];
 const BANNED_V2 = [
   ...BANNED,

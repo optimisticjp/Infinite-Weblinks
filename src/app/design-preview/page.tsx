@@ -18,6 +18,10 @@ import { ArticleCard } from "@/components/cards/ArticleCard";
 import { CaseStudyCard } from "@/components/cards/CaseStudyCard";
 import { ToolCard } from "@/components/cards/ToolCard";
 import { RoadmapCard } from "@/components/cards/RoadmapCard";
+import { GoalCard } from "@/components/cards/GoalCard";
+import { ServiceCard } from "@/components/cards/ServiceCard";
+import { JourneyStageCard } from "@/components/cards/JourneyStageCard";
+import { GoalPath } from "@/components/routes/GoalPath";
 import { LinkChip } from "@/components/primitives/LinkChip";
 import { RelationshipCard } from "@/components/cards/RelationshipCard";
 import { RoadmapPhaseList } from "@/components/routes/RoadmapPhaseList";
@@ -739,6 +743,118 @@ export default function DesignPreviewPage() {
               </span>
             </div>
           </Card>
+        </section>
+
+        {/* 12g · Goal & business-type detail blocks — GoalPath + GoalCard + ServiceCard + JourneyStageCard */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Goal &amp; business-type detail blocks</h2>
+
+          <p className={styles.subTitle}>
+            GoalPath — the three parts of a goal as a semantic ordered list (real seed content)
+          </p>
+          <GoalPath
+            need="A store built to sell, with payments and tracking in place from day one."
+            help="We build it in-house and set up your tools."
+            outcome="A store that's ready to take orders and measure them."
+            tone="var(--lime)"
+          />
+
+          <p className={styles.subTitle}>GoalCard — with an audience hint, without one, and a long wrapping title</p>
+          <CardGrid layout="equal" aria-label="Goal card preview">
+            <GoalCard
+              href="#main"
+              title="Launch a professional store"
+              outcome="A store that's ready to take orders and measure them."
+              icon="shopping-bag"
+              tone="var(--lime)"
+              audienceHint="For brands selling products online for the first time, or replacing a marketplace-only setup."
+            />
+            <GoalCard
+              href="#main"
+              title="Get found on Google"
+              outcome="Steady organic traffic that builds over time."
+              icon="search"
+              tone="var(--cyan)"
+            />
+            <GoalCard
+              href="#main"
+              title="Understand what's actually working across every channel, campaign and customer touchpoint"
+              outcome="Decisions based on real numbers instead of hunches."
+              icon="bar-chart-3"
+              tone="var(--domain-discover)"
+            />
+          </CardGrid>
+
+          <p className={styles.subTitle}>
+            ServiceCard — each of the four locked delivery models, and a long wrapping title
+          </p>
+          <CardGrid layout="equal" aria-label="Service card preview">
+            <ServiceCard
+              href="#main"
+              title="Website Design & Development"
+              description="Your core website, designed and built to load fast, work on every device, and give visitors a clear reason to stay and act."
+              categoryLabel="Websites & Development"
+              categoryIcon="monitor"
+              categoryTone="var(--blue)"
+              deliveryModel="we-do"
+            />
+            <ServiceCard
+              href="#main"
+              title="Technical SEO"
+              description="Fixing the behind-the-scenes issues, like crawl errors, site structure, and page speed, that stop search engines from properly reading and ranking your site."
+              categoryLabel="SEO & Content"
+              categoryIcon="search"
+              categoryTone="var(--cyan)"
+              deliveryModel="we-expert"
+            />
+            <ServiceCard
+              href="#main"
+              title="SMS Marketing"
+              description="Text-message campaigns and automations that reach customers directly, for time-sensitive offers and reminders email alone won't cover."
+              categoryLabel="Email, SMS & CRM"
+              categoryIcon="mail"
+              categoryTone="var(--blue)"
+              deliveryModel="we-run"
+            />
+            <ServiceCard
+              href="#main"
+              title="Workflow Automation"
+              description="Connecting the tools you already use so repetitive manual steps, like copying data between systems, happen automatically instead."
+              categoryLabel="AI & Automation"
+              categoryIcon="zap"
+              categoryTone="var(--pink)"
+              deliveryModel="you-run"
+            />
+            <ServiceCard
+              href="#main"
+              title="GA4 & Google Tag Manager Setup for full-funnel measurement and attribution"
+              description="Proper analytics and tag setup so every important action on your site or store is actually being measured, not just guessed at."
+              categoryLabel="Analytics & Data"
+              categoryIcon="bar-chart-3"
+              categoryTone="var(--cyan)"
+              deliveryModel="you-run"
+            />
+          </CardGrid>
+
+          <p className={styles.subTitle}>JourneyStageCard — the stage&apos;s real journey position, name and summary</p>
+          <CardGrid layout="equal" aria-label="Journey stage card preview">
+            <JourneyStageCard
+              href="#main"
+              order={2}
+              title="Foundation"
+              summary="Brand, website or store, hosting, tracking, and the legal basics. The base everything else sits on."
+              icon="layout"
+              tone="var(--blue)"
+            />
+            <JourneyStageCard
+              href="#main"
+              order={3}
+              title="Get Discovered"
+              summary="SEO, content, social, video, ads, and marketplaces, so the right people can actually find you."
+              icon="search"
+              tone="var(--cyan)"
+            />
+          </CardGrid>
         </section>
 
         {/* 12c · Callouts */}

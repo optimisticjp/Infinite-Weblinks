@@ -1,0 +1,150 @@
+/* HomepageHeroSection — V2 light hero. No canvas, no full-screen height, no ambient animation.
+   V2 tokens only. The accent word is a solid brand ink, never a gradient. */
+.hero {
+  padding-block: clamp(var(--space-8), 6vw, var(--space-12));
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(var(--space-8), 5vw, var(--space-10));
+  align-items: center;
+}
+@media (min-width: 60rem) {
+  .grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  }
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.eyebrow {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--v2-brand-strong);
+}
+.slogan {
+  margin: 0 0 var(--space-3);
+  font-size: var(--fs-lead);
+  font-weight: var(--fw-semibold);
+  color: var(--text-body);
+}
+.headline {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+  color: var(--text-heading);
+  text-wrap: balance;
+}
+.accent {
+  color: var(--v2-brand-strong);
+}
+.support {
+  margin: var(--space-5) 0 0;
+  max-width: 52ch;
+  font-size: var(--fs-lead);
+  color: var(--text-body);
+}
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+}
+.reassurance {
+  margin: var(--space-4) 0 0;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+.areas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  margin-top: var(--space-6);
+}
+.areasLabel {
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.areasList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.areaChip {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--v2-radius-pill);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+
+.aside {
+  min-width: 0;
+}
+
+/* ---- works-with rail ---- */
+.railWrap {
+  margin-top: clamp(var(--space-8), 5vw, var(--space-10));
+}
+.rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+.railLabel {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--text-body);
+}
+.railList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
+.railItem {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--v2-radius-md);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+}
+.railLogo {
+  width: 24px;
+  height: 24px;
+}
+.railNote {
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}

@@ -3,12 +3,11 @@ import AxeBuilder from "@axe-core/playwright";
 import { setViewportAndWaitForStableLayout, expectNoHorizontalOverflow } from "./helpers/layout";
 
 /**
- * Every service domain renders from the shared Constellation template. This sweeps all
- * sixteen category slugs and checks the load-bearing contract for each: one H1, the full
- * service list as anchored blocks (li[id] — the 301 target for old service URLs), no
- * horizontal overflow at the narrowest and widest breakpoints, and no serious/critical
- * accessibility violations. Detailed Strategy-specific assertions live in
- * services-strategy.spec.ts.
+ * Every service area renders from the shared V2 ServiceDomainTemplate. This sweeps all sixteen
+ * category slugs and checks the load-bearing contract for each: one H1, the full service list as
+ * anchored article blocks (article[id] — the 308 target for old service URLs), no horizontal
+ * overflow at the narrowest and widest breakpoints, and no serious/critical accessibility
+ * violations. Detailed Strategy-specific assertions live in services-strategy.spec.ts.
  */
 
 const DOMAINS = [
@@ -36,8 +35,9 @@ for (const slug of DOMAINS) {
       const res = await page.goto(`/services/${slug}`);
       expect(res?.status(), `/services/${slug} should not error`).toBeLessThan(400);
       await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
-      // The full service list is present as li[id=<slug>] anchors.
-      expect(await page.locator("main li[id]").count()).toBeGreaterThan(0);
+      // The full service list is present as article[id=<slug>] anchors, and no canvas is rendered.
+      expect(await page.locator("main article[id]").count()).toBeGreaterThan(0);
+      expect(await page.locator("canvas").count(), `${slug} no canvas`).toBe(0);
       // A domain-hued CTA into the growth-plan builder is present.
       await expect(page.locator('main a[href="/growth-plan"]').first()).toBeVisible();
 

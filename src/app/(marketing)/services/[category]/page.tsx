@@ -1,28 +1,20 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Check } from "lucide-react";
-import { PageHero } from "@/components/routes/PageHero";
-import { RelatedLinks } from "@/components/routes/RelatedLinks";
-import { Badge, DELIVERY_COLOR } from "@/components/primitives/Badge";
-import { Button } from "@/components/primitives/Button";
-import { Icon } from "@/components/primitives/Icon";
-import { IconTile } from "@/components/primitives/IconTile";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { ServiceDomainTemplate } from "@/components/routes/ServiceDomainTemplate";
+import { ServiceDomainTemplate, type RelatedGoal } from "@/components/routes/ServiceDomainTemplate";
 import { breadcrumbJsonLd, itemListJsonLd, serviceJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
-import { getDeliveryModels, getGoals, getServiceCategories, getServices, getStages } from "@/lib/content";
+import { getGoals, getServiceCategories, getServices, getStages } from "@/lib/content";
 import { getServiceDomainConfig } from "@/lib/services/domains";
-import styles from "./category.module.css";
 
 /**
- * /services/[category] — a single service category, given room to be its own page.
+ * /services/[category] — one service category, rendered by the shared V2 ServiceDomainTemplate.
  *
- * Phase 4: /services was one 14k-px wall of sixteen stacked category sections; each is
- * now its own route. The individual services fold in here as anchored blocks (id=<slug>)
- * rather than seventy thin standalone pages — so the old /services/<service> URLs 301 to
- * /services/<category>#<service> and land on the exact block. No new copy: every field
- * comes from service-categories.ts and services.ts.
+ * Every renderable category has a DomainConfig (proven by v2-service-domain-integrity), so the
+ * template renders for every valid category and the old legacy PageHero fallback is gone. The
+ * seventy individual services fold in as anchored ServiceOfferingCard blocks (id=<slug>); the old
+ * /services/<service> URLs 308 to /services/<category>#<service> and land on the exact block. No
+ * new copy: every field comes from service-categories.ts, services.ts and the domain config.
  */
 export async function generateStaticParams() {
   const categories = await getServiceCategories();
@@ -50,10 +42,9 @@ export default async function ServiceCategoryPage({
   params: Promise<{ category: string }>;
 }) {
   const { category: slug } = await params;
-  const [categories, services, deliveryModels, goals, stages] = await Promise.all([
+  const [categories, services, goals, stages] = await Promise.all([
     getServiceCategories(),
     getServices(),
-    getDeliveryModels(),
     getGoals(),
     getStages(),
   ]);
@@ -61,17 +52,29 @@ export default async function ServiceCategoryPage({
   const category = categories.find((c) => c.slug === slug);
   if (!category) notFound();
 
-  const items = services.filter((s) => s.categorySlug === category.slug);
-  const deliveryByKey = new Map(deliveryModels.map((d) => [d.key, d] as const));
-  const domainConfig = getServiceDomainConfig(slug);
+  const config = getServiceDomainConfig(slug);
+  // Every renderable category has a config (integrity invariant); a category without one is not a
+  // real service area, so it 404s rather than falling back to a dead legacy presentation.
+  if (!config) notFound();
 
-  // Internal-linking preserved at the category level: the goals every service here helps
-  // with, de-duplicated, so the ranking signal points at one strong page instead of many.
-  const goalSlugs = [...new Set(items.flatMap((s) => s.goalSlugs))];
-  const relatedGoals = goalSlugs
-    .map((gs) => goals.find((g) => g.slug === gs))
+  const items = services.filter((s) => s.categorySlug === category.slug);
+
+  const categoryBySlug = new Map(categories.map((c) => [c.slug, c] as const));
+  const stageBySlug = new Map(stages.map((s) => [s.slug, s] as const));
+  const goalBySlug = new Map(goals.map((g) => [g.slug, g] as const));
+
+  const activeStage = stageBySlug.get(config.stageSlug);
+  const nextCategory = categoryBySlug.get(config.next.slug);
+  // Both are integrity invariants; if either is missing the config is broken, so 404 rather than
+  // render a page that lies about the journey.
+  if (!activeStage || !nextCategory) notFound();
+
+  // Internal-linking preserved at the category level: the goals every service here helps with,
+  // de-duplicated and source-first, so the ranking signal points at one strong page.
+  const relatedGoals: RelatedGoal[] = [...new Set(items.flatMap((s) => s.goalSlugs))]
+    .map((gs) => goalBySlug.get(gs))
     .filter((g): g is NonNullable<typeof g> => Boolean(g))
-    .map((g) => ({ name: g.title, href: `/goals/${g.slug}`, hint: g.outcome }));
+    .map((g) => ({ slug: g.slug, title: g.title, outcome: g.outcome }));
 
   return (
     <>
@@ -99,112 +102,14 @@ export default async function ServiceCategoryPage({
         />
       )}
 
-      {domainConfig ? (
-        <ServiceDomainTemplate
-          config={domainConfig}
-          category={category}
-          services={items}
-          deliveryModels={deliveryModels}
-          stages={stages}
-        />
-      ) : (
-        <>
-      <PageHero
-        eyebrow="Services"
-        title={category.name}
-        intro={category.intro}
-        breadcrumbs={[{ name: "Services", path: "/services" }, { name: category.name }]}
-        accent={category.color}
-        aside={
-          // Outline, not filled: the H1 must own the brightest value in the hero — the tile
-          // is a quiet category marker, not a second bloom competing with the headline.
-          <IconTile color={category.color} variant="outline" size={72}>
-            <Icon name={category.icon} />
-          </IconTile>
-        }
-        actions={
-          <Button href="/growth-plan" variant="primary">
-            Build My Digital Growth Plan
-          </Button>
-        }
+      <ServiceDomainTemplate
+        config={config}
+        category={category}
+        services={items}
+        activeStage={activeStage}
+        nextCategory={nextCategory}
+        relatedGoals={relatedGoals}
       />
-
-      <section
-        className="theme-band iw-section"
-        aria-labelledby="whats-included"
-        style={{ ["--cat-accent" as string]: category.color }}
-      >
-        <div className="iw-container">
-          <h2 id="whats-included" className={styles.sectionTitle}>
-            What&rsquo;s included
-          </h2>
-
-          <ul className={styles.list}>
-            {items.map((service) => {
-              const delivery = deliveryByKey.get(service.deliveryModel);
-              return (
-                <li key={service.slug} id={service.slug} className={styles.item}>
-                  <div className={styles.itemHead}>
-                    <h3 className={styles.itemName}>{service.name}</h3>
-                    {delivery && (
-                      <Badge color={DELIVERY_COLOR[delivery.key]}>{delivery.name}</Badge>
-                    )}
-                  </div>
-
-                  <p className={styles.itemLead}>{service.plainDescription}</p>
-
-                  <ul className={styles.checklist}>
-                    {service.whatYouGet.map((point) => (
-                      <li key={point} className={styles.checkItem}>
-                        <Check className={styles.checkIcon} aria-hidden="true" />
-                        <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {service.exampleTools.length > 0 && (
-                    <ul className={styles.chips} aria-label="Tools we can connect">
-                      {service.exampleTools.map((tool) => (
-                        <li key={tool} className={styles.chip}>
-                          {tool}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-
-          {relatedGoals.length > 0 && (
-            <div className={styles.goals}>
-              <RelatedLinks title="Goals these services help with" links={relatedGoals} columns={2} />
-            </div>
-          )}
-        </div>
-      </section>
-
-      <section className="theme-dark iw-section iw-section--tight" aria-label="Next steps">
-        <div className="iw-container">
-          <div className={styles.cta}>
-            <h2 className={styles.ctaTitle}>Not sure which of these you need first?</h2>
-            <p className={styles.ctaBody}>
-              That&apos;s the point of a plan. Tell us your goals and we&apos;ll map the smallest next
-              step, then the ones that follow — in the right order, around what you already have.
-            </p>
-            <div className={styles.ctaActions}>
-              <Button href="/growth-plan" variant="primary">
-                Build My Digital Growth Plan
-              </Button>
-              <Button href="/services" variant="secondary">
-                All service categories
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-        </>
-      )}
     </>
   );
 }

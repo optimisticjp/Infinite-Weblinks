@@ -66,7 +66,7 @@ test.describe("listing & hub routes", () => {
     await expect(
       page.getByRole("main").getByRole("link", { name: /growth plan/i }).first(),
     ).toBeVisible();
-    await expect(page.locator("main li[id]").first()).toBeAttached();
+    await expect(page.locator("main article[id]").first()).toBeAttached();
   });
 });
 
@@ -122,8 +122,8 @@ test.describe("services split into category pages (Phase 4)", () => {
       const res = await page.goto(`/services/${category}`);
       expect(res?.status(), `/services/${category} should not 404`).toBeLessThan(400);
       await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
-      // The folded services are anchored blocks with an id — the 301 target for each old URL.
-      expect(await page.locator("main li[id]").count()).toBeGreaterThan(0);
+      // The folded services are anchored article blocks with an id — the 308 target for each old URL.
+      expect(await page.locator("main article[id]").count()).toBeGreaterThan(0);
     });
   }
 

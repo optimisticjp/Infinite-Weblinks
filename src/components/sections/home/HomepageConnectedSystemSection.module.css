@@ -1,0 +1,63 @@
+/* HomepageConnectedSystemSection — the flow + CTA + three bridge cards. V2 tokens only; no
+   theme-band, glow/glass/gradient, raw colour. Bridge cards carry scroll-margin so a homepage
+   fragment (#growth-journey / #customer-journey / #services) clears the sticky header. */
+.cta {
+  margin: var(--space-8) 0;
+}
+
+.bridge {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  height: 100%;
+  padding: var(--space-6);
+  scroll-margin-top: calc(var(--header-h) + var(--space-4));
+}
+.bridgeHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.bridgeTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+  overflow-wrap: anywhere;
+}
+.bridgeDesc {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+.more {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-2);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--link);
+}
+.moreIcon {
+  width: 16px;
+  height: 16px;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .bridge:hover .moreIcon {
+    transform: translate(2px, -2px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .moreIcon {
+    transition: none;
+  }
+  .bridge:hover .moreIcon {
+    transform: none;
+  }
+}

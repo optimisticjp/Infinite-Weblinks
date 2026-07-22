@@ -340,13 +340,17 @@ describe("honest-expectations is the single shared source", () => {
     ]);
   });
 
-  it("is consumed by BOTH the legacy /about section and the new homepage trust section", () => {
+  it("is consumed by BOTH the legacy /about section and the extracted HonestExpectationsPanel", () => {
     const legacy = read("../../src/components/sections/home/HonestExpectationsSection.tsx");
-    const trust = read("../../src/components/sections/home/HomepageTrustSection.tsx");
-    for (const src of [legacy, trust]) {
+    const panel = read("../../src/components/routes/HonestExpectationsPanel.tsx");
+    for (const src of [legacy, panel]) {
       expect(src).toMatch(/from "@\/lib\/content\/data\/honest-expectations"/);
       expect(src).not.toMatch(/const WONT\s*[:=]\s*\[/); // no re-declared local arrays
     }
+    // The homepage trust section no longer touches the data directly — it composes the panel.
+    const trust = read("../../src/components/sections/home/HomepageTrustSection.tsx");
+    expect(trust).toContain("HonestExpectationsPanel");
+    expect(trust).not.toMatch(/honestExpectations(Wont|Promise)/);
   });
 });
 

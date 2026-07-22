@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
-import { Hero } from "@/components/hero/Hero";
-import { EditorialStatement } from "@/components/sections/EditorialStatement";
-import { GoalBentoSection } from "@/components/sections/home/GoalBentoSection";
-import { ConnectedGrowthSection } from "@/components/sections/home/ConnectedGrowthSection";
-import { OneSystemSection } from "@/components/sections/home/OneSystemSection";
-import { CustomerJourneySection } from "@/components/sections/CustomerJourneySection";
-import { ServicesConstellationSection } from "@/components/sections/home/ServicesConstellationSection";
-import { DeliveryModelsSection } from "@/components/sections/DeliveryModelsSection";
-import { AccountOwnershipSection } from "@/components/sections/AccountOwnershipSection";
-import { HonestExpectationsSection } from "@/components/sections/home/HonestExpectationsSection";
-import { LearningResourcesSection } from "@/components/sections/LearningResourcesSection";
-import { FinalCtaBannerSection } from "@/components/sections/FinalCtaBannerSection";
+import { HomepageHeroSection } from "@/components/sections/home/HomepageHeroSection";
+import { HomepageProblemSection } from "@/components/sections/home/HomepageProblemSection";
+import { HomepageGoalRouterSection } from "@/components/sections/home/HomepageGoalRouterSection";
+import { HomepageConnectedSystemSection } from "@/components/sections/home/HomepageConnectedSystemSection";
+import { DeliveryModelsExplainerSection } from "@/components/sections/DeliveryModelsExplainerSection";
+import { HomepageTrustSection } from "@/components/sections/home/HomepageTrustSection";
+import { HomepageLearningSection } from "@/components/sections/home/HomepageLearningSection";
+import { FinalCtaSection } from "@/components/sections/FinalCtaSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { getHomepageOpening } from "@/lib/content";
 import { canonical } from "@/lib/seo/metadata";
@@ -23,14 +19,13 @@ export const metadata: Metadata = {
 };
 
 /**
- * Homepage — the flagship page of the Constellation rebrand. The spine, in order:
- * hero (dark, the signature moment) → the digital world today (light breather) → start with
- * your goal (bento router) → the connected growth journey (stage timeline + rails) → one
- * system not silos (the differentiator) → customer journey (phones) → services constellation
- * (interactive) → four ways we deliver (light) → ownership → honest expectations → resources
- * (light) → final CTA. Reused sections are rendered directly; the new cosmic sections live in
- * `sections/home/`. The hero headline is server-rendered text (the LCP element); every heavy
- * scene hydrates progressively and only animates while in view.
+ * Homepage — the V2 light-first spine: hero (with the works-with rail) → the digital-world problem
+ * → start with your goal → one connected system (with the growth-journey / customer-journey /
+ * services bridges) → ways of working → ownership and honest expectations → learn → the single
+ * reserved dark final CTA. Every section is a server component (no HeroUniverse, canvas or
+ * animation loop); the hero H1 is server-rendered text. Each homepage fragment lives on real,
+ * visible content. The heavy legacy homepage sections stay in the codebase (used by their other
+ * routes and the registry) — the homepage simply no longer renders them.
  */
 export default async function HomePage() {
   const { hero, editorial } = await getHomepageOpening();
@@ -40,18 +35,21 @@ export default async function HomePage() {
       <JsonLd data={organizationJsonLd()} />
       <JsonLd data={websiteJsonLd()} />
 
-      <Hero hero={hero} />
-      <EditorialStatement data={editorial} />
-      <GoalBentoSection />
-      <ConnectedGrowthSection />
-      <OneSystemSection />
-      <CustomerJourneySection anchorId="customer-journey" />
-      <ServicesConstellationSection />
-      <DeliveryModelsSection anchorId="ways-of-working" />
-      <AccountOwnershipSection anchorId="ownership" />
-      <HonestExpectationsSection />
-      <LearningResourcesSection anchorId="learn" />
-      <FinalCtaBannerSection anchorId="get-started" />
+      <HomepageHeroSection hero={hero} />
+      <HomepageProblemSection data={editorial} />
+      <HomepageGoalRouterSection />
+      <HomepageConnectedSystemSection />
+      <DeliveryModelsExplainerSection id="ways-of-working" surface="alt" showOwnership={false} />
+      <HomepageTrustSection surface="light" />
+      <HomepageLearningSection surface="alt" />
+
+      <FinalCtaSection
+        id="get-started"
+        title="Build your digital growth plan, one connected step at a time."
+        lead="Tell us where you are and what you want to achieve. We'll help you find the right starting point, then map what to build first and what to connect next."
+        primary={{ href: "/growth-plan", label: "Build my growth plan" }}
+        secondary={{ href: "/contact", label: "Talk it through" }}
+      />
     </>
   );
 }

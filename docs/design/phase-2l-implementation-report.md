@@ -222,23 +222,34 @@ unchanged.
 
 ## 22. Client-JavaScript and presentation-cost changes
 
-Reported honestly: the three routes were already **fully server-rendered with zero route-level client
-components and zero `<canvas>`** both before and after (the removed cosmic layer, glow buttons,
-node-orbs, InfinityMark and phone frame are all server components). So there is **no route client-JS
-count to reduce** — the change is in *presentation cost and accessibility*:
+> **Corrected in Phase 2M (§A.1).** The original wording here was wrong. Each legacy route opened
+> with `CosmicPageHero`, whose real dependency chain was `CosmicPageHero → CosmicBackground →
+> StarfieldLazy → Starfield`. `CosmicBackground` renders the starfield **by default** (`stars=true`),
+> `StarfieldLazy` is a **client-only** boundary (`"use client"`, `next/dynamic` with `ssr:false`),
+> and `Starfield` is a **client component that paints a `<canvas>`**. So each old route carried **at
+> least one client-only decorative boundary and one canvas** (client-rendered after hydration, which
+> is why it never appeared in the prerendered SSR HTML — the earlier "0 canvas" count only measured
+> SSR output). `PhoneFrame`, `NodeOrb` and `InfinityMark` *were* themselves server-rendered, but that
+> does **not** make the complete old route client-free — the starfield boundary did. This regression
+> is pinned by `tests/unit/v2-phase-2l-corrections.test.ts` so the narrative cannot drift while those
+> components remain in the repo.
+
+The migrated routes now render **no starfield canvas and no starfield client boundary**; each route
+loses at least one client-only decorative boundary and one canvas:
 
 | Aspect | Before | After |
 |---|---|---|
-| Animated cosmic background (`CosmicBackground`, CSS-animated) | on all three heroes | **removed** |
+| Starfield decorative layer (`CosmicPageHero → CosmicBackground → StarfieldLazy → Starfield`) | one **client-only boundary + one client `<canvas>`** per route | **removed** |
 | Full-width dark cosmic surfaces | multiple per route | **one reserved night final CTA** each |
-| Glow buttons / node-orbs / InfinityMark decoration | present | **removed (flat V2)** |
+| Glow buttons / node-orbs / InfinityMark decoration (server-rendered) | present | **removed (flat V2)** |
 | `/connected-growth` horizontal phone strip with a focusable `tabindex=0` scroll region | present | **replaced by a semantic vertical `<ol>`** (a11y win — no forced-focusable scroller) |
-| H1 | server text over an animated background | **server text on a flat light surface** |
-| `<canvas>` on the three routes | 0 | 0 |
+| H1 | server text over an animated starfield background | **server text on a flat light surface** |
+| Starfield `<canvas>` on the three routes (client-rendered) | 1 per route | **0** |
 
-Lighthouse / LCP / CLS were **not** run in this environment (no invented scores); structurally, removing
-the ambient background animation and the focusable scroll region reduces main-thread/paint work and
-improves reduced-motion behaviour, while the H1 stays a server-rendered LCP element.
+Exact JavaScript-byte, LCP and CLS reductions were **not measured** (Lighthouse was not run here; no
+invented scores). Structurally, removing the client starfield boundary + canvas and the focusable
+scroll region reduces client JS, main-thread and paint work and improves reduced-motion behaviour,
+while the H1 stays a server-rendered LCP element.
 
 ## 23. Tests actually run
 
@@ -279,7 +290,13 @@ run inside the shards, once each).
 - **No overflow** at 320 / 360 / 390 / 768 / 1024 / 1160 / 1280 / 1440 px on all three routes (and the
   homepage), via `setViewportAndWaitForStableLayout` + `expectNoHorizontalOverflow`.
 - **One H1** per route with the approved text; logical H1 → H2 → H3 → H4 hierarchy.
-- **No-JavaScript**: every route renders its full content and all fragments from the server response.
+- **No-JavaScript**: every route renders from the server response. *(Corrected in Phase 2M §A.2:
+  the Phase 2L no-JS blocks were strengthened from H1 + first link + fragment presence to
+  **directly** assert each route's full content — /about's who-we-are body, five principles, four
+  delivery models, eight honest items and CTA destinations; /account-ownership's every asset, flow
+  step, guarantee, closing, callout and both CTAs; /connected-growth's six phases, captions, screen
+  headings and lines, six examples and every service label — rather than inferring the rest from
+  "it's a server component".)*
 - **Axe**: 0 serious/critical on `/about`, `/account-ownership`, `/connected-growth`, the homepage and
   both design-preview pages (wcag2a/2aa/21a/21aa/22aa).
 - **Reduced motion / adaptive header at 200%**: covered by the existing `reduced-motion` and
@@ -307,11 +324,19 @@ run inside the shards, once each).
 
 ## 29. Recommended scope for Phase 2M
 
-Migrate the **service surfaces**: `/services` (hub) and the **service-category routes** onto V2 —
-replacing `CosmicPageHero` + `FinalCtaBannerSection` there with PageHeader + FinalCtaSection, moving the
-services explorer onto V2 cards/grids, and preserving every service, category, delivery-model tag and
-deep-link fragment. That is the largest remaining cosmic surface and shares the delivery-model
-components already hardened here. Keep `ServiceDomainTemplate`, `/pricing`, `/contact`, `/growth-plan`
+> **Corrected in Phase 2M (§A.4).** All **16 current service categories delegate to
+> `ServiceDomainTemplate`** (every renderable category has a `DomainConfig`), so migrating the
+> category family **requires migrating the shared template** — the two cannot be separated. The
+> legacy `PageHero` fallback in `/services/[category]` is unreachable *only while* that one-to-one
+> config-coverage invariant holds. Phase 2M therefore covers the **services hub, the category route
+> and `ServiceDomainTemplate` together** (not the hub + category routes with the template left out).
+
+Migrate the **service surfaces** as one unit: `/services` (hub), `/services/[category]` and the shared
+`ServiceDomainTemplate` onto V2 — replacing `CosmicPageHero` + `FinalCtaBannerSection` + the cosmic
+template with PageHeader + V2 cards/sections + FinalCtaSection, and preserving every service, category,
+cluster, delivery-model tag, connectsTo/forWho/next relationship, structured-data graph and the 70
+service deep-link fragments + folded-service redirects. That is the largest remaining cosmic surface and
+reuses the delivery-model components already hardened here. Keep `/pricing`, `/contact`, `/growth-plan`
 and `/troubleshooter` out of scope until their own phases, and defer the root colour-scheme flip and any
 broad legacy-component / galaxy-engine deletion until every consuming route is migrated.
 

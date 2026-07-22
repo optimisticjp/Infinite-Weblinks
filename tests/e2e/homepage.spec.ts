@@ -70,12 +70,30 @@ test.describe("homepage — V2 hero and content", () => {
     const h1Box = await h1.boundingBox();
     const supportBox = await support.boundingBox();
     const ctaBox = await cta.boundingBox();
+
+    // Read the computed line-height of the support paragraph, resolving a computed `normal`
+    // safely to ~1.2× the font size, so the "at least one full line visible" check uses a real
+    // measured line rather than a hard-coded pixel guess.
+    const supportLineHeight = await support.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      const lh = cs.lineHeight;
+      if (lh === "normal") return Math.round(parseFloat(cs.fontSize) * 1.2);
+      return Math.round(parseFloat(lh));
+    });
+
     // Record the measured geometry so a regression shows exact bounds in the failure context.
-    const bounds = JSON.stringify({ viewport: { VW, VH }, h1: h1Box, support: supportBox, cta: ctaBox });
+    const bounds = JSON.stringify({
+      viewport: { VW, VH },
+      h1: h1Box,
+      support: supportBox,
+      cta: ctaBox,
+      supportLineHeight,
+    });
 
     expect(h1Box, `H1 bounds ${bounds}`).not.toBeNull();
     expect(supportBox, `support bounds ${bounds}`).not.toBeNull();
     expect(ctaBox, `CTA bounds ${bounds}`).not.toBeNull();
+    expect(supportLineHeight, `computed support line-height resolves — ${bounds}`).toBeGreaterThan(0);
 
     // The complete H1 bounding box sits inside the viewport.
     expect(h1Box!.y, `H1 top inside fold — ${bounds}`).toBeGreaterThanOrEqual(0);
@@ -83,9 +101,15 @@ test.describe("homepage — V2 hero and content", () => {
     expect(h1Box!.x, `H1 left inside viewport — ${bounds}`).toBeGreaterThanOrEqual(0);
     expect(h1Box!.x + h1Box!.width, `H1 right inside viewport — ${bounds}`).toBeLessThanOrEqual(VW + 1);
 
-    // At least one full line of the useful support copy is inside the viewport.
-    expect(supportBox!.y, `support top inside fold — ${bounds}`).toBeGreaterThanOrEqual(0);
-    expect(supportBox!.y + 20, `at least one support line above the fold — ${bounds}`).toBeLessThanOrEqual(VH);
+    // At least one COMPLETE computed line-height of the support paragraph is inside the viewport:
+    // measure the visible vertical intersection of the paragraph box and the viewport.
+    const visibleTop = Math.max(supportBox!.y, 0);
+    const visibleBottom = Math.min(supportBox!.y + supportBox!.height, VH);
+    const visibleSupportHeight = visibleBottom - visibleTop;
+    expect(
+      visibleSupportHeight,
+      `at least one full support line (${supportLineHeight}px) visible — ${bounds}`,
+    ).toBeGreaterThanOrEqual(supportLineHeight);
 
     // The complete primary CTA is inside the viewport.
     expect(ctaBox!.y, `CTA top inside fold — ${bounds}`).toBeGreaterThanOrEqual(0);

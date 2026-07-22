@@ -106,18 +106,137 @@ for (const [route, cfg] of Object.entries(ROUTES)) {
     }
   });
 
-  test.describe(`${route} — without JavaScript`, () => {
-    test.use({ javaScriptEnabled: false });
-    test("the full page renders from the server response, with all fragments", async ({ page }) => {
-      await page.goto(route);
-      await expect(page.getByRole("heading", { level: 1 })).toHaveText(cfg.h1);
-      await expect(page.getByRole("link", { name: "Build my growth plan" }).first()).toBeVisible();
-      for (const id of cfg.fragments) {
-        expect(await idCount(page, id), `#${id} present (no JS)`).toBe(1);
-      }
-    });
-  });
 }
+
+/**
+ * Route-specific no-JavaScript coverage: each block asserts the content that makes THAT route
+ * complete from the server response alone (not just the H1 + first link + fragment presence).
+ */
+test.describe("/about — without JavaScript", () => {
+  test.use({ javaScriptEnabled: false });
+  test("renders who-we-are, all principles, delivery models, honest items and the final CTA", async ({ page }) => {
+    await page.goto("/about");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Your digital growth partner");
+    await expect(page.getByText(/We're not tied to any one platform and we don't sell software/)).toBeVisible();
+    for (const principle of [
+      "We understand before we sell",
+      "Growth is one connected system",
+      "We start with the smallest next step",
+      "You own your accounts, data and tools",
+      "More tools is not better",
+    ]) {
+      await expect(page.getByRole("heading", { name: principle })).toBeVisible();
+    }
+    for (const model of ["We Do the Work", "We Bring In an Expert", "We Run It End to End", "You Run It After"]) {
+      await expect(page.getByRole("heading", { name: model })).toBeVisible();
+    }
+    for (const item of [
+      "No overnight results",
+      "No guaranteed rankings",
+      "No invented numbers",
+      "No lock-in",
+      "A clear plan",
+      "Work done properly",
+      "Honest reporting",
+      "Steady improvement",
+    ]) {
+      await expect(page.getByText(item, { exact: true }).first()).toBeVisible();
+    }
+    await expect(page.locator('#get-started a[href="/growth-plan"]')).toBeVisible();
+    await expect(page.locator('#get-started a[href="/how-it-works"]')).toBeVisible();
+    for (const id of ["about-hero", "who-we-are", "principles", "ways-of-working", "honest", "get-started"]) {
+      expect(await idCount(page, id), `#${id} present (no JS)`).toBe(1);
+    }
+  });
+});
+
+test.describe("/account-ownership — without JavaScript", () => {
+  test.use({ javaScriptEnabled: false });
+  test("renders every asset, flow step, guarantee, the closing, the callout and both CTAs", async ({ page }) => {
+    await page.goto("/account-ownership");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Your business is built in your name");
+    for (const asset of ["Brand", "Website", "Customer data", "Analytics", "Content", "Accounts", "Automations", "Documentation"]) {
+      await expect(page.getByText(asset, { exact: true }).first()).toBeVisible();
+    }
+    for (const step of ["Plan", "Build", "Connect", "Support"]) {
+      await expect(page.getByText(step, { exact: true }).first()).toBeVisible();
+    }
+    for (const g of [
+      { title: "Your accounts", body: /created in your business name/ },
+      { title: "Your data", body: /customer information and analytics stay under your control/ },
+      { title: "Your future", body: /bring the work in-house, or move on/ },
+    ]) {
+      await expect(page.getByRole("heading", { name: g.title })).toBeVisible();
+      await expect(page.getByText(g.body).first()).toBeVisible();
+    }
+    await expect(page.getByText("We help build the system. You keep control of it.")).toBeVisible();
+    await expect(page.getByText("Why documented ownership matters")).toBeVisible();
+    await expect(page.locator('#get-started a[href="/growth-plan"]')).toBeVisible();
+    await expect(page.locator('#get-started a[href="/how-it-works"]')).toBeVisible();
+    for (const id of ["ownership-hero", "ownership", "get-started"]) {
+      expect(await idCount(page, id), `#${id} present (no JS)`).toBe(1);
+    }
+  });
+});
+
+test.describe("/connected-growth — without JavaScript", () => {
+  test.use({ javaScriptEnabled: false });
+  test("renders all six journey steps + screens, all six examples and the disclaimers", async ({ page }) => {
+    await page.goto("/connected-growth");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Simple combinations that compound");
+
+    const phases = ["Discover", "Visit store", "Take action", "Follow up", "Purchase", "Retain & grow"];
+    for (const phase of phases) await expect(page.getByRole("heading", { name: phase })).toBeVisible();
+
+    const captions = [
+      "A customer sees your content or an advert on social.",
+      "They browse the products on your website.",
+      "They add something to the cart or sign up.",
+      "Email or a message brings them back to finish.",
+      "The order is completed and confirmed.",
+      "Loyalty and personalised offers earn the next purchase.",
+    ];
+    for (const caption of captions) await expect(page.getByText(caption)).toBeVisible();
+
+    const screenHeadings = ["New drop is live", "New arrivals", "Added to cart", "Still thinking it over?", "Order confirmed", "Rewards unlocked"];
+    for (const h of screenHeadings) await expect(page.getByText(h, { exact: true }).first()).toBeVisible();
+
+    const screenLines = [
+      "Sponsored", "Shop the collection",
+      "New in", "Best sellers", "Accessories",
+      "Choose size", "Add to cart", "Save for later",
+      "Your picks are waiting", "Return to cart",
+      "Thanks for your order", "View order",
+      "Early access", "Member offers", "Just for you",
+    ];
+    for (const line of screenLines) await expect(page.getByText(line, { exact: true }).first()).toBeVisible();
+
+    const examples = [
+      "Turn visitors into customers",
+      "Know which marketing works",
+      "Bring in qualified leads",
+      "Build repeat sales",
+      "Grow through short-form content",
+      "Save time on repetitive work",
+    ];
+    for (const ex of examples) await expect(page.getByRole("heading", { name: ex })).toBeVisible();
+
+    const serviceLabels = [
+      "Store & checkout", "Conversion", "Paid ads", "Analytics", "Tracking setup", "Reporting",
+      "Search ads", "Landing pages", "CRM", "Email & SMS", "Loyalty", "Automation",
+      "Short-form video", "Content", "Social ads", "Workflow automation", "AI assistance",
+    ];
+    for (const label of serviceLabels) await expect(page.getByText(label, { exact: true }).first()).toBeVisible();
+
+    await expect(page.getByText(/not real clients/i).first()).toBeVisible();
+    await expect(page.getByText(/generic, illustrative path/i)).toBeVisible();
+    await expect(page.locator('#get-started a[href="/growth-plan"]')).toBeVisible();
+    await expect(page.locator('#get-started a[href="/how-it-works"]')).toBeVisible();
+    for (const id of ["connected-growth-hero", "journey", "examples", "get-started"]) {
+      expect(await idCount(page, id), `#${id} present (no JS)`).toBe(1);
+    }
+  });
+});
 
 test.describe("/about — content integrity", () => {
   test("keeps all five principles, four delivery models and the honest items; no delivery-* ids", async ({ page }) => {

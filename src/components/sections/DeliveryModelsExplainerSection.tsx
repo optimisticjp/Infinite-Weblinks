@@ -18,8 +18,10 @@ const ASSURANCES = [
 
 /**
  * DeliveryModelsExplainerSection — the V2 delivery-model section. SectionShell (an explicit V2
- * surface, the existing eyebrow/title/intro) with the four DeliveryModelCards in source order —
- * each carrying id="delivery-<key>" — plus, by default, the ownership statement and its four
+ * surface, the existing eyebrow/title/intro) with the four DeliveryModelCards in source order.
+ * Each card's derived id="delivery-<key>" fragment target is CONDITIONAL on `cardFragmentTargets`
+ * (default true) — the four ids render on /how-it-works but are omitted on the homepage and /about
+ * (which pass false). By default the section also shows the ownership statement and its four
  * assurances as a semantic list. Icon/ink come from the central DELIVERY_MODEL_META (no raw
  * DELIVERY_COLOR, no duplicated icon map, no filled legacy tiles, no theme-band-bright, no
  * hard-coded shared heading id).

@@ -1,0 +1,123 @@
+/* RoadmapCard — planning / sequence card. The Card shell owns the softly-tinted surface,
+   accent rail, radius, ≤2px hover and focus ring; this module lays out the content. Colours
+   come from theme tokens and the mapped `--card-accent` ink — no raw colours, no glow/glass. */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  height: 100%;
+  padding: var(--space-6);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+}
+.count {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--text-muted);
+}
+
+.title {
+  margin: var(--space-1) 0 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+  overflow-wrap: anywhere;
+}
+
+.intro {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+
+.seqLabel {
+  margin: var(--space-2) 0 0;
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Compact numbered sequence — an ordered list with custom accent markers. */
+.phases {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.phase {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.marker {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  min-width: 26px;
+  height: 22px;
+  padding-inline: var(--space-1);
+  border-radius: var(--v2-radius-sm);
+  background: color-mix(in srgb, var(--card-accent) 14%, var(--surface));
+  color: var(--card-accent);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  line-height: 1;
+}
+.phaseTitle {
+  min-width: 0;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--text-heading);
+  overflow-wrap: anywhere;
+}
+
+.morePhases {
+  margin: 0;
+  padding-left: calc(26px + var(--space-3));
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+/* Shared destination affordance (coherent with the other card families). */
+.more {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-2);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--link);
+}
+.moreIcon {
+  width: 16px;
+  height: 16px;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .moreIcon {
+    transform: translateX(3px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .moreIcon {
+    transition: none;
+  }
+  .card:hover .moreIcon {
+    transform: none;
+  }
+}

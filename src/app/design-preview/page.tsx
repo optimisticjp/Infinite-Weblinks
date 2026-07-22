@@ -18,6 +18,9 @@ import { ArticleCard } from "@/components/cards/ArticleCard";
 import { CaseStudyCard } from "@/components/cards/CaseStudyCard";
 import { ToolCard } from "@/components/cards/ToolCard";
 import { RoadmapCard } from "@/components/cards/RoadmapCard";
+import { LinkChip } from "@/components/primitives/LinkChip";
+import { RelationshipCard } from "@/components/cards/RelationshipCard";
+import { RoadmapPhaseList } from "@/components/routes/RoadmapPhaseList";
 import { FilterChipDemo } from "./FilterChipDemo";
 import styles from "./design-preview.module.css";
 
@@ -578,6 +581,85 @@ export default function DesignPreviewPage() {
               ]}
             />
           </CardGrid>
+        </section>
+
+        {/* 12e · Detail-page building blocks — LinkChip + RelationshipCard + RoadmapPhaseList */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Detail-page building blocks</h2>
+
+          <p className={styles.subTitle}>LinkChip — internal navigation links (distinct from static Chips)</p>
+          <div className={styles.row}>
+            <LinkChip href="#main" icon={<Icon name="link" />} tone="var(--domain-build)">
+              Websites &amp; Development
+            </LinkChip>
+            <LinkChip href="#main" tone="var(--domain-discover)">
+              SEO &amp; Content
+            </LinkChip>
+            <LinkChip href="#main">Analytics &amp; Tracking</LinkChip>
+          </div>
+
+          <p className={styles.subTitle}>RelationshipCard — a group of links, and a long wrapping label</p>
+          <CardGrid layout="equal" aria-label="Relationship card preview">
+            <RelationshipCard
+              title="Connects with"
+              description="Areas this joins up to cleanly."
+              icon={<Icon name="link" />}
+              tone="var(--domain-build)"
+            >
+              <LinkChip href="#main">Ecommerce &amp; Operations</LinkChip>
+              <LinkChip href="#main">Email, SMS &amp; CRM</LinkChip>
+              <LinkChip href="#main">Analytics &amp; Tracking</LinkChip>
+            </RelationshipCard>
+            <RelationshipCard
+              title="Suits these businesses"
+              description="Kinds of business this area tends to suit."
+              icon={<Icon name="users" />}
+              tone="var(--domain-retain)"
+            >
+              <LinkChip href="#main">
+                Local &amp; service businesses that rely on a steady flow of enquiries and bookings
+              </LinkChip>
+            </RelationshipCard>
+          </CardGrid>
+
+          <p className={styles.subTitle}>RoadmapPhaseList — three phases (one with services + goals, two without)</p>
+          <RoadmapPhaseList
+            phases={[
+              {
+                id: "preview-phase-1",
+                number: 1,
+                title: "Build the foundation",
+                summary: "Store or redesign, checkout, GA4 and pixels, and core email flows.",
+                stage: { slug: "foundation", name: "Foundation", tone: "var(--blue)" },
+                services: [
+                  {
+                    slug: "ga4-google-tag-manager-setup",
+                    categorySlug: "analytics-data",
+                    name: "GA4 & Google Tag Manager setup",
+                  },
+                ],
+                goals: [{ slug: "launch-professional-store", title: "Launch a professional store" }],
+              },
+              {
+                id: "preview-phase-2",
+                number: 2,
+                title: "Bring in and convert traffic",
+                summary: "Ads and SEO to bring traffic, then reviews and retargeting to convert it.",
+                stage: { slug: "get-discovered", name: "Get Discovered", tone: "var(--cyan)" },
+                services: [],
+                goals: [],
+              },
+              {
+                id: "preview-phase-3",
+                number: 3,
+                title: "Operate and retain",
+                summary: "Fulfilment and support systems, then loyalty and lifecycle messaging.",
+                stage: null,
+                services: [],
+                goals: [],
+              },
+            ]}
+          />
         </section>
 
         {/* 12c · Callouts */}

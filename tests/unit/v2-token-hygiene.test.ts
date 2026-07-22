@@ -45,6 +45,35 @@ describe("V2 chrome token hygiene", () => {
   }
 });
 
+// Phase 2F §G: the new detail-page components and both rewritten detail-route modules must use
+// V2 semantic surfaces / domain ink+tint mapping only — additionally banning the legacy
+// --domain-*, --hue, and base accent-palette tokens (never a legacy hue as V2 text).
+const V2_DETAIL_MODULES = [
+  "../../src/components/primitives/LinkChip.module.css",
+  "../../src/components/cards/RelationshipCard.module.css",
+  "../../src/components/routes/RoadmapPhaseList.module.css",
+  "../../src/app/(marketing)/tools/[slug]/tool.module.css",
+  "../../src/app/(marketing)/roadmaps/[slug]/roadmap.module.css",
+];
+const BANNED_V2 = [
+  ...BANNED,
+  /var\(--domain-[a-z0-9-]+\)/i, // legacy domain tokens
+  /var\(--hue\b/i, // legacy per-route --hue variable
+  /var\(--(violet|pink|blue|cyan|lime|orange|yellow)(-[a-z]+)?\)/i, // base accent palette
+];
+
+describe("V2 detail-route + new-component token hygiene", () => {
+  for (const rel of V2_DETAIL_MODULES) {
+    const css = read(rel);
+    const name = rel.split("/").slice(-2).join("/");
+    for (const pattern of BANNED_V2) {
+      it(`${name} contains no ${pattern}`, () => {
+        expect(css).not.toMatch(pattern);
+      });
+    }
+  }
+});
+
 describe("V2 night link token hygiene", () => {
   it("defines --v2-link-night centrally in v2.css", () => {
     expect(v2).toMatch(/--v2-link-night:\s*#[0-9a-f]{6}/i);

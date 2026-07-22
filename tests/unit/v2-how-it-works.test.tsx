@@ -205,4 +205,15 @@ describe("DeliveryModelCard", () => {
       other.unmount();
     }
   });
+
+  it("omits the derived id when withFragmentTarget={false} — still no custom id is accepted", () => {
+    const { container } = render(<DeliveryModelCard {...base} withFragmentTarget={false} />);
+    const article = container.querySelector("article") as HTMLElement;
+    expect(article.id).toBe(""); // no fragment target rendered
+    // The default badge is still derived only from the key, unaffected by the flag.
+    expect(screen.getByText("Our default")).toBeVisible();
+    // The DeliveryModelCard props expose no `id` — a caller cannot inject one.
+    // @ts-expect-error id is not part of the public API.
+    void (<DeliveryModelCard {...base} id="delivery-hacked" />);
+  });
 });

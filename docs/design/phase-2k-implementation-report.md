@@ -177,6 +177,14 @@ there are no articles — proven by `unit/v2-homepage-learning-empty` (mocked em
 
 ## 18. Proof-gating
 
+> **Corrected in Phase 2L (§A.4).** To state the behaviour precisely: **no genuine publishable
+> proof exists in the current content**, so the homepage **renders no proof section at all** — it
+> does not even call a proof getter. **No empty placeholder renders**, and the **illustrative
+> scenarios are never used as proof**. A future verified-proof homepage section **remains
+> deferred**: the current implementation does **not** yet dynamically add such a section when
+> genuine proof content becomes available — that wiring is left for a later phase and was **not**
+> built in Phase 2K or 2L.
+
 No verified-proof, testimonial, logo-wall, numeric-outcome or empty-placeholder block renders under
 the current seed; the illustrative `CaseScenario` is never used as proof. `e2e/homepage.spec.ts`
 asserts the JSON-LD contains **Organization + WebSite** and **not** Review or AggregateRating, and
@@ -198,9 +206,18 @@ All ten homepage fragments resolve **exactly once** on meaningful visible conten
 header, work without JavaScript and behave under normal back/forward: `#goals`, `#growth-journey`,
 `#how-it-connects`, `#customer-journey`, `#services`, `#ways-of-working`, `#ownership`, `#honest`,
 `#learn`, `#get-started`. No homepage section named `delivery` is created (the homepage delivery
-section is `ways-of-working`; the per-card `#delivery-<key>` ids stay page-scoped to
-`/how-it-works`). Verified in `e2e/homepage.spec.ts` (uniqueness + visibility + bridge hrefs +
-per-fragment sticky-header clearance).
+section is `ways-of-working`).
+
+> **Corrected in Phase 2L (§A.1).** The `delivery-<key>` per-card fragment targets are now
+> **page-scoped to `/how-it-works`** in fact, not just in intent: `DeliveryModelCard` gained a
+> `withFragmentTarget` flag (default `true`) and `DeliveryModelsExplainerSection` a
+> `cardFragmentTargets` flag (default `true`), and the homepage passes `cardFragmentTargets={false}`
+> so it renders **no `delivery-*` ids** (the design-preview does the same). Callers still cannot
+> supply a custom id, and "Our default" is still derived only from `we-do`. In Phase 2K the homepage
+> delivery cards did still emit those ids; that is fixed here.
+
+Verified in `e2e/homepage.spec.ts` (uniqueness + visibility + bridge hrefs + per-fragment
+sticky-header clearance + the no-JS server-output block + the above-the-fold geometry check).
 
 ## 21. CSS / motion discipline
 

@@ -50,15 +50,110 @@ test.describe("homepage — V2 hero and content", () => {
     await expect(page.getByText(/official partner|our clients/i)).toHaveCount(0);
   });
 
-  test("the primary CTA is visible without scrolling at 390×844", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
+  test("the complete H1, a full support line and the primary CTA are above the fold at 390×844", async ({
+    page,
+  }) => {
+    const VW = 390;
+    const VH = 844;
+    await page.setViewportSize({ width: VW, height: VH });
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+
+    const h1 = page.getByRole("heading", { level: 1 });
+    const support = page.getByText(
+      "We help you choose the right digital tools and services, build what you need, and make everything work together around your goals.",
+    );
     const cta = page.getByRole("link", { name: "Build my growth plan" }).first();
-    const box = await cta.boundingBox();
-    expect(box).not.toBeNull();
-    expect(box!.y, "primary CTA top within the fold").toBeGreaterThanOrEqual(0);
-    expect(box!.y + box!.height, "primary CTA fully above the fold").toBeLessThanOrEqual(844);
+    await expect(h1).toBeVisible();
+    await expect(support).toBeVisible();
+    await expect(cta).toBeVisible();
+
+    const h1Box = await h1.boundingBox();
+    const supportBox = await support.boundingBox();
+    const ctaBox = await cta.boundingBox();
+    // Record the measured geometry so a regression shows exact bounds in the failure context.
+    const bounds = JSON.stringify({ viewport: { VW, VH }, h1: h1Box, support: supportBox, cta: ctaBox });
+
+    expect(h1Box, `H1 bounds ${bounds}`).not.toBeNull();
+    expect(supportBox, `support bounds ${bounds}`).not.toBeNull();
+    expect(ctaBox, `CTA bounds ${bounds}`).not.toBeNull();
+
+    // The complete H1 bounding box sits inside the viewport.
+    expect(h1Box!.y, `H1 top inside fold — ${bounds}`).toBeGreaterThanOrEqual(0);
+    expect(h1Box!.y + h1Box!.height, `H1 bottom inside fold — ${bounds}`).toBeLessThanOrEqual(VH);
+    expect(h1Box!.x, `H1 left inside viewport — ${bounds}`).toBeGreaterThanOrEqual(0);
+    expect(h1Box!.x + h1Box!.width, `H1 right inside viewport — ${bounds}`).toBeLessThanOrEqual(VW + 1);
+
+    // At least one full line of the useful support copy is inside the viewport.
+    expect(supportBox!.y, `support top inside fold — ${bounds}`).toBeGreaterThanOrEqual(0);
+    expect(supportBox!.y + 20, `at least one support line above the fold — ${bounds}`).toBeLessThanOrEqual(VH);
+
+    // The complete primary CTA is inside the viewport.
+    expect(ctaBox!.y, `CTA top inside fold — ${bounds}`).toBeGreaterThanOrEqual(0);
+    expect(ctaBox!.y + ctaBox!.height, `CTA bottom inside fold — ${bounds}`).toBeLessThanOrEqual(VH);
+    expect(ctaBox!.x + ctaBox!.width, `CTA right inside viewport — ${bounds}`).toBeLessThanOrEqual(VW + 1);
+
+    await expectNoHorizontalOverflow(page, "/ hero @ 390×844");
+  });
+});
+
+test.describe("homepage — without JavaScript (server output is complete)", () => {
+  test.use({ javaScriptEnabled: false });
+
+  test("the full homepage renders from the server response alone", async ({ page }) => {
+    await page.goto("/");
+
+    // One H1 with the complete approved headline text.
+    const h1 = page.getByRole("heading", { level: 1 });
+    await expect(h1).toHaveCount(1);
+    await expect(h1).toHaveText("A smarter way to plan and grow your business online.");
+
+    // Useful support copy + both hero CTAs.
+    await expect(
+      page.getByText(
+        "We help you choose the right digital tools and services, build what you need, and make everything work together around your goals.",
+      ),
+    ).toBeVisible();
+    await expect(page.getByRole("link", { name: "Build my growth plan" }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "See how it all works" }).first()).toBeVisible();
+
+    // All ten goal destinations.
+    expect(await page.locator('section#goals a[href^="/growth-plan?goal="]').count()).toBe(10);
+
+    // The five connected-system nodes.
+    for (const node of ["Get discovered", "Your website", "Analytics", "Email and SMS", "Repeat customers"]) {
+      await expect(page.getByText(node, { exact: true }).first()).toBeVisible();
+    }
+
+    // The three bridge destinations.
+    await expect(page.locator('a#growth-journey[href="/how-it-works#growth-journey"]')).toHaveCount(1);
+    await expect(page.locator('a#customer-journey[href="/connected-growth"]')).toHaveCount(1);
+    await expect(page.locator('a#services[href="/services"]')).toHaveCount(1);
+
+    // The four delivery models (with no delivery-* fragment target on the homepage).
+    for (const model of ["We Do the Work", "We Bring In an Expert", "We Run It End to End", "You Run It After"]) {
+      await expect(page.getByRole("heading", { name: model })).toBeVisible();
+    }
+    expect(await page.locator('[id^="delivery-"]').count(), "no delivery-* ids on the homepage").toBe(0);
+
+    // Ownership + honest expectations content.
+    await expect(page.getByText("Owned and controlled by you")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "What we won't do" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "What we do promise" })).toBeVisible();
+
+    // Learn preview + final CTA.
+    await expect(page.locator("section#learn")).toBeVisible();
+    await expect(page.locator("section#get-started")).toBeVisible();
+
+    // Every required homepage fragment target is present exactly once (no interaction needed).
+    for (const id of ALL_FRAGMENTS) {
+      expect(await idCount(page, id), `#${id} exactly once (no JS)`).toBe(1);
+    }
+  });
+
+  test("ordinary fragment navigation resolves without JavaScript", async ({ page }) => {
+    await page.goto("/#ownership");
+    await expect(page.locator("#ownership")).toBeVisible();
+    await expect(page.locator("#honest")).toBeVisible();
   });
 });
 

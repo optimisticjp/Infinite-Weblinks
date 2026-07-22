@@ -26,17 +26,22 @@ const ASSURANCES = [
  *
  * The section id defaults to "delivery" (its /how-it-works contract) and the ownership strip
  * defaults to on, so /how-it-works stays byte-for-byte unchanged. The homepage passes
- * id="ways-of-working" and showOwnership={false} (ownership lives in the merged trust section
- * there). Server Component.
+ * id="ways-of-working", showOwnership={false} and cardFragmentTargets={false} (ownership lives in
+ * the merged trust section there, and the per-card delivery fragments belong to /how-it-works).
+ * Server Component.
  */
 export async function DeliveryModelsExplainerSection({
   surface = "light",
   id = "delivery",
   showOwnership = true,
+  cardFragmentTargets = true,
 }: {
   surface?: "light" | "alt";
   id?: string;
   showOwnership?: boolean;
+  /** Whether each card renders its derived `delivery-<key>` fragment target. Default true
+   *  (the /how-it-works contract). The homepage and /about pass false. */
+  cardFragmentTargets?: boolean;
 }) {
   const models = await getDeliveryModels();
   if (models.length === 0) return null;
@@ -58,6 +63,7 @@ export async function DeliveryModelsExplainerSection({
             modelKey={model.key}
             tagline={model.tagline}
             description={model.description}
+            withFragmentTarget={cardFragmentTargets}
           />
         ))}
       </CardGrid>

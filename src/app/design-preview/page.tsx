@@ -1170,9 +1170,10 @@ export default async function DesignPreviewPage() {
           <HomepageConnectedSystemSection />
 
           <p className={styles.subTitle}>
-            DeliveryModelsExplainerSection — homepage configuration: alt surface, NO ownership strip
+            DeliveryModelsExplainerSection — homepage configuration: alt surface, NO ownership strip,
+            no per-card delivery fragment targets
           </p>
-          <DeliveryModelsExplainerSection surface="alt" showOwnership={false} />
+          <DeliveryModelsExplainerSection surface="alt" showOwnership={false} cardFragmentTargets={false} />
 
           <p className={styles.subTitle}>HomepageTrustSection — ownership + honest expectations merged (id=ownership, id=honest)</p>
           <HomepageTrustSection surface="light" />

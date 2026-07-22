@@ -39,7 +39,12 @@ export default async function HomePage() {
       <HomepageProblemSection data={editorial} />
       <HomepageGoalRouterSection />
       <HomepageConnectedSystemSection />
-      <DeliveryModelsExplainerSection id="ways-of-working" surface="alt" showOwnership={false} />
+      <DeliveryModelsExplainerSection
+        id="ways-of-working"
+        surface="alt"
+        showOwnership={false}
+        cardFragmentTargets={false}
+      />
       <HomepageTrustSection surface="light" />
       <HomepageLearningSection surface="alt" />
 

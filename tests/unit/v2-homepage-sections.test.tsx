@@ -233,21 +233,31 @@ describe("HomepageConnectedSystemSection — one system + three onward bridges",
 // ------------------------------------------------------------------ delivery reuse (homepage config)
 
 describe("DeliveryModelsExplainerSection — homepage configuration", () => {
-  it("uses the homepage id, an alt surface and hides the ownership block", async () => {
+  it("uses the homepage id, an alt surface, hides ownership and renders NO delivery fragment targets", async () => {
     const { container } = render(
-      await DeliveryModelsExplainerSection({ id: "ways-of-working", surface: "alt", showOwnership: false }),
+      await DeliveryModelsExplainerSection({
+        id: "ways-of-working",
+        surface: "alt",
+        showOwnership: false,
+        cardFragmentTargets: false,
+      }),
     );
     expect(container.querySelector("section#ways-of-working")).not.toBeNull();
-    // The four delivery models still render, in order, with the "Our default" flag on we-do only.
-    expect(container.querySelector('[id="delivery-we-do"]')).not.toBeNull();
-    expect(container.querySelector('[id="delivery-you-run"]')).not.toBeNull();
+    // The four models still render (in order, "Our default" on we-do), but WITHOUT delivery-* ids
+    // — those belong to /how-it-works, not the homepage.
+    expect(container.querySelectorAll("article")).toHaveLength(4);
+    expect(container.querySelector('[id^="delivery-"]'), "no delivery fragment target on the homepage").toBeNull();
+    expect(screen.getByText("Our default")).toBeInTheDocument();
     // Ownership reassurance must NOT be repeated here (the trust section owns it).
     expect(container.textContent).not.toMatch(/owned and controlled by you/i);
   });
 
-  it("still shows ownership by default (the /how-it-works configuration is unchanged)", async () => {
+  it("keeps all four delivery fragment targets by default (the /how-it-works contract)", async () => {
     const { container } = render(await DeliveryModelsExplainerSection({}));
     expect(container.querySelector("section#delivery")).not.toBeNull();
+    for (const id of ["delivery-we-do", "delivery-we-expert", "delivery-we-run", "delivery-you-run"]) {
+      expect(container.querySelector(`[id="${id}"]`), `${id} present by default`).not.toBeNull();
+    }
   });
 });
 

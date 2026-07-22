@@ -1,0 +1,67 @@
+/* GoalPath — three restrained light step panels in a wrapping grid. V2 tokens only; the shared
+   sequence-marker ink comes from `--path-ink` (a mapped V2 domain ink). No connector, glow,
+   gradient, progress bar or fixed height; the grid never forces a single overflowing row, and no
+   panel is enlarged over the others. */
+.path {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+@media (min-width: 40rem) {
+  .path {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+}
+@media (min-width: 60rem) {
+  .path {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-6);
+  border-radius: var(--v2-radius-lg);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--v2-shadow-sm);
+}
+
+/* Compact visible sequence marker in the goal tone (aria-hidden — order comes from the <ol>). */
+.marker {
+  display: inline-grid;
+  place-items: center;
+  min-width: 28px;
+  height: 24px;
+  padding-inline: var(--space-1);
+  border-radius: var(--v2-radius-sm);
+  background: color-mix(in srgb, var(--path-ink) 12%, var(--surface));
+  color: var(--path-ink);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  line-height: 1;
+}
+
+.heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+  overflow-wrap: anywhere;
+}
+
+.detail {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}

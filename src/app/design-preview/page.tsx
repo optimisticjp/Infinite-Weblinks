@@ -16,6 +16,8 @@ import { BentoCard } from "@/components/primitives/BentoCard";
 import { Callout } from "@/components/primitives/Callout";
 import { ArticleCard } from "@/components/cards/ArticleCard";
 import { CaseStudyCard } from "@/components/cards/CaseStudyCard";
+import { ToolCard } from "@/components/cards/ToolCard";
+import { RoadmapCard } from "@/components/cards/RoadmapCard";
 import { FilterChipDemo } from "./FilterChipDemo";
 import styles from "./design-preview.module.css";
 
@@ -514,6 +516,66 @@ export default function DesignPreviewPage() {
               forWho="An established brand whose growth has stalled"
               summary="Retention, loyalty and automation make each existing customer worth more."
               tone="var(--domain-retain)"
+            />
+          </CardGrid>
+        </section>
+
+        {/* 12d · Catalog & planning cards — ToolCard + RoadmapCard (real public seed content) */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Catalog &amp; planning cards</h2>
+
+          <p className={styles.subTitle}>ToolCard — two connected areas, and more than three with a truthful +N</p>
+          <CardGrid layout="equal" aria-label="Tool card preview">
+            <ToolCard
+              href="#main"
+              title="Email, SMS & CRM Platforms"
+              description="Owning your audience directly, through email, SMS, and a CRM that tracks every contact and lead."
+              categoryLabel="Email, SMS & CRM"
+              categoryTone="var(--blue)"
+              categoryIcon="mail"
+              connectedAreaLabels={["Ecommerce & Operations", "Analytics & Tracking"]}
+            />
+            <ToolCard
+              href="#main"
+              title="Website & Hosting Platforms"
+              description="The platform your site or store runs on, plus the hosting and performance layer that keeps it fast and online."
+              categoryLabel="Websites, Hosting & Performance"
+              categoryTone="var(--blue)"
+              categoryIcon="monitor"
+              connectedAreaLabels={[
+                "Ecommerce & Operations",
+                "Email, SMS & CRM",
+                "Analytics & Tracking",
+                "Automation & AI",
+                "SEO & Content",
+              ]}
+            />
+          </CardGrid>
+
+          <p className={styles.subTitle}>RoadmapCard — three phases, and four phases with a truthful +1 phase</p>
+          <CardGrid layout="editorial" aria-label="Roadmap card preview">
+            <RoadmapCard
+              href="#main"
+              title="Creator Roadmap"
+              intro="The rough shape we'd follow for an audience-first brand building toward monetisation."
+              businessTypeLabel="Creators"
+              businessTypeTone="var(--pink)"
+              businessTypeIcon="play"
+              phases={[{ title: "Build the base" }, { title: "Grow one platform" }, { title: "Monetise" }]}
+            />
+            <RoadmapCard
+              href="#main"
+              title="Ecommerce Brand Roadmap"
+              intro="The rough shape we'd follow for a product seller or D2C brand, tailored during discovery."
+              businessTypeLabel="Ecommerce Brands"
+              businessTypeTone="var(--lime)"
+              businessTypeIcon="shopping-bag"
+              phases={[
+                { title: "Build the foundation" },
+                { title: "Bring in and convert traffic" },
+                { title: "Operate and retain" },
+                { title: "Scale with data and automation" },
+              ]}
             />
           </CardGrid>
         </section>

@@ -48,7 +48,17 @@ import { HonestExpectationsPanel } from "@/components/routes/HonestExpectationsP
 import { CustomerJourneyList } from "@/components/routes/CustomerJourneyList";
 import { ConnectedExampleCard } from "@/components/cards/ConnectedExampleCard";
 import { ConnectedGrowthExamplesSection } from "@/components/sections/ConnectedGrowthExamplesSection";
-import { getHomepageOpening, getAccountOwnership, getCustomerJourney } from "@/lib/content";
+import { ServiceCategoryCard } from "@/components/cards/ServiceCategoryCard";
+import { ServiceOfferingCard } from "@/components/cards/ServiceOfferingCard";
+import { ServiceConnectionList } from "@/components/routes/ServiceConnectionList";
+import {
+  getHomepageOpening,
+  getAccountOwnership,
+  getCustomerJourney,
+  getServiceCategories,
+  getServices,
+} from "@/lib/content";
+import { getServiceDomainConfig } from "@/lib/services/domains";
 import { FilterChipDemo } from "./FilterChipDemo";
 import styles from "./design-preview.module.css";
 
@@ -87,6 +97,13 @@ export default async function DesignPreviewPage() {
   const { hero, editorial } = await getHomepageOpening();
   const ownership = await getAccountOwnership();
   const journey = await getCustomerJourney();
+  const [svcCategories, allServices] = await Promise.all([getServiceCategories(), getServices()]);
+  const svcCountByCategory = new Map<string, number>();
+  for (const s of allServices) svcCountByCategory.set(s.categorySlug, (svcCountByCategory.get(s.categorySlug) ?? 0) + 1);
+  const strategyConfig = getServiceDomainConfig("strategy-discovery");
+  const strategyCategory = svcCategories.find((c) => c.slug === "strategy-discovery");
+  const strategyServices = allServices.filter((s) => s.categorySlug === "strategy-discovery");
+  const websitesCategory = svcCategories.find((c) => c.slug === "websites-development");
 
   return (
     <main id="main" className={`theme-light ${styles.wrap}`}>
@@ -1241,6 +1258,136 @@ export default async function DesignPreviewPage() {
           <p className={styles.subTitle}>ConnectedGrowthExamplesSection — the real illustrative-combination grid (id=examples)</p>
           <ConnectedGrowthExamplesSection surface="light" />
         </section>
+
+        {/* 18 · Phase 2M — services hub + service-domain system (real seed/config; service cards
+            use withFragmentTarget={false} so production service fragment ids don't leak here) */}
+        {strategyConfig && strategyCategory && websitesCategory ? (
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Phase 2M · Services system</h2>
+
+            <p className={styles.subTitle}>ServiceCategoryCard — whole-card route with a real service count, plus a long-title case</p>
+            <CardGrid layout="equal" aria-label="Service category card preview">
+              <ServiceCategoryCard
+                order={strategyCategory.order}
+                title={strategyCategory.name}
+                description={strategyCategory.intro}
+                href={`/services/${strategyCategory.slug}`}
+                icon={strategyCategory.icon}
+                tone={strategyConfig.hue}
+                serviceCount={svcCountByCategory.get(strategyCategory.slug) ?? 0}
+              />
+              <ServiceCategoryCard
+                order={99}
+                title="A deliberately long service-area name that must wrap cleanly across two or three lines"
+                description="Preview-only placeholder intro for a service area with a long name and a long description, so the card layout and the service-count footer can be checked at width without clipping."
+                href="#main"
+                icon="layers"
+                tone="var(--domain-operate)"
+                serviceCount={1}
+              />
+            </CardGrid>
+
+            <p className={styles.subTitle}>ServiceOfferingCard — with delivery badge, whatYouGet and example tools (no fragment id)</p>
+            <CardGrid layout="equal" aria-label="Service offering card preview">
+              {strategyServices.slice(0, 2).map((service) => (
+                <ServiceOfferingCard
+                  key={service.slug}
+                  slug={service.slug}
+                  title={service.name}
+                  summary={strategyConfig.serviceCopy?.[service.slug] ?? service.plainDescription}
+                  deliveryModel={service.deliveryModel}
+                  whatYouGet={service.whatYouGet}
+                  exampleTools={service.exampleTools}
+                  categoryIcon={strategyCategory.icon}
+                  categoryTone={strategyConfig.hue}
+                  withFragmentTarget={false}
+                />
+              ))}
+            </CardGrid>
+
+            <p className={styles.subTitle}>ServiceOfferingCard — without example tools (the chips list is omitted)</p>
+            {strategyServices[0] ? (
+              <div className={styles.previewNarrow}>
+                <ServiceOfferingCard
+                  slug={strategyServices[0].slug}
+                  title={strategyServices[0].name}
+                  summary={strategyServices[0].plainDescription}
+                  deliveryModel={strategyServices[0].deliveryModel}
+                  whatYouGet={strategyServices[0].whatYouGet}
+                  exampleTools={[]}
+                  categoryIcon={strategyCategory.icon}
+                  categoryTone={strategyConfig.hue}
+                  withFragmentTarget={false}
+                />
+              </div>
+            ) : null}
+
+            <p className={styles.subTitle}>One complete cluster — heading (h3) + intro + a grid of ServiceOfferingCards</p>
+            <h3 className={styles.subTitle}>{strategyConfig.clusters[1]?.heading}</h3>
+            <p className={styles.subTitle}>{strategyConfig.clusters[1]?.intro}</p>
+            <CardGrid layout="equal" aria-label="Cluster preview">
+              {(strategyConfig.clusters[1]?.serviceSlugs ?? []).map((slug) => {
+                const service = strategyServices.find((s) => s.slug === slug);
+                if (!service) return null;
+                return (
+                  <ServiceOfferingCard
+                    key={service.slug}
+                    slug={service.slug}
+                    title={service.name}
+                    summary={strategyConfig.serviceCopy?.[service.slug] ?? service.plainDescription}
+                    deliveryModel={service.deliveryModel}
+                    whatYouGet={service.whatYouGet}
+                    exampleTools={service.exampleTools}
+                    categoryIcon={strategyCategory.icon}
+                    categoryTone={strategyConfig.hue}
+                    withFragmentTarget={false}
+                  />
+                );
+              })}
+            </CardGrid>
+
+            <p className={styles.subTitle}>One service-outcome card treatment</p>
+            {strategyConfig.outcomes[0] ? (
+              <div className={styles.previewNarrow}>
+                <Card as="article" variant="outlined">
+                  <IconTile color="var(--v2-domain-strategy-ink)" size="md">
+                    <Icon name={strategyConfig.outcomes[0].icon} />
+                  </IconTile>
+                  <h3 className={styles.cardTitle}>{strategyConfig.outcomes[0].title}</h3>
+                  <span className={styles.cardBody}>{strategyConfig.outcomes[0].body}</span>
+                </Card>
+              </div>
+            ) : null}
+
+            <p className={styles.subTitle}>ServiceConnectionList — the current area first, then each connectsTo</p>
+            <ServiceConnectionList
+              categoryTitle={strategyCategory.name}
+              categoryDescription={strategyConfig.definition}
+              categoryIcon={strategyCategory.icon}
+              categoryTone={strategyConfig.hue}
+              connectsTo={strategyConfig.connectsTo}
+            />
+
+            <p className={styles.subTitle}>Next-domain card (DomainCard) + service page-jump navigation</p>
+            <div className={styles.previewNarrow}>
+              <DomainCard
+                title={strategyConfig.next.name}
+                description={websitesCategory.intro}
+                href={`/services/${strategyConfig.next.slug}`}
+                icon={websitesCategory.icon}
+                tone={strategyConfig.next.hue}
+                eyebrow="Next in the journey"
+              />
+            </div>
+            <nav aria-label="Service area sections (preview)" className={styles.row}>
+              <LinkChip href="#main">Why it matters</LinkChip>
+              <LinkChip href="#main">Services included</LinkChip>
+              <LinkChip href="#main">How it connects</LinkChip>
+              <LinkChip href="#main">When this helps</LinkChip>
+              <LinkChip href="#main">What comes next</LinkChip>
+            </nav>
+          </section>
+        ) : null}
       </div>
     </main>
   );

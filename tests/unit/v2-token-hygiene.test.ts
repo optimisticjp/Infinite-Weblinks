@@ -112,6 +112,12 @@ const V2_DETAIL_MODULES = [
   "../../src/app/(marketing)/about/about.module.css",
   "../../src/app/(marketing)/account-ownership/account-ownership.module.css",
   "../../src/app/(marketing)/connected-growth/connected-growth.module.css",
+  // Phase 2M §K: the services hub + service-domain system.
+  "../../src/components/cards/ServiceCategoryCard.module.css",
+  "../../src/components/cards/ServiceOfferingCard.module.css",
+  "../../src/components/routes/ServiceConnectionList.module.css",
+  "../../src/components/routes/ServiceDomainTemplate.module.css",
+  "../../src/app/(marketing)/services/services.module.css",
 ];
 const BANNED_V2 = [
   ...BANNED,

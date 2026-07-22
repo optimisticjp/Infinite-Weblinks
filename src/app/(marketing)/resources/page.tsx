@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/routes/PageHeader";
 import { SectionShell } from "@/components/sections/SectionShell";
+import { FinalCtaSection } from "@/components/sections/FinalCtaSection";
 import { BentoGrid } from "@/components/primitives/BentoGrid";
 import { BentoCard } from "@/components/primitives/BentoCard";
 import { Card } from "@/components/primitives/Card";
@@ -175,23 +176,14 @@ export default async function ResourcesHubPage() {
         </SectionShell>
       )}
 
-      {/* Restrained final CTA — reserved .theme-night band, no cosmic decoration. */}
-      <SectionShell
-        surface="night"
+      {/* Restrained final CTA — shared V2 night band, no cosmic decoration. */}
+      <FinalCtaSection
         id="get-started"
         title="Ready to make an informed decision?"
         lead="Build a plan around your goals, or talk it through with us first — no obligation."
-        align="center"
-      >
-        <div className={styles.ctaActions}>
-          <Button href="/growth-plan" variant="signature" size="lg">
-            Build my growth plan
-          </Button>
-          <Button href="/contact" variant="secondary" size="lg">
-            Talk to us
-          </Button>
-        </div>
-      </SectionShell>
+        primary={{ href: "/growth-plan", label: "Build my growth plan" }}
+        secondary={{ href: "/contact", label: "Talk to us" }}
+      />
     </>
   );
 }

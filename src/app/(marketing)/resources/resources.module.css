@@ -17,9 +17,3 @@
   color: var(--text-heading);
   font-size: var(--fs-sm);
 }
-.ctaActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-  justify-content: center;
-}

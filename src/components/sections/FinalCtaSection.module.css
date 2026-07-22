@@ -1,0 +1,9 @@
+/* FinalCtaSection — actions row. The night surface, heading and lead come from SectionShell;
+   this only lays out the buttons, centred and wrapping on narrow screens. */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+}

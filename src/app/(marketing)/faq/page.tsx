@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/routes/PageHeader";
 import { SectionShell } from "@/components/sections/SectionShell";
+import { FinalCtaSection } from "@/components/sections/FinalCtaSection";
 import { Button } from "@/components/primitives/Button";
 import { FaqAccordion, type FaqGroup } from "@/components/routes/FaqAccordion";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd, faqJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getFaqs } from "@/lib/content";
-import styles from "./faq.module.css";
 
 export const metadata: Metadata = pageMetadata({
   title: "FAQ",
@@ -84,23 +84,14 @@ export default async function FaqPage() {
         <FaqAccordion groups={groups} />
       </SectionShell>
 
-      {/* Restrained final CTA — reserved .theme-night band, no cosmic decoration. */}
-      <SectionShell
-        surface="night"
+      {/* Restrained final CTA — shared V2 night band, no cosmic decoration. */}
+      <FinalCtaSection
         id="get-started"
         title="Still have a question?"
         lead="Get a plan built around your goals, or just ask us directly — no obligation."
-        align="center"
-      >
-        <div className={styles.ctaActions}>
-          <Button href="/growth-plan" variant="signature" size="lg">
-            Build my growth plan
-          </Button>
-          <Button href="/contact" variant="secondary" size="lg">
-            Ask a question
-          </Button>
-        </div>
-      </SectionShell>
+        primary={{ href: "/growth-plan", label: "Build my growth plan" }}
+        secondary={{ href: "/contact", label: "Ask a question" }}
+      />
     </>
   );
 }

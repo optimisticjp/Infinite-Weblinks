@@ -1,7 +1,2 @@
-/* /faq — V2 canary. Layout only; surfaces come from PageHeader + SectionShell. */
-.ctaActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-  justify-content: center;
-}
+/* /faq — V2 canary. Layout only; surfaces come from PageHeader + SectionShell.
+   The final CTA now uses the shared FinalCtaSection, so no page-local CTA layout is needed. */

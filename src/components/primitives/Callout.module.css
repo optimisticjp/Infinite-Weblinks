@@ -1,0 +1,65 @@
+/* Callout — restrained inline notice. Tones use the V2 semantic tokens (soft tint + accessible
+   ink); no raw colours, no glow, no illustration. Icon + copy wrap cleanly on narrow screens. */
+.callout {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--v2-radius-lg);
+  border: 1px solid var(--callout-line, var(--hairline-strong));
+  background: var(--callout-tint, var(--surface-raised));
+  color: var(--text-body);
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  color: var(--callout-ink, var(--text-muted));
+}
+.icon > svg {
+  width: 20px;
+  height: 20px;
+}
+
+.body {
+  flex: 1;
+  min-width: min(100%, 16rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.title {
+  margin: 0;
+  font-weight: var(--fw-semibold);
+  color: var(--text-heading);
+}
+.content {
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+.content :where(p) {
+  margin: 0;
+}
+.content :where(p + p) {
+  margin-top: var(--space-2);
+}
+
+/* ---- Tones (soft tint + accessible ink; the icon reinforces the meaning) ---- */
+.neutral {
+  --callout-tint: var(--v2-paper-2);
+  --callout-line: var(--hairline-strong);
+  --callout-ink: var(--text-muted);
+}
+.information {
+  --callout-tint: var(--v2-info-tint);
+  --callout-line: color-mix(in srgb, var(--v2-info) 40%, transparent);
+  --callout-ink: var(--v2-info);
+}
+.warning {
+  --callout-tint: var(--v2-warning-tint);
+  --callout-line: color-mix(in srgb, var(--v2-warning) 40%, transparent);
+  --callout-ink: var(--v2-warning);
+}

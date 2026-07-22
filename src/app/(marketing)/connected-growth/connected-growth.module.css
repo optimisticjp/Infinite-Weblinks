@@ -1,0 +1,7 @@
+/* /connected-growth — layout spacing only; the content uses shared V2 components + tokens. */
+.note {
+  margin-bottom: var(--space-8);
+}
+.cta {
+  margin-top: var(--space-8);
+}

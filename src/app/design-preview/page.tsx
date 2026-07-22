@@ -21,6 +21,8 @@ import { RoadmapCard } from "@/components/cards/RoadmapCard";
 import { GoalCard } from "@/components/cards/GoalCard";
 import { ServiceCard } from "@/components/cards/ServiceCard";
 import { JourneyStageCard } from "@/components/cards/JourneyStageCard";
+import { StartingPointCard } from "@/components/cards/StartingPointCard";
+import { BusinessTypeCard } from "@/components/cards/BusinessTypeCard";
 import { GoalPath } from "@/components/routes/GoalPath";
 import { LinkChip } from "@/components/primitives/LinkChip";
 import { RelationshipCard } from "@/components/cards/RelationshipCard";
@@ -855,6 +857,69 @@ export default function DesignPreviewPage() {
               tone="var(--cyan)"
             />
           </CardGrid>
+        </section>
+
+        {/* 12h · Goals-hub blocks — StartingPointCard + BusinessTypeCard + hub-jump nav */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Goals-hub blocks</h2>
+
+          <p className={styles.subTitle}>
+            StartingPointCard — with a recommended stage, and with a long wrapping label (real seed situations)
+          </p>
+          <CardGrid layout="equal" aria-label="Starting point card preview">
+            <StartingPointCard
+              href="#main"
+              order={3}
+              title="I have a website but no traffic"
+              situation="The site is live, but almost nobody is finding it."
+              icon="search"
+              tone="var(--cyan)"
+              recommendedStageLabel="Get Discovered"
+            />
+            <StartingPointCard
+              href="#main"
+              order={5}
+              title="I'm getting sales but it's chaotic"
+              situation="Orders are coming in, but fulfilment, support, and follow-up feel unmanaged."
+              icon="workflow"
+              tone="var(--pink)"
+              recommendedStageLabel="Deliver & Operate"
+            />
+            <StartingPointCard
+              href="#main"
+              order={8}
+              title="I want to automate and save time across fulfilment, support and follow-up without breaking what already works"
+              situation="The process works, but too much of it is manual and repetitive."
+              icon="zap"
+              tone="var(--domain-operate)"
+              recommendedStageLabel="Deliver & Operate"
+            />
+          </CardGrid>
+
+          <p className={styles.subTitle}>BusinessTypeCard — a compact audience card, and one with a long name and summary</p>
+          <CardGrid layout="equal" aria-label="Business type card preview">
+            <BusinessTypeCard
+              href="#main"
+              title="Ecommerce Brands"
+              summary="Selling products online, or moving from a marketplace to your own store."
+              icon="shopping-bag"
+              tone="var(--lime)"
+            />
+            <BusinessTypeCard
+              href="#main"
+              title="Established Brands Ready to Scale across multiple channels, markets and customer lifecycles"
+              summary="Already profitable, and ready to push further with retention, advocacy, automation and new channels once the data is trustworthy."
+              icon="trending-up"
+              tone="var(--domain-strategy)"
+            />
+          </CardGrid>
+
+          <p className={styles.subTitle}>Hub-jump nav — three real internal section links (not a filter)</p>
+          <nav aria-label="Choose how to start (preview)" className={styles.row}>
+            <LinkChip href="#main">Start with a goal</LinkChip>
+            <LinkChip href="#main">Start with where I am</LinkChip>
+            <LinkChip href="#main">Start with my business type</LinkChip>
+          </nav>
         </section>
 
         {/* 12c · Callouts */}

@@ -80,6 +80,11 @@ const V2_DETAIL_MODULES = [
   "../../src/components/cards/JourneyStageCard.module.css",
   "../../src/app/(marketing)/goals/[slug]/goal.module.css",
   "../../src/app/(marketing)/business-types/[slug]/business-type.module.css",
+  // Phase 2I §I: the goals-hub / starting-point system.
+  "../../src/components/cards/StartingPointCard.module.css",
+  "../../src/components/cards/BusinessTypeCard.module.css",
+  "../../src/components/sections/StartingPointSelectorSection.module.css",
+  "../../src/app/(marketing)/goals/goals.module.css",
 ];
 const BANNED_V2 = [
   ...BANNED,

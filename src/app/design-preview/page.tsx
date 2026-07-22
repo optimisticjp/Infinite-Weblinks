@@ -21,6 +21,9 @@ import { RoadmapCard } from "@/components/cards/RoadmapCard";
 import { LinkChip } from "@/components/primitives/LinkChip";
 import { RelationshipCard } from "@/components/cards/RelationshipCard";
 import { RoadmapPhaseList } from "@/components/routes/RoadmapPhaseList";
+import { DomainCard } from "@/components/cards/DomainCard";
+import { ArticleMetaLine } from "@/components/routes/ArticleMetaLine";
+import { ScenarioApproachList } from "@/components/routes/ScenarioApproachList";
 import { FilterChipDemo } from "./FilterChipDemo";
 import styles from "./design-preview.module.css";
 
@@ -660,6 +663,82 @@ export default function DesignPreviewPage() {
               },
             ]}
           />
+        </section>
+
+        {/* 12f · Article & scenario detail blocks — DomainCard + ArticleMetaLine + ScenarioApproachList */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Article &amp; scenario detail blocks</h2>
+
+          <p className={styles.subTitle}>DomainCard — related service domain, and a long wrapping title</p>
+          <CardGrid layout="equal" aria-label="Domain card preview">
+            <DomainCard
+              href="#main"
+              eyebrow="Service domain"
+              title="Analytics & Data"
+              description="Where the numbers actually live, so decisions are based on evidence."
+              icon="bar-chart-3"
+              tone="var(--cyan)"
+            />
+            <DomainCard
+              href="#main"
+              eyebrow="Service domain"
+              title="Retention, Loyalty & Advocacy across every owned channel and lifecycle stage"
+              description="Turn first orders into repeat customers and advocates."
+              icon="heart"
+              tone="var(--domain-retain)"
+            />
+          </CardGrid>
+
+          <p className={styles.subTitle}>ArticleMetaLine — with reading time + a real date, and without a date</p>
+          <p className={styles.body}>
+            <ArticleMetaLine readMinutes={6} publishedAt="2025-03-14T12:00:00Z" />
+          </p>
+          <p className={styles.body}>
+            <ArticleMetaLine readMinutes={5} />
+          </p>
+
+          <p className={styles.subTitle}>ScenarioApproachList — three steps</p>
+          <ScenarioApproachList
+            steps={[
+              {
+                number: 1,
+                label: "A store built to convert",
+                detail: "Fix the checkout, product pages and speed so the path to buy is clear.",
+                icon: "monitor",
+                tone: "var(--domain-build)",
+              },
+              {
+                number: 2,
+                label: "Tracking you can trust",
+                detail: "Set up analytics properly so every step from arrival to purchase is measured.",
+                icon: "bar-chart-3",
+                tone: "var(--domain-ai)",
+              },
+              {
+                number: 3,
+                label: "Follow-up that brings people back",
+                detail: "Automated email for abandoned carts and past buyers.",
+                icon: "mail",
+                tone: "var(--domain-retain)",
+              },
+            ]}
+          />
+
+          <p className={styles.subTitle}>Qualitative illustrative outcome (never a statistic dashboard)</p>
+          <Card variant="raised" accent="var(--v2-domain-convert-ink)">
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)", alignItems: "flex-start" }}>
+              <Badge tone="information" icon={<Icon name="sparkles" />}>
+                Illustrative outcome
+              </Badge>
+              <span className={styles.cardTitle}>Checkout completion — Improving</span>
+              <span className={styles.cardBody}>
+                The same traffic does more, because fewer people fall through the gaps.
+              </span>
+              <span className={styles.cardBody} style={{ color: "var(--text-muted)" }}>
+                Qualitative example, not a measured client result.
+              </span>
+            </div>
+          </Card>
         </section>
 
         {/* 12c · Callouts */}

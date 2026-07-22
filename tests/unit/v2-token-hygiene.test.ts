@@ -51,9 +51,14 @@ describe("V2 chrome token hygiene", () => {
 const V2_DETAIL_MODULES = [
   "../../src/components/primitives/LinkChip.module.css",
   "../../src/components/cards/RelationshipCard.module.css",
+  "../../src/components/cards/DomainCard.module.css",
   "../../src/components/routes/RoadmapPhaseList.module.css",
+  "../../src/components/routes/ArticleMetaLine.module.css",
+  "../../src/components/routes/ScenarioApproachList.module.css",
   "../../src/app/(marketing)/tools/[slug]/tool.module.css",
   "../../src/app/(marketing)/roadmaps/[slug]/roadmap.module.css",
+  "../../src/app/(marketing)/learn/[slug]/article.module.css",
+  "../../src/app/(marketing)/case-studies/case.module.css",
 ];
 const BANNED_V2 = [
   ...BANNED,

@@ -157,7 +157,7 @@ export default async function RoadmapDetailPage({
         id="phases"
         eyebrow="The sequence"
         title="How the phases fit together"
-        lead="Each phase builds on the last. Jump to any phase with the numbered anchors, and follow the links to the stages, services and goals it moves."
+        lead="Each phase builds on the last. Jump straight to any phase using the links below, then follow it through to the stages, services and goals it moves."
         align="start"
       >
         <RoadmapPhaseList phases={phaseItems} />

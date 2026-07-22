@@ -27,12 +27,26 @@ export type RoadmapPhaseItem = {
  * connector, starfield, timeline illustration, sticky scroll-jacking, animated path drawing,
  * fixed viewport height, fake progress, completion percentages or invented durations. It is a
  * suggested sequence, not project progress, and it stays understandable with CSS disabled.
+ *
+ * A compact phase-jump nav precedes the list — one LinkChip per phase, linking to its stable
+ * `#phase-N` anchor (each phase target carries a scroll-margin so it clears the sticky header).
+ * The nav wraps cleanly with no horizontal scroll, dropdown, sticky behaviour or client state.
  */
 export function RoadmapPhaseList({ phases }: { phases: RoadmapPhaseItem[] }) {
   return (
-    <ol className={styles.list}>
-      {phases.map((phase) => (
-        <li key={phase.id} id={phase.id} className={styles.item}>
+    <>
+      <nav className={styles.jumpNav} aria-label="Roadmap phases">
+        <ul className={styles.jumpList}>
+          {phases.map((phase) => (
+            <li key={phase.id}>
+              <LinkChip href={`#${phase.id}`}>{phase.title}</LinkChip>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <ol className={styles.list}>
+        {phases.map((phase) => (
+          <li key={phase.id} id={phase.id} className={styles.item}>
           <span className={styles.marker} aria-hidden="true">
             {String(phase.number).padStart(2, "0")}
           </span>
@@ -77,8 +91,9 @@ export function RoadmapPhaseList({ phases }: { phases: RoadmapPhaseItem[] }) {
               </div>
             ) : null}
           </div>
-        </li>
-      ))}
-    </ol>
+          </li>
+        ))}
+      </ol>
+    </>
   );
 }

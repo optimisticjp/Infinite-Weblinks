@@ -1,5 +1,19 @@
 /* RoadmapPhaseList — restrained vertical phase sequence. V2 tokens only; a neutral connector
    line (no gradient), compact numbered markers, no fixed height, no timeline illustration. */
+
+/* Compact phase-jump navigation — LinkChips that wrap cleanly (no horizontal scroll/sticky). */
+.jumpNav {
+  margin-bottom: var(--space-6);
+}
+.jumpList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
 .list {
   list-style: none;
   margin: 0;
@@ -14,6 +28,8 @@
   grid-template-columns: 40px minmax(0, 1fr);
   gap: var(--space-4);
   align-items: start;
+  /* Fragment navigation must clear the sticky header. */
+  scroll-margin-top: calc(var(--header-h) + var(--space-4));
 }
 /* Neutral connector line joining the markers (decorative; hairline, never a gradient/glow). */
 .item:not(:last-child)::before {

@@ -1,17 +1,20 @@
 /**
- * Legacy wayfinding colour → accessible V2 ink bridge.
+ * Wayfinding colour → accessible V2 ink/tint bridge.
  *
- * A MIGRATION BRIDGE (removable at final convergence). Seed content still carries the legacy
- * wayfinding colour tokens — the seven `--domain-*` tokens used by case scenarios, and the
- * accent-palette tokens (`--violet`, `--blue`, …) used by goals. On the V2 light surfaces
- * those legacy values are not guaranteed to clear WCAG AA as text/icon colours, so this module
- * maps each to the matching V2 domain ink token, which IS measured AA on white and on its tint
- * (see src/styles/tokens/v2.css). Once the datasets are re-authored with V2 tokens directly,
- * this bridge can be deleted.
+ * A MIGRATION BRIDGE (removable at final convergence). It accepts EITHER a legacy wayfinding
+ * token — the seven `--domain-*` tokens used by case scenarios, or the accent-palette tokens
+ * (`--violet`, `--blue`, …) used by goals — OR one of its own V2 domain-role tokens
+ * (`--v2-domain-{X}-ink` / `-tint` / `-line`). It resolves each to the matching V2 domain ink or
+ * tint, which is measured AA on white and on its tint (see src/styles/tokens/v2.css). Because it
+ * recognises its own outputs, the mapping is IDEMPOTENT: `domainInk(domainInk(t)) === domainInk(t)`,
+ * `domainTint(domainTint(t)) === domainTint(t)`, and ink↔tint round-trips within a domain. So a
+ * component API may truthfully say it accepts a legacy OR a V2 domain-role token. Once the
+ * datasets are re-authored with V2 tokens directly, this bridge can be deleted.
  *
  * Pure and server-safe: a token string in, a token string out. No DOM, no computed style, no
- * raw colour values (it only ever returns `var(--v2-*)` tokens). Unknown or absent input
- * returns a safe neutral ink that is AA on every V2 surface.
+ * raw colour values (raw hex/rgb inputs are not recognised and fall back; it only ever returns
+ * `var(--v2-*)` tokens). Unknown or absent input returns a safe neutral ink/tint that is AA on
+ * every V2 surface.
  */
 
 export type DomainKey =
@@ -49,12 +52,15 @@ const V2_DOMAIN_TINT: Record<DomainKey, string> = {
 export const V2_INK_FALLBACK = "var(--v2-ink-muted)";
 export const V2_TINT_FALLBACK = "var(--v2-paper-2)";
 
+const DOMAIN_KEYS: DomainKey[] = ["strategy", "build", "discover", "convert", "operate", "retain", "ai"];
+
 /**
- * Legacy custom-property name → domain key. The seven `--domain-*` tokens are the primary,
- * spec-defined set; the accent-palette aliases (still carried by the goals seed) are mapped
- * by hue family so per-goal wayfinding survives the migration.
+ * Custom-property name → domain key. The seven `--domain-*` tokens are the primary, spec-defined
+ * set; the accent-palette aliases (still carried by the goals seed) are mapped by hue family; and
+ * the module's own V2 domain-role tokens (`--v2-domain-{X}-ink/-tint/-line`) are recognised too,
+ * so the mapping is idempotent (it accepts its own outputs).
  */
-const LEGACY_TOKEN_TO_DOMAIN: Record<string, DomainKey> = {
+const TOKEN_TO_DOMAIN: Record<string, DomainKey> = {
   // The seven domain tokens (constellation.css) — the canonical set.
   "--domain-strategy": "strategy",
   "--domain-build": "build",
@@ -76,17 +82,26 @@ const LEGACY_TOKEN_TO_DOMAIN: Record<string, DomainKey> = {
   "--orange-bright": "operate",
   "--lime": "retain",
   "--lime-bright": "retain",
+  // The module's own V2 domain-role tokens — makes ink/tint mapping idempotent.
+  ...Object.fromEntries(
+    DOMAIN_KEYS.flatMap((k) => [
+      [`--v2-domain-${k}-ink`, k],
+      [`--v2-domain-${k}-tint`, k],
+      [`--v2-domain-${k}-line`, k],
+    ]),
+  ),
 };
 
 /**
- * Resolve a legacy colour token to a domain key, or null when it isn't a recognised token.
- * Accepts `var(--domain-convert)`, `--domain-convert`, or `domain-convert`.
+ * Resolve a wayfinding token to a domain key, or null when it isn't a recognised token.
+ * Accepts `var(--domain-convert)`, `--domain-convert`, `domain-convert`, or any V2 domain-role
+ * token (`var(--v2-domain-convert-ink)` etc). Raw colour values are not recognised.
  */
 export function domainKeyFromToken(token: string | null | undefined): DomainKey | null {
   if (!token) return null;
   const match = token.match(/--[a-z0-9-]+/i);
   const name = match ? match[0].toLowerCase() : `--${token.trim().toLowerCase()}`;
-  return LEGACY_TOKEN_TO_DOMAIN[name] ?? null;
+  return TOKEN_TO_DOMAIN[name] ?? null;
 }
 
 /** The accessible V2 ink token for a legacy wayfinding token (safe neutral fallback otherwise). */

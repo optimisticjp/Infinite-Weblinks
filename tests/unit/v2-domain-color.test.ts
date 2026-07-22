@@ -59,4 +59,38 @@ describe("domainColor bridge", () => {
       expect(value).not.toMatch(/rgba?\(/i);
     }
   });
+
+  it("recognises its own V2 ink / tint / line role tokens for every domain", () => {
+    for (const key of DOMAINS) {
+      for (const role of ["ink", "tint", "line"] as const) {
+        expect(domainKeyFromToken(`var(--v2-domain-${key}-${role})`)).toBe(key);
+      }
+    }
+  });
+
+  it("is idempotent: mapping an already-mapped ink or tint returns the same token", () => {
+    for (const key of DOMAINS) {
+      const legacy = `var(--domain-${key})`;
+      const ink = domainInk(legacy);
+      const tint = domainTint(legacy);
+      // idempotence
+      expect(domainInk(ink)).toBe(ink);
+      expect(domainTint(tint)).toBe(tint);
+      // ink <-> tint round-trips within the domain
+      expect(domainTint(ink)).toBe(tint);
+      expect(domainInk(tint)).toBe(ink);
+      // line token also resolves to the same domain's ink/tint
+      const line = `var(--v2-domain-${key}-line)`;
+      expect(domainInk(line)).toBe(ink);
+      expect(domainTint(line)).toBe(tint);
+    }
+  });
+
+  it("still rejects raw colour values (fallback), never treating them as a domain", () => {
+    for (const raw of ["#6d28d9", "#fff", "rgb(109,40,217)", "rgba(0,0,0,0.5)"]) {
+      expect(domainKeyFromToken(raw)).toBeNull();
+      expect(domainInk(raw)).toBe(V2_INK_FALLBACK);
+      expect(domainTint(raw)).toBe(V2_TINT_FALLBACK);
+    }
+  });
 });

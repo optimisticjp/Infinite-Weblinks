@@ -86,4 +86,27 @@ describe("RoadmapPhaseList", () => {
     const text = container.textContent ?? "";
     expect(text).not.toMatch(/\d+%|\bweek|\bmonth|complete|progress|guaranteed/i);
   });
+
+  it("renders a semantic phase-jump nav: one link per phase id, in source order", () => {
+    render(<RoadmapPhaseList phases={PHASES} />);
+    const nav = screen.getByRole("navigation", { name: "Roadmap phases" });
+    const links = within(nav).getAllByRole("link");
+    expect(links).toHaveLength(2);
+    // real phase titles as labels, in source order, linking to the stable ids
+    expect(links[0]).toHaveTextContent("Build the foundation");
+    expect(links[0]).toHaveAttribute("href", "#phase-1");
+    expect(links[1]).toHaveTextContent("Bring in and convert traffic");
+    expect(links[1]).toHaveAttribute("href", "#phase-2");
+  });
+
+  it("does not make the static phase <li> focusable (no tabindex on list items)", () => {
+    const { container } = render(<RoadmapPhaseList phases={PHASES} />);
+    const ol = container.querySelector("ol")!;
+    for (const li of Array.from(ol.querySelectorAll(":scope > li"))) {
+      expect(li.hasAttribute("tabindex")).toBe(false);
+    }
+    // still exactly one <ol> and no heading-level change from the nav (nav has no headings)
+    expect(container.querySelectorAll("ol")).toHaveLength(1);
+    expect(within(screen.getByRole("navigation", { name: "Roadmap phases" })).queryByRole("heading")).toBeNull();
+  });
 });

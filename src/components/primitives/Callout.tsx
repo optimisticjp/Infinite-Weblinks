@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { Info, TriangleAlert } from "lucide-react";
 import styles from "./Callout.module.css";
 
@@ -18,6 +18,7 @@ type CalloutProps = {
    */
   role?: string;
   className?: string;
+  style?: CSSProperties;
 };
 
 const DEFAULT_ICON: Record<Tone, ReactNode> = {
@@ -40,10 +41,11 @@ export function Callout({
   icon,
   role = "note",
   className,
+  style,
 }: CalloutProps) {
   const glyph = icon === undefined ? DEFAULT_ICON[tone] : icon;
   return (
-    <div role={role} className={[styles.callout, styles[tone], className].filter(Boolean).join(" ")}>
+    <div role={role} className={[styles.callout, styles[tone], className].filter(Boolean).join(" ")} style={style}>
       {glyph ? (
         <span className={styles.icon} aria-hidden="true">
           {glyph}

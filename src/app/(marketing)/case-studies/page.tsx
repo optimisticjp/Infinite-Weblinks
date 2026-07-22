@@ -1,18 +1,16 @@
 import type { Metadata } from "next";
-import { ArrowRight, Info } from "lucide-react";
-import { CosmicPageHero } from "@/components/routes/CosmicPageHero";
+import { ArrowRight } from "lucide-react";
+import { PageHeader } from "@/components/routes/PageHeader";
 import { SectionShell } from "@/components/sections/SectionShell";
-import { BentoGrid } from "@/components/primitives/BentoGrid";
-import { BentoCard } from "@/components/primitives/BentoCard";
-import { GlowButton } from "@/components/primitives/GlowButton";
-import { NodeOrb } from "@/components/primitives/NodeOrb";
-import { Icon } from "@/components/primitives/Icon";
-import { FinalCtaBannerSection } from "@/components/sections/FinalCtaBannerSection";
+import { FinalCtaSection } from "@/components/sections/FinalCtaSection";
+import { CardGrid } from "@/components/primitives/CardGrid";
+import { CaseStudyCard } from "@/components/cards/CaseStudyCard";
+import { Callout } from "@/components/primitives/Callout";
+import { Button } from "@/components/primitives/Button";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getCaseScenarios } from "@/lib/content";
-import styles from "./case.module.css";
 
 export const metadata: Metadata = pageMetadata({
   title: "Case studies",
@@ -45,70 +43,65 @@ export default async function CaseStudiesIndexPage() {
         )}
       />
 
-      <CosmicPageHero
+      <PageHeader
         id="case-studies-hero"
         breadcrumbs={[{ name: "Case studies" }]}
         eyebrow="Worked examples"
-        hue="var(--domain-convert)"
-        title={
-          <>
-            How a connected system <span className="iw-gradient-word">fits together</span>
-          </>
-        }
+        title="How a connected system fits together"
         lead="Worked examples of how the pieces connect for different kinds of business: the challenge, the parts of the system that solve it, and the outcome. Real client stories will appear here once they're published."
         actions={
           <>
-            <GlowButton href="/growth-plan" size="lg" iconRight={<ArrowRight size={18} aria-hidden="true" />}>
+            <Button href="/growth-plan" iconRight={<ArrowRight size={16} aria-hidden="true" />}>
               Build my growth plan
-            </GlowButton>
-            <GlowButton href="#examples" variant="ghost" size="lg">
+            </Button>
+            <Button href="#examples" variant="secondary">
               See the examples
-            </GlowButton>
+            </Button>
           </>
         }
-        aside={
-          <span aria-hidden="true">
-            <NodeOrb hue="var(--domain-convert)" size={128} emphasis="bright">
-              <Icon name="git-branch" />
-            </NodeOrb>
-          </span>
-        }
+        trustNote="Every entry below is an illustrative scenario, not a real client."
       />
 
       <SectionShell
+        surface="alt"
         id="examples"
         eyebrow="By situation"
         title="Example scenarios"
         lead="Each is an illustrative example, not a real client. Open one to see the challenge, the connected approach, and the qualitative outcome."
         align="start"
       >
-        <div className={styles.notice}>
-          <Info className={styles.noticeIcon} size={20} aria-hidden="true" />
-          <p className={styles.noticeText}>
-            <strong>These are illustrative examples, not real clients.</strong> They show how a
-            connected system fits together for a kind of business. No client names, logos,
-            testimonials or specific numeric results are shown, because none of these are real
-            projects.
-          </p>
-        </div>
+        <Callout
+          tone="information"
+          title="These are illustrative examples, not real clients."
+          style={{ marginBottom: "var(--space-8)" }}
+        >
+          They show how a connected system fits together for a kind of business. No client
+          names, logos, testimonials or specific numeric results are shown, because none of
+          these are real projects.
+        </Callout>
 
-        <BentoGrid>
-          {scenarios.map((scenario, i) => (
-            <BentoCard
+        <CardGrid layout="equal" aria-label="Example scenarios">
+          {scenarios.map((scenario) => (
+            <CaseStudyCard
               key={scenario.slug}
               href={`/case-studies/${scenario.slug}`}
-              hue={scenario.hue}
-              icon="git-branch"
-              eyebrow={`Example · ${scenario.forWho}`}
               title={scenario.title}
-              blurb={scenario.summary}
-              variant={i === 0 ? "featured" : "medium"}
+              forWho={scenario.forWho}
+              summary={scenario.summary}
+              tone={scenario.hue}
+              status="illustrative"
             />
           ))}
-        </BentoGrid>
+        </CardGrid>
       </SectionShell>
 
-      <FinalCtaBannerSection anchorId="get-started" />
+      <FinalCtaSection
+        id="get-started"
+        title="Want a plan mapped to your situation?"
+        lead="These are worked examples — build one around your own goals, or talk it through with us first. No obligation."
+        primary={{ href: "/growth-plan", label: "Build my growth plan" }}
+        secondary={{ href: "/contact", label: "Talk it through" }}
+      />
     </>
   );
 }

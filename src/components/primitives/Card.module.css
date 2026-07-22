@@ -3,6 +3,14 @@
   padding: var(--space-8); /* ≥ radius-lg (20) + 12 */
   border-radius: var(--radius-lg);
   overflow: hidden;
+  color: inherit; /* link-root cards: don't take the default anchor colour */
+  text-decoration: none; /* link-root cards: no underline on the whole panel */
+}
+/* Link-root card: the whole card is one anchor — show a clear focus ring on it (the ring is
+   an outset box-shadow, unaffected by the card's own overflow:hidden). */
+.card:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
 }
 
 .raised {

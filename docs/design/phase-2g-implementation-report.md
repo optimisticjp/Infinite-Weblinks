@@ -5,8 +5,11 @@
 Compatibility-first and additive, on branch `claude/infinite-weblinks-v2-design-yb1yi3`.
 Governing spec: `docs/design/v2-design-spec.md`.
 
-**Status:** Complete. `npm run lint`, `npm run typecheck`, `npm run test` (495 unit),
-`npm run build` and `npm run test:e2e` (full Playwright + axe suite) all pass.
+**Status:** Complete. `npm run lint`, `npm run typecheck`, `npm run test` (495 unit) and
+`npm run build` all pass. On the e2e suite (Playwright + axe), the migrated `/learn` and
+`/case-studies` targets and their new specs pass; the full `npm run test:e2e` invocation was
+**not a clean single-run pass** — see §15 for the one observed intermittent failure and its
+successful reruns.
 
 ---
 
@@ -169,15 +172,26 @@ No root body/themeColor/colorScheme flip; no legacy token or galaxy component de
   `v2-article-case-integrity`; DomainCard added to `v2-catalog-cards`; domain idempotence added
   to `v2-domain-color`; phase-jump added to `v2-roadmap-phases`; hygiene extended to DomainCard,
   ArticleMetaLine, ScenarioApproachList and both detail modules.
-- **E2E (Playwright + axe): full suite pass.** New `article-case-detail`: crawls all five article
-  + five scenario routes (one H1, semantic `<article>`, no cosmic canvas / legacy banner /
-  visible node-orb, V2 FinalCtaSection), structural checks (excerpt once, ordered paragraphs, org
-  byline, meta + related goals/guides; illustrative Badge + Callout, ordered approach steps, work
-  list, honest qualitative outcome with no `%`, DomainCards, no Review/AggregateRating), the
-  roadmap phase-jump fragment navigation (scroll-margin clears the header), a representative axe
-  matrix, and responsive no-overflow at 320–1440. The existing `content`/`rebrand-pages`/
-  `catalog-hubs`/`content-hubs`/`detail-pages`/`navigation`/`layout`/`chrome-adaptive` suites
-  remain green.
+- **E2E (Playwright + axe): one observed intermittent failure, not a clean original full-suite
+  pass.** On the full `npm run test:e2e` run, a single spec —
+  `/services/social-media` "renders template with one H1 and anchored services, no overflow" (in
+  the `service-domains` suite, an *unchanged* Phase 2G-external route) — failed **once** under
+  full parallel worker load. It is an observed intermittent (flaky) failure, not a reproduced
+  defect: re-running that spec in isolation passed (2/2), and re-running the whole
+  `service-domains` suite passed (32/32). **No service, service-domain, or other application
+  file was changed in Phase 2G** — the migration touched only `/learn/[slug]`,
+  `/case-studies/[slug]` and the additive new components — so the failure is attributable to
+  test-run scheduling under parallel load, not to any change in this phase. Per flake discipline,
+  no service-route presentation was altered, no assertion weakened, no sleep added and no timeout
+  broadly raised to "fix" it. The migrated targets and their new `article-case-detail` spec pass:
+  it crawls all five article + five scenario routes (one H1, semantic `<article>`, no cosmic
+  canvas / legacy banner / visible node-orb, V2 FinalCtaSection), structural checks (excerpt once,
+  ordered paragraphs, org byline, meta + related goals/guides; illustrative Badge + Callout,
+  ordered approach steps, work list, honest qualitative outcome with no `%`, DomainCards, no
+  Review/AggregateRating), the roadmap phase-jump fragment navigation (scroll-margin clears the
+  header), a representative axe matrix, and responsive no-overflow at 320–1440. The existing
+  `content`/`rebrand-pages`/`catalog-hubs`/`content-hubs`/`detail-pages`/`navigation`/`layout`/
+  `chrome-adaptive` suites passed.
 
 ## 16. Responsive, zoom and accessibility results
 

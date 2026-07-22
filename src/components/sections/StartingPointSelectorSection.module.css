@@ -1,176 +1,19 @@
-/* theme-band-bright supplies the near-white daylight surface + dark ink text tokens.
-   Ring-lit nodes are colour, not glow: a coloured stroke + tint, no box-shadow bloom.
-   The connection line is a spectrum stroke (the connect motif), not a section glow. */
-
-.section {
-  overflow: hidden; /* the spectrum rail scrolls inside its own container, never the page */
-}
-
-.rail {
-  --node-size: 60px;
-  position: relative;
-  margin-top: clamp(32px, 5vw, 48px);
-}
-.spectrum {
-  position: absolute;
-  inset-inline: calc(var(--node-size) / 2);
-  top: calc(var(--node-size) / 2); /* centre of the node ring */
-  height: 3px;
-  border-radius: var(--radius-pill);
-  background: var(--grad-path);
-  opacity: 0.5;
-}
-
-.points {
-  list-style: none;
-  margin: 0;
-  padding: 0 0 var(--space-3);
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(190px, 1fr);
-  gap: var(--space-5);
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-  scrollbar-width: thin;
-  -webkit-overflow-scrolling: touch;
-}
-.point {
-  scroll-snap-align: start;
-}
-.pointLink {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-2);
-  height: 100%;
-  color: var(--text-heading);
-  transition: transform var(--dur-base) var(--ease-out);
-}
-
-.node {
-  display: grid;
-  place-items: center;
-  width: var(--node-size);
-  height: var(--node-size);
-  border-radius: 50%;
-  color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 14%, var(--surface-raised));
-  border: 2px solid var(--accent);
-  transition: transform var(--dur-base) var(--ease-out);
-}
-.node :global(svg) {
-  width: 26px;
-  height: 26px;
-}
-.pointLink:hover {
-  transform: translateY(-3px);
-}
-.pointLink:hover .node {
-  transform: scale(1.06);
-}
-
-.label {
-  font-family: var(--font-display);
-  font-weight: var(--fw-bold);
-  font-size: var(--fs-h4);
-  color: var(--text-heading);
-  margin-top: var(--space-2);
-}
-.order {
-  /* Darkened accent so the ordinal meets AA on the daylight band (the node above
-     carries the full-strength accent). */
-  color: color-mix(in srgb, var(--accent) 45%, var(--band-ink));
-  margin-right: 4px;
-}
-.situation {
-  font-size: var(--fs-sm);
-  color: var(--text-muted);
-}
-.stageBadge {
-  margin-top: var(--space-2);
-}
-.go {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  margin-top: auto;
-  padding-top: var(--space-3);
-  font-family: var(--font-display);
-  font-size: var(--fs-sm);
-  font-weight: var(--fw-bold);
-  color: var(--link);
-}
-.go svg {
-  transition: transform var(--dur-fast) var(--ease-out);
-}
-.pointLink:hover .go svg {
-  transform: translateX(3px);
-}
-.pointLink:hover .go {
-  color: var(--link-hover);
-}
-
-/* ---- build-plan CTA ---- */
+/* StartingPointSelectorSection (V2) — the section shell and cards own their own styling; this
+   module only lays out the closing CTA below the grid. V2 tokens only: no theme-band-bright, no
+   spectrum rail, no horizontal scroll, no scroll-snap, no glow/glass/gradient, no raw colour. */
 .cta {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-4);
   text-align: center;
-  margin-top: clamp(40px, 6vw, 64px);
+  margin-top: clamp(32px, 5vw, 56px);
 }
 .ctaText {
+  margin: 0;
+  max-width: var(--measure);
   font-family: var(--font-display);
   font-size: var(--fs-lead);
   font-weight: var(--fw-semibold);
   color: var(--text-heading);
-  margin: 0;
-  max-width: var(--measure);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .pointLink:hover,
-  .pointLink:hover .node {
-    transform: none;
-  }
-}
-
-/* Stack into a vertical list on narrow screens: follow one point at a time rather than
-   forcing a horizontal scan. The spectrum line drops out; each node reads as a row. */
-@media (max-width: 720px) {
-  .spectrum {
-    display: none;
-  }
-  .points {
-    grid-auto-flow: row;
-    grid-auto-columns: auto;
-    grid-template-columns: 1fr;
-    overflow-x: visible;
-    gap: var(--space-6);
-  }
-  .pointLink {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    column-gap: var(--space-4);
-    align-items: center;
-  }
-  .node {
-    grid-row: span 2;
-  }
-  .label {
-    margin-top: 0;
-    align-self: end;
-  }
-  .situation {
-    grid-column: 2;
-    align-self: start;
-  }
-  .stageBadge,
-  .go {
-    grid-column: 2;
-  }
-  .go {
-    margin-top: var(--space-1);
-    padding-top: 0;
-  }
 }

@@ -94,6 +94,14 @@ const V2_DETAIL_MODULES = [
   "../../src/components/cards/DeliveryModelCard.module.css",
   "../../src/components/sections/DeliveryModelsExplainerSection.module.css",
   "../../src/app/(marketing)/how-it-works/how-it-works.module.css",
+  // Phase 2K §O: the V2 homepage spine components.
+  "../../src/components/routes/GrowthPlanPreview.module.css",
+  "../../src/components/sections/home/HomepageHeroSection.module.css",
+  "../../src/components/sections/home/HomepageProblemSection.module.css",
+  "../../src/components/sections/home/HomepageGoalRouterSection.module.css",
+  "../../src/components/sections/home/HomepageConnectedSystemSection.module.css",
+  "../../src/components/sections/home/HomepageTrustSection.module.css",
+  "../../src/components/sections/home/HomepageLearningSection.module.css",
 ];
 const BANNED_V2 = [
   ...BANNED,

@@ -24,7 +24,6 @@ import { JourneyStageCard } from "@/components/cards/JourneyStageCard";
 import { StartingPointCard } from "@/components/cards/StartingPointCard";
 import { BusinessTypeCard } from "@/components/cards/BusinessTypeCard";
 import { CrossCuttingSystemCard } from "@/components/cards/CrossCuttingSystemCard";
-import { DeliveryModelCard } from "@/components/cards/DeliveryModelCard";
 import { GoalPath } from "@/components/routes/GoalPath";
 import { GrowthJourneyList } from "@/components/routes/GrowthJourneyList";
 import { ConnectedSystemFlow } from "@/components/routes/ConnectedSystemFlow";
@@ -35,6 +34,15 @@ import { RoadmapPhaseList } from "@/components/routes/RoadmapPhaseList";
 import { DomainCard } from "@/components/cards/DomainCard";
 import { ArticleMetaLine } from "@/components/routes/ArticleMetaLine";
 import { ScenarioApproachList } from "@/components/routes/ScenarioApproachList";
+import { BrandLogo } from "@/components/brand/BrandLogo";
+import { GrowthPlanPreview } from "@/components/routes/GrowthPlanPreview";
+import { HomepageProblemSection } from "@/components/sections/home/HomepageProblemSection";
+import { HomepageGoalRouterSection } from "@/components/sections/home/HomepageGoalRouterSection";
+import { HomepageConnectedSystemSection } from "@/components/sections/home/HomepageConnectedSystemSection";
+import { DeliveryModelsExplainerSection } from "@/components/sections/DeliveryModelsExplainerSection";
+import { HomepageTrustSection } from "@/components/sections/home/HomepageTrustSection";
+import { HomepageLearningSection } from "@/components/sections/home/HomepageLearningSection";
+import { getHomepageOpening } from "@/lib/content";
 import { FilterChipDemo } from "./FilterChipDemo";
 import styles from "./design-preview.module.css";
 
@@ -69,7 +77,9 @@ const STATUSES = [
   { key: "info", label: "Information", icon: "sparkles" },
 ] as const;
 
-export default function DesignPreviewPage() {
+export default async function DesignPreviewPage() {
+  const { hero, editorial } = await getHomepageOpening();
+
   return (
     <main id="main" className={`theme-light ${styles.wrap}`}>
       <div className={styles.banner}>
@@ -998,13 +1008,10 @@ export default function DesignPreviewPage() {
             ]}
           />
 
-          <p className={styles.subTitle}>DeliveryModelCard — all four locked models (Our default only on we-do)</p>
-          <CardGrid layout="equal" aria-label="Delivery model card preview">
-            <DeliveryModelCard order={1} modelKey="we-do" tagline="Done by our in-house team" description="Our own team handles it start to finish. This is the core of what we do, and the model most of our services use." />
-            <DeliveryModelCard order={2} modelKey="we-expert" tagline="Through our specialist network" description="For specialist work like video, UGC, and parts of SEO, we bring in a vetted specialist we've worked with before, managed by us." />
-            <DeliveryModelCard order={3} modelKey="we-run" tagline="Fully managed for you" description="We handle it completely and, where there's a platform involved, keep running it for you. You don't have to touch the tools." />
-            <DeliveryModelCard order={4} modelKey="you-run" tagline="Set up and handed to you" description="We build and configure the system, show you how it works, and hand you the keys so your team can run it day to day." />
-          </CardGrid>
+          <p className={styles.subTitle}>
+            DeliveryModelCard — shown in its real section below (Phase 2K), where its derived
+            id=&quot;delivery-&lt;key&gt;&quot; is unique on the page.
+          </p>
 
           <p className={styles.subTitle}>Page-jump nav — real internal section links (not tabs)</p>
           <nav aria-label="How it works sections (preview)" className={styles.row}>
@@ -1104,6 +1111,74 @@ export default function DesignPreviewPage() {
               <span className={styles.spaceLabel}>{label}</span>
             </div>
           ))}
+        </section>
+
+        {/* 16 · Phase 2K — homepage spine (real sections, real seed content) */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Phase 2K · Homepage spine</h2>
+
+          <p className={styles.subTitle}>
+            GrowthPlanPreview — a truthful STATIC structure (inputs → three ordering buckets), no
+            fabricated plan, price, percentage or form control
+          </p>
+          <div className={styles.previewNarrow}>
+            <GrowthPlanPreview />
+          </div>
+
+          <p className={styles.subTitle}>
+            Homepage hero — labelled shell (never a second document H1). Real seed eyebrow, slogan,
+            headline, support and both CTAs, plus the works-with rail
+          </p>
+          <div className={`theme-light ${styles.surfacePanel}`}>
+            <span className={styles.cardEyebrow}>{hero.eyebrow}</span>
+            <span className={styles.cardBody}>{hero.slogan}</span>
+            <span className={styles.cardTitle}>
+              {hero.headline.pre}
+              {hero.headline.accent}
+              {hero.headline.post}
+            </span>
+            <span className={styles.cardBody}>{hero.support}</span>
+            <div className={styles.row}>
+              <Button size="sm" iconRight={<ArrowRight size={16} aria-hidden="true" />}>
+                {hero.primaryCta.label}
+              </Button>
+              <Button variant="secondary" size="sm">
+                {hero.secondaryCta.label}
+              </Button>
+            </div>
+            <p className={styles.railPreviewLabel}>Works with the tools your business already uses.</p>
+            <ul className={styles.railPreview} aria-label="Example tools (preview)">
+              {hero.platforms.map((p) => (
+                <li key={p.slug} className={styles.railPreviewItem}>
+                  <BrandLogo slug={p.slug} name={p.name} />
+                </li>
+              ))}
+            </ul>
+            <p className={styles.cardBody}>Examples only. No partnership or endorsement implied.</p>
+          </div>
+
+          <p className={styles.subTitle}>HomepageProblemSection — the editorial verbatim, three static point cards</p>
+          <HomepageProblemSection data={editorial} />
+
+          <p className={styles.subTitle}>HomepageGoalRouterSection — every goal into the plan builder (id=goals)</p>
+          <HomepageGoalRouterSection />
+
+          <p className={styles.subTitle}>
+            HomepageConnectedSystemSection — the connected flow + three onward bridge cards
+            (id=how-it-connects, growth-journey / customer-journey / services)
+          </p>
+          <HomepageConnectedSystemSection />
+
+          <p className={styles.subTitle}>
+            DeliveryModelsExplainerSection — homepage configuration: alt surface, NO ownership strip
+          </p>
+          <DeliveryModelsExplainerSection surface="alt" showOwnership={false} />
+
+          <p className={styles.subTitle}>HomepageTrustSection — ownership + honest expectations merged (id=ownership, id=honest)</p>
+          <HomepageTrustSection surface="light" />
+
+          <p className={styles.subTitle}>HomepageLearningSection — the first three real guides (id=learn)</p>
+          <HomepageLearningSection surface="alt" />
         </section>
       </div>
     </main>

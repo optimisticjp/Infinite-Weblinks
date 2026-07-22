@@ -335,3 +335,37 @@
   flex-direction: column;
   gap: var(--space-4);
 }
+
+/* Phase 2K homepage-spine preview — arrangement only (the sections use the real components). */
+.previewNarrow {
+  max-width: 24rem;
+}
+.cardEyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.railPreviewLabel {
+  margin: var(--space-4) 0 0;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+.railPreview {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+.railPreviewItem {
+  display: inline-grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--v2-radius-md);
+  border: 1px solid var(--hairline);
+  background: var(--v2-paper);
+}

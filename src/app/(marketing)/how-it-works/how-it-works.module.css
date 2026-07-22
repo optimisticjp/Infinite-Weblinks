@@ -1,11 +1,14 @@
-/* Deep-link anchor band: thin, non-visual targets for the mega-menu's per-stage and
-   per-system links. They carry the page scroll-padding offset so the sticky header never
-   covers the landing point (WCAG 2.4.11). */
-.anchors {
-  position: relative;
+/* How-it-works — page-specific layout on V2 tokens only (no legacy/domain/base-palette tokens, no
+   theme-band, no glow/glass/gradient, no raw colour). The old hidden anchor band is gone: every
+   deep-link id now lives on real visible content (stages, systems, delivery models, sections).
+   This module only lays out the compact page-jump nav band between the PageHeader and the first
+   section. */
+.jumpNavBand {
+  padding-block: var(--space-5);
+  border-bottom: 1px solid var(--hairline);
 }
-.anchor {
-  display: block;
-  height: 0;
-  scroll-margin-top: calc(var(--header-h) + var(--space-4));
+.jumpNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
 }

@@ -85,6 +85,15 @@ const V2_DETAIL_MODULES = [
   "../../src/components/cards/BusinessTypeCard.module.css",
   "../../src/components/sections/StartingPointSelectorSection.module.css",
   "../../src/app/(marketing)/goals/goals.module.css",
+  // Phase 2J §M: the how-it-works explainer system.
+  "../../src/components/routes/GrowthJourneyList.module.css",
+  "../../src/components/cards/CrossCuttingSystemCard.module.css",
+  "../../src/components/sections/GrowthJourneyOverviewSection.module.css",
+  "../../src/components/routes/ConnectedSystemFlow.module.css",
+  "../../src/components/routes/ProcessStepList.module.css",
+  "../../src/components/cards/DeliveryModelCard.module.css",
+  "../../src/components/sections/DeliveryModelsExplainerSection.module.css",
+  "../../src/app/(marketing)/how-it-works/how-it-works.module.css",
 ];
 const BANNED_V2 = [
   ...BANNED,

@@ -23,7 +23,12 @@ import { ServiceCard } from "@/components/cards/ServiceCard";
 import { JourneyStageCard } from "@/components/cards/JourneyStageCard";
 import { StartingPointCard } from "@/components/cards/StartingPointCard";
 import { BusinessTypeCard } from "@/components/cards/BusinessTypeCard";
+import { CrossCuttingSystemCard } from "@/components/cards/CrossCuttingSystemCard";
+import { DeliveryModelCard } from "@/components/cards/DeliveryModelCard";
 import { GoalPath } from "@/components/routes/GoalPath";
+import { GrowthJourneyList } from "@/components/routes/GrowthJourneyList";
+import { ConnectedSystemFlow } from "@/components/routes/ConnectedSystemFlow";
+import { ProcessStepList } from "@/components/routes/ProcessStepList";
 import { LinkChip } from "@/components/primitives/LinkChip";
 import { RelationshipCard } from "@/components/cards/RelationshipCard";
 import { RoadmapPhaseList } from "@/components/routes/RoadmapPhaseList";
@@ -919,6 +924,94 @@ export default function DesignPreviewPage() {
             <LinkChip href="#main">Start with a goal</LinkChip>
             <LinkChip href="#main">Start with where I am</LinkChip>
             <LinkChip href="#main">Start with my business type</LinkChip>
+          </nav>
+        </section>
+
+        {/* 12i · How-it-works blocks — journey list, cross-cutting system, connected flow, process, delivery */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>How-it-works blocks</h2>
+
+          <p className={styles.subTitle}>GrowthJourneyList — three real stages (ordered list, intended outcomes)</p>
+          <GrowthJourneyList
+            stages={[
+              {
+                order: 1,
+                slug: "preview-discovery-plan",
+                name: "Discovery & Plan",
+                summary: "Working out the goal, auditing what's already in place, and turning it into a clear roadmap and budget.",
+                whatHappens: "We learn your business, goals, and current setup, then turn that into a written plan with a realistic budget and sequence of work.",
+                outcome: "A clear roadmap that tells you what to do first, and why.",
+                icon: "compass",
+                tone: "var(--violet)",
+              },
+              {
+                order: 2,
+                slug: "preview-foundation",
+                name: "Foundation",
+                summary: "Brand, website or store, hosting, tracking, and the legal basics. The base everything else sits on.",
+                whatHappens: "We build or tidy up the brand, the site or store itself, hosting, analytics, and the legal pages every business needs before it markets itself.",
+                outcome: "A working, trackable base that's ready to have traffic sent to it.",
+                icon: "layout",
+                tone: "var(--blue)",
+              },
+              {
+                order: 3,
+                slug: "preview-get-discovered",
+                name: "Get Discovered",
+                summary: "SEO, content, social, video, ads, and marketplaces, so the right people can actually find you.",
+                whatHappens: "We put you in front of people already looking for what you offer, through search, content, social, video, ads, and marketplaces.",
+                outcome: "A steady, growing stream of the right kind of visitor.",
+                icon: "search",
+                tone: "var(--cyan)",
+              },
+            ]}
+          />
+
+          <p className={styles.subTitle}>CrossCuttingSystemCard — a real system, and one with a long wrapping title</p>
+          <CardGrid layout="equal" aria-label="Cross-cutting system card preview">
+            <CrossCuttingSystemCard
+              id="preview-ai-automation"
+              title="AI & Automation"
+              description="Saves time and answers customers at every stage, not just at the end. Applied where it removes real repetitive work, not for its own sake."
+              icon="zap"
+              tone="var(--pink)"
+            />
+            <CrossCuttingSystemCard
+              id="preview-long-system"
+              title="A cross-cutting system with a deliberately long title, to prove the heading wraps cleanly across lines"
+              description="Preview-only placeholder for a system that runs across every stage of the growth journey."
+              icon="wrench"
+              tone="var(--domain-build)"
+            />
+          </CardGrid>
+
+          <p className={styles.subTitle}>ConnectedSystemFlow — the five parts as one connected sequence (real content)</p>
+          <ConnectedSystemFlow />
+
+          <p className={styles.subTitle}>ProcessStepList — four real steps in source order (one coherent accent)</p>
+          <ProcessStepList
+            steps={[
+              { order: 1, title: "Understand Your Goals", description: "We start by learning your business, your goals, and what's getting in the way, before talking about any service.", icon: "compass" },
+              { order: 2, title: "Assess What You Already Have", description: "We look honestly at your current site, tools, and setup, so the plan builds on what's working rather than starting from scratch.", icon: "search" },
+              { order: 3, title: "Identify Your Starting Point", description: "We work out where you actually are on the growth journey, and the smallest next step that moves you forward.", icon: "target" },
+              { order: 4, title: "Build a Connected Plan", description: "We turn goals and gaps into a clear roadmap, scoped to your budget and timeline.", icon: "git-branch" },
+            ]}
+          />
+
+          <p className={styles.subTitle}>DeliveryModelCard — all four locked models (Our default only on we-do)</p>
+          <CardGrid layout="equal" aria-label="Delivery model card preview">
+            <DeliveryModelCard id="preview-delivery-we-do" order={1} modelKey="we-do" isDefault tagline="Done by our in-house team" description="Our own team handles it start to finish. This is the core of what we do, and the model most of our services use." />
+            <DeliveryModelCard id="preview-delivery-we-expert" order={2} modelKey="we-expert" tagline="Through our specialist network" description="For specialist work like video, UGC, and parts of SEO, we bring in a vetted specialist we've worked with before, managed by us." />
+            <DeliveryModelCard id="preview-delivery-we-run" order={3} modelKey="we-run" tagline="Fully managed for you" description="We handle it completely and, where there's a platform involved, keep running it for you. You don't have to touch the tools." />
+            <DeliveryModelCard id="preview-delivery-you-run" order={4} modelKey="you-run" tagline="Set up and handed to you" description="We build and configure the system, show you how it works, and hand you the keys so your team can run it day to day." />
+          </CardGrid>
+
+          <p className={styles.subTitle}>Page-jump nav — real internal section links (not tabs)</p>
+          <nav aria-label="How it works sections (preview)" className={styles.row}>
+            <LinkChip href="#main">Growth journey</LinkChip>
+            <LinkChip href="#main">How it connects</LinkChip>
+            <LinkChip href="#main">Our process</LinkChip>
+            <LinkChip href="#main">Ways of working</LinkChip>
           </nav>
         </section>
 

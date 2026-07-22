@@ -1,0 +1,4 @@
+/* /services hub — layout spacing only; content uses shared V2 components + tokens. */
+.note {
+  margin-bottom: var(--space-8);
+}

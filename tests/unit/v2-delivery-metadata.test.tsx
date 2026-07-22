@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { readFileSync } from "node:fs";
 import { describe, it, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
@@ -43,6 +44,13 @@ describe("central delivery-model metadata", () => {
 
   it("throws on an unknown key rather than silently inventing a model", () => {
     expect(() => deliveryModelMeta("not-a-model" as DeliveryModelKey)).toThrow(/Unknown delivery model key/);
+  });
+
+  it("declares no second DeliveryModelKey union — the type comes from the content types", () => {
+    const src = readFileSync("src/lib/design/deliveryModel.ts", "utf8");
+    // No locally-declared union: the module imports the canonical type and re-exports it.
+    expect(src).not.toMatch(/type\s+DeliveryModelKey\s*=\s*["']/);
+    expect(src).toMatch(/import type \{ DeliveryModelKey \} from "@\/lib\/content\/types"/);
   });
 
   it("is the source DeliveryModelBadge renders from", () => {

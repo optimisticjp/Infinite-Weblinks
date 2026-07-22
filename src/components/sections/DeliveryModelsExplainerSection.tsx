@@ -46,12 +46,10 @@ export async function DeliveryModelsExplainerSection({
         {models.map((model, i) => (
           <DeliveryModelCard
             key={model.key}
-            id={`delivery-${model.key}`}
             order={i + 1}
             modelKey={model.key}
             tagline={model.tagline}
             description={model.description}
-            isDefault={model.key === "we-do"}
           />
         ))}
       </CardGrid>

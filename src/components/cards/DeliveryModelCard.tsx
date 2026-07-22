@@ -6,8 +6,6 @@ import { deliveryModelMeta, type DeliveryModelKey } from "@/lib/design/deliveryM
 import styles from "./DeliveryModelCard.module.css";
 
 type DeliveryModelCardProps = {
-  /** DOM id — the deep-link fragment target, e.g. "delivery-we-do". */
-  id: string;
   /** Position in source order (1-based). */
   order: number;
   /** One of the four locked delivery-model keys. */
@@ -16,34 +14,25 @@ type DeliveryModelCardProps = {
   tagline: string;
   /** The model's real description. */
   description: string;
-  /** Marks the core/default model — shown as an "Our default" Badge (only true for `we-do`). */
-  isDefault?: boolean;
   className?: string;
 };
 
 /**
  * DeliveryModelCard — a STATIC explanatory card (not a link) for one of the four locked delivery
- * models. Its root carries the deep-link id (`delivery-<key>`) with scroll-margin for the sticky
- * header. A compact order marker, the shared model glyph + V2 ink (from the central
- * DELIVERY_MODEL_META), the exact model name as its H3, the real tagline and description, and an
- * optional "Our default" Badge — grounded in the seed statement that this is the core model most
- * services use, and shown ONLY for `we-do`. No nested interaction, no popularity/recommendation
- * label on any other model. Server Component.
+ * models. Its root's deep-link id is DERIVED as `delivery-<key>` (with scroll-margin for the
+ * sticky header) and the "Our default" Badge is DERIVED only when the key is `we-do` — a caller
+ * cannot mislabel another model as default or create an id that disagrees with the key. A compact
+ * order marker, the shared model glyph + V2 ink (from the central DELIVERY_MODEL_META), the exact
+ * model name as its H3, the real tagline and description. No nested interaction, no
+ * popularity/recommendation label on any other model. Server Component.
  */
-export function DeliveryModelCard({
-  id,
-  order,
-  modelKey,
-  tagline,
-  description,
-  isDefault = false,
-  className,
-}: DeliveryModelCardProps) {
+export function DeliveryModelCard({ order, modelKey, tagline, description, className }: DeliveryModelCardProps) {
   const meta = deliveryModelMeta(modelKey);
+  const isDefault = modelKey === "we-do";
   return (
     <Card
       as="article"
-      id={id}
+      id={`delivery-${modelKey}`}
       variant="raised"
       accent={meta.ink}
       className={[styles.card, className].filter(Boolean).join(" ")}

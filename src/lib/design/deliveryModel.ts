@@ -7,9 +7,15 @@
  * test). Server-safe: plain data, no DOM, tokens only. The `Record<DeliveryModelKey, …>` shape is
  * compile-time exhaustive — an unknown key cannot be added without a type error — and
  * `deliveryModelMeta()` throws at runtime rather than silently falling back to a made-up model.
+ *
+ * The key type is the canonical `DeliveryModelKey` from the content types (re-exported here for
+ * co-located imports) — there is NO second union declared in this module, so content data,
+ * ServiceCard, DeliveryModelBadge, DeliveryModelCard and this metadata all use one type.
  */
 
-export type DeliveryModelKey = "we-do" | "we-expert" | "we-run" | "you-run";
+import type { DeliveryModelKey } from "@/lib/content/types";
+
+export type { DeliveryModelKey };
 
 export type DeliveryModelMeta = {
   /** The locked key. */

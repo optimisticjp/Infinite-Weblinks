@@ -9,7 +9,7 @@ import { ProcessStepList } from "@/components/routes/ProcessStepList";
 import { DeliveryModelCard } from "@/components/cards/DeliveryModelCard";
 import { stages, systems, processSteps } from "@/lib/content/data";
 import { domainInk } from "@/lib/design/domainColor";
-import { DELIVERY_MODEL_META } from "@/lib/design/deliveryModel";
+import { DELIVERY_MODEL_META, type DeliveryModelKey } from "@/lib/design/deliveryModel";
 
 vi.mock("next/link", () => ({
   default: ({ href, children, prefetch: _p, ...rest }: { href: unknown; children: unknown; prefetch?: unknown }) => {
@@ -162,18 +162,18 @@ describe("ProcessStepList", () => {
 
 describe("DeliveryModelCard", () => {
   const base = {
-    id: "delivery-we-do",
     order: 1,
     modelKey: "we-do" as const,
     tagline: "Done by our in-house team",
     description: "Our own team handles it start to finish.",
   };
 
-  it("is a static card with the real anchor id, exact name, tagline, description and shared ink", () => {
-    const { container } = render(<DeliveryModelCard {...base} isDefault />);
+  it("derives its anchor id from the key, with the exact name, tagline, description and shared ink", () => {
+    const { container } = render(<DeliveryModelCard {...base} />);
     expect(container.querySelector("a")).toBeNull();
     expect(container.querySelector("button")).toBeNull();
     const article = container.querySelector("article") as HTMLElement;
+    // id is DERIVED as delivery-<key> — a caller cannot supply a mismatching id.
     expect(article.id).toBe("delivery-we-do");
     expect(article.style.getPropertyValue("--card-accent")).toBe(DELIVERY_MODEL_META["we-do"].ink);
     expect(screen.getByRole("heading", { level: 3, name: "We Do the Work" })).toBeInTheDocument();
@@ -181,19 +181,28 @@ describe("DeliveryModelCard", () => {
     expect(screen.getByText(/Our own team handles it/)).toBeVisible();
   });
 
-  it("shows the 'Our default' Badge only for we-do (and no popularity/recommendation label elsewhere)", () => {
-    const withDefault = render(<DeliveryModelCard {...base} isDefault />);
+  it("derives the four production ids exactly, one per locked key", () => {
+    const cases: Array<[DeliveryModelKey, string]> = [
+      ["we-do", "delivery-we-do"],
+      ["we-expert", "delivery-we-expert"],
+      ["we-run", "delivery-we-run"],
+      ["you-run", "delivery-you-run"],
+    ];
+    for (const [key, id] of cases) {
+      const { container, unmount } = render(<DeliveryModelCard order={1} modelKey={key} tagline="t" description="d" />);
+      expect((container.querySelector("article") as HTMLElement).id).toBe(id);
+      unmount();
+    }
+  });
+
+  it("shows the 'Our default' Badge ONLY for we-do — callers cannot override it", () => {
+    const withDefault = render(<DeliveryModelCard {...base} />);
     expect(screen.getByText("Our default")).toBeVisible();
     withDefault.unmount();
-    const other = render(
-      <DeliveryModelCard
-        id="delivery-we-expert"
-        order={2}
-        modelKey="we-expert"
-        tagline="Through our specialist network"
-        description="We bring in a vetted specialist."
-      />,
-    );
-    expect(other.container.textContent ?? "").not.toMatch(/our default|popular|recommended|best/i);
+    for (const key of ["we-expert", "we-run", "you-run"] as const) {
+      const other = render(<DeliveryModelCard order={2} modelKey={key} tagline="Through our specialist network" description="We bring in a vetted specialist." />);
+      expect(other.container.textContent ?? "", key).not.toMatch(/our default|popular|recommended|best/i);
+      other.unmount();
+    }
   });
 });

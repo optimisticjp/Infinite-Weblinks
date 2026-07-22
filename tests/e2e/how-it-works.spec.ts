@@ -117,19 +117,47 @@ test.describe("how-it-works — V2 structure and preserved wiring", () => {
   });
 });
 
-test.describe("how-it-works — fragment clearance (representative targets, every group)", () => {
+test.describe("how-it-works — fragment clearance (every id)", () => {
   test.use({ viewport: { width: 1280, height: 900 } });
-  for (const [group, id] of [
-    ["stage", "discovery-plan"],
-    ["system", "ai-automation"],
-    ["section", "process"],
-    ["delivery", "delivery-we-do"],
-  ] as const) {
-    test(`${group} #${id} clears the sticky header`, async ({ page }) => {
-      await page.goto(`/how-it-works#${id}`);
-      await expectFragmentTargetClearsStickyHeader(page, `#${id}`, `how-it-works #${id}`);
+  const groups: Record<string, string[]> = { stage: STAGES, system: SYSTEMS, section: SECTIONS, delivery: DELIVERY };
+  // One test per group (each reuses the same page/server) navigates to every fragment in the
+  // group and asserts real geometry — so all 20 ids are covered without extra server boots.
+  for (const [group, ids] of Object.entries(groups)) {
+    test(`${group} fragments each clear the sticky header`, async ({ page }) => {
+      for (const id of ids) {
+        // Force a full document navigation each iteration (a hash-only goto does not reliably
+        // re-scroll), so every fragment is measured from a fresh load like a real inbound link.
+        await page.goto("about:blank");
+        await page.goto(`/how-it-works#${id}`);
+        await expectFragmentTargetClearsStickyHeader(page, `#${id}`, `how-it-works #${id}`);
+      }
     });
   }
+});
+
+test.describe("how-it-works — works with JavaScript disabled", () => {
+  test.use({ javaScriptEnabled: false });
+  test("all approved content and fragments are server-rendered without JS", async ({ page }) => {
+    await page.goto("/how-it-works");
+    // One H1, and the eight-stage ordered list, three systems, eight process steps and four
+    // delivery models are all in the server response (locators do not depend on page JS).
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+    await expect(page.locator("section#growth-journey ol > li")).toHaveCount(8);
+    for (const id of SYSTEMS) await expect(page.locator(`article#${id}`)).toHaveCount(1);
+    await expect(page.locator("section#process ol > li")).toHaveCount(8);
+    for (const id of DELIVERY) await expect(page.locator(`article#${id}`)).toHaveCount(1);
+    // Every required fragment target exists exactly once, with visible content (no interaction).
+    // Locator counts do not depend on page JS (unlike page.evaluate).
+    for (const id of ALL_IDS) {
+      expect(await page.locator(`[id="${id}"]`).count(), `#${id} once (no JS)`).toBe(1);
+      await expect(page.locator(`[id="${id}"]`)).toBeVisible();
+    }
+    // Ordinary fragment navigation resolves to a real target without JS.
+    await page.goto("/how-it-works#foundation");
+    await expect(page.locator("li#foundation")).toBeVisible();
+    // The primary CTA destination is present.
+    await expect(page.locator('a[href="/growth-plan"]').first()).toBeVisible();
+  });
 });
 
 test.describe("homepage safety — the homepage is not migrated in this phase", () => {

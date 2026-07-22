@@ -1000,10 +1000,10 @@ export default function DesignPreviewPage() {
 
           <p className={styles.subTitle}>DeliveryModelCard — all four locked models (Our default only on we-do)</p>
           <CardGrid layout="equal" aria-label="Delivery model card preview">
-            <DeliveryModelCard id="preview-delivery-we-do" order={1} modelKey="we-do" isDefault tagline="Done by our in-house team" description="Our own team handles it start to finish. This is the core of what we do, and the model most of our services use." />
-            <DeliveryModelCard id="preview-delivery-we-expert" order={2} modelKey="we-expert" tagline="Through our specialist network" description="For specialist work like video, UGC, and parts of SEO, we bring in a vetted specialist we've worked with before, managed by us." />
-            <DeliveryModelCard id="preview-delivery-we-run" order={3} modelKey="we-run" tagline="Fully managed for you" description="We handle it completely and, where there's a platform involved, keep running it for you. You don't have to touch the tools." />
-            <DeliveryModelCard id="preview-delivery-you-run" order={4} modelKey="you-run" tagline="Set up and handed to you" description="We build and configure the system, show you how it works, and hand you the keys so your team can run it day to day." />
+            <DeliveryModelCard order={1} modelKey="we-do" tagline="Done by our in-house team" description="Our own team handles it start to finish. This is the core of what we do, and the model most of our services use." />
+            <DeliveryModelCard order={2} modelKey="we-expert" tagline="Through our specialist network" description="For specialist work like video, UGC, and parts of SEO, we bring in a vetted specialist we've worked with before, managed by us." />
+            <DeliveryModelCard order={3} modelKey="we-run" tagline="Fully managed for you" description="We handle it completely and, where there's a platform involved, keep running it for you. You don't have to touch the tools." />
+            <DeliveryModelCard order={4} modelKey="you-run" tagline="Set up and handed to you" description="We build and configure the system, show you how it works, and hand you the keys so your team can run it day to day." />
           </CardGrid>
 
           <p className={styles.subTitle}>Page-jump nav — real internal section links (not tabs)</p>

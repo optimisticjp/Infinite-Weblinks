@@ -1,21 +1,11 @@
 import { X, Check } from "lucide-react";
 import { SectionShell } from "@/components/sections/SectionShell";
 import { NodeOrb } from "@/components/primitives/NodeOrb";
+import {
+  honestExpectationsWont as WONT,
+  honestExpectationsPromise as PROMISE,
+} from "@/lib/content/data/honest-expectations";
 import styles from "./HonestExpectationsSection.module.css";
-
-const WONT: { title: string; body: string }[] = [
-  { title: "No overnight results", body: "Real growth shows over months, not days. We'll say so up front rather than sell a shortcut." },
-  { title: "No guaranteed rankings", body: "Nobody can promise a spot on Google. Anyone who does is guessing with your money." },
-  { title: "No invented numbers", body: "We won't promise a set number of sales or leads to win the work." },
-  { title: "No lock-in", body: "Your accounts, data and files stay in your name, so you can leave whenever you want." },
-];
-
-const PROMISE: { title: string; body: string; hue: string }[] = [
-  { title: "A clear plan", body: "You'll always know what we're doing, in what order, and why.", hue: "var(--domain-strategy)" },
-  { title: "Work done properly", body: "Built to a standard we'd be happy to show anyone, not rushed to hit a deadline.", hue: "var(--domain-build)" },
-  { title: "Honest reporting", body: "Real numbers every time, including when a test doesn't work and we change course.", hue: "var(--domain-discover)" },
-  { title: "Steady improvement", body: "Small, compounding steps backed by data, not big risky bets on one idea.", hue: "var(--domain-retain)" },
-];
 
 /**
  * HonestExpectationsSection — the trust differentiator: what we won't promise, next to what

@@ -17,18 +17,26 @@ const ASSURANCES = [
 ];
 
 /**
- * DeliveryModelsExplainerSection — the V2 replacement for the legacy DeliveryModelsSection on
- * /how-it-works (the legacy section stays for the homepage and /about). SectionShell
- * (id="delivery", explicit V2 surface, the existing eyebrow/title/intro) with the four
- * DeliveryModelCards in source order — each carrying id="delivery-<key>" — plus the ownership
- * statement and its four assurances as a semantic list. Icon/ink come from the central
- * DELIVERY_MODEL_META (no raw DELIVERY_COLOR, no duplicated icon map, no filled legacy tiles, no
- * theme-band-bright, no hard-coded shared heading id). Server Component.
+ * DeliveryModelsExplainerSection — the V2 delivery-model section. SectionShell (an explicit V2
+ * surface, the existing eyebrow/title/intro) with the four DeliveryModelCards in source order —
+ * each carrying id="delivery-<key>" — plus, by default, the ownership statement and its four
+ * assurances as a semantic list. Icon/ink come from the central DELIVERY_MODEL_META (no raw
+ * DELIVERY_COLOR, no duplicated icon map, no filled legacy tiles, no theme-band-bright, no
+ * hard-coded shared heading id).
+ *
+ * The section id defaults to "delivery" (its /how-it-works contract) and the ownership strip
+ * defaults to on, so /how-it-works stays byte-for-byte unchanged. The homepage passes
+ * id="ways-of-working" and showOwnership={false} (ownership lives in the merged trust section
+ * there). Server Component.
  */
 export async function DeliveryModelsExplainerSection({
   surface = "light",
+  id = "delivery",
+  showOwnership = true,
 }: {
   surface?: "light" | "alt";
+  id?: string;
+  showOwnership?: boolean;
 }) {
   const models = await getDeliveryModels();
   if (models.length === 0) return null;
@@ -36,7 +44,7 @@ export async function DeliveryModelsExplainerSection({
   return (
     <SectionShell
       surface={surface}
-      id="delivery"
+      id={id}
       align="start"
       eyebrow="Four ways we can work together"
       title="Choose the way of working that fits your business"
@@ -54,22 +62,24 @@ export async function DeliveryModelsExplainerSection({
         ))}
       </CardGrid>
 
-      <div className={styles.ownership}>
-        <p className={styles.ownershipLead}>
-          <IconTile color="var(--v2-brand-strong)" size="sm">
-            <Shield aria-hidden="true" />
-          </IconTile>
-          You own your accounts, tools and data.
-        </p>
-        <ul className={styles.assurances}>
-          {ASSURANCES.map((a) => (
-            <li key={a.label} className={styles.assurance}>
-              <Icon name={a.icon} className={styles.assuranceIcon} />
-              {a.label}
-            </li>
-          ))}
-        </ul>
-      </div>
+      {showOwnership ? (
+        <div className={styles.ownership}>
+          <p className={styles.ownershipLead}>
+            <IconTile color="var(--v2-brand-strong)" size="sm">
+              <Shield aria-hidden="true" />
+            </IconTile>
+            You own your accounts, tools and data.
+          </p>
+          <ul className={styles.assurances}>
+            {ASSURANCES.map((a) => (
+              <li key={a.label} className={styles.assurance}>
+                <Icon name={a.icon} className={styles.assuranceIcon} />
+                {a.label}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </SectionShell>
   );
 }

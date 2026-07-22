@@ -1,0 +1,214 @@
+/* HomepageTrustSection — ownership card + build flow + guarantees + honest-expectations subsection.
+   V2 tokens only; per-item ink via mapped domain ink. No vault glow, orbit, constellation,
+   theme-band, glow/glass/gradient or raw colour. */
+.ownership {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+@media (min-width: 52rem) {
+  .ownership {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.vaultCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-6);
+}
+.vaultLabel {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+}
+.owned {
+  margin: 0 0 var(--space-3);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--v2-brand-strong);
+}
+.assets {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+.asset {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+.assetIcon {
+  display: inline-flex;
+  color: var(--v2-ink-muted);
+}
+.assetIcon > svg {
+  width: 16px;
+  height: 16px;
+}
+
+.flowLabel {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.flow {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.flowStep {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--v2-radius-md);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--flow-ink);
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  color: var(--text-heading);
+}
+
+.guarantees {
+  list-style: none;
+  margin: var(--space-8) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+@media (min-width: 52rem) {
+  .guarantees {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.guarantee {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  border-radius: var(--v2-radius-lg);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--v2-shadow-sm);
+}
+.guaranteeTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+}
+.guaranteeBody {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+
+.closing {
+  margin: var(--space-6) 0 0;
+  max-width: var(--measure);
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-lead);
+  color: var(--text-heading);
+}
+
+/* ---- honest expectations subsection ---- */
+.honest {
+  margin-top: var(--space-10);
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--hairline);
+  scroll-margin-top: calc(var(--header-h) + var(--space-4));
+}
+.honestHeading {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h3);
+  color: var(--text-heading);
+}
+.honestLead {
+  margin: 0 0 var(--space-6);
+  max-width: var(--measure);
+  font-size: var(--fs-body);
+  color: var(--text-body);
+}
+.honestGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+@media (min-width: 52rem) {
+  .honestGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.honestColHeading {
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+}
+.honestList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.honestItem {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+.honestIcon {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--v2-radius-pill);
+}
+.wontIcon {
+  color: var(--v2-danger);
+  background: var(--v2-danger-tint);
+}
+.promiseIcon {
+  color: var(--v2-success);
+  background: var(--v2-success-tint);
+}
+.honestText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.honestItemTitle {
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  color: var(--text-heading);
+}
+.honestItemBody {
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}

@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArrowRight } from "lucide-react";
-import { CosmicPageHero } from "@/components/routes/CosmicPageHero";
+import { PageHeader } from "@/components/routes/PageHeader";
 import { SectionShell } from "@/components/sections/SectionShell";
-import { BentoGrid } from "@/components/primitives/BentoGrid";
-import { BentoCard } from "@/components/primitives/BentoCard";
-import { GlowButton } from "@/components/primitives/GlowButton";
-import { NodeOrb } from "@/components/primitives/NodeOrb";
-import { Icon } from "@/components/primitives/Icon";
-import { FinalCtaBannerSection } from "@/components/sections/FinalCtaBannerSection";
+import { FinalCtaSection } from "@/components/sections/FinalCtaSection";
+import { CardGrid } from "@/components/primitives/CardGrid";
+import { Button } from "@/components/primitives/Button";
+import { GoalCard } from "@/components/cards/GoalCard";
+import { RoadmapCard } from "@/components/cards/RoadmapCard";
+import { DomainCard } from "@/components/cards/DomainCard";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
+import { domainInk } from "@/lib/design/domainColor";
 import {
   getBusinessType,
   getBusinessTypes,
@@ -19,9 +20,8 @@ import {
   getRoadmaps,
   getServices,
   getServiceCategories,
-  getStages,
 } from "@/lib/content";
-import { getServiceDomainConfig } from "@/lib/services/domains";
+import styles from "./business-type.module.css";
 
 export async function generateStaticParams() {
   const businessTypes = await getBusinessTypes();
@@ -44,10 +44,13 @@ export async function generateMetadata({
 }
 
 /**
- * /business-types/[slug] — one kind of business, framed on the Constellation kit: the
- * situation and the goals that matter most, a recommended roadmap in phases, and the service
- * domains the work touches (each linking to its domain page in its hue), then a route into
- * the plan builder. Reuses the shared cosmic hero, SectionShell, bento tiles and node orbs.
+ * /business-types/[slug] — one kind of business on the V2 light-first system: the situation and
+ * the goals that matter most (GoalCards), the suggested roadmap as a single sequence-led
+ * RoadmapCard, and the service domains the work touches (DomainCards, each in its own tone),
+ * then the shared closing CTA. The service domains are still derived from the business type's own
+ * services and deduplicated — the derivation is unchanged; only the presentation is V2.
+ * Server-rendered; metadata, canonical, the "Your goal" → /goals breadcrumb, `notFound` gating
+ * and every content relationship are preserved from the pre-V2 template.
  */
 export default async function BusinessTypeDetailPage({
   params,
@@ -55,13 +58,12 @@ export default async function BusinessTypeDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [businessType, goals, roadmaps, services, categories, stages] = await Promise.all([
+  const [businessType, goals, roadmaps, services, categories] = await Promise.all([
     getBusinessType(slug),
     getGoals(),
     getRoadmaps(),
     getServices(),
     getServiceCategories(),
-    getStages(),
   ]);
   if (!businessType) notFound();
 
@@ -69,25 +71,27 @@ export default async function BusinessTypeDetailPage({
     ? roadmaps.find((r) => r.slug === businessType.roadmapSlug)
     : undefined;
 
+  // The goals that matter most, in the business type's own source order. A goal that can't be
+  // resolved is omitted (surfaced by the relationship-integrity test); content integrity
+  // guarantees resolution today.
   const matchingGoals = businessType.goalSlugs
     .map((s) => goals.find((g) => g.slug === s))
     .filter((g): g is NonNullable<typeof g> => Boolean(g));
 
-  const stageBySlug = new Map(stages.map((s) => [s.slug, s] as const));
-
   // The service domains this business type touches, derived from its relevant services and
-  // deduplicated, so the page points at whole domains (in their hue), not seventy services.
+  // deduplicated first-seen — unchanged derivation, so the page points at whole domains (each in
+  // its own tone), not seventy services. No getServiceDomainConfig: the domain tone is the
+  // category's own colour, mapped through the domain bridge inside DomainCard.
   const relevantCategorySlugs = [
     ...new Set(
-      services.filter((sv) => sv.businessTypeSlugs.includes(businessType.slug)).map((sv) => sv.categorySlug),
+      services
+        .filter((sv) => sv.businessTypeSlugs.includes(businessType.slug))
+        .map((sv) => sv.categorySlug),
     ),
   ];
   const relevantDomains = relevantCategorySlugs
     .map((cs) => categories.find((c) => c.slug === cs))
     .filter((c): c is NonNullable<typeof c> => Boolean(c));
-
-  const hueFor = (cslug: string, fallback: string) =>
-    getServiceDomainConfig(cslug)?.hue ?? fallback;
 
   return (
     <>
@@ -99,33 +103,29 @@ export default async function BusinessTypeDetailPage({
         ])}
       />
 
-      <CosmicPageHero
+      <PageHeader
         id="business-type-hero"
+        surface="light"
         breadcrumbs={[{ name: "Your goal", path: "/goals" }, { name: businessType.name }]}
         eyebrow="Who we help"
-        hue={businessType.color}
+        accent={domainInk(businessType.color)}
         title={businessType.name}
         lead={businessType.summary}
         actions={
           <>
-            <GlowButton href="/growth-plan" size="lg" iconRight={<ArrowRight size={18} aria-hidden="true" />}>
+            <Button href="/growth-plan" iconRight={<ArrowRight size={16} aria-hidden="true" />}>
               Build my growth plan
-            </GlowButton>
-            <GlowButton href="#matters" variant="ghost" size="lg">
+            </Button>
+            <Button href="#matters" variant="secondary">
               What matters here
-            </GlowButton>
+            </Button>
           </>
         }
-        aside={
-          <span aria-hidden="true">
-            <NodeOrb hue={businessType.color} size={128} emphasis="bright">
-              <Icon name={businessType.icon} />
-            </NodeOrb>
-          </span>
-        }
+        trustNote="Every plan is tailored during discovery."
       />
 
       <SectionShell
+        surface="alt"
         id="matters"
         eyebrow="The situation"
         title="What tends to matter, and in what order"
@@ -133,81 +133,77 @@ export default async function BusinessTypeDetailPage({
         align="start"
       >
         {matchingGoals.length > 0 ? (
-          <BentoGrid>
-            {matchingGoals.map((goal, i) => (
-              <BentoCard
+          <CardGrid layout="equal" aria-label="Goals that matter most for this kind of business">
+            {matchingGoals.map((goal) => (
+              <GoalCard
                 key={goal.slug}
                 href={`/goals/${goal.slug}`}
-                hue={goal.color}
-                icon={goal.icon}
-                index={String(i + 1).padStart(2, "0")}
-                eyebrow="Goal"
                 title={goal.title}
-                blurb={goal.outcome}
-                variant={i === 0 ? "featured" : "medium"}
+                outcome={goal.outcome}
+                icon={goal.icon}
+                tone={goal.color}
+                audienceHint={goal.audienceHint}
               />
             ))}
-          </BentoGrid>
+          </CardGrid>
         ) : null}
       </SectionShell>
 
       {roadmap ? (
         <SectionShell
+          surface="light"
           id="roadmap"
           eyebrow="Your roadmap"
-          title={
-            <>
-              A path in <span className="iw-gradient-word">phases</span>
-            </>
-          }
-          lead={roadmap.intro}
+          title="A suggested path, in phases"
+          lead="A suggested sequence for this kind of business, not a fixed script. Open it for the full phases, the stage each maps to, and the services and goals it moves."
           align="start"
         >
-          <BentoGrid>
-            {roadmap.phases.map((phase, i) => {
-              const stage = stageBySlug.get(phase.stageSlug);
-              return (
-                <BentoCard
-                  key={phase.title}
-                  hue={stage?.color ?? businessType.color}
-                  icon={stage?.icon ?? "compass"}
-                  index={String(i + 1).padStart(2, "0")}
-                  eyebrow={`Phase ${i + 1}`}
-                  title={phase.title}
-                  blurb={phase.summary}
-                  variant={i === 0 ? "featured" : "medium"}
-                />
-              );
-            })}
-          </BentoGrid>
+          <div className={styles.roadmapWrap}>
+            <RoadmapCard
+              href={`/roadmaps/${roadmap.slug}`}
+              title={roadmap.name}
+              intro={roadmap.intro}
+              businessTypeLabel={businessType.name}
+              businessTypeTone={businessType.color}
+              businessTypeIcon={businessType.icon}
+              phases={roadmap.phases}
+            />
+          </div>
         </SectionShell>
       ) : null}
 
       {relevantDomains.length > 0 ? (
         <SectionShell
+          surface="alt"
           id="domains"
           eyebrow="Where we'd focus"
           title="The domains this touches"
           lead="The areas of work that come up most for this kind of business. Open any one to see exactly what's inside."
           align="start"
         >
-          <BentoGrid>
-            {relevantDomains.map((cat, i) => (
-              <BentoCard
+          <CardGrid layout="equal" aria-label="Service domains this business type touches">
+            {relevantDomains.map((cat) => (
+              <DomainCard
                 key={cat.slug}
                 href={`/services/${cat.slug}`}
-                hue={hueFor(cat.slug, cat.color)}
-                icon={cat.icon}
+                eyebrow="Service domain"
                 title={cat.name}
-                blurb={cat.intro}
-                variant={i === 0 ? "featured" : "medium"}
+                description={cat.intro}
+                icon={cat.icon}
+                tone={cat.color}
               />
             ))}
-          </BentoGrid>
+          </CardGrid>
         </SectionShell>
       ) : null}
 
-      <FinalCtaBannerSection anchorId="get-started" />
+      <FinalCtaSection
+        id="get-started"
+        title="Get a plan built around your business"
+        lead="Your plan is tailored during discovery — not an identical roadmap for every business like yours. Build one around your goals. No obligation."
+        primary={{ href: "/growth-plan", label: "Build my growth plan" }}
+        secondary={{ href: "/goals#by-business-type", label: "See other business types" }}
+      />
     </>
   );
 }

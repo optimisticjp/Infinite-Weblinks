@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import { PageHeader } from "@/components/routes/PageHeader";
 import { SectionShell } from "@/components/sections/SectionShell";
+import { FinalCtaSection } from "@/components/sections/FinalCtaSection";
 import { Button } from "@/components/primitives/Button";
 import { Card } from "@/components/primitives/Card";
 import { BentoGrid } from "@/components/primitives/BentoGrid";
@@ -170,6 +171,16 @@ export default function ShellsPreviewPage() {
           </Button>
         </div>
       </SectionShell>
+
+      {/* 6 · FinalCtaSection — the reusable closing CTA (its own night band, no cosmic layer).
+          Shown here on the shells preview rather than a nested marketing page. */}
+      <FinalCtaSection
+        id="final-cta"
+        title="Ready to plan your growth?"
+        lead="The reusable V2 closing CTA — one reserved night band with a signature primary and a quiet secondary. Replaces the per-page duplicated CTA; the legacy cosmic banner is untouched."
+        primary={{ href: "/growth-plan", label: "Build my growth plan" }}
+        secondary={{ href: "/design-preview", label: "Back to components" }}
+      />
     </main>
   );
 }

@@ -10,8 +10,12 @@ import { DeliveryModelBadge } from "@/components/primitives/DeliveryModelBadge";
 import { FilterChip } from "@/components/primitives/FilterChip";
 import { IconTile } from "@/components/primitives/IconTile";
 import { Card } from "@/components/primitives/Card";
+import { CardGrid } from "@/components/primitives/CardGrid";
 import { BentoGrid } from "@/components/primitives/BentoGrid";
 import { BentoCard } from "@/components/primitives/BentoCard";
+import { Callout } from "@/components/primitives/Callout";
+import { ArticleCard } from "@/components/cards/ArticleCard";
+import { CaseStudyCard } from "@/components/cards/CaseStudyCard";
 import { FilterChipDemo } from "./FilterChipDemo";
 import styles from "./design-preview.module.css";
 
@@ -451,6 +455,97 @@ export default function DesignPreviewPage() {
               href="#main"
             />
           </BentoGrid>
+        </section>
+
+        {/* 12b · Content cards — CardGrid + ArticleCard + CaseStudyCard */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Content cards</h2>
+
+          <p className={styles.subTitle}>ArticleCard — editorial CardGrid (1 explicitly-featured item spans)</p>
+          <CardGrid layout="editorial" aria-label="Article preview">
+            <ArticleCard
+              featured
+              href="#main"
+              title="How online growth works as one connected system"
+              excerpt="The order usually matters more than the number of tools — why each part feeds the next, in plain English."
+              goalLabel="Get found on Google"
+              goalTone="var(--domain-discover)"
+              readingTime="6 min read"
+              icon="search"
+            />
+            <ArticleCard
+              href="#main"
+              title="Choosing the right first step"
+              excerpt="Where to start when everything feels urgent."
+              goalLabel="Turn visitors into buyers"
+              goalTone="var(--domain-convert)"
+              readingTime="4 min read"
+              icon="git-branch"
+            />
+            <ArticleCard
+              href="#main"
+              title="What connected tools actually mean"
+              excerpt="No jargon: what 'everything talks to everything' looks like day to day."
+              goalLabel="Guide"
+              goalTone="var(--domain-strategy)"
+              icon="book-open"
+            />
+          </CardGrid>
+
+          <p className={styles.subTitle}>CaseStudyCard — equal CardGrid (every card is an illustrative example)</p>
+          <CardGrid layout="equal" aria-label="Case scenario preview">
+            <CaseStudyCard
+              href="#main"
+              title="Turning browsers into buyers"
+              forWho="An online store getting visitors but not enough sales"
+              summary="Fix the store, tracking and follow-up together so more of the same traffic converts."
+              tone="var(--domain-convert)"
+            />
+            <CaseStudyCard
+              href="#main"
+              title="From a quiet site to steady enquiries"
+              forWho="A local service business that relies on word of mouth"
+              summary="Get found locally and catch every enquiry in one place."
+              tone="var(--domain-discover)"
+            />
+            <CaseStudyCard
+              href="#main"
+              title="Earning more from each customer"
+              forWho="An established brand whose growth has stalled"
+              summary="Retention, loyalty and automation make each existing customer worth more."
+              tone="var(--domain-retain)"
+            />
+          </CardGrid>
+          <p className={styles.subTitle}>
+            CaseStudyCard status API — the future <code>verified</code> state (illustrative preview; no such
+            client exists yet)
+          </p>
+          <CardGrid layout="equal" aria-label="Verified status preview">
+            <CaseStudyCard
+              href="#main"
+              status="verified"
+              title="Example of a published case study"
+              forWho="Reserved for a real, verified client story"
+              summary="When a real case study is published it renders unlabelled with a Verified badge — invented here only to show the API."
+              tone="var(--domain-build)"
+            />
+          </CardGrid>
+        </section>
+
+        {/* 12c · Callouts */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Callout tones (note by default, not an alert)</h2>
+          <div className={styles.stack}>
+            <Callout tone="neutral" title="Neutral note">
+              A quiet aside for supporting context. Meaning is carried by the icon and copy, not colour.
+            </Callout>
+            <Callout tone="information" title="Information">
+              Used on the case-studies hub to make clear the scenarios are illustrative examples, not real clients.
+            </Callout>
+            <Callout tone="warning" title="Worth checking first">
+              A caution the reader should notice before acting — still a passive note, never a live alert.
+            </Callout>
+          </div>
         </section>
 
         {/* 13 · Form fields */}

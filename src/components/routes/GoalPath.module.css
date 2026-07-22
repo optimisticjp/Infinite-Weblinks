@@ -35,9 +35,9 @@
 }
 
 /* Compact visible sequence marker in the goal tone (aria-hidden — order comes from the <ol>).
-   The tint is mixed against white (not the section surface) at the measured-AA 8% used by the
-   domain Badge, so the ink clears 4.5:1 on every surface this renders on — including the darker
-   alt paper, where a surface-relative tint would drop below AA. */
+   The tint is mixed against the base paper token (not the section surface) at the measured-AA 8%
+   used by the domain Badge, so the ink clears 4.5:1 on every surface this renders on — including
+   the darker alt paper, where a surface-relative tint would drop below AA. */
 .marker {
   display: inline-grid;
   place-items: center;
@@ -45,7 +45,7 @@
   height: 24px;
   padding-inline: var(--space-1);
   border-radius: var(--v2-radius-sm);
-  background: color-mix(in srgb, var(--path-ink) 8%, white);
+  background: color-mix(in srgb, var(--path-ink) 8%, var(--v2-paper));
   color: var(--path-ink);
   font-family: var(--font-mono);
   font-size: var(--fs-xs);

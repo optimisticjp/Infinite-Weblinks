@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { setViewportAndWaitForStableLayout, expectNoHorizontalOverflow } from "./helpers/layout";
 
 /**
  * Every service domain renders from the shared Constellation template. This sweeps all
@@ -41,11 +42,8 @@ for (const slug of DOMAINS) {
       await expect(page.locator('main a[href="/growth-plan"]').first()).toBeVisible();
 
       for (const width of [360, 1440]) {
-        await page.setViewportSize({ width, height: 900 });
-        const overflow = await page.evaluate(
-          () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-        );
-        expect(overflow, `overflow at ${width}px on ${slug}`).toBeLessThanOrEqual(1);
+        await setViewportAndWaitForStableLayout(page, width);
+        await expectNoHorizontalOverflow(page, `${slug} @ ${width}px`);
       }
     });
 

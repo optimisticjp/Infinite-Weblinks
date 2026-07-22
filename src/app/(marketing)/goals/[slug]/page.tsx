@@ -200,7 +200,7 @@ export default async function GoalDetailPage({
           id="where-it-fits"
           eyebrow="Where it fits"
           title="How this maps to the growth journey"
-          lead="Every business moves through the same journey. These are the stages this goal touches most."
+          lead="The growth journey is a useful map, not a fixed checklist — these are the stages most relevant to this goal. Not every business needs every stage, and the exact sequence stays tailored to yours."
           align="start"
         >
           <CardGrid layout="equal" aria-label="Growth-journey stages this goal touches">

@@ -45,6 +45,20 @@ describe("V2 chrome token hygiene", () => {
   }
 });
 
+/**
+ * Raw named colours (Phase 2I §I): `white` / `black` as literal colour values are banned in the
+ * migrated V2 modules — use the semantic paper/ink tokens (or `color-mix` against them). The
+ * lookarounds keep this from matching hyphenated identifiers such as `white-space` or
+ * `blackboard`.
+ *
+ * Policy note on the two named values deliberately NOT banned:
+ *   • `currentColor` is a semantic keyword (it resolves to the element's own `color`), not a
+ *     hard-coded colour, so it is allowed.
+ *   • `transparent` is allowed — it is the project's established way to fade a token to nothing
+ *     inside `color-mix(..., transparent)` (used across the V2 modules) and carries no hue.
+ */
+const NAMED_COLOUR = /(?<![\w-])(white|black)(?![\w-])/i;
+
 // Phase 2F §G: the new detail-page components and both rewritten detail-route modules must use
 // V2 semantic surfaces / domain ink+tint mapping only — additionally banning the legacy
 // --domain-*, --hue, and base accent-palette tokens (never a legacy hue as V2 text).
@@ -72,6 +86,8 @@ const BANNED_V2 = [
   /var\(--domain-[a-z0-9-]+\)/i, // legacy domain tokens
   /var\(--hue\b/i, // legacy per-route --hue variable
   /var\(--(violet|pink|blue|cyan|lime|orange|yellow)(-[a-z]+)?\)/i, // base accent palette
+  /theme-band-bright/, // legacy daylight band surface class
+  NAMED_COLOUR,
 ];
 
 describe("V2 detail-route + new-component token hygiene", () => {
@@ -103,5 +119,25 @@ describe("V2 night link token hygiene", () => {
   it("BentoCard night styling references the night accent token", () => {
     expect(bento).toContain("var(--v2-link-night)");
     expect(bento.toLowerCase()).not.toContain("#cdbcff");
+  });
+});
+
+describe("V2 named-colour hygiene rule (Phase 2I §I)", () => {
+  it("catches raw white and black as colour values", () => {
+    expect("background: white;").toMatch(NAMED_COLOUR);
+    expect("color: black;").toMatch(NAMED_COLOUR);
+    expect("border: 1px solid White;").toMatch(NAMED_COLOUR); // case-insensitive
+    expect("color-mix(in srgb, var(--path-ink) 8%, white)").toMatch(NAMED_COLOUR);
+  });
+
+  it("does not flag semantic keywords or hyphenated identifiers", () => {
+    expect("color: currentColor;").not.toMatch(NAMED_COLOUR);
+    expect("color-mix(in srgb, var(--accent) 20%, transparent)").not.toMatch(NAMED_COLOUR);
+    expect("white-space: nowrap;").not.toMatch(NAMED_COLOUR);
+    expect("background: var(--v2-paper);").not.toMatch(NAMED_COLOUR);
+  });
+
+  it("is part of the banned set applied to the V2 detail modules", () => {
+    expect(BANNED_V2).toContain(NAMED_COLOUR);
   });
 });

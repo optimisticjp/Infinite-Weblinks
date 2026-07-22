@@ -16,7 +16,7 @@ Governing spec: `docs/design/v2-design-spec.md`.
   a real `YYYY-MM-DD` calendar date or an RFC3339/ISO timestamp with an explicit timezone), and a
   **corrected, honest Phase 2G test record** (the one observed intermittent full-suite failure and
   its successful reruns).
-- Added five components: **GoalPath**, **GoalCard**, **ServiceCard**, **JourneyStageCard** (and
+- Added four components: **GoalPath**, **GoalCard**, **ServiceCard**, **JourneyStageCard** (and
   reused DomainCard / RoadmapCard).
 - Migrated **`/goals/[slug]`** (outcome-led goal detail) and **`/business-types/[slug]`** (one kind
   of business) off the cosmic components onto PageHeader + explicit V2 surfaces + the card system.

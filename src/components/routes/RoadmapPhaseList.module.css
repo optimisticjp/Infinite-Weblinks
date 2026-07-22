@@ -1,0 +1,87 @@
+/* RoadmapPhaseList — restrained vertical phase sequence. V2 tokens only; a neutral connector
+   line (no gradient), compact numbered markers, no fixed height, no timeline illustration. */
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-6);
+}
+
+.item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+/* Neutral connector line joining the markers (decorative; hairline, never a gradient/glow). */
+.item:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  top: 44px;
+  bottom: calc(var(--space-6) * -1);
+  width: 1px;
+  background: var(--hairline-strong);
+  transform: translateX(-0.5px);
+}
+
+/* Compact numbered marker. Decorative (aria-hidden) — the <ol> carries the order. */
+.marker {
+  position: relative;
+  z-index: 1;
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--v2-radius-pill);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline-strong);
+  color: var(--text-heading);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  line-height: 1;
+}
+
+.body {
+  min-width: 0;
+  padding-bottom: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+}
+.summary {
+  margin: 0;
+  color: var(--text-body);
+  line-height: var(--lh-body);
+  max-width: 64ch;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.groupLabel {
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

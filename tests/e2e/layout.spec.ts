@@ -97,9 +97,13 @@ test.describe("containers respect their max-width tokens", () => {
       };
     });
 
+    // The homepage header bar is a wide container (present on every page).
     const wide = await contentBox(page, HEADER_BAR);
     expect(wide!.boxWidth, "wide container width").toBeLessThanOrEqual(tokens.wide + 2);
 
+    // The V2 homepage spine uses wide containers throughout, so the standard-container token is
+    // sampled from a content page that still uses one (/about renders standard `.iw-container`s).
+    await page.goto("/about");
     const widestStandard = await page.evaluate(() => {
       const els = Array.from(document.querySelectorAll(".iw-container:not(.iw-container--wide)"));
       return els.reduce((max, el) => Math.max(max, el.getBoundingClientRect().width), 0);

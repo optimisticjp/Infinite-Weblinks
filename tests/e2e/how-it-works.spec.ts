@@ -160,15 +160,15 @@ test.describe("how-it-works — works with JavaScript disabled", () => {
   });
 });
 
-test.describe("homepage safety — the homepage is not migrated in this phase", () => {
-  test("/ keeps its legacy presentation and none of the V2 how-it-works sections", async ({ page }) => {
+test.describe("how-it-works page navs stay page-scoped (not duplicated onto the homepage)", () => {
+  test("/ is the V2 spine and carries none of the how-it-works page-specific navs", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
-    // The legacy homepage sections are still present (gradient titles are a legacy tell).
-    expect(await page.locator(".iw-gradient-word").count(), "homepage still legacy").toBeGreaterThan(0);
-    // The V2 how-it-works page-jump nav must NOT appear on the homepage.
+    // The migrated homepage is the V2 light-first spine — no legacy gradient titles.
+    expect(await page.locator(".iw-gradient-word").count(), "homepage is V2, not legacy").toBe(0);
+    // The how-it-works page-jump nav belongs to /how-it-works, never the homepage.
     await expect(page.getByRole("navigation", { name: "How it works sections" })).toHaveCount(0);
-    // And no V2 stage-jump nav either.
+    // And no stage-jump nav either (the homepage bridges to the journey, it does not embed it).
     await expect(page.getByRole("navigation", { name: "Growth journey stages" })).toHaveCount(0);
   });
 });

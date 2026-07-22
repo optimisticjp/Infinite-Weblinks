@@ -131,6 +131,40 @@ describe("SiteHeader (V2 light chrome)", () => {
   });
 });
 
+describe("SiteHeader adaptive fit probes (non-interactive)", () => {
+  const probeOf = (container: HTMLElement) => {
+    const probe = container.querySelector(".probeWrap");
+    expect(probe, "measurement wrapper present").not.toBeNull();
+    return probe as HTMLElement;
+  };
+
+  it("the measurement wrapper contains NO anchor, button, nav or focusable element", () => {
+    pathState.current = "/";
+    const { container } = render(<SiteHeader nav={NAV} />);
+    const probe = probeOf(container);
+    expect(probe.querySelector("a"), "no anchor in the probe").toBeNull();
+    expect(probe.querySelector("button"), "no button in the probe").toBeNull();
+    expect(probe.querySelector("nav"), "no nav landmark in the probe").toBeNull();
+    const focusable = Array.from(probe.querySelectorAll("[tabindex]")).filter(
+      (el) => Number(el.getAttribute("tabindex")) >= 0,
+    );
+    expect(focusable, "no tabindex>=0 descendant in the probe").toHaveLength(0);
+  });
+
+  it("stays aria-hidden + inert but still carries the measured text (logo, nav labels, CTAs)", () => {
+    pathState.current = "/";
+    const { container } = render(<SiteHeader nav={NAV} />);
+    const probe = probeOf(container);
+    expect(probe).toHaveAttribute("aria-hidden", "true");
+    expect(probe.hasAttribute("inert")).toBe(true);
+    // the presentational clones still reproduce the widths that matter
+    expect(probe.textContent).toContain("Services"); // nav label + chevron
+    expect(probe.textContent).toContain("Your goal"); // simple nav label
+    expect(probe.textContent).toContain("Build my growth plan"); // full CTA set
+    expect(probe.querySelector('[role="img"]'), "presentational logo present").not.toBeNull();
+  });
+});
+
 describe("MobileNav (V2 light drawer)", () => {
   it("is a labelled modal dialog with id mobile-nav, on the light surface", () => {
     pathState.current = "/";

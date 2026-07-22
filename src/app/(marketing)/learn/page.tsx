@@ -50,7 +50,7 @@ export default async function LearnIndexPage() {
         breadcrumbs={[{ name: "Learn" }]}
         eyebrow="Learn"
         title="Understand how it all fits together"
-        lead="Short reads on the thinking behind the work: how growth works as one connected system, how to choose the right first step, and what connected tools actually mean in practice. Educational first, no hard sell."
+        lead="Short reads on the thinking behind the work: how growth works as one connected system, how to choose the right first step, and what connected tools actually mean in practice."
         actions={
           <>
             <Button href="/growth-plan" iconRight={<ArrowRight size={16} aria-hidden="true" />}>

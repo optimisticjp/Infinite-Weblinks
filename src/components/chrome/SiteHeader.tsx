@@ -12,6 +12,7 @@ import type { NavItem, SiteNav } from "@/lib/content/types";
 import { ariaCurrent, isCurrent, routeCurrentState, sectionCurrentState } from "@/lib/nav/currentRoute";
 import { MobileNav } from "./MobileNav";
 import styles from "./SiteHeader.module.css";
+import btn from "@/components/primitives/Button.module.css";
 
 /** Per-column wayfinding accent, cycled — V2 domain inks (build → discover → convert →
     operate). Decorative only; used for the flat link-icon tiles. */
@@ -114,10 +115,24 @@ function MegaPanel({ item, panelId }: { item: NavItem; panelId: string }) {
   );
 }
 
+/** A purely PRESENTATIONAL clone of a header CTA — a `<span>` carrying Button's own
+ *  (element-agnostic) box classes, so it measures identically to the real Button without being
+ *  an anchor, a button, a Link or focusable. */
+function ProbeCta({ label, primary }: { label: string; primary: boolean }) {
+  return (
+    <span className={`${btn.btn} ${primary ? btn.primary : btn.secondary} ${btn.sm}`}>
+      <span className={btn.label}>{label}</span>
+    </span>
+  );
+}
+
 /** Non-interactive width probe for one desktop layout (logo + nav + a set of CTAs). It mirrors
  *  the real elements' typography/padding/gaps so its natural width equals the real bar's, but
- *  it is aria-hidden + inert (never focusable, never in the a11y tree, no duplicate landmark)
- *  and clipped by a 0-height wrapper (never affects layout or causes overflow). */
+ *  it is built ENTIRELY from presentational markup — no anchor, no button, no Link, no href, no
+ *  focusable descendant and no navigation landmark. Combined with the aria-hidden + inert
+ *  wrapper and the 0-height clip, it never enters the a11y tree, never takes focus and never
+ *  affects the document's dimensions. The `<Logo>` renders without `href`, so it is a
+ *  non-interactive role="img" span, not a link. */
 function FitProbe({
   nav,
   ctas,
@@ -129,7 +144,7 @@ function FitProbe({
 }) {
   return (
     <div className={styles.probeRow} ref={probeRef}>
-      <Logo href="/" size={28} />
+      <Logo size={28} />
       {/* A plain <ul>, NOT a <nav>, so the probe never duplicates the Primary landmark. */}
       <ul className={styles.navList}>
         {nav.primary.map((item) => (
@@ -147,14 +162,7 @@ function FitProbe({
       </ul>
       <span className={styles.probeActions}>
         {ctas.map((cta) => (
-          <Button
-            key={cta.label}
-            href={cta.route}
-            variant={cta.style === "primary" ? "primary" : "secondary"}
-            size="sm"
-          >
-            {cta.label}
-          </Button>
+          <ProbeCta key={cta.label} label={cta.label} primary={cta.style === "primary"} />
         ))}
       </span>
     </div>

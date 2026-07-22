@@ -5,7 +5,7 @@ import "@testing-library/jest-dom/vitest";
 import { Card } from "@/components/primitives/Card";
 import { CardGrid } from "@/components/primitives/CardGrid";
 import { ArticleCard } from "@/components/cards/ArticleCard";
-import { CaseStudyCard } from "@/components/cards/CaseStudyCard";
+import { CaseStudyCard, type CaseStudyCardProps } from "@/components/cards/CaseStudyCard";
 
 vi.mock("next/link", () => ({
   default: ({ href, children, prefetch: _p, ...rest }: { href: unknown; children: unknown; prefetch?: unknown }) => {
@@ -193,14 +193,27 @@ describe("CaseStudyCard", () => {
     expect(screen.getByText("An online store")).toBeVisible();
   });
 
-  it("shows a real status badge and supports a future verified status without inventing content", () => {
+  it("illustrative is the default and stays visible; verified requires + shows truthful context", () => {
     const { rerender } = render(
       <CaseStudyCard href="/x" title="T" forWho="w" summary="s" status="illustrative" />,
     );
     expect(screen.getByText("Illustrative example")).toBeInTheDocument();
     expect(screen.queryByText(/verified/i)).toBeNull();
-    rerender(<CaseStudyCard href="/x" title="T" forWho="w" summary="s" status="verified" />);
-    expect(screen.getByText("Verified case study")).toBeInTheDocument();
+    // Verified cannot be written without truthful verification context (type-enforced); the
+    // rendered badge is the SUPPLIED label, not a bare "verified" flag, and the optional client
+    // label is shown as given.
+    rerender(
+      <CaseStudyCard
+        href="/x"
+        title="T"
+        forWho="w"
+        summary="s"
+        status="verified"
+        verification={{ label: "Verified with the client", client: "Client confidential" }}
+      />,
+    );
+    expect(screen.getByText("Verified with the client")).toBeInTheDocument();
+    expect(screen.getByText("Client confidential")).toBeInTheDocument();
     expect(screen.queryByText("Illustrative example")).toBeNull();
   });
 
@@ -211,5 +224,25 @@ describe("CaseStudyCard", () => {
     expect(container.querySelector("img")).toBeNull();
     // no digits presented as an outcome metric
     expect(container.textContent).not.toMatch(/\d+%|\d+x/i);
+  });
+
+  it("type-enforces verification context (compile-time — verified needs it, illustrative forbids it)", () => {
+    // Checked by `npm run typecheck` (tests are in the tsconfig scope). Object-literal-to-union
+    // assignability is stricter than JSX prop checking, so these directives are load-bearing.
+    const base = { href: "/x", title: "T", forWho: "w", summary: "s" };
+    // @ts-expect-error — status="verified" cannot compile without truthful verification context.
+    const missingContext: CaseStudyCardProps = { ...base, status: "verified" };
+    // @ts-expect-error — the illustrative form does not accept verification fields.
+    const illustrativeWithContext: CaseStudyCardProps = { ...base, verification: { label: "x" } };
+    // The valid verified form (with context) DOES compile.
+    const validVerified: CaseStudyCardProps = {
+      ...base,
+      status: "verified",
+      verification: { label: "Verified with the client" },
+    };
+    void missingContext;
+    void illustrativeWithContext;
+    void validVerified;
+    expect(true).toBe(true);
   });
 });

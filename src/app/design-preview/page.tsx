@@ -516,20 +516,6 @@ export default function DesignPreviewPage() {
               tone="var(--domain-retain)"
             />
           </CardGrid>
-          <p className={styles.subTitle}>
-            CaseStudyCard status API — the future <code>verified</code> state (illustrative preview; no such
-            client exists yet)
-          </p>
-          <CardGrid layout="equal" aria-label="Verified status preview">
-            <CaseStudyCard
-              href="#main"
-              status="verified"
-              title="Example of a published case study"
-              forWho="Reserved for a real, verified client story"
-              summary="When a real case study is published it renders unlabelled with a Verified badge — invented here only to show the API."
-              tone="var(--domain-build)"
-            />
-          </CardGrid>
         </section>
 
         {/* 12c · Callouts */}

@@ -11,8 +11,14 @@
 
 .head {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   gap: var(--space-2);
+}
+/* Verified form only — a truthful, caller-supplied client / confidentiality label. */
+.client {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
 }
 
 .title {

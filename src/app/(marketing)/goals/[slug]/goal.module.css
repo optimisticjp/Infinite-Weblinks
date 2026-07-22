@@ -1,5 +1,9 @@
-/* Example-tool chips: a simple wrap of pills on the cosmic surface. */
-.chips {
+/* Goal detail — page-specific layout on V2 tokens only (no legacy/domain/base-palette tokens,
+   no glow/glass/gradient, no raw colour). The chips reuse the Chip primitive; this module only
+   lays out the wrapping list, its honesty note, and the spacing under the GoalPath. */
+
+/* Example-tool chips — a simple wrap of Chip primitives. */
+.tools {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -7,15 +11,13 @@
   flex-wrap: wrap;
   gap: var(--space-3);
 }
-.chip {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-pill);
-  background: var(--surface-raised);
-  border: 1px solid var(--hairline-strong);
-  color: var(--text-body);
+.toolsNote {
+  margin: var(--space-4) 0 0;
   font-size: var(--fs-sm);
-  font-family: var(--font-mono);
-  line-height: 1.3;
+  color: var(--text-muted);
+}
+
+/* The variability note sits a step below the GoalPath, as a visible callout (not fine print). */
+.variability {
+  margin-top: var(--space-6);
 }

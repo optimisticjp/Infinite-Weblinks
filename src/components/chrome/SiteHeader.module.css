@@ -41,9 +41,41 @@
   border-radius: var(--v2-radius-sm);
 }
 
+/* ---- Off-screen fit probes (adaptive header) ----
+   A 0-height, viewport-anchored, overflow-clipped wrapper holding non-interactive copies of
+   the desktop bar. Each probe row sizes to its natural content width (max-content) so the
+   component can compare it against the real container width. The wrapper never adds height or
+   page scroll width, and the rows are aria-hidden + inert in the markup. */
+.probeWrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.probeRow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: max-content;
+  white-space: nowrap;
+}
+.probeActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: none;
+}
+
 /* ---- Desktop nav ---- */
 .desktopNav {
   display: none;
+  align-self: stretch;
   margin-inline-end: auto;
 }
 .navList {
@@ -360,14 +392,18 @@
   }
 }
 
-/* ---- Breakpoints ----
-   < 1160px : compact header (logo + hamburger).
-   ≥ 1160px : desktop nav + primary CTA (mega-menus enabled).
-   ≥ 1400px : the secondary CTA joins. */
+/* ---- Adaptive header (measured fit) ----
+   The header shows the desktop nav + CTAs when they FIT and collapses to the compact
+   logo + hamburger when they don't — including at ≥1160px under large text / zoom, where a
+   fixed breakpoint would overflow. Pre-hydration (no `data-mode`) the media queries below are
+   the SSR / no-JS fallback; once mounted, SiteHeader measures the real fit and sets
+   `data-mode` / `data-secondary`, which override the media queries. Desktop is only ever
+   chosen at ≥1160px (the compact floor), so the mega-menu keeps its ≥1160 layout. */
+
+/* SSR / no-JS fallback: compact by default; desktop from 1160; secondary from 1400. */
 @media (min-width: 1160px) {
   .desktopNav {
     display: flex;
-    align-self: stretch;
   }
   .menuButtonSlot {
     display: none;
@@ -383,4 +419,31 @@
   .secondaryCta {
     display: inline-flex;
   }
+}
+
+/* Measured overrides (win over the media fallback once `data-mode` is present). */
+.header[data-mode="desktop"] .desktopNav {
+  display: flex;
+}
+.header[data-mode="desktop"] .ctaGroup {
+  display: flex;
+}
+.header[data-mode="desktop"] .menuButtonSlot {
+  display: none;
+}
+.header[data-mode="compact"] .desktopNav {
+  display: none;
+}
+.header[data-mode="compact"] .ctaGroup {
+  display: none;
+}
+.header[data-mode="compact"] .menuButtonSlot {
+  display: inline-flex;
+}
+/* Secondary CTA: hidden once measured, shown only when it actually fits. */
+.header[data-mode] .secondaryCta {
+  display: none;
+}
+.header[data-secondary="true"] .secondaryCta {
+  display: inline-flex;
 }

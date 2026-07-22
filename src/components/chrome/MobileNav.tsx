@@ -7,8 +7,14 @@ import { ChevronDown, Mail, X } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/primitives/Button";
 import { Icon } from "@/components/primitives/Icon";
-import type { SiteNav } from "@/lib/content/types";
+import type { NavItem, SiteNav } from "@/lib/content/types";
+import { ariaCurrent, isCurrent, routeCurrentState, sectionCurrentState } from "@/lib/nav/currentRoute";
 import styles from "./MobileNav.module.css";
+
+/** Every child href a mega item points at (its hub links live in the columns). */
+function childHrefsOf(item: NavItem): string[] {
+  return (item.megaMenu?.columns ?? []).flatMap((c) => c.items.map((l) => l.href));
+}
 
 const SUPPORT_EMAIL = "support@infiniteweblinks.com";
 
@@ -26,9 +32,6 @@ export function MobileNav({
   const restoreRef = useRef<HTMLElement | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
   const pathname = usePathname();
-
-  const inSection = (href: string) =>
-    pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
 
   // Reset any stale expanded accordion state once the drawer is closed.
   useEffect(() => {
@@ -122,13 +125,13 @@ export function MobileNav({
           <ul className={styles.list}>
             {nav.primary.map((item) => {
               if (!item.megaMenu) {
-                const current = pathname === item.href;
+                const linkState = routeCurrentState(item.href, pathname);
                 return (
                   <li key={item.label}>
                     <Link
                       href={item.href}
-                      className={`${styles.topLink} ${current ? styles.topLinkActive : ""}`}
-                      aria-current={current ? "page" : undefined}
+                      className={`${styles.topLink} ${isCurrent(linkState) ? styles.topLinkActive : ""}`}
+                      aria-current={ariaCurrent(linkState)}
                       onClick={onClose}
                     >
                       {item.label}
@@ -138,15 +141,14 @@ export function MobileNav({
               }
               const isOpen = expanded === item.label;
               const panelId = `m-${item.label.replace(/\s+/g, "-").toLowerCase()}`;
-              const sectionCurrent =
-                inSection(item.href) ||
-                item.megaMenu.columns.some((c) => c.items.some((l) => inSection(l.href)));
+              // exact hub → "page"; a child/under-hub route → "location"; else none.
+              const sectionState = sectionCurrentState(item.href, childHrefsOf(item), pathname);
               return (
                 <li key={item.label} className={styles.group}>
                   <button
                     type="button"
-                    className={`${styles.groupTrigger} ${sectionCurrent ? styles.groupTriggerActive : ""}`}
-                    aria-current={sectionCurrent ? "true" : undefined}
+                    className={`${styles.groupTrigger} ${isCurrent(sectionState) ? styles.groupTriggerActive : ""}`}
+                    aria-current={ariaCurrent(sectionState)}
                     aria-expanded={isOpen}
                     aria-controls={panelId}
                     onClick={() => setExpanded(isOpen ? null : item.label)}
@@ -156,26 +158,31 @@ export function MobileNav({
                   </button>
                   {isOpen && (
                     <div id={panelId} className={styles.panel}>
-                      <Link
-                        href={item.href}
-                        className={styles.overviewLink}
-                        aria-current={pathname === item.href ? "page" : undefined}
-                        onClick={onClose}
-                      >
-                        All {item.label}
-                      </Link>
+                      {(() => {
+                        const overviewState = routeCurrentState(item.href, pathname);
+                        return (
+                          <Link
+                            href={item.href}
+                            className={styles.overviewLink}
+                            aria-current={ariaCurrent(overviewState)}
+                            onClick={onClose}
+                          >
+                            All {item.label}
+                          </Link>
+                        );
+                      })()}
                       {item.megaMenu.columns.map((col) => (
                         <div key={col.heading} className={styles.panelCol}>
                           <p className={styles.panelHeading}>{col.heading}</p>
                           <ul className={styles.panelLinks}>
                             {col.items.map((link) => {
-                              const subCurrent = pathname === link.href;
+                              const subState = routeCurrentState(link.href, pathname);
                               return (
                                 <li key={link.label + link.href}>
                                   <Link
                                     href={link.href}
-                                    className={`${styles.subLink} ${subCurrent ? styles.subLinkActive : ""}`}
-                                    aria-current={subCurrent ? "page" : undefined}
+                                    className={`${styles.subLink} ${isCurrent(subState) ? styles.subLinkActive : ""}`}
+                                    aria-current={ariaCurrent(subState)}
                                     onClick={onClose}
                                   >
                                     {link.icon ? (

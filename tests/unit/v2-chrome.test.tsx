@@ -93,13 +93,20 @@ describe("SiteHeader (V2 light chrome)", () => {
     expect(screen.getByRole("link", { name: "Your goal" })).toHaveAttribute("aria-current", "page");
   });
 
-  it("marks the mega-menu parent current when a child route is active (aria-current)", () => {
+  it("marks the mega-menu parent current when a child route is active (aria-current=location)", () => {
     pathState.current = "/services/web";
     render(<SiteHeader nav={NAV} />);
     const services = screen.getByRole("button", { name: /^Services$/ });
-    expect(services).toHaveAttribute("aria-current", "true");
+    // The section is an ANCESTOR of the current route, so it reads as a location, not the page.
+    expect(services).toHaveAttribute("aria-current", "location");
     // a non-matching section is not marked current
     expect(screen.getByRole("button", { name: /^Resources$/ })).not.toHaveAttribute("aria-current");
+  });
+
+  it("marks the mega-menu parent aria-current=page when the hub itself is the current page", () => {
+    pathState.current = "/services";
+    render(<SiteHeader nav={NAV} />);
+    expect(screen.getByRole("button", { name: /^Services$/ })).toHaveAttribute("aria-current", "page");
   });
 
   it("mega trigger exposes aria-expanded (closed initially)", () => {
@@ -135,11 +142,11 @@ describe("MobileNav (V2 light drawer)", () => {
     expect(within(container).getByRole("button", { name: "Close menu" })).toBeInTheDocument();
   });
 
-  it("marks the active parent group when a child route is current", () => {
+  it("marks the active parent group when a child route is current (aria-current=location)", () => {
     pathState.current = "/services/web";
     render(<MobileNav nav={NAV} open onClose={() => {}} />);
-    // the accordion trigger for the section carries aria-current
-    expect(screen.getByRole("button", { name: /^Services$/ })).toHaveAttribute("aria-current", "true");
+    // the accordion trigger for the section carries aria-current=location (ancestor, not page)
+    expect(screen.getByRole("button", { name: /^Services$/ })).toHaveAttribute("aria-current", "location");
   });
 
   it("marks a direct link current with aria-current=page", () => {

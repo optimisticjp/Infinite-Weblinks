@@ -9,6 +9,7 @@ import { Button } from "@/components/primitives/Button";
 import { IconButton } from "@/components/primitives/IconButton";
 import { Icon } from "@/components/primitives/Icon";
 import type { NavItem, SiteNav } from "@/lib/content/types";
+import { ariaCurrent, isCurrent, routeCurrentState, sectionCurrentState } from "@/lib/nav/currentRoute";
 import { MobileNav } from "./MobileNav";
 import styles from "./SiteHeader.module.css";
 
@@ -21,12 +22,9 @@ const MEGA_COL_ACCENTS = [
   "var(--v2-domain-operate-ink)",
 ];
 
-/** True when the current route belongs to a mega-menu section (its hub or any of its links). */
-function isSectionCurrent(item: NavItem, pathname: string): boolean {
-  const inHref = (href: string) =>
-    pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
-  if (inHref(item.href)) return true;
-  return (item.megaMenu?.columns ?? []).some((c) => c.items.some((l) => inHref(l.href)));
+/** Every child href a mega item points at (its hub links live in the columns). */
+function childHrefsOf(item: NavItem): string[] {
+  return (item.megaMenu?.columns ?? []).flatMap((c) => c.items.map((l) => l.href));
 }
 
 type Pt = { x: number; y: number };
@@ -116,13 +114,68 @@ function MegaPanel({ item, panelId }: { item: NavItem; panelId: string }) {
   );
 }
 
+/** Non-interactive width probe for one desktop layout (logo + nav + a set of CTAs). It mirrors
+ *  the real elements' typography/padding/gaps so its natural width equals the real bar's, but
+ *  it is aria-hidden + inert (never focusable, never in the a11y tree, no duplicate landmark)
+ *  and clipped by a 0-height wrapper (never affects layout or causes overflow). */
+function FitProbe({
+  nav,
+  ctas,
+  probeRef,
+}: {
+  nav: SiteNav;
+  ctas: SiteNav["ctas"];
+  probeRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  return (
+    <div className={styles.probeRow} ref={probeRef}>
+      <Logo href="/" size={28} />
+      {/* A plain <ul>, NOT a <nav>, so the probe never duplicates the Primary landmark. */}
+      <ul className={styles.navList}>
+        {nav.primary.map((item) => (
+          <li key={item.label} className={styles.navItem}>
+            {item.megaMenu ? (
+              <span className={styles.navTrigger}>
+                {item.label}
+                <ChevronDown className={styles.chevron} aria-hidden="true" />
+              </span>
+            ) : (
+              <span className={styles.navLink}>{item.label}</span>
+            )}
+          </li>
+        ))}
+      </ul>
+      <span className={styles.probeActions}>
+        {ctas.map((cta) => (
+          <Button
+            key={cta.label}
+            href={cta.route}
+            variant={cta.style === "primary" ? "primary" : "secondary"}
+            size="sm"
+          >
+            {cta.label}
+          </Button>
+        ))}
+      </span>
+    </div>
+  );
+}
+
+type Mode = "desktop" | "compact";
+
 export function SiteHeader({ nav }: { nav: SiteNav }) {
   const [openKey, setOpenKey] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   // Desktop-first default (SSR-safe); corrected on mount by matchMedia below.
   const [hoverCapable, setHoverCapable] = useState(true);
+  // Adaptive header: null until measured (SSR/no-JS falls back to the CSS media queries).
+  const [mode, setMode] = useState<Mode | null>(null);
+  const [showSecondary, setShowSecondary] = useState(false);
   const navRef = useRef<HTMLElement | null>(null);
+  const barRef = useRef<HTMLDivElement | null>(null);
+  const probeMinRef = useRef<HTMLDivElement | null>(null);
+  const probeFullRef = useRef<HTMLDivElement | null>(null);
   const triggerRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // True when the imminent click came from a pointer (pointerdown fired first);
@@ -170,6 +223,62 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
     return () => mq.removeEventListener("change", onChange);
   }, []);
 
+  // Adaptive compact header (measured fit). The probes always carry the DESKTOP content, so
+  // the fit result is independent of the current mode — there is no measurement feedback loop
+  // and no flicker/oscillation after hydration. Desktop is only chosen at ≥1160px (the mega
+  // layout's floor); above that, the header collapses to logo + hamburger whenever the nav +
+  // CTAs don't fit (e.g. 200% text zoom), and returns to desktop when the room is restored.
+  useEffect(() => {
+    const bar = barRef.current;
+    const probeMin = probeMinRef.current;
+    const probeFull = probeFullRef.current;
+    if (!bar || !probeMin || !probeFull) return;
+
+    const desktopMQ = window.matchMedia("(min-width: 1160px)");
+    const wideMQ = window.matchMedia("(min-width: 1400px)");
+
+    const measure = () => {
+      const avail = bar.clientWidth;
+      if (avail <= 0) return; // not laid out yet (or a no-layout test env)
+      const minW = probeMin.scrollWidth;
+      const fullW = probeFull.scrollWidth;
+      if (minW <= 0) return;
+      const canDesktop = desktopMQ.matches && minW <= avail;
+      const nextMode: Mode = canDesktop ? "desktop" : "compact";
+      // The secondary CTA keeps its ≥1400 home, but only if it genuinely fits there.
+      const nextSecondary = nextMode === "desktop" && wideMQ.matches && fullW <= avail;
+      setMode((m) => (m === nextMode ? m : nextMode));
+      setShowSecondary((s) => (s === nextSecondary ? s : nextSecondary));
+    };
+
+    let raf = 0;
+    if (typeof requestAnimationFrame === "function") raf = requestAnimationFrame(measure);
+    else measure();
+
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(() => measure());
+      ro.observe(bar);
+      ro.observe(probeFull);
+    } else {
+      window.addEventListener("resize", measure);
+    }
+    desktopMQ.addEventListener("change", measure);
+    wideMQ.addEventListener("change", measure);
+    if (typeof document !== "undefined" && "fonts" in document) {
+      // Re-measure once webfonts swap in (their metrics change the natural width).
+      (document as Document & { fonts: FontFaceSet }).fonts.ready.then(measure).catch(() => {});
+    }
+
+    return () => {
+      if (raf && typeof cancelAnimationFrame === "function") cancelAnimationFrame(raf);
+      if (ro) ro.disconnect();
+      else window.removeEventListener("resize", measure);
+      desktopMQ.removeEventListener("change", measure);
+      wideMQ.removeEventListener("change", measure);
+    };
+  }, [nav]);
+
   // Clear any pending timers on unmount.
   useEffect(
     () => () => {
@@ -211,10 +320,26 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
     closeTimer.current = setTimeout(() => setOpenKey(null), 140);
   }, []);
 
+  // The CTAs always shown in desktop mode (the secondary one hides below the wide breakpoint).
+  const minCtas = nav.ctas.filter((c) => c.style !== "secondary");
+
   return (
     <>
-      <header className={`theme-light ${styles.header} ${scrolled ? styles.scrolled : ""}`}>
-        <div className={`iw-container iw-container--wide ${styles.bar}`}>
+      <header
+        className={`theme-light ${styles.header} ${scrolled ? styles.scrolled : ""}`}
+        data-mode={mode ?? undefined}
+        data-secondary={mode == null ? undefined : showSecondary ? "true" : "false"}
+      >
+        {/* Off-screen fit probes: aria-hidden + inert (not focusable, not in the a11y tree,
+            no duplicate landmark), clipped by a 0-height wrapper (no layout, no overflow).
+            They measure the desktop nav's natural width so the header can collapse to compact
+            when it would otherwise overflow. */}
+        <div className={styles.probeWrap} aria-hidden="true" inert>
+          <FitProbe nav={nav} ctas={minCtas} probeRef={probeMinRef} />
+          <FitProbe nav={nav} ctas={nav.ctas} probeRef={probeFullRef} />
+        </div>
+
+        <div className={`iw-container iw-container--wide ${styles.bar}`} ref={barRef}>
           <Logo href="/" size={28} className={styles.logo} />
 
           <nav
@@ -305,15 +430,13 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
               {nav.primary.map((item) => {
                 const isOpen = openKey === item.label;
                 if (!item.megaMenu) {
-                  const isCurrent =
-                    pathname === item.href ||
-                    (item.href !== "/" && pathname.startsWith(`${item.href}/`));
+                  const linkState = routeCurrentState(item.href, pathname);
                   return (
                     <li key={item.label} className={styles.navItem}>
                       <Link
                         href={item.href}
-                        className={`${styles.navLink} ${isCurrent ? styles.navLinkActive : ""}`}
-                        aria-current={isCurrent ? "page" : undefined}
+                        className={`${styles.navLink} ${isCurrent(linkState) ? styles.navLinkActive : ""}`}
+                        aria-current={ariaCurrent(linkState)}
                       >
                         {item.label}
                       </Link>
@@ -321,7 +444,8 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
                   );
                 }
                 const panelId = `mega-${item.label.replace(/\s+/g, "-").toLowerCase()}`;
-                const sectionCurrent = isSectionCurrent(item, pathname);
+                // exact hub → "page"; a child/under-hub route → "location"; else none.
+                const sectionState = sectionCurrentState(item.href, childHrefsOf(item), pathname);
                 return (
                   <li
                     key={item.label}
@@ -334,10 +458,10 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
                   >
                     <button
                       type="button"
-                      className={`${styles.navTrigger} ${sectionCurrent ? styles.navTriggerActive : ""}`}
+                      className={`${styles.navTrigger} ${isCurrent(sectionState) ? styles.navTriggerActive : ""}`}
                       // Section wayfinding for AT — the current route lives under this
                       // menu; the visible cue is the indicator bar, not colour alone.
-                      aria-current={sectionCurrent ? "true" : undefined}
+                      aria-current={ariaCurrent(sectionState)}
                       aria-expanded={isOpen}
                       // Only reference the panel while it's actually in the DOM (it renders
                       // only when open), so aria-controls never dangles at a missing id.
@@ -423,9 +547,9 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
         </div>
       </header>
 
-      {/* Rendered OUTSIDE <header>: the header's `backdrop-filter` establishes a
-          containing block for position:fixed descendants, which would otherwise trap the
-          full-screen overlay inside the 72px header bar. */}
+      {/* Rendered OUTSIDE <header> so the full-screen overlay is a sibling of the page
+          landmarks (header / main / footer) and covers the whole viewport, rather than being
+          confined to the header bar. */}
       <MobileNav nav={nav} open={mobileOpen} onClose={() => setMobileOpen(false)} />
     </>
   );

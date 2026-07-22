@@ -102,6 +102,16 @@ const V2_DETAIL_MODULES = [
   "../../src/components/sections/home/HomepageConnectedSystemSection.module.css",
   "../../src/components/sections/home/HomepageTrustSection.module.css",
   "../../src/components/sections/home/HomepageLearningSection.module.css",
+  // Phase 2L §K: the brand / ownership / connected-growth building blocks + migrated routes.
+  "../../src/components/routes/OwnershipDetails.module.css",
+  "../../src/components/routes/HonestExpectationsPanel.module.css",
+  "../../src/components/cards/PrincipleCard.module.css",
+  "../../src/components/routes/CustomerJourneyList.module.css",
+  "../../src/components/cards/ConnectedExampleCard.module.css",
+  "../../src/components/sections/ConnectedGrowthExamplesSection.module.css",
+  "../../src/app/(marketing)/about/about.module.css",
+  "../../src/app/(marketing)/account-ownership/account-ownership.module.css",
+  "../../src/app/(marketing)/connected-growth/connected-growth.module.css",
 ];
 const BANNED_V2 = [
   ...BANNED,

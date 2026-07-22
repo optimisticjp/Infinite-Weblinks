@@ -42,7 +42,13 @@ import { HomepageConnectedSystemSection } from "@/components/sections/home/Homep
 import { DeliveryModelsExplainerSection } from "@/components/sections/DeliveryModelsExplainerSection";
 import { HomepageTrustSection } from "@/components/sections/home/HomepageTrustSection";
 import { HomepageLearningSection } from "@/components/sections/home/HomepageLearningSection";
-import { getHomepageOpening } from "@/lib/content";
+import { PrincipleCard } from "@/components/cards/PrincipleCard";
+import { OwnershipDetails } from "@/components/routes/OwnershipDetails";
+import { HonestExpectationsPanel } from "@/components/routes/HonestExpectationsPanel";
+import { CustomerJourneyList } from "@/components/routes/CustomerJourneyList";
+import { ConnectedExampleCard } from "@/components/cards/ConnectedExampleCard";
+import { ConnectedGrowthExamplesSection } from "@/components/sections/ConnectedGrowthExamplesSection";
+import { getHomepageOpening, getAccountOwnership, getCustomerJourney } from "@/lib/content";
 import { FilterChipDemo } from "./FilterChipDemo";
 import styles from "./design-preview.module.css";
 
@@ -79,6 +85,8 @@ const STATUSES = [
 
 export default async function DesignPreviewPage() {
   const { hero, editorial } = await getHomepageOpening();
+  const ownership = await getAccountOwnership();
+  const journey = await getCustomerJourney();
 
   return (
     <main id="main" className={`theme-light ${styles.wrap}`}>
@@ -1180,6 +1188,58 @@ export default async function DesignPreviewPage() {
 
           <p className={styles.subTitle}>HomepageLearningSection — the first three real guides (id=learn)</p>
           <HomepageLearningSection surface="alt" />
+        </section>
+
+        {/* 17 · Phase 2L — brand / ownership / connected-growth building blocks (composition-only,
+            rendered without their route section ids so they don't collide with the blocks above) */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Phase 2L · Brand, ownership &amp; connected blocks</h2>
+
+          <p className={styles.subTitle}>PrincipleCard — static positioning cards, incl. a long wrapping title</p>
+          <CardGrid layout="equal" aria-label="Principle card preview">
+            <PrincipleCard
+              title="We understand before we sell"
+              body="We learn your business, goals and current setup before recommending anything."
+              icon="compass"
+              tone="var(--domain-strategy)"
+            />
+            <PrincipleCard
+              title="A deliberately long principle title, to prove the heading and body wrap cleanly across several lines without clipping"
+              body="Preview-only placeholder body for a principle with a long heading, so the card layout can be checked at width."
+              icon="link"
+              tone="var(--domain-discover)"
+            />
+          </CardGrid>
+
+          <p className={styles.subTitle}>OwnershipDetails — vault, build flow, guarantees + closing (real seed, no section root)</p>
+          <OwnershipDetails data={ownership} />
+
+          <p className={styles.subTitle}>HonestExpectationsPanel — standalone (no id here to avoid colliding with #honest above)</p>
+          <HonestExpectationsPanel heading="Honest expectations" intro="The plain version." columnLevel={3} />
+
+          <p className={styles.subTitle}>CustomerJourneyList — six illustrative steps as a vertical ordered list (no phone strip)</p>
+          <CustomerJourneyList steps={journey} />
+
+          <p className={styles.subTitle}>ConnectedExampleCard — static illustrative combination, incl. long wrapping content</p>
+          <CardGrid layout="equal" aria-label="Connected example card preview">
+            <ConnectedExampleCard
+              title="Turn visitors into customers"
+              summary="Improve the store, the tracking and the advertising together, so more of the people who arrive actually complete a purchase."
+              goalHint="Sell more products"
+              services={["Store & checkout", "Conversion", "Paid ads"]}
+              tone="var(--pink)"
+            />
+            <ConnectedExampleCard
+              title="A deliberately long connected-example title that must wrap cleanly across lines"
+              summary="Preview-only placeholder summary describing a combination with a long title and several service labels, to check wrapping and chip flow at width."
+              goalHint="Reach more people"
+              services={["Short-form video", "Content", "Social ads", "Analytics", "Reporting"]}
+              tone="var(--blue)"
+            />
+          </CardGrid>
+
+          <p className={styles.subTitle}>ConnectedGrowthExamplesSection — the real illustrative-combination grid (id=examples)</p>
+          <ConnectedGrowthExamplesSection surface="light" />
         </section>
       </div>
     </main>

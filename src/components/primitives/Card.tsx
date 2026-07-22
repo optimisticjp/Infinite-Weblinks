@@ -20,6 +20,8 @@ type BaseCardProps = {
   railed?: boolean;
   /** Optional ordinal badge (01, 02…) shown top-left. */
   index?: string;
+  /** Optional DOM id — e.g. a deep-link fragment target on a static explanatory card. */
+  id?: string;
   className?: string;
   style?: CSSProperties;
 };
@@ -63,6 +65,7 @@ export function Card(props: CardProps) {
     variant = "raised",
     railed = false,
     index,
+    id,
     className,
     style,
   } = props;
@@ -96,7 +99,7 @@ export function Card(props: CardProps) {
   if (isLink) {
     const { href, prefetch } = props as LinkCardProps;
     return (
-      <Link href={href} prefetch={prefetch} className={classNames} style={mergedStyle}>
+      <Link href={href} prefetch={prefetch} id={id} className={classNames} style={mergedStyle}>
         {inner}
       </Link>
     );
@@ -104,7 +107,7 @@ export function Card(props: CardProps) {
 
   const Tag = (props as StaticCardProps).as ?? "div";
   return (
-    <Tag className={classNames} style={mergedStyle}>
+    <Tag id={id} className={classNames} style={mergedStyle}>
       {inner}
     </Tag>
   );

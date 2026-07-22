@@ -1,108 +1,66 @@
-/* Tool detail — an answer-oriented mini-page. Structured short fields, clean headings for
-   long-tail search, no long-form body. */
+/* Tool detail — V2 layout only. Surfaces, cards, callouts and chips come from the shared V2
+   components; this module carries page-specific layout on V2 semantic tokens only (no --hue,
+   --domain-*, --border-glow, glow/glass/gradient or raw colours). */
 
-.lead {
-  margin: 0 0 var(--space-6);
-  font-size: var(--fs-lead);
-  color: var(--text-body);
-  max-width: 60ch;
-}
-
-/* "When you might not need this yet" — an honest callout, tinted in the domain hue. */
-.callout {
-  margin: var(--space-6) 0 0;
-  padding: var(--space-5);
-  border-radius: var(--radius-lg);
-  border: 1px solid color-mix(in srgb, var(--hue) 30%, var(--hairline));
-  background: color-mix(in srgb, var(--hue) 8%, var(--surface-raised));
-  display: grid;
-  grid-template-columns: auto 1fr;
+/* PageHeader aside — a restrained category summary Card. */
+.aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   gap: var(--space-3);
-  align-items: start;
-  max-width: 60ch;
 }
-.calloutIcon {
-  color: color-mix(in srgb, var(--hue) 60%, var(--text-heading));
-  margin-top: 2px;
-}
-.calloutLabel {
-  margin: 0 0 2px;
-  font-weight: var(--fw-bold);
+.asideTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
   color: var(--text-heading);
 }
-.calloutBody {
-  margin: 0;
-  color: var(--text-body);
-}
-
-/* Example tools we can connect — plain-text chips, never products/partners/endorsements. */
-.chipsBlock {
-  margin: var(--space-8) 0 0;
-}
-.chipsLabel {
-  margin: 0 0 var(--space-3);
-  font-family: var(--font-label);
-  font-size: var(--fs-eyebrow);
-  font-weight: var(--fw-bold);
-  letter-spacing: var(--ls-eyebrow);
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--hue) 55%, var(--text-heading));
-}
-.chips {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-}
-.chip {
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--hairline-strong);
-  background: var(--surface-raised);
-  font-size: var(--fs-sm);
-  color: var(--text-body);
-}
-
-/* Small "in your name" reassurance strip. */
-.ownership {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  margin: var(--space-8) 0 0;
-  padding: var(--space-4) var(--space-5);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--hairline);
-  background: color-mix(in srgb, var(--domain-retain) 6%, var(--surface-raised));
-  max-width: 60ch;
-}
-.ownershipIcon {
-  color: color-mix(in srgb, var(--domain-retain) 55%, var(--text-heading));
-  flex: none;
-}
-.ownershipText {
+.asideText {
   margin: 0;
   font-size: var(--fs-sm);
   color: var(--text-body);
 }
 
-/* Facet rows (where it fits / who it suits) — simple labelled link lists. */
-.facets {
+/* "Why it's useful / when it isn't" — a restrained two-column overview at wider widths. */
+.whyGrid {
   display: grid;
-  gap: var(--space-6);
-  margin-top: var(--space-4);
+  gap: var(--space-5);
 }
-@media (min-width: 720px) {
-  .facets {
+@media (min-width: 48rem) {
+  .whyGrid {
     grid-template-columns: 1fr 1fr;
+    align-items: start;
   }
 }
-.facet {
-  display: grid;
+.whyCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.whyHeading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+}
+.whyBody {
+  margin: 0;
+  color: var(--text-body);
+  line-height: var(--lh-body);
+}
+
+/* Example tools — plain-text Chips, never products/partners/endorsements. */
+.examples {
+  margin-top: var(--space-8);
+  display: flex;
+  flex-direction: column;
   gap: var(--space-3);
 }
-.facetLabel {
+.examplesLabel {
   margin: 0;
   font-family: var(--font-label);
   font-size: var(--fs-eyebrow);
@@ -111,31 +69,18 @@
   text-transform: uppercase;
   color: var(--text-muted);
 }
-.facetList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.examplesChips {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
 }
-.facetLink {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-height: 40px;
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--hairline-strong);
-  background: var(--surface-raised);
-  color: var(--text-heading);
-  font-size: var(--fs-sm);
-  text-decoration: none;
-  transition:
-    border-color var(--dur-fast) var(--ease-out),
-    background var(--dur-fast) var(--ease-out);
+.examplesNote {
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
 }
-.facetLink:hover {
-  border-color: var(--border-glow);
-  background: var(--surface-hover);
+
+/* Ownership callout — spacing before the reassurance. */
+.ownership {
+  margin-top: var(--space-6);
 }

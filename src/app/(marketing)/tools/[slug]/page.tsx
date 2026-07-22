@@ -1,18 +1,24 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, Info, Shield } from "lucide-react";
-import { CosmicPageHero } from "@/components/routes/CosmicPageHero";
+import { ArrowRight } from "lucide-react";
+import { PageHeader } from "@/components/routes/PageHeader";
 import { SectionShell } from "@/components/sections/SectionShell";
+import { FinalCtaSection } from "@/components/sections/FinalCtaSection";
+import { CardGrid } from "@/components/primitives/CardGrid";
+import { Card } from "@/components/primitives/Card";
+import { Callout } from "@/components/primitives/Callout";
+import { Chip } from "@/components/primitives/Chip";
+import { IconTile } from "@/components/primitives/IconTile";
+import { Icon } from "@/components/primitives/Icon";
+import { Button } from "@/components/primitives/Button";
 import { BentoGrid } from "@/components/primitives/BentoGrid";
 import { BentoCard } from "@/components/primitives/BentoCard";
-import { GlowButton } from "@/components/primitives/GlowButton";
-import { NodeOrb } from "@/components/primitives/NodeOrb";
-import { Icon } from "@/components/primitives/Icon";
-import { FinalCtaBannerSection } from "@/components/sections/FinalCtaBannerSection";
+import { RelationshipCard } from "@/components/cards/RelationshipCard";
+import { LinkChip } from "@/components/primitives/LinkChip";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { articleJsonLd, breadcrumbJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
+import { domainInk } from "@/lib/design/domainColor";
 import {
   getBusinessTypes,
   getServiceCategories,
@@ -22,7 +28,6 @@ import {
   getToolCategories,
   getTools,
 } from "@/lib/content";
-import { getServiceDomainConfig } from "@/lib/services/domains";
 import styles from "./tool.module.css";
 
 export async function generateStaticParams() {
@@ -63,33 +68,43 @@ export default async function ToolDetailPage({
     ]);
   if (!tool) notFound();
 
-  const category = categories.find((c) => c.slug === tool.categorySlug);
-  const hue = category?.color ?? "var(--domain-build)";
+  // Resolve via maps rather than repeated array scans.
+  const categoryBySlug = new Map(categories.map((c) => [c.slug, c] as const));
+  const toolByCategorySlug = new Map(tools.map((t) => [t.categorySlug, t] as const));
+  const serviceBySlug = new Map(services.map((s) => [s.slug, s] as const));
+  const serviceCategoryBySlug = new Map(serviceCategories.map((c) => [c.slug, c] as const));
+  const stageBySlug = new Map(stages.map((s) => [s.slug, s] as const));
+  const businessTypeBySlug = new Map(businessTypes.map((b) => [b.slug, b] as const));
 
-  // Related service DOMAINS: resolve the related services, take their unique categories, and
-  // link each to its domain page (in its hue).
-  const relatedCategorySlugs = [
+  const category = categoryBySlug.get(tool.categorySlug);
+  const ink = domainInk(category?.color);
+  const categoryLabel = category?.name ?? "Tool area";
+
+  // Related service DOMAINS: related services → their unique categories → the domain pages.
+  const relatedDomains = [
     ...new Set(
       tool.relatedServiceSlugs
-        .map((s) => services.find((sv) => sv.slug === s)?.categorySlug)
+        .map((s) => serviceBySlug.get(s)?.categorySlug)
         .filter((c): c is string => Boolean(c)),
     ),
-  ];
-  const relatedDomains = relatedCategorySlugs
-    .map((cs) => serviceCategories.find((c) => c.slug === cs))
+  ]
+    .map((cs) => serviceCategoryBySlug.get(cs))
     .filter((c): c is NonNullable<typeof c> => Boolean(c));
 
+  // connectsWith stores connected CATEGORY slugs → resolve each to the tool in that category.
   const connectsWith = tool.connectsWith
-    .map((catSlug) => tools.find((t) => t.categorySlug === catSlug && t.slug !== tool.slug))
-    .filter((t): t is NonNullable<typeof t> => Boolean(t));
+    .map((catSlug) => toolByCategorySlug.get(catSlug))
+    .filter((t): t is NonNullable<typeof t> => Boolean(t) && t!.slug !== tool.slug);
 
   const relatedStages = tool.stageSlugs
-    .map((s) => stages.find((st) => st.slug === s))
+    .map((s) => stageBySlug.get(s))
     .filter((st): st is NonNullable<typeof st> => Boolean(st));
 
   const suitsBusinessTypes = tool.suitsBusinessTypeSlugs
-    .map((s) => businessTypes.find((b) => b.slug === s))
+    .map((s) => businessTypeBySlug.get(s))
     .filter((b): b is NonNullable<typeof b> => Boolean(b));
+
+  const hasFits = connectsWith.length > 0 || relatedStages.length > 0 || suitsBusinessTypes.length > 0;
 
   return (
     <>
@@ -108,76 +123,77 @@ export default async function ToolDetailPage({
         ])}
       />
 
-      <CosmicPageHero
+      <PageHeader
         id="tool-hero"
         breadcrumbs={[{ name: "Tools", path: "/tools" }, { name: tool.name }]}
-        eyebrow={category ? category.name : "Tool"}
-        hue={hue}
+        eyebrow={categoryLabel}
+        accent={ink}
         title={tool.name}
         lead={tool.whatItDoes}
         actions={
           <>
-            <GlowButton href="/growth-plan" size="lg" iconRight={<ArrowRight size={18} aria-hidden="true" />}>
+            <Button href="/growth-plan" iconRight={<ArrowRight size={16} aria-hidden="true" />}>
               Build my growth plan
-            </GlowButton>
-            <GlowButton href="#why" variant="ghost" size="lg">
+            </Button>
+            <Button href="#why" variant="secondary">
               Why it matters
-            </GlowButton>
+            </Button>
           </>
         }
+        trustNote="Accounts and billing stay in your name."
         aside={
-          <span aria-hidden="true">
-            <NodeOrb hue={hue} size={128} emphasis="bright">
-              <Icon name={category?.icon ?? "wrench"} />
-            </NodeOrb>
-          </span>
+          category ? (
+            <Card variant="raised" accent={ink} className={styles.aside}>
+              <IconTile color={ink} size="lg">
+                <Icon name={category.icon} />
+              </IconTile>
+              <p className={styles.asideTitle}>{category.name}</p>
+              <p className={styles.asideText}>{category.intro}</p>
+            </Card>
+          ) : undefined
         }
       />
 
       <SectionShell
+        surface="alt"
         id="why"
         eyebrow="Why it matters"
-        title="Why it's useful"
+        title="Why it's useful — and when it isn't"
         align="start"
-        contentClassName={undefined}
       >
-        <div style={{ ["--hue" as string]: hue }}>
-          <p className={styles.lead}>{tool.whyUseful}</p>
+        <div className={styles.whyGrid}>
+          <Card variant="raised" className={styles.whyCard}>
+            <h3 className={styles.whyHeading}>Why it&apos;s useful</h3>
+            <p className={styles.whyBody}>{tool.whyUseful}</p>
+          </Card>
+          <Callout tone="information" title="When you might not need this yet">
+            {tool.whenNotNeeded}
+          </Callout>
+        </div>
 
-          <div className={styles.callout}>
-            <Info className={styles.calloutIcon} size={20} aria-hidden="true" />
-            <div>
-              <p className={styles.calloutLabel}>When you might not need this yet</p>
-              <p className={styles.calloutBody}>{tool.whenNotNeeded}</p>
+        {tool.exampleTools.length > 0 ? (
+          <div className={styles.examples}>
+            <p className={styles.examplesLabel}>Example tools we can connect</p>
+            <div className={styles.examplesChips}>
+              {tool.exampleTools.map((example) => (
+                <Chip key={example}>{example}</Chip>
+              ))}
             </div>
-          </div>
-
-          {tool.exampleTools.length > 0 ? (
-            <div className={styles.chipsBlock}>
-              <p className={styles.chipsLabel}>Example tools we can connect</p>
-              <ul className={styles.chips} aria-label="Example tools we can connect">
-                {tool.exampleTools.map((example) => (
-                  <li key={example} className={styles.chip}>
-                    {example}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-
-          <div className={styles.ownership}>
-            <Shield className={styles.ownershipIcon} size={20} aria-hidden="true" />
-            <p className={styles.ownershipText}>
-              Whatever we set up here is created in your name, with billing under your control.
-              The right stack depends on your size, budget and goals, not on which platform is
-              trending.
+            <p className={styles.examplesNote}>
+              Examples only. This does not imply partnership or endorsement.
             </p>
           </div>
-        </div>
+        ) : null}
+
+        <Callout tone="neutral" title="Set up in your name" className={styles.ownership}>
+          Whatever we set up here is created in your name, with billing under your control. The
+          right stack depends on your size, budget and goals — not on which platform is trending.
+        </Callout>
       </SectionShell>
 
       {relatedDomains.length > 0 ? (
         <SectionShell
+          surface="light"
           id="domains"
           eyebrow="Where the work lives"
           title="The service domains this connects to"
@@ -185,69 +201,79 @@ export default async function ToolDetailPage({
           align="start"
         >
           <BentoGrid>
-            {relatedDomains.map((cat, i) => (
+            {relatedDomains.map((cat) => (
               <BentoCard
                 key={cat.slug}
                 href={`/services/${cat.slug}`}
-                hue={getServiceDomainConfig(cat.slug)?.hue ?? cat.color}
+                hue={domainInk(cat.color)}
                 icon={cat.icon}
                 title={cat.name}
                 blurb={cat.intro}
-                variant={i === 0 ? "featured" : "medium"}
+                variant="medium"
               />
             ))}
           </BentoGrid>
         </SectionShell>
       ) : null}
 
-      <SectionShell id="fits" eyebrow="How it fits" title="Where it fits, and who it suits" align="start">
-        <div className={styles.facets}>
-          {connectsWith.length > 0 ? (
-            <div className={styles.facet}>
-              <p className={styles.facetLabel}>Connects with</p>
-              <ul className={styles.facetList}>
-                {connectsWith.map((t) => (
-                  <li key={t.slug}>
-                    <Link href={`/tools/${t.slug}`} className={styles.facetLink}>
-                      {t.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-          {relatedStages.length > 0 ? (
-            <div className={styles.facet}>
-              <p className={styles.facetLabel}>Where it fits in the journey</p>
-              <ul className={styles.facetList}>
-                {relatedStages.map((st) => (
-                  <li key={st.slug}>
-                    <Link href={`/how-it-works#${st.slug}`} className={styles.facetLink}>
-                      {st.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-          {suitsBusinessTypes.length > 0 ? (
-            <div className={styles.facet}>
-              <p className={styles.facetLabel}>Suits</p>
-              <ul className={styles.facetList}>
-                {suitsBusinessTypes.map((b) => (
-                  <li key={b.slug}>
-                    <Link href={`/business-types/${b.slug}`} className={styles.facetLink}>
-                      {b.name}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-        </div>
-      </SectionShell>
+      {hasFits ? (
+        <SectionShell
+          surface="alt"
+          id="fits"
+          eyebrow="How it fits"
+          title="Where it fits, and who it suits"
+          align="start"
+        >
+          <CardGrid layout="equal" aria-label="Where this tool area fits">
+            <RelationshipCard
+              title="Connects with"
+              description="Tool areas this joins up to cleanly."
+              icon={<Icon name="link" />}
+              tone={category?.color}
+            >
+              {connectsWith.map((t) => (
+                <LinkChip key={t.slug} href={`/tools/${t.slug}`}>
+                  {t.name}
+                </LinkChip>
+              ))}
+            </RelationshipCard>
 
-      <FinalCtaBannerSection anchorId="get-started" />
+            <RelationshipCard
+              title="Where it fits in the journey"
+              description="The growth stage this area supports."
+              icon={<Icon name="workflow" />}
+              tone={category?.color}
+            >
+              {relatedStages.map((st) => (
+                <LinkChip key={st.slug} href={`/how-it-works#${st.slug}`} tone={st.color}>
+                  {st.name}
+                </LinkChip>
+              ))}
+            </RelationshipCard>
+
+            <RelationshipCard
+              title="Suits these businesses"
+              description="Kinds of business this area tends to suit."
+              icon={<Icon name="users" />}
+              tone={category?.color}
+            >
+              {suitsBusinessTypes.map((b) => (
+                <LinkChip key={b.slug} href={`/business-types/${b.slug}`}>
+                  {b.name}
+                </LinkChip>
+              ))}
+            </RelationshipCard>
+          </CardGrid>
+        </SectionShell>
+      ) : null}
+
+      <FinalCtaSection
+        id="get-started"
+        title="Start with the smallest useful stack"
+        lead="Tell us your goals and we'll help you choose the few tools worth connecting first — set up in your name. No obligation."
+        primary={{ href: "/growth-plan", label: "Build my growth plan" }}
+        secondary={{ href: "/tools", label: "Browse the tool areas" }}
+      />
     </>
   );
 }

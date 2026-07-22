@@ -1,6 +1,10 @@
 import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { setViewportAndWaitForStableLayout, expectNoHorizontalOverflow } from "./helpers/layout";
+import {
+  setViewportAndWaitForStableLayout,
+  expectNoHorizontalOverflow,
+  expectFragmentTargetClearsStickyHeader,
+} from "./helpers/layout";
 
 /**
  * Phase 2I — the /goals routing hub migrated to V2 (PageHeader + light/alt shells + the card
@@ -90,14 +94,11 @@ test.describe("goals hub — V2 structure and preserved wiring", () => {
   test("a hub-jump link updates the hash and reveals its section, clearing the sticky header", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/goals");
-    // The global scroll-padding keeps a fragment target clear of the sticky header.
-    const scrollPad = await page
-      .locator("html")
-      .evaluate((el) => parseFloat(getComputedStyle(el).scrollPaddingTop) || 0);
-    expect(scrollPad).toBeGreaterThan(60);
     await page.getByRole("navigation", { name: "Choose how to start" }).getByRole("link", { name: "Start with my business type" }).click();
     await expect(page).toHaveURL(/#by-business-type$/);
     await expect(page.locator("section#by-business-type")).toBeVisible();
+    // Real geometry: the target's top clears the sticky header and is inside the viewport.
+    await expectFragmentTargetClearsStickyHeader(page, "section#by-business-type", "goals hub #by-business-type");
   });
 });
 
@@ -108,8 +109,8 @@ test.describe("retired index URLs still fold into the /goals facets (redirect sa
   ] as const) {
     test(`${from} → ${to}`, async ({ request }) => {
       const res = await request.get(from, { maxRedirects: 0 });
-      expect(res.status(), `${from} is a permanent redirect`).toBeGreaterThanOrEqual(300);
-      expect(res.status()).toBeLessThan(400);
+      // Next.js `permanent: true` is a 308 Permanent Redirect — require the exact contract.
+      expect(res.status(), `${from} must be a 308 permanent redirect`).toBe(308);
       expect(res.headers()["location"]).toBe(to);
     });
   }

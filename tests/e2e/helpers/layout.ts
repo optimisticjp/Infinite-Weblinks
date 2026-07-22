@@ -67,3 +67,59 @@ export async function expectNoHorizontalOverflow(page: Page, context = ""): Prom
     )
     .toBeLessThanOrEqual(1);
 }
+
+/**
+ * After navigating to a fragment (via `page.goto("…#id")` or clicking an in-page link), assert the
+ * fragment target actually clears the sticky header — i.e. its rendered top edge sits AT or BELOW
+ * the visible sticky/fixed header's bottom (1px tolerance) AND inside the viewport. This measures
+ * real geometry, not merely `scroll-padding-top` (which a broken header height or a mid-page target
+ * could still defeat) and not merely "visible somewhere". It waits for the target to exist, lets
+ * the layout settle (fonts + two animation frames), and polls with a finite timeout so a
+ * still-scrolling page gets a brief chance to land — a target that stays under the header fails.
+ * It changes no application CSS and makes no static content focusable.
+ */
+export async function expectFragmentTargetClearsStickyHeader(
+  page: Page,
+  targetSelector: string,
+  context = "",
+): Promise<void> {
+  const label = context ? ` (${context})` : "";
+  const target = page.locator(targetSelector).first();
+  await target.waitFor({ state: "attached", timeout: 5_000 });
+
+  await page.evaluate(async () => {
+    if (document.fonts?.ready) await document.fonts.ready;
+  });
+  await page.evaluate(
+    () => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))),
+  );
+
+  const read = () =>
+    page.evaluate((sel) => {
+      const el = document.querySelector(sel);
+      if (!el) return null;
+      const rect = el.getBoundingClientRect();
+      // The visible sticky/fixed header's bottom edge (0 when there is no stuck header).
+      let headerBottom = 0;
+      for (const header of Array.from(document.querySelectorAll("header"))) {
+        const cs = getComputedStyle(header);
+        if (cs.position === "sticky" || cs.position === "fixed") {
+          headerBottom = Math.max(headerBottom, header.getBoundingClientRect().bottom);
+        }
+      }
+      return { top: rect.top, headerBottom, vh: window.innerHeight };
+    }, targetSelector);
+
+  await expect
+    .poll(
+      async () => {
+        const m = await read();
+        return m ? m.top >= m.headerBottom - 1 && m.top < m.vh : false;
+      },
+      {
+        timeout: 3_000,
+        message: `fragment target ${targetSelector}${label} did not clear the sticky header within the viewport`,
+      },
+    )
+    .toBe(true);
+}

@@ -1,81 +1,19 @@
-/* Article reading view — a calm, single-column layout tuned for legibility. The title header
-   sits on the cosmic surface with a very subtle glow; the body is a quiet dark reading
-   surface with bright text at a comfortable ~66ch measure. */
+/* Article reading view — a calm, light, single-column layout tuned for legibility. V2 semantic
+   tokens only (no cosmic surface, no --hue, no glow/gradient, no raw colours). */
 
 .article {
   display: block;
 }
 
-/* Narrow reading container, overriding the wide site container for a comfortable measure. */
+/* ---- Reading body ---- */
+.reading {
+  /* theme-light supplies the surface + text tokens; this is a quiet light reading canvas. */
+}
+/* Narrow reading container (~66ch measure), overriding the wide site container. */
 .narrow {
   max-width: 44rem;
 }
 
-/* ---- Header ---- */
-.header {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-}
-.headerInner {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  gap: var(--space-4);
-}
-.eyebrow {
-  margin: var(--space-4) 0 0;
-  font-family: var(--font-label);
-  font-size: var(--fs-eyebrow);
-  font-weight: var(--fw-bold);
-  letter-spacing: var(--ls-eyebrow);
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--hue) 55%, var(--text-heading));
-  width: fit-content;
-}
-.title {
-  margin: 0;
-  font-size: var(--fs-h1);
-  color: var(--text-heading);
-  text-wrap: balance;
-  max-width: 20ch;
-}
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2) var(--space-4);
-  margin: var(--space-2) 0 0;
-  font-size: var(--fs-sm);
-  color: var(--text-muted);
-}
-.metaItem {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-.metaIcon {
-  width: 15px;
-  height: 15px;
-  color: color-mix(in srgb, var(--hue) 55%, var(--text-heading));
-}
-
-/* ---- Body ---- */
-.body {
-  /* Quiet dark reading surface — the calm canvas, no animated background competing with text. */
-  background: var(--surface-page, var(--space-navy));
-}
-.standfirst {
-  margin: 0 0 var(--space-6);
-  font-size: var(--fs-lead);
-  line-height: var(--lh-snug, 1.4);
-  color: var(--text-heading);
-  font-weight: var(--fw-medium);
-  max-width: 42ch;
-}
-
-/* Prose: bright body text, generous line height, ~66ch measure. Styles the full set of
-   long-form elements so richer content renders correctly if the model gains it later. */
 .prose {
   color: var(--text-body);
   font-size: var(--fs-body);
@@ -87,65 +25,45 @@
 .prose p {
   margin: 0 0 var(--space-5);
 }
-.prose h2 {
+.prose p:last-child {
+  margin-bottom: 0;
+}
+/* Long-form element styles kept so richer content renders correctly if the model gains it. */
+.prose :where(h2) {
   margin: var(--space-9) 0 var(--space-3);
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
   font-size: var(--fs-h3);
   color: var(--text-heading);
   scroll-margin-top: calc(var(--header-h) + var(--space-4));
 }
-.prose h3 {
+.prose :where(h3) {
   margin: var(--space-7) 0 var(--space-2);
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
   font-size: var(--fs-h4);
   color: var(--text-heading);
 }
-.prose ul,
-.prose ol {
+.prose :where(ul, ol) {
   margin: 0 0 var(--space-5);
   padding-left: var(--space-6);
   display: grid;
   gap: var(--space-2);
 }
-.prose blockquote {
+.prose :where(blockquote) {
   margin: var(--space-6) 0;
   padding: var(--space-2) 0 var(--space-2) var(--space-5);
-  border-left: 3px solid color-mix(in srgb, var(--hue) 60%, var(--hairline-strong));
+  border-left: 3px solid var(--hairline-strong);
   color: var(--text-heading);
   font-size: var(--fs-lead);
   font-style: normal;
 }
-.prose code {
-  font-family: var(--font-mono);
-  font-size: 0.9em;
-  padding: 0.1em 0.35em;
-  border-radius: var(--radius-xs);
-  background: var(--surface-raised);
-}
-.prose pre {
-  margin: 0 0 var(--space-5);
-  padding: var(--space-4);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--hairline);
-  background: var(--surface-raised);
-  overflow-x: auto;
-}
-.prose pre code {
-  padding: 0;
-  background: none;
-}
-.prose a {
+.prose :where(a) {
   color: var(--link);
   text-underline-offset: 2px;
 }
-.prose figure {
-  margin: var(--space-6) 0;
-}
-.prose figcaption {
-  margin-top: var(--space-2);
-  font-size: var(--fs-sm);
-  color: var(--text-muted);
-}
 
-/* ---- Byline ---- */
+/* ---- Organisation byline (no glow, no avatar, org not individual) ---- */
 .byline {
   display: flex;
   align-items: center;
@@ -154,6 +72,9 @@
   padding-top: var(--space-6);
   border-top: 1px solid var(--hairline);
   max-width: 66ch;
+}
+.bylineMark {
+  flex: none;
 }
 .bylineText {
   display: grid;
@@ -166,4 +87,11 @@
 .bylineRole {
   font-size: var(--fs-sm);
   color: var(--text-muted);
+}
+
+/* ---- Keep going (related goals + more guides) ---- */
+.keepGoing {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
 }

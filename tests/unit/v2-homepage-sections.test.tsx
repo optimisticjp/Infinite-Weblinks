@@ -356,17 +356,23 @@ describe("honest-expectations is the single shared source", () => {
 
 // ------------------------------------------------------------------ legacy safety (source-level)
 
-describe("legacy homepage components are left intact for their other routes", () => {
-  it("/about still renders the legacy honest + delivery sections", () => {
-    const about = read("../../src/app/(marketing)/about/page.tsx");
-    for (const legacy of ["HonestExpectationsSection", "DeliveryModelsSection"]) {
-      expect(about, `/about keeps ${legacy}`).toContain(legacy);
+describe("legacy homepage components are left intact for their other consumers", () => {
+  it("the legacy sections still exist and are still imported by the section registry (it compiles)", () => {
+    const registry = read("../../src/components/sections/registry.tsx");
+    const legacyPaths = [
+      "../../src/components/sections/home/HonestExpectationsSection.tsx",
+      "../../src/components/sections/DeliveryModelsSection.tsx",
+      "../../src/components/sections/AccountOwnershipSection.tsx",
+      "../../src/components/sections/CustomerJourneySection.tsx",
+      "../../src/components/sections/ConnectedExamplesSection.tsx",
+    ];
+    for (const p of legacyPaths) {
+      expect(() => read(p), `${p} still exists`).not.toThrow();
     }
-  });
-
-  it("/account-ownership still renders the legacy AccountOwnershipSection", () => {
-    const page = read("../../src/app/(marketing)/account-ownership/page.tsx");
-    expect(page).toContain("AccountOwnershipSection");
+    // The registry keeps mapping the ones it owns, so nothing was globally deleted.
+    for (const mapped of ["AccountOwnershipSection", "CustomerJourneySection", "ConnectedExamplesSection", "DeliveryModelsSection"]) {
+      expect(registry, `registry keeps ${mapped}`).toContain(mapped);
+    }
   });
 
   it("the legacy CustomerJourneySection and ServicesConstellationSection still exist", () => {

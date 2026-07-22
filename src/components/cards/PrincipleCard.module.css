@@ -1,0 +1,22 @@
+/* PrincipleCard — static positioning-principle card. V2 tokens only; no glow/glass/gradient,
+   no fixed decorative height. */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  height: 100%;
+}
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+}
+.body {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-body);
+}

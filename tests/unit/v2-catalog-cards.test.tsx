@@ -4,6 +4,7 @@ import { render, screen, cleanup, within } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { ToolCard } from "@/components/cards/ToolCard";
 import { RoadmapCard } from "@/components/cards/RoadmapCard";
+import { DomainCard } from "@/components/cards/DomainCard";
 
 vi.mock("next/link", () => ({
   default: ({ href, children, prefetch: _p, ...rest }: { href: unknown; children: unknown; prefetch?: unknown }) => {
@@ -155,5 +156,41 @@ describe("RoadmapCard", () => {
     expect(container.querySelector("progress")).toBeNull();
     // it frames itself as a suggested sequence
     expect(screen.getByText("Suggested sequence")).toBeVisible();
+  });
+});
+
+describe("DomainCard", () => {
+  const base = {
+    href: "/services/analytics-data",
+    title: "Analytics & Data",
+    description: "Where the numbers actually live, so decisions are based on evidence.",
+    icon: "bar-chart-3",
+    tone: "var(--cyan)",
+    eyebrow: "Service domain",
+  };
+
+  it("is one whole-card link with an <h3> title, icon and description (no nested interaction)", () => {
+    const { container } = render(<DomainCard {...base} />);
+    const link = screen.getByRole("link");
+    expect(link).toHaveAttribute("href", "/services/analytics-data");
+    expect(container.querySelectorAll("a")).toHaveLength(1);
+    expect(container.querySelector("button")).toBeNull();
+    expect(screen.getByRole("heading", { level: 3, name: "Analytics & Data" })).toBeInTheDocument();
+    expect(screen.getByText(/Where the numbers actually live/)).toBeVisible();
+    expect(container.querySelector('[aria-hidden="true"] svg')).not.toBeNull();
+  });
+
+  it("maps the tone to an accessible V2 ink (never a raw colour) and has no NodeOrb", () => {
+    const { container } = render(<DomainCard {...base} />);
+    const link = container.querySelector("a") as HTMLElement;
+    expect(link.style.getPropertyValue("--card-accent")).toBe("var(--v2-domain-discover-ink)");
+    // no legacy node-orb markup
+    expect(container.querySelector('[class*="orbLegacy"]')).toBeNull();
+  });
+
+  it("supports long titles and descriptions (renders them fully)", () => {
+    const longTitle = "Retention, Loyalty & Advocacy across every owned channel and lifecycle stage";
+    render(<DomainCard {...base} title={longTitle} />);
+    expect(screen.getByRole("heading", { level: 3, name: longTitle })).toBeInTheDocument();
   });
 });

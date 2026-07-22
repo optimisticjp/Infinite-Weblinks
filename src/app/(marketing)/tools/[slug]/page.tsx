@@ -11,8 +11,7 @@ import { Chip } from "@/components/primitives/Chip";
 import { IconTile } from "@/components/primitives/IconTile";
 import { Icon } from "@/components/primitives/Icon";
 import { Button } from "@/components/primitives/Button";
-import { BentoGrid } from "@/components/primitives/BentoGrid";
-import { BentoCard } from "@/components/primitives/BentoCard";
+import { DomainCard } from "@/components/cards/DomainCard";
 import { RelationshipCard } from "@/components/cards/RelationshipCard";
 import { LinkChip } from "@/components/primitives/LinkChip";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -200,19 +199,19 @@ export default async function ToolDetailPage({
           lead="Choosing and connecting tools is one part of the wider system. These are the domains this area feeds into."
           align="start"
         >
-          <BentoGrid>
+          <CardGrid layout="equal" aria-label="Related service domains">
             {relatedDomains.map((cat) => (
-              <BentoCard
+              <DomainCard
                 key={cat.slug}
                 href={`/services/${cat.slug}`}
-                hue={domainInk(cat.color)}
-                icon={cat.icon}
+                eyebrow="Service domain"
                 title={cat.name}
-                blurb={cat.intro}
-                variant="medium"
+                description={cat.intro}
+                icon={cat.icon}
+                tone={cat.color}
               />
             ))}
-          </BentoGrid>
+          </CardGrid>
         </SectionShell>
       ) : null}
 

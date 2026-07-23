@@ -201,6 +201,15 @@ name).
 
 ## 19. Redirect and fragment results
 
+> **Coverage note (corrected in Phase 2N).** The **original Phase 2M** run directly verified: exact
+> **308** responses with the exact `Location` header for **all 70** folded URLs (request level); the
+> **existence and visibility** of all service articles on every category page; **fragment geometry
+> (sticky-header clearance) only on Strategy & Discovery**; a no-JS check of **service names and
+> section IDs** on every category (not every service field); and it had **no dedicated no-JS
+> Services-hub test**. The exhaustive per-service geometry, full per-category no-JS field oracle,
+> `/services` no-JS contract and browser-level redirect-follow were **added in Phase 2N** and are
+> reported in the Phase 2N report — they are **not** part of the 553-test total below.
+
 All **70** folded `/services/<service>` URLs return **HTTP 308** with an exact
 `Location: /services/<categorySlug>#<service>` (one data-driven request-level test asserting all 70),
 and following the redirect lands on the visible service card. Every service is a unique visible
@@ -208,8 +217,9 @@ and following the redirect lands on the visible service card. Every service is a
 working hash navigation without JavaScript. Section fragments preserved: hub
 `services-hero/service-domains/get-started`; category
 `domain-outcomes/domain-catalog/domain-connects/domain-forwho/domain-next/get-started` + every service
-slug (plus a landmark `domain-goals`). Fragment clearance is verified for the strategy section +
-service anchors.
+slug (plus a landmark `domain-goals`). In the original Phase 2M run, fragment clearance was verified
+for the strategy section + strategy service anchors only; Phase 2N extends it to every section and
+every one of the 70 service anchors.
 
 ## 20. Content-integrity results
 
@@ -279,6 +289,12 @@ replaced its immediate `setViewportSize` + inline overflow read with
 `setViewportAndWaitForStableLayout` + `expectNoHorizontalOverflow`. No stress or no-JS reruns are
 merged into the 553 total (the no-JS category blocks run inside the shards, once each).
 
+> **This 553-test total is the original Phase 2M run.** The Phase 2N correction pass rewrote
+> `services-system.spec.ts` to add exhaustive per-service fragment geometry, a full per-category
+> no-JS content oracle, a dedicated `/services` no-JS contract and browser-level redirect-follow for
+> all 70 services. Those tests are counted in the **Phase 2N** report's E2E total, never folded back
+> into this 553.
+
 ## 27. Responsive, zoom, no-JS and accessibility results
 
 - **No overflow**: every category at 360 + 1440; the representative smallest / largest /
@@ -287,7 +303,10 @@ merged into the 553 total (the no-JS category blocks run inside the shards, once
 - **One H1** per route (the category name / the hub headline); logical H1 → H2 → H3 → H4 hierarchy
   (cluster H3 → service H4).
 - **No canvas** on any service route; no horizontal service catalogue; no hidden service content.
-- **No-JavaScript**: every category renders its full service list + section fragments from the server.
+- **No-JavaScript** (original Phase 2M): every category renders its **service names + section
+  fragments** from the server. The full per-field no-JS oracle (outcomes, cluster intros, delivery
+  labels, `whatYouGet`, tools, `connectsTo` bodies, related-goal links, `forWho`/`when`, next
+  destination, CTA destinations) and the `/services` hub no-JS contract were added in **Phase 2N**.
 - **Axe**: 0 serious/critical on `/services`, all 16 category pages, the homepage, the brand routes
   and both design-preview pages (wcag2a/2aa/21a/21aa/22aa).
 - **≥44px targets, visible focus, hover/focus parity, reduced motion, adaptive header at 200%**:

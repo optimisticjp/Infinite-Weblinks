@@ -141,12 +141,45 @@ test.describe("troubleshooter — selection interaction", () => {
     await expect(page.locator('[aria-live="polite"]')).toHaveText(`Showing guidance for: ${P[5].label}`);
   });
 
-  test("every one of the eight selector buttons is reachable and selectable", async ({ page }) => {
+  test("every one of the eight problem states renders its complete guidance in source order", async ({ page }) => {
+    test.setTimeout(60_000);
     await page.goto("/troubleshooter");
+    const region = page.locator("#troubleshooter-result");
     for (const p of P) {
       await selector(page, p.label).click();
+      // one pressed = this problem, and the clicked button keeps focus
       await expect(selector(page, p.label)).toHaveAttribute("aria-pressed", "true");
-      await expect(page.locator("#troubleshooter-result").getByRole("heading", { level: 2, name: p.label })).toBeVisible();
+      await expect(selector(page, p.label)).toBeFocused();
+      expect(await page.locator('button[aria-pressed="true"]').count(), `${p.slug} one pressed`).toBe(1);
+
+      // exact H2 + complete explanation
+      await expect(region.getByRole("heading", { level: 2, name: p.label })).toBeVisible();
+      await expect(region).toContainText(p.explanation);
+
+      // every reason title + body, in exact source order
+      for (const r of p.reasons) {
+        await expect(region, `${p.slug} ${r.title}`).toContainText(r.title);
+        await expect(region, `${p.slug} ${r.title} body`).toContainText(r.body);
+      }
+      const reasonTitles = await region
+        .locator('section[aria-labelledby="troubleshooter-reasons-heading"] article h3')
+        .allTextContents();
+      expect(reasonTitles.map((t) => t.trim()), `${p.slug} reason order`).toEqual(p.reasons.map((r) => r.title));
+
+      // all five checks, in exact source order
+      const checkItems = region.locator('section[aria-labelledby="troubleshooter-checks-heading"] ol > li');
+      expect(await checkItems.count(), `${p.slug} five checks`).toBe(5);
+      for (let i = 0; i < p.checks.length; i++) {
+        await expect(checkItems.nth(i), `${p.slug} check ${i}`).toContainText(p.checks[i]);
+      }
+
+      // complete focus-first + exact recommended-stage href + exact live status
+      await expect(region).toContainText(p.focusFirst);
+      await expect(region.getByRole("link", { name: "See the connected stage" })).toHaveAttribute(
+        "href",
+        `/how-it-works#${p.recommendedStageSlug}`,
+      );
+      await expect(page.locator('[aria-live="polite"]')).toHaveText(`Showing guidance for: ${p.label}`);
     }
   });
 
@@ -175,16 +208,25 @@ test.describe("troubleshooter — without JavaScript", () => {
     expect(await page.locator('[id="troubleshooter-hero"] a[href="/growth-plan"]').count()).toBeGreaterThan(0);
     await expect(main).toContainText("not a guaranteed diagnosis");
 
-    // All eight choices render server-side, and the first problem is selected in the server response.
+    // Every choice renders server-side with a STABLE data-problem-slug identity — all eight exact
+    // slugs in source order — and the exact labels (no URL/query/hash state involved).
+    const slugs = await page.locator("button[data-problem-slug]").evaluateAll((els) =>
+      els.map((e) => (e as HTMLElement).dataset.problemSlug),
+    );
+    expect(slugs, "all eight slugs in source order").toEqual(P.map((p) => p.slug));
     for (const p of P) await expect(selector(page, p.label)).toBeVisible();
+    // The first problem is selected in the server response.
     expect(await page.locator('button[aria-pressed="true"]').count(), "one pressed on the server").toBe(1);
     await expect(selector(page, P[0].label)).toHaveAttribute("aria-pressed", "true");
 
-    // The first problem's full guidance is the no-JS result.
+    // The first problem's full guidance is the no-JS result (every reason title AND body, every check).
     const region = page.locator("#troubleshooter-result");
     await expect(region.getByRole("heading", { level: 2, name: P[0].label })).toBeVisible();
     await expect(region).toContainText(P[0].explanation);
-    for (const r of P[0].reasons) await expect(region, r.title).toContainText(r.title);
+    for (const r of P[0].reasons) {
+      await expect(region, r.title).toContainText(r.title);
+      await expect(region, `${r.title} body`).toContainText(r.body);
+    }
     for (const c of P[0].checks) await expect(region, c).toContainText(c);
     await expect(region).toContainText(P[0].focusFirst);
     await expect(region.getByRole("link", { name: "See the connected stage" })).toHaveAttribute(
@@ -193,8 +235,10 @@ test.describe("troubleshooter — without JavaScript", () => {
     );
     expect(await region.locator('a[href="/growth-plan"]').count()).toBeGreaterThan(0);
 
-    // The final CTA and every route fragment.
+    // The final CTA (primary /growth-plan + secondary /contact) and every route fragment.
     await expect(page.getByRole("heading", { name: "Ready to turn the first check into a plan?" })).toBeVisible();
+    expect(await page.locator('[id="get-started"] a[href="/growth-plan"]').count()).toBeGreaterThan(0);
+    expect(await page.locator('[id="get-started"] a[href="/contact"]').count()).toBeGreaterThan(0);
     for (const id of SECTION_FRAGMENTS) {
       expect(await page.locator(`[id="${id}"]`).count(), `#${id} (no JS)`).toBe(1);
     }

@@ -58,6 +58,7 @@ export function GrowthTroubleshooter({ problems }: { problems: TroubleshooterPro
               <li key={p.slug}>
                 <button
                   type="button"
+                  data-problem-slug={p.slug}
                   className={[styles.problem, selected ? styles.problemActive : ""].filter(Boolean).join(" ")}
                   style={{ ["--btn-ink" as string]: ink, ["--btn-tint" as string]: tint } as CSSProperties}
                   aria-pressed={selected}
@@ -102,8 +103,8 @@ export function GrowthTroubleshooter({ problems }: { problems: TroubleshooterPro
             <p className={styles.activeExplanation}>{active.explanation}</p>
           </div>
 
-          <section className={styles.block} aria-labelledby="ts-reasons-heading">
-            <h3 id="ts-reasons-heading" className={styles.blockHeading}>
+          <section className={styles.block} aria-labelledby="troubleshooter-reasons-heading">
+            <h3 id="troubleshooter-reasons-heading" className={styles.blockHeading}>
               Why this may be happening
             </h3>
             <CardGrid layout="equal" aria-label="Common reasons this may be happening">
@@ -113,8 +114,8 @@ export function GrowthTroubleshooter({ problems }: { problems: TroubleshooterPro
             </CardGrid>
           </section>
 
-          <section className={styles.block} aria-labelledby="ts-checks-heading">
-            <h3 id="ts-checks-heading" className={styles.blockHeading}>
+          <section className={styles.block} aria-labelledby="troubleshooter-checks-heading">
+            <h3 id="troubleshooter-checks-heading" className={styles.blockHeading}>
               Things you can check today
             </h3>
             <TroubleshooterChecklist checks={active.checks} tone={active.color} />
@@ -123,8 +124,8 @@ export function GrowthTroubleshooter({ problems }: { problems: TroubleshooterPro
           {/* Focus first — a restrained panel, not a dark hero. A sensible place to start plus the two
               contextual next steps (the guided plan + the connected stage). No "only fix" or
               guaranteed-result claim; the stage destination is exact (integrity-tested). */}
-          <section className={styles.focusFirst} aria-labelledby="ts-focus-eyebrow">
-            <p id="ts-focus-eyebrow" className={styles.focusEyebrow}>
+          <section className={styles.focusFirst} aria-labelledby="troubleshooter-focus-eyebrow">
+            <p id="troubleshooter-focus-eyebrow" className={styles.focusEyebrow}>
               Focus first
             </p>
             <p className={styles.focusText}>{active.focusFirst}</p>

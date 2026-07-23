@@ -83,6 +83,70 @@ describe("GrowthTroubleshooter — selection contract", () => {
   });
 });
 
+describe("GrowthTroubleshooter — all eight states render exhaustively (Phase 2R §A.3)", () => {
+  it("every problem, when selected, renders its complete guidance in source order with one pressed", () => {
+    const { container } = render(<GrowthTroubleshooter problems={P} />);
+    for (const p of P) {
+      fireEvent.click(selectorButton(p.label));
+
+      // exactly one pressed, and it is this problem
+      expect(container.querySelectorAll('button[aria-pressed="true"]'), `${p.slug} one pressed`).toHaveLength(1);
+      expect(selectorButton(p.label)).toHaveAttribute("aria-pressed", "true");
+
+      const region = screen.getByRole("region", { name: p.label });
+      // exact active H2 + complete explanation
+      expect(within(region).getByRole("heading", { level: 2, name: p.label })).toBeInTheDocument();
+      expect(within(region).getByText(p.explanation)).toBeInTheDocument();
+
+      // every reason title + body, in exact source order (reason-card H3s in DOM order)
+      for (const r of p.reasons) {
+        expect(within(region).getByText(r.title), `${p.slug} ${r.title}`).toBeInTheDocument();
+        expect(within(region).getByText(r.body), `${p.slug} ${r.title} body`).toBeInTheDocument();
+      }
+      const reasonsSection = container.querySelector('section[aria-labelledby="troubleshooter-reasons-heading"]')!;
+      const reasonTitles = [...reasonsSection.querySelectorAll("article h3")].map((el) => el.textContent);
+      expect(reasonTitles, `${p.slug} reason order`).toEqual(p.reasons.map((r) => r.title));
+
+      // all five checks, in exact source order (ordered-list items in DOM order)
+      expect(p.checks).toHaveLength(5);
+      const checksSection = container.querySelector('section[aria-labelledby="troubleshooter-checks-heading"]')!;
+      const items = [...checksSection.querySelectorAll("ol > li")];
+      expect(items, `${p.slug} five checks`).toHaveLength(5);
+      p.checks.forEach((c, i) => expect(items[i].textContent, `${p.slug} check ${i}`).toContain(c));
+
+      // complete focus-first copy + exact recommended-stage href + exact live status
+      expect(within(region).getByText(p.focusFirst)).toBeInTheDocument();
+      expect(within(region).getByRole("link", { name: "See the connected stage" })).toHaveAttribute(
+        "href",
+        `/how-it-works#${p.recommendedStageSlug}`,
+      );
+      expect(container.querySelector('[aria-live="polite"]')).toHaveTextContent(`Showing guidance for: ${p.label}`);
+    }
+  });
+});
+
+describe("GrowthTroubleshooter — retired ts-* ids are gone (Phase 2R §A.1)", () => {
+  it("uses no ts-* heading ids; uses coherent troubleshooter-* ids instead", () => {
+    for (const id of [
+      "ts-hero-heading",
+      "ts-select-heading",
+      "ts-checks-heading",
+      "ts-focus-heading",
+      "ts-reasons-heading",
+      "ts-focus-eyebrow",
+    ]) {
+      expect(source, `no #${id}`).not.toContain(`"${id}"`);
+    }
+    expect(source).toContain('id="troubleshooter-reasons-heading"');
+    expect(source).toContain('id="troubleshooter-checks-heading"');
+    expect(source).toContain('id="troubleshooter-focus-eyebrow"');
+  });
+
+  it("gives every selector button a stable data-problem-slug identity (no URL/hash state)", () => {
+    expect(source).toContain("data-problem-slug={p.slug}");
+  });
+});
+
 describe("GrowthTroubleshooter — source contract (no hover / API / persistence / URL state)", () => {
   it("selection is click-driven, never hover-driven", () => {
     expect(source).toMatch(/onClick=\{\(\)\s*=>\s*setActiveSlug/);

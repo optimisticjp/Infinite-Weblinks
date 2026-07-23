@@ -202,19 +202,25 @@ was added (none existed).
 
 ## 21. Fragment results
 
-Retired (no consumer): `#ts-hero-heading`, `#ts-select-heading`, `#ts-checks-heading`,
-`#ts-focus-heading`. Final fragments — `#troubleshooter-hero`, `#diagnose`, `#diagnosis`,
-`#get-started` — each occur exactly once, carry visible meaningful content, and clear the sticky
-header through ordinary hash navigation. The stable active-result region uses `#troubleshooter-result`;
-the selected problem slug is never a public fragment.
+The legacy `ts-*` heading ids (`ts-hero-heading`, `ts-select-heading`, `ts-checks-heading`,
+`ts-focus-heading`) are gone. **Correction (Phase 2R §A.1):** the 2Q rebuild had reused the `ts-`
+prefix for a few *internal, non-public* labelling ids (`ts-reasons-heading`, `ts-checks-heading`,
+`ts-focus-eyebrow`); those are renamed to the coherent `troubleshooter-*` prefix
+(`troubleshooter-reasons-heading`, `troubleshooter-checks-heading`, `troubleshooter-focus-eyebrow`)
+so no `ts-*` id remains anywhere. Final public fragments — `#troubleshooter-hero`, `#diagnose`,
+`#diagnosis`, `#get-started` — each occur exactly once, carry visible meaningful content, and clear the
+sticky header through ordinary hash navigation. The stable active-result region uses
+`#troubleshooter-result`; the selected problem slug is never a public fragment.
 
 ## 22. No-JavaScript result and switching limitation
 
 With JavaScript disabled, `/troubleshooter` serves the page framing (H1 + lead + both hero actions +
-no-email trust note), all eight selector buttons and their identity, the **first problem selected in
-the server response**, and the first problem's full guidance (heading, explanation, every reason, all
-five checks, focusFirst and the recommended-stage link), plus the growth-plan action, the final CTA
-and every route fragment. Page framing and initial guidance are server-rendered; the first problem is
+no-email trust note), all eight selector buttons — each carrying a stable `data-problem-slug`
+**identity** (the explicit slug attribute, asserted for all eight in source order; Phase 2R §A.4) —
+the **first problem selected in the server response**, and the first problem's full guidance (heading,
+explanation, every reason title AND body, all five checks, focusFirst and the recommended-stage link),
+plus the growth-plan action, the final CTA (primary `/growth-plan` + secondary `/contact`) and every
+route fragment. Page framing and initial guidance are server-rendered; the first problem is
 the no-JS result; **switching to another problem requires JavaScript**. No fake all-problems no-JS
 experience was claimed, and no form or API fallback was needed (there is none). No noscript-only
 duplicate of all eight result panels was added.
@@ -280,8 +286,12 @@ kept separate from the complete-suite total:
 logical heading hierarchy; the selector above the guidance on mobile; the result not sticky; no canvas;
 no horizontal selector rail; all eight buttons reachable and selectable; Enter and Space activate;
 exactly one `aria-pressed=true`; selection visible beyond colour (the tick); focus ring visible; the
-active guidance updates completely; the concise live status updates; 44px targets; reduced motion;
-200% text; and zero serious/critical axe on the initial state and each of the eight problem states.
+concise live status updates; 44px targets; reduced motion; 200% text; and zero serious/critical axe on
+the initial state and each of the eight problem states. **Content coverage (Phase 2R §A.3):** each of
+the eight states is verified *exhaustively* — exact active H2, complete explanation, every reason title
+AND body in source order, all five checks in source order, complete focusFirst, exact recommended-stage
+href, exact live-status text, one `aria-pressed=true`, and the clicked button retaining focus — rather
+than treating axe plus a heading assertion as complete content coverage.
 (axe cannot run with JavaScript disabled — it injects and executes axe-core in the page — so the no-JS
 result's accessibility is covered by the initial-state axe run, which loads the identical
 server-rendered DOM, the first problem selected, before any interaction.) The selector grid clamps its

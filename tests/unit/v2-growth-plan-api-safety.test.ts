@@ -21,7 +21,7 @@ describe("growth-plan API route — preserved contract", () => {
     expect(route).toMatch(/resolve\(\s*\{[\s\S]*?\},\s*growthPlanRuleSet,?\s*\)/);
   });
 
-  it("keeps every response code (the six original + the Phase 3A request-boundary codes)", () => {
+  it("keeps every response code (the six original + the Phase 3A request-boundary + fail-closed codes)", () => {
     for (const code of [
       "unsupported-media-type",
       "payload-too-large",
@@ -29,11 +29,20 @@ describe("growth-plan API route — preserved contract", () => {
       "validation-error",
       "rate-limited",
       "turnstile-failed",
+      "security-unavailable",
       "delivery-unavailable",
       "delivery-failed",
     ]) {
       expect(route, code).toContain(`code: "${code}"`);
     }
+  });
+
+  it("fails the Turnstile gate CLOSED — an unavailable human-check is a 503 security-unavailable", () => {
+    // The route branches on the typed disposition, not a boolean: an outage never becomes a 400 the
+    // visitor could retry past — it is surfaced as a distinct, fail-closed 503.
+    expect(route).toContain('verifyTurnstile(values.turnstileToken, { expectedAction: "growth-plan"');
+    expect(route).toContain('turnstile.disposition === "unavailable"');
+    expect(route).toContain('code: "security-unavailable"');
   });
 
   it("reads the body through the bounded reader and returns a request id on every response", () => {

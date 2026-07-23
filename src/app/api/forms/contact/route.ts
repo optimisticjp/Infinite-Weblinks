@@ -19,6 +19,7 @@ import { readJsonBody, newRequestId } from "@/lib/forms/request";
 const MIN_HUMAN_MS = 1500;
 
 const DELIVERY_UNAVAILABLE_MESSAGE = `Form delivery isn't set up on this preview yet. Please email ${supportEmail} and we'll pick it up.`;
+const SECURITY_UNAVAILABLE_MESSAGE = `We couldn't run the security check just now. Please try again shortly, or email ${supportEmail} and we'll pick it up.`;
 
 export async function POST(req: Request) {
   const requestId = newRequestId();
@@ -70,8 +71,15 @@ export async function POST(req: Request) {
     );
   }
 
-  const turnstile = await verifyTurnstile(values.turnstileToken, ip);
-  if (!turnstile.success) {
+  const turnstile = await verifyTurnstile(values.turnstileToken, { expectedAction: "contact", ip });
+  if (turnstile.disposition === "unavailable") {
+    // The human check couldn't run (missing keys or Cloudflare unreachable) — fail closed, never deliver.
+    return respond(
+      { ok: false, code: "security-unavailable", message: SECURITY_UNAVAILABLE_MESSAGE },
+      503,
+    );
+  }
+  if (turnstile.disposition !== "pass") {
     return respond(
       { ok: false, code: "turnstile-failed", message: "We couldn't verify you're human. Please try again." },
       400,

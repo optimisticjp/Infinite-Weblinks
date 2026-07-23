@@ -99,7 +99,11 @@ describe("ContactForm behaviour contract (unchanged)", () => {
     expect(form).toContain("JSON.stringify(parsed.data)");
     // Success is set ONLY when the server says data.ok; delivery problems surface a truthful notice.
     expect(form).toMatch(/if \(data\.ok\) \{\s*setStatus\("success"\)/);
-    expect(form).toContain('data.code === "delivery-unavailable" || data.code === "delivery-failed"');
+    // Delivery/infra failures surface a truthful "email us" notice — never presented as success.
+    expect(form).toContain('data.code === "delivery-unavailable"');
+    expect(form).toContain('data.code === "delivery-failed"');
+    // Phase 3A: a fail-closed security-check outage is handled the same truthful way.
+    expect(form).toContain('data.code === "security-unavailable"');
     expect(form).toContain("contactSchema.safeParse");
   });
 });
@@ -133,11 +137,14 @@ describe("API safety — the production form pipeline is unchanged", () => {
       "validation-error",
       "rate-limited",
       "turnstile-failed",
+      "security-unavailable",
       "delivery-unavailable",
       "delivery-failed",
     ]) {
       expect(route, `code ${code}`).toContain(code);
     }
+    // The Turnstile gate fails closed: an unavailable human-check is a distinct 503, not a 400.
+    expect(route).toContain('turnstile.disposition === "unavailable"');
     // Every response carries a request id, and the direct req.json() is gone.
     expect(route).toContain('"X-Request-ID": requestId');
     expect(route).not.toContain("req.json()");

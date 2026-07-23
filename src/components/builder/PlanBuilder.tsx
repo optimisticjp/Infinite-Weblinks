@@ -263,7 +263,13 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
       if (data.ok) {
         setStatus("success");
         setStatusMessage(null);
-      } else if (data.code === "delivery-unavailable" || data.code === "delivery-failed") {
+      } else if (
+        data.code === "delivery-unavailable" ||
+        data.code === "delivery-failed" ||
+        data.code === "security-unavailable"
+      ) {
+        // Truthful "try again / email us" notice — delivery isn't set up, upstream failed, or the
+        // human check couldn't run. Never presented as success.
         setStatus("delivery-unavailable");
         setStatusMessage(
           data.message ??
@@ -406,7 +412,11 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
                 />
               </div>
 
-              <TurnstileField onToken={setTurnstileToken} onSkipped={() => setTurnstileSkipped(true)} />
+              <TurnstileField
+                action="growth-plan"
+                onToken={setTurnstileToken}
+                onSkipped={() => setTurnstileSkipped(true)}
+              />
               {turnstileSkipped ? (
                 <p className={styles.skipNote}>
                   Human verification isn&apos;t active in this preview. Your submission is still

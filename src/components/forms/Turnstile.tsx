@@ -11,6 +11,9 @@ export interface TurnstileFieldProps {
    * load) — callers treat the submission as "skipped" client-side; the server makes the
    * real decision either way via `verifyTurnstile`. */
   onSkipped?: () => void;
+  /** The action bound into the token (e.g. "contact" / "growth-plan"), which the server
+   * verifies against the expected action so a token can't be replayed across forms. */
+  action?: string;
   className?: string;
 }
 
@@ -20,6 +23,7 @@ interface TurnstileApi {
     el: HTMLElement,
     opts: {
       sitekey: string;
+      action?: string;
       callback?: (token: string) => void;
       "expired-callback"?: () => void;
       "error-callback"?: () => void;
@@ -87,7 +91,7 @@ function loadTurnstile(): Promise<TurnstileApi | null> {
  * stay fully usable on a preview without keys. The server never trusts the client's token
  * alone — see `src/lib/forms/turnstile.ts`.
  */
-export function TurnstileField({ onToken, onSkipped, className }: TurnstileFieldProps) {
+export function TurnstileField({ onToken, onSkipped, action, className }: TurnstileFieldProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const reported = useRef(false);
   const skip = useCallback(() => {
@@ -116,6 +120,7 @@ export function TurnstileField({ onToken, onSkipped, className }: TurnstileField
       try {
         widgetId = api.render(containerRef.current, {
           sitekey: siteKey,
+          ...(action ? { action } : {}),
           callback: (token) => onToken(token),
           "expired-callback": () => onToken(null),
           "error-callback": () => onToken(null),

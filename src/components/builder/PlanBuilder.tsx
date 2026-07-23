@@ -10,12 +10,13 @@ import {
   RotateCcw,
   ArrowUpRight,
   ShieldCheck,
+  Check,
 } from "lucide-react";
 import { Stepper } from "@/components/primitives/Stepper";
 import { ProgressChecklist, type ChecklistItem } from "@/components/primitives/ProgressChecklist";
 import { OptionCards, type CardOption } from "@/components/primitives/OptionCards";
-import { GlowButton } from "@/components/primitives/GlowButton";
-import { InfinityMark } from "@/components/brand/InfinityMark";
+import { Button } from "@/components/primitives/Button";
+import { IconTile } from "@/components/primitives/IconTile";
 import { TextField } from "@/components/forms/fields/TextField";
 import { TextAreaField } from "@/components/forms/fields/TextAreaField";
 import { TurnstileField } from "@/components/forms/Turnstile";
@@ -298,13 +299,15 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
         <div className={styles.emailCard}>
           {status === "success" ? (
             <div ref={emailStatusRef} tabIndex={-1} role="status" className={styles.success}>
-              <span className={styles.successMark} aria-hidden="true">
-                <InfinityMark size={64} luminous />
+              <span className={styles.successMark}>
+                <IconTile color="var(--v2-success)" size="lg">
+                  <Check aria-hidden="true" />
+                </IconTile>
               </span>
-              <h3 className={styles.successTitle}>Thanks, your plan is on its way.</h3>
+              <h3 className={styles.successTitle}>Thanks, your plan was sent to our team.</h3>
               <p className={styles.successBody}>
-                We&apos;ve sent this plan to your email and a real person will follow up with a
-                practical next step. No obligation.
+                A real person will review it and reply by email with a practical next step. The plan
+                above remains available on screen.
               </p>
             </div>
           ) : (
@@ -323,10 +326,10 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
               </div>
 
               <div className={styles.emailHead}>
-                <h3 className={styles.emailTitle}>Get this plan by email</h3>
+                <h3 className={styles.emailTitle}>Ask us to review this plan</h3>
                 <p className={styles.emailSub}>
-                  Want a copy to keep, and a practical next step from a real person? Add your details.
-                  The plan above is yours either way.
+                  The plan above is already yours to read on screen. Add your details if you would
+                  like a real person to review it and reply by email with a practical next step.
                 </p>
               </div>
 
@@ -344,6 +347,7 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
                 <TextField
                   id="gp-name"
                   label="Your name"
+                  appearance="v2"
                   required
                   value={form.name}
                   onChange={(v) => update("name", v)}
@@ -354,6 +358,7 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
                 <TextField
                   id="gp-email"
                   label="Email"
+                  appearance="v2"
                   type="email"
                   inputMode="email"
                   required
@@ -366,6 +371,7 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
                 <TextField
                   id="gp-business"
                   label="Business name"
+                  appearance="v2"
                   hint="Optional"
                   value={form.company}
                   onChange={(v) => update("company", v)}
@@ -376,6 +382,7 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
                 <TextField
                   id="gp-website"
                   label="Website"
+                  appearance="v2"
                   type="url"
                   inputMode="url"
                   hint="Optional"
@@ -388,6 +395,7 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
                 <TextAreaField
                   id="gp-message"
                   label="Anything else?"
+                  appearance="v2"
                   hint="Optional. Anything that would help us tailor the plan."
                   value={form.message}
                   onChange={(v) => update("message", v)}
@@ -407,16 +415,15 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
               ) : null}
 
               <div className={styles.emailActions}>
-                <GlowButton
+                <Button
                   type="submit"
                   size="lg"
-                  block
+                  className={styles.submit}
                   iconLeft={<Send size={18} aria-hidden="true" />}
-                  aria-busy={status === "submitting"}
-                  disabled={status === "submitting"}
+                  loading={status === "submitting"}
                 >
-                  {status === "submitting" ? "Sending…" : "Send my plan by email"}
-                </GlowButton>
+                  {status === "submitting" ? "Sending…" : "Send my plan for review"}
+                </Button>
                 <p className={styles.reassure}>
                   <ShieldCheck size={15} aria-hidden="true" className={styles.reassureIcon} />
                   Your information is safe. We&apos;ll never share your details.
@@ -534,24 +541,24 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
 
           <div className={styles.nav}>
             {stepIndex > 0 ? (
-              <GlowButton
+              <Button
                 type="button"
-                variant="ghost"
+                variant="secondary"
                 onClick={goBack}
                 iconLeft={<ArrowLeft size={18} aria-hidden="true" />}
               >
                 Back
-              </GlowButton>
+              </Button>
             ) : (
               <span />
             )}
-            <GlowButton
+            <Button
               type="button"
               onClick={goNext}
               iconRight={<ArrowRight size={18} aria-hidden="true" />}
             >
               {meta.next}
-            </GlowButton>
+            </Button>
           </div>
         </div>
 

@@ -161,34 +161,33 @@ describe("/services/[category] route — source contract", () => {
 });
 
 describe("legacy safety — removed-from-service components remain for their other consumers", () => {
-  it("the legacy hero / viz components still exist (not deleted)", () => {
+  it("the retained legacy hero / viz components still exist (Phase 2S kept these)", () => {
+    // Retained after Phase 2S: the cosmic hero/PageHero/CosmicBackground survive until the Commit-8
+    // cosmic cascade; NodeOrb/BentoCard are live via /resources; ScrollThread/StageMarker remain.
+    // ConnectorPath + FinalCtaBannerSection were removed with the dead registry cluster (Commit 7).
     for (const rel of [
       "../../src/components/routes/CosmicPageHero.tsx",
       "../../src/components/routes/PageHero.tsx",
       "../../src/components/viz/CosmicBackground.tsx",
       "../../src/components/viz/ScrollThread.tsx",
       "../../src/components/viz/StageMarker.tsx",
-      "../../src/components/viz/ConnectorPath.tsx",
       "../../src/components/primitives/NodeOrb.tsx",
       "../../src/components/primitives/GlowButton.tsx",
       "../../src/components/primitives/BentoCard.tsx",
-      "../../src/components/sections/FinalCtaBannerSection.tsx",
     ]) {
       expect(() => read(rel), `${rel} still exists`).not.toThrow();
     }
   });
 
-  it("the cosmic hero + banner are retained (not deleted) after /starting-points migrated (Phase 2R)", () => {
-    // Phase 2R migrated /starting-points/[slug] to the V2 kit (PageHeader, no cosmic hero/banner). The
-    // legacy components are NOT deleted: FinalCtaBannerSection remains live in the homepage section
-    // registry, and CosmicPageHero is retained (now unreachable — a Phase 2S removal candidate, not
-    // deleted here). The "still exists" test above proves both files remain.
+  it("the dead section registry + FinalCtaBannerSection were removed in Phase 2S (Commit 7)", () => {
+    // /starting-points/[slug] is V2 (PageHeader, no cosmic hero/banner). The orphaned registry system
+    // (registry.tsx + FinalCtaBannerSection) that no route rendered was proven dead and removed.
     const startingPoint = read("../../src/app/(marketing)/starting-points/[slug]/page.tsx");
     expect(startingPoint).toContain("PageHeader");
     expect(startingPoint).not.toContain("CosmicPageHero");
     expect(startingPoint).not.toContain("FinalCtaBannerSection");
-    const registry = read("../../src/components/sections/registry.tsx");
-    expect(registry).toContain("FinalCtaBannerSection");
+    expect(() => read("../../src/components/sections/registry.tsx"), "registry removed").toThrow();
+    expect(() => read("../../src/components/sections/FinalCtaBannerSection.tsx"), "banner removed").toThrow();
   });
 
   it("DELIVERY_COLOR is still exported for its remaining consumers", () => {

@@ -115,8 +115,9 @@ describe("legacy-route safety (untouched beyond contained corrections)", () => {
     expect(ts).toContain("GrowthTroubleshooter");
     expect(ts).toContain("PageHeader");
   });
-  it("CosmicPageHero and FinalCtaBannerSection still exist for their other (legacy) consumers", () => {
-    expect(() => read("../../src/components/routes/CosmicPageHero.tsx")).not.toThrow();
-    expect(() => read("../../src/components/sections/FinalCtaBannerSection.tsx")).not.toThrow();
+  it("the dead section-registry system (FinalCtaBannerSection + registry) was removed in Phase 2S", () => {
+    // Phase 2S Commit 7 removed the orphaned registry cluster (proven-dead); these no longer exist.
+    expect(() => read("../../src/components/sections/FinalCtaBannerSection.tsx")).toThrow();
+    expect(() => read("../../src/components/sections/registry.tsx")).toThrow();
   });
 });

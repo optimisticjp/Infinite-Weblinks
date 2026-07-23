@@ -117,6 +117,9 @@ describe("/pricing — FAQPage structured-data contract", () => {
 
 describe("legacy-route safety — nothing removed or migrated beyond /pricing", () => {
   it("the removed-from-pricing components still exist for their other consumers", () => {
+    // NodeOrb/BentoCard/BentoGrid are retained-live (resources); the cosmic hero/PageHero/
+    // CosmicBackground are retained until the Phase 2S cosmic cascade (Commit 8). FinalCtaBannerSection
+    // was removed in Phase 2S Commit 7 (dead registry cluster).
     for (const rel of [
       "../../src/components/routes/CosmicPageHero.tsx",
       "../../src/components/routes/PageHero.tsx",
@@ -125,7 +128,6 @@ describe("legacy-route safety — nothing removed or migrated beyond /pricing", 
       "../../src/components/primitives/GlowButton.tsx",
       "../../src/components/primitives/BentoCard.tsx",
       "../../src/components/primitives/BentoGrid.tsx",
-      "../../src/components/sections/FinalCtaBannerSection.tsx",
     ]) {
       expect(() => read(rel), `${rel} still exists`).not.toThrow();
     }

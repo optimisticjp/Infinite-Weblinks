@@ -340,13 +340,13 @@ describe("honest-expectations is the single shared source", () => {
     ]);
   });
 
-  it("is consumed by BOTH the legacy /about section and the extracted HonestExpectationsPanel", () => {
-    const legacy = read("../../src/components/sections/home/HonestExpectationsSection.tsx");
+  it("is consumed by the extracted HonestExpectationsPanel (the legacy home section was removed in 2S)", () => {
+    // The orphaned home HonestExpectationsSection was proven dead and removed in Phase 2S; the
+    // honest-expectations data now has one live consumer, the extracted HonestExpectationsPanel.
+    expect(() => read("../../src/components/sections/home/HonestExpectationsSection.tsx")).toThrow();
     const panel = read("../../src/components/routes/HonestExpectationsPanel.tsx");
-    for (const src of [legacy, panel]) {
-      expect(src).toMatch(/from "@\/lib\/content\/data\/honest-expectations"/);
-      expect(src).not.toMatch(/const WONT\s*[:=]\s*\[/); // no re-declared local arrays
-    }
+    expect(panel).toMatch(/from "@\/lib\/content\/data\/honest-expectations"/);
+    expect(panel).not.toMatch(/const WONT\s*[:=]\s*\[/); // no re-declared local arrays
     // The homepage trust section no longer touches the data directly — it composes the panel.
     const trust = read("../../src/components/sections/home/HomepageTrustSection.tsx");
     expect(trust).toContain("HonestExpectationsPanel");
@@ -356,27 +356,39 @@ describe("honest-expectations is the single shared source", () => {
 
 // ------------------------------------------------------------------ legacy safety (source-level)
 
-describe("legacy homepage components are left intact for their other consumers", () => {
-  it("the legacy sections still exist and are still imported by the section registry (it compiles)", () => {
-    const registry = read("../../src/components/sections/registry.tsx");
-    const legacyPaths = [
-      "../../src/components/sections/home/HonestExpectationsSection.tsx",
+describe("the dead section-registry system was removed in Phase 2S (proven unreachable)", () => {
+  it("the registry + its data getter/type + every registry-only section are gone", () => {
+    // No route rendered HomepageSections/the registry (the homepage uses explicit Homepage* sections),
+    // so the whole cluster was proven dead and removed in Phase 2S Commit 7.
+    for (const p of [
+      "../../src/components/sections/registry.tsx",
+      "../../src/components/sections/FinalCtaBannerSection.tsx",
       "../../src/components/sections/DeliveryModelsSection.tsx",
       "../../src/components/sections/AccountOwnershipSection.tsx",
       "../../src/components/sections/CustomerJourneySection.tsx",
       "../../src/components/sections/ConnectedExamplesSection.tsx",
-    ];
-    for (const p of legacyPaths) {
-      expect(() => read(p), `${p} still exists`).not.toThrow();
+      "../../src/components/sections/home/ServicesConstellationSection.tsx",
+      "../../src/components/sections/home/GoalBentoSection.tsx",
+    ]) {
+      expect(() => read(p), `${p} removed`).toThrow();
     }
-    // The registry keeps mapping the ones it owns, so nothing was globally deleted.
-    for (const mapped of ["AccountOwnershipSection", "CustomerJourneySection", "ConnectedExamplesSection", "DeliveryModelsSection"]) {
-      expect(registry, `registry keeps ${mapped}`).toContain(mapped);
-    }
+    // The dead SectionType/SectionConfig types + getHomepageSections getter are gone too.
+    const contentIndex = read("../../src/lib/content/index.ts");
+    expect(contentIndex).not.toContain("getHomepageSections");
+    expect(read("../../src/lib/content/types.ts")).not.toMatch(/export type SectionType/);
   });
 
-  it("the legacy CustomerJourneySection and ServicesConstellationSection still exist", () => {
-    expect(() => read("../../src/components/sections/home/ServicesConstellationSection.tsx")).not.toThrow();
-    expect(() => read("../../src/components/sections/CustomerJourneySection.tsx")).not.toThrow();
+  it("the live homepage section components remain", () => {
+    for (const p of [
+      "../../src/components/sections/home/HomepageHeroSection.tsx",
+      "../../src/components/sections/home/HomepageProblemSection.tsx",
+      "../../src/components/sections/home/HomepageGoalRouterSection.tsx",
+      "../../src/components/sections/home/HomepageConnectedSystemSection.tsx",
+      "../../src/components/sections/home/HomepageTrustSection.tsx",
+      "../../src/components/sections/home/HomepageLearningSection.tsx",
+      "../../src/components/sections/FinalCtaSection.tsx",
+    ]) {
+      expect(() => read(p), `${p} present`).not.toThrow();
+    }
   });
 });

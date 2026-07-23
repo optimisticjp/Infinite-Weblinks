@@ -315,32 +315,6 @@ export interface LegalPage extends Statused {
 
 /* ------------------------------------------------------------------ homepage sections */
 
-export type SectionType =
-  | "editorialStatement"
-  | "growthJourney"
-  | "goalExplorer"
-  | "startingPointSelector"
-  | "servicesExplorer"
-  | "toolUniverse"
-  | "deliveryModels"
-  | "processSteps"
-  | "whyInfiniteWeblinks"
-  | "connectedSystem"
-  | "customerJourney"
-  | "connectedExamples"
-  | "accountOwnership"
-  | "caseStudyShowcase"
-  | "testimonialWall"
-  | "learningResources"
-  | "faqSection"
-  | "finalCtaBanner";
-
-export interface SectionConfig {
-  type: SectionType;
-  enabled: boolean;
-  anchorId?: string;
-}
-
 export interface EditorialSection {
   eyebrow: string;
   heading: Headline;

@@ -32,7 +32,7 @@ import {
 } from "@/lib/sanity/queries";
 import { seedChrome, seedEditorial, seedHero } from "./seed";
 import * as data from "./data";
-import { isRenderable, type Statused } from "./types";
+import { isPublishableProof, isRenderable, type Statused } from "./types";
 import type {
   AccountOwnership,
   BusinessType,
@@ -283,26 +283,31 @@ export async function getLegalPage(slug: string): Promise<LegalPage | undefined>
   return l && isRenderable(l) ? l : undefined;
 }
 
-/* ---- proof (placeholder-gated → empty until Verified/ReadyToPublish, in seed OR Sanity) ---- */
+/* ---- proof (double-gated → hidden until a renderable status AND complete publication
+   verification, in seed OR Sanity). `isPublishableProof` is the single gate for both modes:
+   consent + identity + claims + owner approval + a non-empty evidence reference. ---- */
 export async function getCaseStudies(): Promise<CaseStudy[]> {
   return fromSanityOrSeed<CaseStudy, CaseStudy>({
     query: caseStudyQuery,
     map: mapCaseStudies,
-    seed: renderable(data.caseStudies),
+    seed: data.caseStudies.filter(isPublishableProof),
+    gate: isPublishableProof,
   });
 }
 export async function getTestimonials(): Promise<Testimonial[]> {
   return fromSanityOrSeed<Testimonial, Testimonial>({
     query: testimonialQuery,
     map: mapTestimonials,
-    seed: renderable(data.testimonials),
+    seed: data.testimonials.filter(isPublishableProof),
+    gate: isPublishableProof,
   });
 }
 export async function getExamples(): Promise<Example[]> {
   return fromSanityOrSeed<Example, Example>({
     query: exampleQuery,
     map: mapExamples,
-    seed: renderable(data.examples),
+    seed: data.examples.filter(isPublishableProof),
+    gate: isPublishableProof,
   });
 }
 /* Single-item proof getters resolve against the status-gated list, so a placeholder /

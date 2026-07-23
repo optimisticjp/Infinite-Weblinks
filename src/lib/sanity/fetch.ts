@@ -61,9 +61,12 @@ export async function fromSanityOrSeed<TDoc, TOut extends Statused>(opts: {
   params?: Record<string, unknown>;
   map: (docs: TDoc[]) => TOut[];
   seed: TOut[];
+  /** The publish gate applied to live rows (defaults to `isRenderable`). Proof getters pass
+   *  `isPublishableProof` so live proof is held to the same publication-verification gate as seed. */
+  gate?: (item: TOut) => boolean;
 }): Promise<TOut[]> {
   if (!sanityLiveContentEnabled || !isSanityConfigured || !opts.query) return opts.seed;
   const docs = await sanityFetch<TDoc[]>(opts.query, opts.params);
   if (docs === null) return opts.seed; // request failed / unavailable — fall back
-  return opts.map(docs).filter(isRenderable); // authoritative live result ([] stays [])
+  return opts.map(docs).filter(opts.gate ?? isRenderable); // authoritative live result ([] stays [])
 }

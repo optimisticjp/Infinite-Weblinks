@@ -277,22 +277,69 @@ export interface LearnArticle extends Statused {
   publishedAt?: string;
 }
 
-/* ------ proof (placeholder-gated — hidden until verified) ------ */
+/* ------ proof (placeholder-gated — hidden until verified AND fully verified for publication) ------ */
+
+/**
+ * Publication-verification metadata shared by every kind of proof (case study / testimonial /
+ * example). A proof item is publishable ONLY when it has a renderable status AND every one of these is
+ * satisfied. This is a second, independent gate on top of the render status — so a status flipped to
+ * "verified" without genuine consent/approval still stays hidden.
+ */
+export interface ProofVerification {
+  /** The client/subject has confirmed consent to be shown publicly. */
+  consentConfirmed: boolean;
+  /** Their identity / name / logo use is approved. */
+  identityApproved: boolean;
+  /** Every claim, quote and figure has been verified against real evidence. */
+  claimsVerified: boolean;
+  /** The owner has approved this specific item for publication. */
+  approvedForPublication: boolean;
+  /** INTERNAL reference to where the consent/evidence lives (e.g. a ticket id) — NEVER the
+   *  confidential evidence itself and NEVER visitor PII stored in the repo. Must be non-empty. */
+  evidenceReference: string;
+}
+
+/** Any proof item: a statused record that may carry publication-verification metadata. */
+export type ProofItem = Statused & { verification?: ProofVerification };
+
 export interface CaseStudy extends Statused {
   slug: string;
   title: string;
   client?: string;
   summary: string;
+  verification?: ProofVerification;
 }
 export interface Testimonial extends Statused {
   quote: string;
   attribution?: string;
   rating?: number;
+  verification?: ProofVerification;
 }
 export interface Example extends Statused {
   slug: string;
   title: string;
   summary: string;
+  verification?: ProofVerification;
+}
+
+/**
+ * The single source of truth for whether a proof item may render publicly. It requires BOTH a
+ * renderable status AND complete, affirmative verification metadata (all flags true and a non-empty
+ * evidence reference). Used by every proof getter, in seed AND live-Sanity modes, so the gate is
+ * identical everywhere. A placeholder, an unapproved item, or one missing any flag stays hidden.
+ */
+export function isPublishableProof(item: ProofItem): boolean {
+  if (!isRenderable(item)) return false;
+  const v = item.verification;
+  return Boolean(
+    v &&
+    v.consentConfirmed === true &&
+    v.identityApproved === true &&
+    v.claimsVerified === true &&
+    v.approvedForPublication === true &&
+    typeof v.evidenceReference === "string" &&
+    v.evidenceReference.trim().length > 0,
+  );
 }
 
 /* ------ legal ------ */

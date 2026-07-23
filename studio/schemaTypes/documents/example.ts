@@ -33,6 +33,13 @@ export const example = defineType({
       type: 'contentStatus',
       validation: (Rule) => Rule.required(),
     }),
+    defineField({
+      name: 'proofVerification',
+      title: 'Publication verification',
+      description:
+        'A second gate on top of status: consent + identity + claims + owner approval + an internal evidence reference are ALL required before this renders. No PII / evidence stored here.',
+      type: 'proofVerification',
+    }),
   ],
   preview: {
     select: {title: 'title', status: 'contentStatus.status'},

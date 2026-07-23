@@ -67,7 +67,6 @@ import {
 import { getServiceDomainConfig } from "@/lib/services/domains";
 import {
   pricingFactors,
-  pricingDeliveryCostNotes,
   pricingEngagementShapes,
   pricingQuoteSteps,
   pricingFaqs,
@@ -1429,12 +1428,7 @@ export default async function DesignPreviewPage() {
           <p className={styles.subTitle}>PricingDeliveryCard — all four ways of working (exact cost notes)</p>
           <CardGrid layout="equal" aria-label="Pricing delivery cards (preview)">
             {deliveryModels.map((model) => (
-              <PricingDeliveryCard
-                key={model.key}
-                modelKey={model.key}
-                tagline={model.tagline}
-                costNote={pricingDeliveryCostNotes[model.key]}
-              />
+              <PricingDeliveryCard key={model.key} modelKey={model.key} tagline={model.tagline} />
             ))}
           </CardGrid>
 

@@ -20,7 +20,6 @@ import { getDeliveryModels } from "@/lib/content";
 import { domainInk } from "@/lib/design/domainColor";
 import {
   pricingFactors,
-  pricingDeliveryCostNotes,
   pricingEngagementShapes,
   pricingQuoteSteps,
   pricingFaqs,
@@ -153,12 +152,7 @@ export default async function PricingPage() {
       >
         <CardGrid layout="equal" aria-label="How each way of working shapes cost">
           {models.map((model) => (
-            <PricingDeliveryCard
-              key={model.key}
-              modelKey={model.key}
-              tagline={model.tagline}
-              costNote={pricingDeliveryCostNotes[model.key]}
-            />
+            <PricingDeliveryCard key={model.key} modelKey={model.key} tagline={model.tagline} />
           ))}
         </CardGrid>
         <p className={styles.footnote}>

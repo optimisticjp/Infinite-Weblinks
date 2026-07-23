@@ -84,9 +84,16 @@ the sharded totals.)
 
 ## 5. Complete service no-JS result
 
-All 16 per-category no-JS oracle tests pass — the complete content of every service area renders from
-the server response with JavaScript disabled — plus the new `/services` hub no-JS contract. No
-no-JS-only production markup was added; this is the same server HTML the JS build hydrates.
+All 16 per-category no-JS oracle tests pass — every service area's content renders from the server
+response with JavaScript disabled — plus the `/services` hub no-JS contract. No no-JS-only production
+markup was added; this is the same server HTML the JS build hydrates.
+
+> **Coverage note (corrected in Phase 2O).** The Phase 2N no-JS test asserted every service **title**
+> plus the full field depth (summary via `serviceCopy` precedence, delivery label, `whatYouGet`,
+> tools) for **one selected service** per category. Phase 2O extended it to the **genuinely
+> per-service** oracle — every one of the 70 services checks all those fields inside its own article,
+> in source order — looping within the same per-category no-JS test (no extra server boots). That
+> extension is counted in the Phase 2O e2e total, not the Phase 2N total below.
 
 ## 6. Complete redirect-follow result
 
@@ -96,13 +103,21 @@ sample. The request-level 308 + Location test still asserts all 70.
 
 ## 7. Pricing content centralisation
 
-`src/lib/content/data/pricing.ts` holds the route-local constants verbatim as typed exports:
-`pricingFactors` (6), `pricingDeliveryCostNotes`, `pricingEngagementShapes` (3), `pricingQuoteSteps`
-(4), `pricingFaqs` (5). The delivery cost notes are an **exhaustive `Record<DeliveryModelKey, string>`**
-— all four canonical keys required, an absent key is a typecheck error, no fallback to a model's own
-`description`; engagement-shape notes are a fixed `"Quoted to scope" | "Monthly, quoted to scope"`
-union. `v2-pricing-content.test.ts` (14) locks the counts, source order, exact copy, exhaustiveness,
-no-fallback, and that not one currency symbol or numeric figure appears anywhere in the content.
+`src/lib/content/data/pricing.ts` holds the **five repeated pricing datasets** verbatim as typed
+exports: `pricingFactors` (6), `pricingDeliveryCostNotes`, `pricingEngagementShapes` (3),
+`pricingQuoteSteps` (4), `pricingFaqs` (5). Route-level hero, page-jump navigation, section framing
+(eyebrows/titles/leads), explanatory prose and CTA copy remain route-local — they are one-off, not
+repeated data — and **no route-local pricing data array remains**. The delivery cost notes are an
+**exhaustive `Record<DeliveryModelKey, string>`** — all four canonical keys required, an absent key is
+a typecheck error, no fallback to a model's own `description`; engagement-shape notes are a fixed
+`"Quoted to scope" | "Monthly, quoted to scope"` union. `v2-pricing-content.test.ts` locks the counts,
+source order, exact copy, exhaustiveness, no-fallback, and that no **numeric** price, rate, range or
+duration appears — while approved **qualitative** duration language ("a few minutes") is preserved.
+
+> **Correction (Phase 2O).** Phase 2O removed `PricingDeliveryCard`'s independent `costNote` prop so
+> the card **derives** its note from `pricingDeliveryCostNotes[modelKey]` internally (a caller can no
+> longer pair a model with another model's note), and typed `EngagementShapeCard`'s `note` as the
+> exported `EngagementShapeNote` union. The visible /pricing and preview output is unchanged.
 
 ## 8. PricingFactorCard design
 

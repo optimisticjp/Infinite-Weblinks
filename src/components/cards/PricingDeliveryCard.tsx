@@ -3,6 +3,7 @@ import { Card } from "@/components/primitives/Card";
 import { IconTile } from "@/components/primitives/IconTile";
 import { Icon } from "@/components/primitives/Icon";
 import { deliveryModelMeta, type DeliveryModelKey } from "@/lib/design/deliveryModel";
+import { pricingDeliveryCostNotes } from "@/lib/content/data/pricing";
 import styles from "./PricingDeliveryCard.module.css";
 
 type PricingDeliveryCardProps = {
@@ -10,8 +11,6 @@ type PricingDeliveryCardProps = {
   modelKey: DeliveryModelKey;
   /** The model's real tagline. */
   tagline: string;
-  /** The exact pricing cost-shape note for this model (never a fabricated figure). */
-  costNote: string;
   className?: string;
 };
 
@@ -20,15 +19,18 @@ type PricingDeliveryCardProps = {
  * exact model label, glyph and accessible V2 ink all come from the central DELIVERY_MODEL_META (the
  * same source as DeliveryModelBadge / DeliveryModelCard) — there is NO second icon/label map and no
  * DELIVERY_COLOR. The flat IconTile + the exact model name as its H3 give the textual delivery
- * identification; the real tagline and the exact cost note follow.
+ * identification; the real tagline follows, and the cost note is DERIVED internally from
+ * `pricingDeliveryCostNotes[modelKey]` — a caller cannot pair a model with another model's note, and
+ * there is no fallback to the model's own description.
  *
  * Pricing explains cost *shape*, not which model to choose — so this card carries NO
  * "Our default" / "popular" / "best value" / "recommended" marker, NO fragment id (`delivery-*`
  * anchors belong to /how-it-works, never /pricing), NO fabricated price or range, and no
  * featured-first emphasis. No NodeOrb/BentoCard/glow/gradient. Server Component.
  */
-export function PricingDeliveryCard({ modelKey, tagline, costNote, className }: PricingDeliveryCardProps) {
+export function PricingDeliveryCard({ modelKey, tagline, className }: PricingDeliveryCardProps) {
   const meta = deliveryModelMeta(modelKey);
+  const costNote = pricingDeliveryCostNotes[modelKey];
   return (
     <Card
       as="article"

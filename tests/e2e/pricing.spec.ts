@@ -5,7 +5,14 @@ import {
   expectNoHorizontalOverflow,
   expectFragmentTargetClearsStickyHeader,
 } from "./helpers/layout";
-import { pricingFaqs } from "../../src/lib/content/data/pricing";
+import {
+  pricingFactors,
+  pricingDeliveryCostNotes,
+  pricingEngagementShapes,
+  pricingQuoteSteps,
+  pricingFaqs,
+} from "../../src/lib/content/data/pricing";
+import { deliveryModels } from "../../src/lib/content/data/delivery-models";
 import { DELIVERY_MODEL_KEYS, deliveryModelMeta } from "../../src/lib/design/deliveryModel";
 
 /**
@@ -85,12 +92,36 @@ test.describe("/pricing — structure and content", () => {
 
 test.describe("/pricing — without JavaScript", () => {
   test.use({ javaScriptEnabled: false });
-  test("the complete page — including every FAQ answer — renders from the server response", async ({ page }) => {
+  test("every exported pricing dataset renders from the server response", async ({ page }) => {
     await page.goto("/pricing");
     const main = page.getByRole("main");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("How pricing works");
 
+    // All six factor titles + blurbs.
+    for (const f of pricingFactors) {
+      await expect(main, `factor "${f.title}"`).toContainText(f.title);
+      await expect(main, `factor blurb "${f.title}"`).toContainText(f.blurb);
+    }
+    // All four delivery-model titles + their exact derived cost notes.
+    for (const key of DELIVERY_MODEL_KEYS) {
+      await expect(main, `delivery "${key}"`).toContainText(deliveryModelMeta(key).label);
+      await expect(main, `cost note "${key}"`).toContainText(pricingDeliveryCostNotes[key]);
+      await expect(main, `tagline "${key}"`).toContainText(deliveryModels.find((m) => m.key === key)!.tagline);
+    }
+    // All three engagement-shape titles, blurbs and typed notes.
+    for (const s of pricingEngagementShapes) {
+      await expect(main, `shape "${s.title}"`).toContainText(s.title);
+      await expect(main, `shape blurb "${s.title}"`).toContainText(s.blurb);
+      await expect(main, `shape note "${s.title}"`).toContainText(s.note);
+    }
+    // All four quote-step titles + blurbs.
+    for (const st of pricingQuoteSteps) {
+      await expect(main, `step "${st.title}"`).toContainText(st.title);
+      await expect(main, `step blurb "${st.title}"`).toContainText(st.blurb);
+    }
+    // All five FAQ questions + answers.
     for (const faq of pricingFaqs) {
+      await expect(main, `FAQ Q "${faq.question}" (no JS)`).toContainText(faq.question);
       await expect(main, `FAQ answer "${faq.question}" (no JS)`).toContainText(faq.answer);
     }
     for (const id of FRAGMENTS) {

@@ -48,9 +48,12 @@ describe("/pricing route — preservation contract", () => {
   });
 
   it("reads every section's content from the centralised pricing module (no route-local arrays)", () => {
-    for (const named of ["pricingFactors", "pricingDeliveryCostNotes", "pricingEngagementShapes", "pricingQuoteSteps", "pricingFaqs"]) {
+    // The route imports the four datasets it renders directly; the delivery cost notes are derived
+    // inside PricingDeliveryCard, so the route no longer imports pricingDeliveryCostNotes.
+    for (const named of ["pricingFactors", "pricingEngagementShapes", "pricingQuoteSteps", "pricingFaqs"]) {
       expect(code, `imports ${named}`).toContain(named);
     }
+    expect(code, "delivery notes derived in the card, not imported by the route").not.toContain("pricingDeliveryCostNotes");
     // The old route-local constants must be gone.
     expect(code).not.toMatch(/const\s+(FACTORS|COST_NOTE|SHAPES|STEPS|FAQS)\b/);
   });
@@ -59,9 +62,11 @@ describe("/pricing route — preservation contract", () => {
     for (const used of ["PageHeader", "SectionShell", "PricingFactorCard", "PricingDeliveryCard", "EngagementShapeCard", "QuoteProcessList", "PricingFaqList", "FinalCtaSection", "LinkChip"]) {
       expect(code, `uses ${used}`).toContain(used);
     }
-    // All four delivery models come from the getter, mapped with the exhaustive cost-note map.
+    // All four delivery models come from the getter; each card derives its own exact cost note
+    // internally (the route no longer threads pricingDeliveryCostNotes through a costNote prop).
     expect(code).toContain("getDeliveryModels");
-    expect(code).toContain("pricingDeliveryCostNotes[model.key]");
+    expect(code).toContain("<PricingDeliveryCard");
+    expect(code).not.toContain("costNote=");
   });
 
   it("uses explicit V2 surfaces with exactly one dark section and no gradient word", () => {

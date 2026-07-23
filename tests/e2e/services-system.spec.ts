@@ -66,8 +66,18 @@ test("all 70 folded service URLs 308 to their exact category anchor", async ({ r
   }
 });
 
+/** Assert each item of `items` appears inside `text` in source order (each after the previous). */
+function expectOrderedWithin(text: string, items: string[], ctx: string) {
+  let pos = 0;
+  for (const item of items) {
+    const i = text.indexOf(item, pos);
+    expect(i, `${ctx}: "${item}" present in source order`).toBeGreaterThanOrEqual(0);
+    pos = i + item.length;
+  }
+}
+
 for (const c of CATEGORIES) {
-  const { catServices, activeStage, nextCategory, relatedGoals, config, copyFor, selected, sectionFragments } = resolve(c.slug);
+  const { catServices, activeStage, nextCategory, relatedGoals, config, copyFor, sectionFragments } = resolve(c.slug);
 
   test.describe(`/services/${c.slug}`, () => {
     test("one H1, no canvas, every service a unique visible article anchor, section fragments resolve", async ({ page }) => {
@@ -133,16 +143,20 @@ for (const c of CATEGORIES) {
         await expect(main, `${c.slug} cluster intro "${cl.heading}"`).toContainText(cl.intro);
       }
 
-      // Every service title.
-      for (const s of catServices) await expect(main, `${c.slug} service "${s.name}"`).toContainText(s.name);
-
-      // Selected service: summary via the EXACT serviceCopy precedence, exact delivery label,
-      // every whatYouGet item and every example tool — all inside its own article.
-      const art = page.locator(`article[id="${selected.slug}"]`);
-      await expect(art, `${selected.slug} summary`).toContainText(copyFor(selected.slug));
-      await expect(art, `${selected.slug} delivery label`).toContainText(deliveryModelMeta(selected.deliveryModel).label);
-      for (const point of selected.whatYouGet) await expect(art, `${selected.slug} whatYouGet`).toContainText(point);
-      for (const tool of selected.exampleTools) await expect(art, `${selected.slug} tool`).toContainText(tool);
+      // EVERY service in this category, inside its OWN article: exact title, the summary via the
+      // exact serviceCopy precedence, the exact canonical delivery label, every whatYouGet item and
+      // every example tool in source order, exactly one matching article id, correct ownership.
+      for (const s of catServices) {
+        expect(s.categorySlug, `${s.slug} belongs to ${c.slug}`).toBe(c.slug);
+        const art = page.locator(`article[id="${s.slug}"]`);
+        expect(await art.count(), `${s.slug} exactly one article`).toBe(1);
+        await expect(art, `${s.slug} title`).toContainText(s.name);
+        await expect(art, `${s.slug} summary`).toContainText(copyFor(s.slug));
+        await expect(art, `${s.slug} delivery label`).toContainText(deliveryModelMeta(s.deliveryModel).label);
+        const txt = (await art.evaluate((el) => el.textContent)) ?? "";
+        expectOrderedWithin(txt, s.whatYouGet, `${s.slug} whatYouGet`);
+        expectOrderedWithin(txt, s.exampleTools, `${s.slug} tools`);
+      }
 
       // The catalog-level non-endorsement clarification.
       await expect(main).toContainText("Example tools are illustrative. No partnership or endorsement is implied.");

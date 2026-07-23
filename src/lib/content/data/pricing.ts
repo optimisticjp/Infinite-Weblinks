@@ -1,11 +1,21 @@
 import type { DeliveryModelKey } from "@/lib/content/types";
 
 /**
- * Pricing content — the single source of truth for the /pricing route.
+ * Pricing content — the five repeated pricing datasets for the /pricing route.
  *
- * These constants were previously route-local in app/(marketing)/pricing/page.tsx and are moved
- * here VERBATIM (no copy changed) so the visible page and the FAQPage JSON-LD read from one typed
- * array, and so the content can be unit-tested for counts, order and the "no invented price" rule.
+ * Scope of centralisation: the five REPEATED datasets below (factors, delivery cost notes,
+ * engagement shapes, quote steps, FAQs) are centralised here so the visible page and the FAQPage
+ * JSON-LD read from one typed source and can be unit-tested for counts, order and the "no invented
+ * figure" rule. The route-level hero, page-jump navigation, section framing (eyebrows/titles/leads),
+ * explanatory prose (e.g. the why-quotes paragraph + Callout) and CTA copy remain route-local in
+ * app/(marketing)/pricing/page.tsx — those are one-off, not repeated data. No route-local pricing
+ * data array remains.
+ *
+ * These constants were moved out of the route VERBATIM (no copy changed).
+ *
+ * "No invented figure" means specifically: no numeric price, numeric rate, numeric range or numeric
+ * duration appears in this content. Qualitative duration language that is already approved copy —
+ * e.g. "a few minutes", "up front", "day to day" — is preserved and is NOT a figure.
  *
  * Honest-pricing rules encoded in the types:
  *  • `pricingDeliveryCostNotes` is an EXHAUSTIVE `Record<DeliveryModelKey, string>` — every one of

@@ -150,4 +150,12 @@ describe("pricing content — no invented figures anywhere", () => {
     // The pricing copy is deliberately number-free; a digit would signal an invented figure.
     for (const s of allStrings) expect(s, `"${s}" has no digit`).not.toMatch(/\d/);
   });
+
+  it("preserves approved qualitative duration language while a numeric duration would be caught", () => {
+    // "a few minutes" is approved qualitative copy — no digit, so allowed.
+    expect(pricingQuoteSteps.some((s) => s.blurb.includes("a few minutes"))).toBe(true);
+    // A numeric duration (what we DO ban) contains a digit and would fail the number-free rule.
+    expect("takes 5 minutes").toMatch(/\d/);
+    expect("2 weeks").toMatch(/\d/);
+  });
 });

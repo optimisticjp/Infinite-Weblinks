@@ -4,6 +4,7 @@ import { IconTile } from "@/components/primitives/IconTile";
 import { Icon } from "@/components/primitives/Icon";
 import { Badge } from "@/components/primitives/Badge";
 import { domainInk } from "@/lib/design/domainColor";
+import type { EngagementShapeNote } from "@/lib/content/data/pricing";
 import styles from "./EngagementShapeCard.module.css";
 
 type EngagementShapeCardProps = {
@@ -11,8 +12,8 @@ type EngagementShapeCardProps = {
   title: string;
   /** The plain description (verbatim). */
   body: string;
-  /** The exact source note — "Quoted to scope" or "Monthly, quoted to scope". */
-  note: string;
+  /** The exact source note — the fixed "quoted to scope" union, never a free string. */
+  note: EngagementShapeNote;
   /** Lucide icon name. */
   icon: string;
   /** Wayfinding tone (legacy or V2 token); mapped to an accessible V2 ink accent + tile. */

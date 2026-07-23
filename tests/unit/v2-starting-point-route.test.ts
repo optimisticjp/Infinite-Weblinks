@@ -67,13 +67,23 @@ describe("metadata, static params and structured data", () => {
     expect(code).toContain("path: `/starting-points/${startingPoint.slug}`");
   });
 
-  it("emits exactly one BreadcrumbList aligned to Goals — Home, Goals, label — never /starting-points", () => {
-    expect((code.match(/breadcrumbJsonLd\(/g) ?? []).length, "one breadcrumb node").toBe(1);
-    expect(code).toMatch(/breadcrumbJsonLd\(\s*\[\s*\{\s*name:\s*"Home",\s*path:\s*"\/"\s*\}/);
+  it("delegates the single BreadcrumbList to the Breadcrumbs component — Home → Goals → label, never /starting-points", () => {
+    // The page no longer emits its own JSON-LD: PageHeader renders <Breadcrumbs>, which prepends Home
+    // and emits exactly ONE BreadcrumbList from the pathful crumbs. The page must therefore NOT call
+    // breadcrumbJsonLd or render a second <JsonLd> (that was the double-emission bug).
+    expect((code.match(/breadcrumbJsonLd\(/g) ?? []).length, "no page-level breadcrumb node").toBe(0);
+    expect(code).not.toContain("<JsonLd");
+    // The trail handed to PageHeader is Goals → the current page (label), with the label carrying its
+    // canonical detail path so the emitted BreadcrumbList is the full Home → Goals → label chain.
     expect(code).toContain('{ name: "Goals", path: "/goals" }');
+    expect(code).toMatch(/name:\s*startingPoint\.label,\s*path:\s*`\/starting-points\/\$\{startingPoint\.slug\}`/);
     // The redirecting index must NOT appear as a breadcrumb destination.
     expect(code).not.toMatch(/name:\s*"Starting points"/);
     expect(code).not.toMatch(/path:\s*"\/starting-points"/);
+
+    // The Breadcrumbs component is the single source of the BreadcrumbList JSON-LD (guarded on >1 crumb).
+    const breadcrumbs = stripComments(read("../../src/components/primitives/Breadcrumbs.tsx"));
+    expect(breadcrumbs).toMatch(/jsonLdItems\.length > 1 && <JsonLd data=\{breadcrumbJsonLd\(jsonLdItems\)\} \/>/);
   });
 
   it("adds no HowTo / FAQPage / Product / Offer / Review / AggregateRating schema", () => {

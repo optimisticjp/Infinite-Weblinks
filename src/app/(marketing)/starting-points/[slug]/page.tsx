@@ -8,8 +8,6 @@ import { Callout } from "@/components/primitives/Callout";
 import { JourneyStageCard } from "@/components/cards/JourneyStageCard";
 import { ServiceCard } from "@/components/cards/ServiceCard";
 import { FinalCtaSection } from "@/components/sections/FinalCtaSection";
-import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import {
   getServiceCategories,
@@ -90,18 +88,13 @@ export default async function StartingPointDetailPage({
 
   return (
     <>
-      <JsonLd
-        data={breadcrumbJsonLd([
-          { name: "Home", path: "/" },
-          { name: "Goals", path: "/goals" },
-          { name: startingPoint.label, path: `/starting-points/${startingPoint.slug}` },
-        ])}
-      />
-
       <PageHeader
         id="starting-point-hero"
         surface="light"
-        breadcrumbs={[{ name: "Goals", path: "/goals" }, { name: startingPoint.label }]}
+        breadcrumbs={[
+          { name: "Goals", path: "/goals" },
+          { name: startingPoint.label, path: `/starting-points/${startingPoint.slug}` },
+        ]}
         eyebrow="Where you're starting"
         title={startingPoint.label}
         lead={startingPoint.situation}

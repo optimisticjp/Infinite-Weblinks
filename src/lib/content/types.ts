@@ -11,11 +11,7 @@
 /* ------------------------------------------------------------------ status */
 
 export type ContentStatus =
-  | "draft"
-  | "placeholder"
-  | "approvalRequired"
-  | "verified"
-  | "readyToPublish";
+  "draft" | "placeholder" | "approvalRequired" | "verified" | "readyToPublish";
 
 /** Only these statuses ever render publicly (brief §14). */
 export const RENDERABLE_STATUSES: ContentStatus[] = ["verified", "readyToPublish"];
@@ -304,10 +300,25 @@ export interface LegalBlock {
   heading?: string;
   paragraphs: string[];
 }
+/**
+ * Whether a legal page's WORDING has had professional legal review. This is DELIBERATELY separate
+ * from `ContentStatus` (which only governs whether a page renders): a page can be `status:"verified"`
+ * (renderable, structurally accurate to the stack) while its legal wording is still `"draft"` and
+ * requires a qualified professional's review. `"professionallyReviewed"` must ONLY ever be set with
+ * owner-supplied confirmation — never inferred from the render status.
+ */
+export type LegalReviewStatus = "draft" | "professionallyReviewed";
 export interface LegalPage extends Statused {
   slug: string;
   title: string;
   updated: string;
+  /** Explicit legal-review state of the WORDING (not the render gate). */
+  legalReviewStatus: LegalReviewStatus;
+  /** Optional: when the wording was professionally reviewed (owner-supplied). */
+  reviewedAt?: string;
+  /** Optional: an internal reference for the review (owner-supplied) — never personal data. */
+  reviewReference?: string;
+  /** Visible editorial notice shown while the wording is a draft. */
   reviewNote?: string;
   intro: string;
   blocks: LegalBlock[];

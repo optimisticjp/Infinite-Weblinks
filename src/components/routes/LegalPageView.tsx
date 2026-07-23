@@ -47,10 +47,25 @@ export async function LegalPageView({ slug }: { slug: string }) {
           </h1>
           <p className={styles.intro}>{page.intro}</p>
           <p className={styles.updated}>Last updated: {page.updated}</p>
-          {page.reviewNote && (
+          {/* Review state is driven by the EXPLICIT `legalReviewStatus`, never inferred from the
+              render status. Drafts carry a visible, accessible notice; a professionally-reviewed page
+              (owner-confirmed only) states that plainly instead. */}
+          {page.legalReviewStatus === "professionallyReviewed" ? (
             <p className={styles.reviewNote} role="note">
               <Info aria-hidden="true" className={styles.reviewIcon} />
-              <span>{page.reviewNote}</span>
+              <span>
+                <span className="iw-visually-hidden">Legal review status: </span>
+                Professionally reviewed
+                {page.reviewedAt ? ` (${page.reviewedAt})` : ""}.
+              </span>
+            </p>
+          ) : (
+            <p className={styles.reviewNote} role="note">
+              <Info aria-hidden="true" className={styles.reviewIcon} />
+              <span>
+                <span className="iw-visually-hidden">Legal review status: </span>
+                {page.reviewNote ?? "Draft — requires professional legal review before launch."}
+              </span>
             </p>
           )}
         </header>

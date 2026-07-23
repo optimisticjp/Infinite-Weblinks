@@ -251,8 +251,9 @@ export const articleDoc = (a: LearnArticle): SanityDoc => ({
 
 /**
  * NOTE: legal pages (privacy/cookies/terms/accessibility) are intentionally NOT seeded and are
- * read from code, not Sanity. They are lawyer-reviewed, lowest-churn, and the site already renders
- * them with a professional-review note; bulk-seeding legal copy is out of scope for this pass.
+ * read from code, not Sanity. They are code-authoritative DRAFTS pending professional review
+ * (legalReviewStatus:"draft") — not yet professionally reviewed — lowest-churn, and the site already
+ * renders them with a visible professional-review note; bulk-seeding legal copy is out of scope here.
  */
 
 export const faqDoc = (f: Faq, index: number): SanityDoc => ({

@@ -93,7 +93,8 @@ function bySlug<T extends { slug: string }>(items: readonly T[], slug: string): 
  *    models, process steps, value props. These are seeded (so they exist as reference
  *    targets and are visible in Studio) but the site renders them from code.
  *  - Brand-locked chrome/hero/editorial and the growth-plan rule set.
- *  - Legal pages — lawyer-reviewed, lowest-churn; rendered from code with a review note.
+ *  - Legal pages — code-authoritative drafts PENDING professional review (legalReviewStatus:"draft"),
+ *    lowest-churn; rendered from code with a visible review note. Not yet professionally reviewed.
  */
 export { isSanityConfigured };
 export const sanityWiredTypes = [
@@ -274,7 +275,9 @@ export async function getLearnArticles(): Promise<LearnArticle[]> {
 export async function getLearnArticle(slug: string): Promise<LearnArticle | undefined> {
   return bySlug(await getLearnArticles(), slug);
 }
-/* Legal pages stay code-authoritative (lawyer-reviewed, lowest-churn — not seeded to Sanity). */
+/* Legal pages stay code-authoritative (drafts pending professional review, lowest-churn — not
+   seeded to Sanity). Renders when its render status is verified; the WORDING's legal-review state is
+   the separate `legalReviewStatus` field. */
 export async function getLegalPage(slug: string): Promise<LegalPage | undefined> {
   const l = bySlug(data.legalPages, slug);
   return l && isRenderable(l) ? l : undefined;

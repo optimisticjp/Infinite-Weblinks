@@ -1,13 +1,17 @@
 import type { LegalPage } from "@/lib/content/types";
 
 /**
- * Legal pages. Structurally complete plain-English drafts describing the
- * ACTUAL data flow (forms -> Formspree; Cloudflare hosting/Turnstile; Sanity
- * CMS; cookieless Cloudflare Web Analytics; support@infiniteweblinks.com; no
- * visitor auto-copy). Status is "verified" so these render (they're structural
- * and accurate to the stack), but every page carries a reviewNote flagging that
- * a qualified professional must review the actual legal wording before launch.
- * No legal guarantees are invented here.
+ * Legal pages. Structurally complete plain-English drafts describing the ACTUAL data flow (forms ->
+ * Formspree; Cloudflare hosting/Turnstile; Sanity CMS; cookieless Cloudflare Web Analytics;
+ * support@infiniteweblinks.com; no visitor auto-copy). No legal guarantees are invented here.
+ *
+ * Two INDEPENDENT states, never conflated:
+ *  - `status: "verified"` is the RENDER gate only (these are structural and accurate to the stack, so
+ *    they render). It is NOT a statement about legal approval.
+ *  - `legalReviewStatus: "draft"` is the WORDING's legal-review state. Every page here is a draft that
+ *    a qualified professional must review before launch, and each carries a visible `reviewNote`.
+ *    `"professionallyReviewed"` is set ONLY with owner-supplied confirmation — never inferred from the
+ *    render status, and never set by Claude.
  */
 
 const REVIEW_NOTE = "Draft structure — requires professional legal review before launch.";
@@ -16,6 +20,7 @@ const UPDATED = "14 July 2026";
 export const legalPages: LegalPage[] = [
   {
     status: "verified",
+    legalReviewStatus: "draft",
     slug: "privacy",
     title: "Privacy Policy",
     updated: UPDATED,
@@ -59,11 +64,13 @@ export const legalPages: LegalPage[] = [
   },
   {
     status: "verified",
+    legalReviewStatus: "draft",
     slug: "cookies",
     title: "Cookie Policy",
     updated: UPDATED,
     reviewNote: REVIEW_NOTE,
-    intro: "This page explains how cookies and similar technologies are used on this site, and why we've kept that use minimal.",
+    intro:
+      "This page explains how cookies and similar technologies are used on this site, and why we've kept that use minimal.",
     blocks: [
       {
         heading: "Analytics Without Cookies",
@@ -85,17 +92,21 @@ export const legalPages: LegalPage[] = [
       },
       {
         heading: "Questions",
-        paragraphs: ["If you have questions about cookies on this site, contact us at support@infiniteweblinks.com."],
+        paragraphs: [
+          "If you have questions about cookies on this site, contact us at support@infiniteweblinks.com.",
+        ],
       },
     ],
   },
   {
     status: "verified",
+    legalReviewStatus: "draft",
     slug: "terms",
     title: "Terms of Use",
     updated: UPDATED,
     reviewNote: REVIEW_NOTE,
-    intro: "These terms cover use of this website. Any separate service engagement is governed by its own written agreement, not by this page.",
+    intro:
+      "These terms cover use of this website. Any separate service engagement is governed by its own written agreement, not by this page.",
     blocks: [
       {
         heading: "Use of This Site",
@@ -129,6 +140,7 @@ export const legalPages: LegalPage[] = [
   },
   {
     status: "verified",
+    legalReviewStatus: "draft",
     slug: "refunds",
     title: "Refunds & Cancellations",
     updated: UPDATED,
@@ -171,11 +183,13 @@ export const legalPages: LegalPage[] = [
   },
   {
     status: "verified",
+    legalReviewStatus: "draft",
     slug: "accessibility",
     title: "Accessibility Statement",
     updated: UPDATED,
     reviewNote: REVIEW_NOTE,
-    intro: "We aim for this site to be usable by as many people as possible, including people using assistive technology.",
+    intro:
+      "We aim for this site to be usable by as many people as possible, including people using assistive technology.",
     blocks: [
       {
         heading: "Our Target Standard",

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
-import { GlowButton } from "@/components/primitives/GlowButton";
+import { Button } from "@/components/primitives/Button";
 import { StatusScreen } from "@/components/routes/StatusScreen";
 
 export const metadata: Metadata = {
@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 
 /**
  * Global 404. Rendered inside the root layout (so the brand fonts and sprite are available)
- * but outside the marketing chrome, so it stays self-contained: the InfinityMark over a
- * connector that breaks and reconnects, a plain message, and clear ways back into the site.
+ * but outside the marketing chrome, so it stays self-contained: the calm V2 StatusScreen — a
+ * restrained brand mark, a plain message, and clear ways back into the site.
  */
 export default function NotFound() {
   return (
@@ -21,12 +21,12 @@ export default function NotFound() {
       body="The link may be old or mistyped. Here are a few good places to pick things back up, or start a plan built around your goals."
       actions={
         <>
-          <GlowButton href="/" size="lg" iconRight={<ArrowRight size={18} aria-hidden="true" />}>
+          <Button href="/" size="lg" iconRight={<ArrowRight size={18} aria-hidden="true" />}>
             Back to home
-          </GlowButton>
-          <GlowButton href="/growth-plan" variant="ghost" size="lg">
+          </Button>
+          <Button href="/growth-plan" variant="secondary" size="lg">
             Build my growth plan
-          </GlowButton>
+          </Button>
         </>
       }
       links={[

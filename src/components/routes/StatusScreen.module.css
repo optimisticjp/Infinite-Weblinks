@@ -1,70 +1,25 @@
+/* V2 status surface — a calm, compact light panel. The chrome-less <main> fills the viewport and
+   centres its content; the panel itself stays small and never reads as a full-screen scene. No
+   cosmic layer, no glow, no status-specific animation (nothing to gate on reduced motion). */
 .wrap {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
   min-height: 100vh;
   min-height: 100svh;
   display: grid;
   place-items: center;
   padding: var(--space-10) var(--space-5);
+  background: var(--surface);
+  color: var(--text-body);
 }
 .inner {
-  position: relative;
-  z-index: 1;
   display: grid;
   justify-items: center;
   text-align: center;
   gap: var(--space-4);
-  max-width: 44rem;
+  max-width: 40rem;
 }
 
-/* ---- Mark + reconnecting connector ---- */
 .mark {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: min(280px, 80vw);
   margin-bottom: var(--space-2);
-}
-.connector {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -6px;
-  width: 100%;
-  height: 24px;
-  overflow: visible;
-}
-.connTrack {
-  stroke: var(--line-soft);
-}
-/* The lit path is fully connected at rest (and under reduced motion). When motion is allowed,
-   it starts broken (a gap in the middle) and closes once, so the connector "reconnects". */
-.connLit {
-  stroke: var(--violet-bright);
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0;
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--violet-bright) 60%, transparent));
-}
-@media (prefers-reduced-motion: no-preference) {
-  .connLit {
-    animation: reconnect 1.4s var(--ease-out, ease) 0.2s both;
-  }
-}
-@keyframes reconnect {
-  0% {
-    stroke-dasharray: 0.42 0.16 0.42;
-    stroke-dashoffset: 0;
-    opacity: 0.5;
-  }
-  60% {
-    opacity: 1;
-  }
-  100% {
-    stroke-dasharray: 1 0 0;
-    stroke-dashoffset: 0;
-    opacity: 1;
-  }
 }
 
 .code {
@@ -74,7 +29,7 @@
   font-weight: var(--fw-bold);
   letter-spacing: var(--ls-eyebrow);
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--violet-bright) 55%, var(--text-heading));
+  color: var(--v2-brand);
 }
 .title {
   margin: 0;
@@ -114,10 +69,10 @@
   text-decoration: none;
 }
 .link:hover {
-  color: var(--text-heading);
+  color: var(--link-hover);
 }
 .link:focus-visible {
   outline: none;
   box-shadow: var(--ring);
-  border-radius: var(--radius-xs);
+  border-radius: var(--v2-radius-sm);
 }

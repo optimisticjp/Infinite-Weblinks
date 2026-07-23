@@ -144,6 +144,9 @@ const V2_DETAIL_MODULES = [
   "../../src/components/troubleshooter/GrowthTroubleshooter.module.css",
   "../../src/components/cards/TroubleshooterReasonCard.module.css",
   "../../src/components/routes/TroubleshooterChecklist.module.css",
+  // Phase 2R §L: the V2 starting-point detail route (composes shared V2 components; only the
+  // recommendation block's local layout remains in the route-local module).
+  "../../src/app/(marketing)/starting-points/[slug]/starting-point.module.css",
 ];
 const BANNED_V2 = [
   ...BANNED,

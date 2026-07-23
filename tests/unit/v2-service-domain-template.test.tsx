@@ -178,12 +178,17 @@ describe("legacy safety — removed-from-service components remain for their oth
     }
   });
 
-  it("a non-migrated route (/starting-points/[slug]) still uses the legacy cosmic hero + banner", () => {
-    // /pricing was migrated in Phase 2N; /starting-points/[slug] remains on the legacy kit until its
-    // own phase, proving the cosmic hero + banner components are not deleted.
+  it("the cosmic hero + banner are retained (not deleted) after /starting-points migrated (Phase 2R)", () => {
+    // Phase 2R migrated /starting-points/[slug] to the V2 kit (PageHeader, no cosmic hero/banner). The
+    // legacy components are NOT deleted: FinalCtaBannerSection remains live in the homepage section
+    // registry, and CosmicPageHero is retained (now unreachable — a Phase 2S removal candidate, not
+    // deleted here). The "still exists" test above proves both files remain.
     const startingPoint = read("../../src/app/(marketing)/starting-points/[slug]/page.tsx");
-    expect(startingPoint).toContain("CosmicPageHero");
-    expect(startingPoint).toContain("FinalCtaBannerSection");
+    expect(startingPoint).toContain("PageHeader");
+    expect(startingPoint).not.toContain("CosmicPageHero");
+    expect(startingPoint).not.toContain("FinalCtaBannerSection");
+    const registry = read("../../src/components/sections/registry.tsx");
+    expect(registry).toContain("FinalCtaBannerSection");
   });
 
   it("DELIVERY_COLOR is still exported for its remaining consumers", () => {

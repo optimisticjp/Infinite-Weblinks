@@ -86,6 +86,10 @@ import {
 } from "@/lib/content/data/contact";
 import { growthPlanIncludes } from "@/lib/content/data/growth-plan";
 import { troubleshooterProblems } from "@/lib/content/data/troubleshooter";
+import { startingPoints } from "@/lib/content/data/starting-points";
+import { stages as stageData } from "@/lib/content/data/stages";
+import { services as serviceData } from "@/lib/content/data/services";
+import { serviceCategories as categoryData } from "@/lib/content/data/service-categories";
 import { domainInk, domainTint } from "@/lib/design/domainColor";
 import tsStyles from "@/components/troubleshooter/GrowthTroubleshooter.module.css";
 import type { GrowthPlanResult } from "@/lib/growth-plan/types";
@@ -152,6 +156,28 @@ export default async function DesignPreviewPage() {
   const deliveryModels = await getDeliveryModels();
   // The real factor with the longest blurb, to show long-copy wrapping in a PricingFactorCard.
   const longFactor = [...pricingFactors].sort((a, b) => b.blurb.length - a.blurb.length)[0];
+
+  // Phase 2R starting-point preview — REAL data, resolved the way the route does (no invented content).
+  const spPreview = startingPoints[0]; // nothing-built-yet → Discovery & Plan
+  const spStage = stageData.find((s) => s.slug === spPreview.recommendedStageSlug)!;
+  const spStageServices = (spStage.serviceSlugs ?? []).map((slug) => {
+    const service = serviceData.find((sv) => sv.slug === slug)!;
+    const category = categoryData.find((c) => c.slug === service.categorySlug)!;
+    return {
+      slug: service.slug,
+      name: service.name,
+      description: service.plainDescription,
+      href: `/services/${service.categorySlug}#${service.slug}`,
+      categoryLabel: category.name,
+      categoryIcon: category.icon,
+      categoryTone: category.color,
+      deliveryModel: service.deliveryModel,
+    };
+  });
+  // The real starting point with the longest label + recommendation, to show long-copy wrapping.
+  const spLong = [...startingPoints].sort(
+    (a, b) => b.label.length + b.recommendation.length - (a.label.length + a.recommendation.length),
+  )[0];
 
   return (
     <main id="main" className={`theme-light ${styles.wrap}`}>
@@ -1680,6 +1706,83 @@ export default async function DesignPreviewPage() {
               </Button>
             </div>
           </section>
+        </section>
+
+        {/* 23 · Phase 2R — starting-point detail. REAL public data, resolved as the route does (no
+            invented starting point / stage / service / result). No second H1, no duplicate production
+            fragment ids; the full eight routes are previewed at /starting-points/<slug>. */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Phase 2R · Starting-point detail</h2>
+
+          <p className={styles.subTitle}>
+            PageHeader-style composition (no second H1) — eyebrow, label, situation, the locked CTA + the
+            &quot;other starting points&quot; action, and the trust note
+          </p>
+          <div className={`theme-light ${styles.surfacePanel}`}>
+            <span className={styles.cardEyebrow}>Where you&apos;re starting</span>
+            <span className={styles.cardTitle}>{spPreview.label}</span>
+            <span className={styles.cardBody}>{spPreview.situation}</span>
+            <div className={styles.row}>
+              <Button href={spPreview.cta.route} size="sm">
+                {spPreview.cta.label}
+              </Button>
+              <Button href="/goals#by-where-you-are" variant="secondary" size="sm">
+                See other starting points
+              </Button>
+            </div>
+            <p className={styles.cardBody}>
+              Most businesses sit in more than one situation at once, and that&apos;s normal.
+            </p>
+          </div>
+
+          <p className={styles.subTitle}>JourneyStageCard — the real recommended stage ({spStage.name})</p>
+          <CardGrid layout="equal" aria-label="Recommended starting stage (preview)">
+            <JourneyStageCard
+              order={spStage.order}
+              title={spStage.name}
+              summary={spStage.summary}
+              href={`/how-it-works#${spStage.slug}`}
+              icon={spStage.icon}
+              tone={spStage.color}
+            />
+          </CardGrid>
+
+          <p className={styles.subTitle}>Recommendation Callout + the verbatim reassurance</p>
+          <div className={`theme-light ${styles.surfacePanel}`}>
+            <Callout tone="information">{spPreview.recommendation}</Callout>
+            <p className={styles.cardBody}>
+              Most businesses sit in more than one situation at once, and that&apos;s normal. Your plan is
+              tailored to your specifics during discovery.
+            </p>
+          </div>
+
+          <p className={styles.subTitle}>
+            ServiceCard set — the recommended stage&apos;s services in exact source order (real category,
+            delivery model and destination)
+          </p>
+          <CardGrid layout="equal" aria-label="Services in this stage (preview)">
+            {spStageServices.map((sv) => (
+              <ServiceCard
+                key={sv.slug}
+                title={sv.name}
+                description={sv.description}
+                href={sv.href}
+                categoryLabel={sv.categoryLabel}
+                categoryIcon={sv.categoryIcon}
+                categoryTone={sv.categoryTone}
+                deliveryModel={sv.deliveryModel}
+              />
+            ))}
+          </CardGrid>
+
+          <p className={styles.subTitle}>
+            Long-content wrapping — the real starting point with the longest label + recommendation
+            ({spLong.label})
+          </p>
+          <div className={`theme-light ${styles.surfacePanel}`}>
+            <span className={styles.cardTitle}>{spLong.label}</span>
+            <Callout tone="information">{spLong.recommendation}</Callout>
+          </div>
         </section>
       </div>
     </main>

@@ -401,11 +401,12 @@ describe("forwardToFormspree", () => {
     const { forwardToFormspree } = await import("@/lib/forms/formspree");
     const result = await forwardToFormspree("contact", { name: "A", email: "a@example.com" });
 
-    expect(result).toEqual({ delivered: false, reason: "not-configured" });
+    expect(result.delivered).toBe(false);
+    expect(result.outcome).toBe("not-configured");
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  it("delivers successfully when configured and Formspree accepts the payload", async () => {
+  it("delivers successfully (with a duration) when configured and Formspree accepts the payload", async () => {
     vi.stubEnv("FORMSPREE_CONTACT_ID", "abcd1234");
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) });
     global.fetch = fetchMock as unknown as typeof fetch;
@@ -417,14 +418,17 @@ describe("forwardToFormspree", () => {
       message: "hi",
     });
 
-    expect(result).toEqual({ delivered: true });
-    expect(fetchMock).toHaveBeenCalledWith(
-      "https://formspree.io/f/abcd1234",
-      expect.objectContaining({ method: "POST" }),
-    );
+    expect(result.delivered).toBe(true);
+    expect(result.outcome).toBe("delivered");
+    expect(typeof result.durationMs).toBe("number");
+    expect(fetchMock).toHaveBeenCalledTimes(1); // exactly one attempt — never a blind retry
+    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe("https://formspree.io/f/abcd1234");
+    expect(init.method).toBe("POST");
+    expect(init.signal).toBeDefined(); // bounded by an AbortController
   });
 
-  it("reports failure when Formspree responds with a non-2xx status", async () => {
+  it("reports an http-error (with status) when Formspree responds with a non-2xx status", async () => {
     vi.stubEnv("FORMSPREE_CONTACT_ID", "abcd1234");
     global.fetch = vi.fn().mockResolvedValue({ ok: false, status: 500 }) as unknown as typeof fetch;
 
@@ -432,10 +436,12 @@ describe("forwardToFormspree", () => {
     const result = await forwardToFormspree("contact", { name: "A", email: "a@example.com" });
 
     expect(result.delivered).toBe(false);
+    expect(result.outcome).toBe("http-error");
+    expect(result.status).toBe(500);
     expect(result.reason).toContain("500");
   });
 
-  it("reports failure on a network error rather than claiming delivery", async () => {
+  it("reports a network-error rather than claiming delivery", async () => {
     vi.stubEnv("FORMSPREE_CONTACT_ID", "abcd1234");
     global.fetch = vi.fn().mockRejectedValue(new Error("down")) as unknown as typeof fetch;
 
@@ -443,6 +449,32 @@ describe("forwardToFormspree", () => {
     const result = await forwardToFormspree("contact", { name: "A", email: "a@example.com" });
 
     expect(result.delivered).toBe(false);
+    expect(result.outcome).toBe("network-error");
+  });
+
+  it("times out after FORMSPREE_TIMEOUT_MS with a single attempt (no retry)", async () => {
+    vi.stubEnv("FORMSPREE_CONTACT_ID", "abcd1234");
+    vi.useFakeTimers();
+    const fetchMock = vi.fn(
+      (_url: string, init?: RequestInit) =>
+        new Promise<Response>((_resolve, reject) => {
+          init?.signal?.addEventListener("abort", () =>
+            reject(new DOMException("The operation was aborted.", "AbortError")),
+          );
+        }),
+    );
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    const { forwardToFormspree } = await import("@/lib/forms/formspree");
+    const { FORMSPREE_TIMEOUT_MS } = await import("@/lib/forms/config.server");
+    const pending = forwardToFormspree("contact", { name: "A", email: "a@example.com" });
+    await vi.advanceTimersByTimeAsync(FORMSPREE_TIMEOUT_MS + 10);
+    const result = await pending;
+
+    expect(result.delivered).toBe(false);
+    expect(result.outcome).toBe("timeout");
+    expect(fetchMock).toHaveBeenCalledTimes(1); // one attempt only
+    vi.useRealTimers();
   });
 
   it("rejects header injection in an email-like field before ever calling fetch", async () => {
@@ -457,6 +489,7 @@ describe("forwardToFormspree", () => {
     });
 
     expect(result.delivered).toBe(false);
+    expect(result.outcome).toBe("invalid-field");
     expect(result.reason).toBe("invalid-field");
     expect(fetchMock).not.toHaveBeenCalled();
   });

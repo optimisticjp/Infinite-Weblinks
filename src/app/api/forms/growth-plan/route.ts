@@ -7,6 +7,7 @@ import { rateLimit } from "@/lib/forms/rate-limit-adapter";
 import { deliveryEnabled } from "@/lib/forms/config.server";
 import { supportEmail } from "@/lib/forms/config.public";
 import { readJsonBody, newRequestId } from "@/lib/forms/request";
+import { logFormEvent, type FormLifecycleEvent } from "@/lib/forms/observability";
 import { resolve } from "@/lib/growth-plan/engine";
 import { growthPlanRuleSet } from "@/lib/growth-plan/rules";
 import type { GrowthPlanResult } from "@/lib/growth-plan/types";
@@ -44,26 +45,46 @@ function formatRecommendationForEmail(result: GrowthPlanResult): string {
 
 export async function POST(req: Request) {
   const requestId = newRequestId();
-  const respond = (body: Record<string, unknown>, status = 200, headers: Record<string, string> = {}) =>
-    NextResponse.json(body, { status, headers: { "X-Request-ID": requestId, ...headers } });
+  const respond = (
+    body: Record<string, unknown>,
+    status = 200,
+    headers: Record<string, string> = {},
+  ) => NextResponse.json(body, { status, headers: { "X-Request-ID": requestId, ...headers } });
+  // PII-free lifecycle log, correlated by requestId (never carries visitor data).
+  const log = (event: FormLifecycleEvent, outcome?: string) =>
+    logFormEvent({ form: "growth-plan", requestId, event, ...(outcome ? { outcome } : {}) });
+
+  log("received");
 
   // Bounded request read: application/json only, small size cap, streamed-safe (§C).
   const read = await readJsonBody(req);
   if (!read.ok) {
+    log("rejected", read.kind);
     if (read.kind === "unsupported-media-type") {
       return respond(
-        { ok: false, code: "unsupported-media-type", message: "Please send this form as application/json." },
+        {
+          ok: false,
+          code: "unsupported-media-type",
+          message: "Please send this form as application/json.",
+        },
         415,
       );
     }
     if (read.kind === "payload-too-large") {
-      return respond({ ok: false, code: "payload-too-large", message: "That request was too large." }, 413);
+      return respond(
+        { ok: false, code: "payload-too-large", message: "That request was too large." },
+        413,
+      );
     }
-    return respond({ ok: false, code: "invalid-json", message: "The request body must be valid JSON." }, 400);
+    return respond(
+      { ok: false, code: "invalid-json", message: "The request body must be valid JSON." },
+      400,
+    );
   }
 
   const parsed = growthPlanSchema.safeParse(read.data);
   if (!parsed.success) {
+    log("rejected", "validation-error");
     return respond(
       {
         ok: false,
@@ -78,9 +99,11 @@ export async function POST(req: Request) {
 
   // Honeypot trip or too-fast submission: reject quietly, no signal to bots.
   if (values._gotcha) {
+    log("rejected", "honeypot");
     return respond({ ok: true });
   }
   if (typeof values.elapsedMs === "number" && values.elapsedMs < MIN_HUMAN_MS) {
+    log("rejected", "timing");
     return respond({ ok: true });
   }
 
@@ -88,6 +111,7 @@ export async function POST(req: Request) {
   const rate = await rateLimit(`growth-plan:${ip}`);
   if (rate.disposition === "unavailable") {
     // The required rate limiter couldn't run — fail closed rather than accept unlimited traffic.
+    log("unavailable", "rate-limit-unavailable");
     return respond(
       { ok: false, code: "rate-limit-unavailable", message: RATE_LIMIT_UNAVAILABLE_MESSAGE },
       503,
@@ -95,6 +119,7 @@ export async function POST(req: Request) {
     );
   }
   if (rate.disposition === "limited") {
+    log("rejected", "rate-limited");
     return respond(
       { ok: false, code: "rate-limited", message: "Please wait a moment before trying again." },
       429,
@@ -102,17 +127,26 @@ export async function POST(req: Request) {
     );
   }
 
-  const turnstile = await verifyTurnstile(values.turnstileToken, { expectedAction: "growth-plan", ip });
+  const turnstile = await verifyTurnstile(values.turnstileToken, {
+    expectedAction: "growth-plan",
+    ip,
+  });
   if (turnstile.disposition === "unavailable") {
     // The human check couldn't run (missing keys or Cloudflare unreachable) — fail closed, never deliver.
+    log("unavailable", turnstile.outcome);
     return respond(
       { ok: false, code: "security-unavailable", message: SECURITY_UNAVAILABLE_MESSAGE },
       503,
     );
   }
   if (turnstile.disposition !== "pass") {
+    log("rejected", turnstile.outcome);
     return respond(
-      { ok: false, code: "turnstile-failed", message: "We couldn't verify you're human. Please try again." },
+      {
+        ok: false,
+        code: "turnstile-failed",
+        message: "We couldn't verify you're human. Please try again.",
+      },
       400,
     );
   }
@@ -130,27 +164,35 @@ export async function POST(req: Request) {
   );
 
   if (!deliveryEnabled("growth-plan")) {
-    return respond({ ok: false, code: "delivery-unavailable", message: DELIVERY_UNAVAILABLE_MESSAGE }, 503);
+    log("unavailable", "delivery-unavailable");
+    return respond(
+      { ok: false, code: "delivery-unavailable", message: DELIVERY_UNAVAILABLE_MESSAGE },
+      503,
+    );
   }
 
-  const delivery = await forwardToFormspree("growth-plan", {
-    formName: "Growth Plan Builder",
-    subject: `New Growth Plan enquiry: ${values.businessType} / ${values.mainGoal}`,
-    name: values.name,
-    email: values.email,
-    replyTo: values.email,
-    businessType: values.businessType,
-    currentStage: values.currentStage ?? "",
-    mainGoal: values.mainGoal,
-    existingSetup: values.existingSetup,
-    engagement: values.engagement,
-    timeline: values.timeline,
-    company: values.company ?? "",
-    website: values.website ?? "",
-    message: values.message ?? "",
-    recommendationSummary: formatRecommendationForEmail(result),
-    matchedRuleId: result.matchedRuleId,
-  });
+  const delivery = await forwardToFormspree(
+    "growth-plan",
+    {
+      formName: "Growth Plan Builder",
+      subject: `New Growth Plan enquiry: ${values.businessType} / ${values.mainGoal}`,
+      name: values.name,
+      email: values.email,
+      replyTo: values.email,
+      businessType: values.businessType,
+      currentStage: values.currentStage ?? "",
+      mainGoal: values.mainGoal,
+      existingSetup: values.existingSetup,
+      engagement: values.engagement,
+      timeline: values.timeline,
+      company: values.company ?? "",
+      website: values.website ?? "",
+      message: values.message ?? "",
+      recommendationSummary: formatRecommendationForEmail(result),
+      matchedRuleId: result.matchedRuleId,
+    },
+    { requestId },
+  );
 
   if (!delivery.delivered) {
     return respond(

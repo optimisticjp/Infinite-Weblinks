@@ -48,8 +48,10 @@ describe("growth-plan API route — preserved contract", () => {
 
   it("fails the Turnstile gate CLOSED — an unavailable human-check is a 503 security-unavailable", () => {
     // The route branches on the typed disposition, not a boolean: an outage never becomes a 400 the
-    // visitor could retry past — it is surfaced as a distinct, fail-closed 503.
-    expect(route).toContain('verifyTurnstile(values.turnstileToken, { expectedAction: "growth-plan"');
+    // visitor could retry past — it is surfaced as a distinct, fail-closed 503. The token is pinned
+    // to this form's expected action.
+    expect(route).toContain("verifyTurnstile(values.turnstileToken");
+    expect(route).toContain('expectedAction: "growth-plan"');
     expect(route).toContain('turnstile.disposition === "unavailable"');
     expect(route).toContain('code: "security-unavailable"');
   });

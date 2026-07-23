@@ -121,7 +121,7 @@ describe("API safety — the production form pipeline is unchanged", () => {
       "rateLimit(`contact:${ip}`)",
       "verifyTurnstile(values.turnstileToken",
       'deliveryEnabled("contact")',
-      'forwardToFormspree("contact"',
+      "forwardToFormspree(",
       "delivery.delivered",
     ];
     let pos = 0;

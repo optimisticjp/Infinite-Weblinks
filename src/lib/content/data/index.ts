@@ -39,3 +39,8 @@ export {
   contactAlternativePaths,
   contactClosingNote,
 } from "./contact";
+export {
+  growthPlanHeroTrustPoints,
+  growthPlanPreviewItems,
+  growthPlanIncludes,
+} from "./growth-plan";

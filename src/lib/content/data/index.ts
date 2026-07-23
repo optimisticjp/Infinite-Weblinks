@@ -33,3 +33,9 @@ export {
   pricingQuoteSteps,
   pricingFaqs,
 } from "./pricing";
+export {
+  contactTrustPoints,
+  contactProcessSteps,
+  contactAlternativePaths,
+  contactClosingNote,
+} from "./contact";

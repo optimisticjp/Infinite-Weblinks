@@ -1,0 +1,41 @@
+/* V2 form-control appearance — opt-in via `appearance="v2"` (default stays legacy). Light-first:
+   a paper input surface, a semantic hairline border, V2 text/placeholder roles, the V2 focus ring,
+   V2 radius and a ≥44px control height. No glow, glass, --border-glow, dark-input fallback or raw
+   colour. The error border is supplied by FormField.module.css `.hasError :global(input)` (shared by
+   both appearances), so nothing here needs to restate it. */
+.control {
+  width: 100%;
+  min-height: var(--target-min);
+  padding: var(--space-3) var(--space-4);
+  background: var(--v2-paper);
+  border: 1px solid var(--hairline);
+  border-radius: var(--v2-radius-md);
+  color: var(--text-heading);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+.control::placeholder {
+  color: var(--text-muted);
+}
+.control:focus-visible {
+  outline: none;
+  border-color: var(--v2-brand);
+  box-shadow: var(--v2-ring);
+}
+.control:disabled {
+  background: var(--v2-paper-2);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+textarea.control {
+  min-height: 140px;
+  resize: vertical;
+}
+
+/* Required-field marker on a V2 label (the legacy marker uses a base-palette pink). */
+.required {
+  color: var(--v2-brand-strong);
+}

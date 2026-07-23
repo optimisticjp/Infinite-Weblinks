@@ -15,7 +15,8 @@ import styles from "./growth-plan.module.css";
 /**
  * /growth-plan — the Growth Plan Builder, the site's primary conversion tool, on the V2 light-first
  * system. `noindex, follow` (the tool is kept out of the index but link equity flows through it) and a
- * self-canonical consolidate tracking-param variants onto the clean URL. PageHeader (server H1 = LCP)
+ * self-canonical consolidate tracking-param variants onto the clean URL. PageHeader (a
+ * server-rendered H1, a likely LCP candidate — not a measured LCP result)
  * → the builder on a light SectionShell → what a plan can include → the single reserved dark final
  * CTA. No cosmic hero/starfield, ConnectorPath, InView, FloatingCards, InfinityMark, NodeOrb, glass or
  * fake chart. The builder is the existing Client Component (unchanged behaviour). Server Component.

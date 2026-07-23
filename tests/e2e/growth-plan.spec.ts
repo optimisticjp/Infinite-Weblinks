@@ -185,6 +185,23 @@ test.describe("growth plan — the flow", () => {
 });
 
 test.describe("growth plan — the review-request follow-up", () => {
+  test("submitting the review form empty surfaces an accessible error state (axe-clean, no success)", async ({ page }) => {
+    await fillToPlan(page);
+    // Submit with the required fields empty → client validation, no network call, no faked success.
+    await page.getByRole("button", { name: "Send my plan for review" }).click();
+    const alert = page.locator('[role="alert"]').first();
+    await expect(alert).toBeVisible();
+    await expect(alert).toContainText(/check your details/i);
+    // The invalid required fields are marked programmatically (not colour-only).
+    await expect(page.getByLabel("Your name")).toHaveAttribute("aria-invalid", "true");
+    await expect(page.getByLabel("Email")).toHaveAttribute("aria-invalid", "true");
+    // It never fakes a sent state, and the plan stays on screen.
+    await expect(page.getByText(/your plan was sent to our team/i)).toHaveCount(0);
+    await expect(page.getByTestId("growth-plan-result")).toBeVisible();
+    // No success response is mocked for this state — axe runs on the genuine error UI.
+    expect(JSON.stringify((await axeSerious(page)).map((v) => v.id)), "error-state a11y").toBe("[]");
+  });
+
   test("a valid submission never fakes success when delivery is unconfigured", async ({ page }) => {
     await fillReviewRequest(page);
     await page.waitForTimeout(HUMAN_DELAY); // clear the server anti-bot timing gate
@@ -268,22 +285,46 @@ test.describe("growth plan — without JavaScript", () => {
     await page.goto("/growth-plan");
     const main = page.getByRole("main");
 
+    // One complete H1 + the complete hero lead + all three trust points.
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
     await expect(page.getByRole("heading", { level: 1 })).toContainText("growth plan");
-    await expect(main).toContainText("No account needed");
-    await expect(page.getByRole("heading", { name: "What best describes your business?" })).toBeVisible();
+    await expect(main).toContainText(
+      "Answer a few short questions and get a clear, honest starting plan: what to do first, what connects next, and the tools that fit. No account needed — your plan appears on screen.",
+    );
+    for (const t of growthPlanHeroTrustPoints) await expect(main, t).toContainText(t);
 
-    // The first-step options render server-side — exact values + order — from the real dataset.
+    // Both hero actions render server-side (primary → #builder, secondary → /how-it-works).
+    expect(await page.locator('[id="growth-plan-hero"] a[href="#builder"]').count()).toBeGreaterThan(0);
+    expect(await page.locator('[id="growth-plan-hero"] a[href="/how-it-works"]').count()).toBeGreaterThan(0);
+
+    // The builder's Step 1 heading + subtitle, the fieldset and its legend.
+    await expect(page.getByRole("heading", { name: "What best describes your business?" })).toBeVisible();
+    await expect(main).toContainText("Pick the closest fit. It shapes the plan, it isn't a label.");
+    expect(await page.locator('#builder fieldset').count(), "step-1 fieldset").toBeGreaterThan(0);
+    await expect(page.locator("#builder legend").first()).toHaveText("Business type");
+
+    // Every renderable business-type option renders server-side — exact value, visible label and
+    // visible description, in source order.
+    const expected = businessTypes.filter(renderable);
     const values = await page
       .locator('input[name="businessType"]')
       .evaluateAll((els) => els.map((e) => (e as HTMLInputElement).value));
-    expect(values).toEqual(businessTypes.filter(renderable).map((b) => b.slug));
+    expect(values).toEqual(expected.map((b) => b.slug));
+    for (const b of expected) {
+      const label = page.locator(`label:has(input[name="businessType"][value="${b.slug}"])`);
+      await expect(label, `${b.slug} label`).toContainText(b.name);
+      await expect(label, `${b.slug} description`).toContainText(b.summary);
+    }
+    // None initially checked in the server response (the builder selects nothing until answered).
+    expect(await page.locator('input[name="businessType"]:checked').count(), "none checked").toBe(0);
 
-    // The what-your-plan-includes content and the final CTA + contact fallback.
+    // The what-your-plan-includes content and the final CTA (primary #builder + secondary /contact).
     for (const item of growthPlanIncludes) {
       await expect(main, item.title).toContainText(item.title);
       await expect(main, item.body).toContainText(item.body);
     }
     await expect(page.getByRole("heading", { name: "Ready to find your first step?" })).toBeVisible();
+    expect(await page.locator('[id="get-started"] a[href="#builder"]').count()).toBeGreaterThan(0);
     expect(await page.locator('[id="get-started"] a[href="/contact"]').count()).toBeGreaterThan(0);
 
     for (const id of SECTION_FRAGMENTS) {
@@ -292,13 +333,23 @@ test.describe("growth plan — without JavaScript", () => {
   });
 });
 
-test.describe("growth plan — fragment clearance", () => {
+test.describe("growth plan — fragment geometry", () => {
   test.use({ viewport: { width: 1280, height: 900 } });
-  test("the builder fragment clears the sticky header", async ({ page }) => {
-    await page.goto("about:blank");
-    await page.goto("/growth-plan#builder");
-    await expectFragmentTargetClearsStickyHeader(page, '[id="builder"]', "growth-plan #builder");
-  });
+  for (const id of ["builder", "what-your-plan-includes", "get-started"]) {
+    test(`#${id} occurs once, is meaningful content and clears the sticky header via hash nav`, async ({ page }) => {
+      await page.goto("about:blank");
+      await page.goto(`/growth-plan#${id}`);
+      // Exactly one occurrence of the target.
+      expect(await page.locator(`[id="${id}"]`).count(), `#${id} count`).toBe(1);
+      const target = page.locator(`[id="${id}"]`);
+      // Visible, meaningful (non-empty) content — not a hidden anchor band.
+      await expect(target).toBeVisible();
+      const text = ((await target.textContent()) ?? "").trim();
+      expect(text.length, `#${id} has meaningful content`).toBeGreaterThan(0);
+      // Ordinary browser hash navigation clears the sticky header.
+      await expectFragmentTargetClearsStickyHeader(page, `[id="${id}"]`, `growth-plan #${id}`);
+    });
+  }
 });
 
 test.describe("growth plan — responsive & zoom", () => {

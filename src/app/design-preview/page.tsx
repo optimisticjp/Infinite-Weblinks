@@ -84,6 +84,8 @@ import {
 } from "@/lib/content/data/contact";
 import { growthPlanIncludes } from "@/lib/content/data/growth-plan";
 import type { GrowthPlanResult } from "@/lib/growth-plan/types";
+import { resolve } from "@/lib/growth-plan/engine";
+import { growthPlanRuleSet } from "@/lib/growth-plan/rules";
 import { FilterChipDemo } from "./FilterChipDemo";
 import { GrowthPlanPreviewDemo } from "./GrowthPlanPreviewDemo";
 import styles from "./design-preview.module.css";
@@ -120,34 +122,16 @@ const STATUSES = [
 ] as const;
 
 /**
- * A representative Growth Plan result, for previewing PlanReveal with every section populated. This is
- * an illustrative fixture — NOT a real recommendation — so a human and the axe scan can see the full
- * result view. The real result comes from the deterministic engine on /growth-plan.
+ * An illustrative Growth Plan result for previewing PlanReveal. It is NOT hand-authored: it is
+ * produced by the SAME deterministic engine and rule set that power /growth-plan, from one stable set
+ * of real public inputs (an ecommerce business launching a store). No API call, no visitor data, no
+ * randomness — deterministic across runs. Clearly labelled illustrative in the preview; PlanReveal
+ * still never displays the matchedRuleId.
  */
-const PLAN_REVEAL_PREVIEW: GrowthPlanResult = {
-  matchedRuleId: "preview-fixture",
-  startHere: [
-    "Publish a clear one-page website that explains what you do and who it's for.",
-    "Set up a business email address on your own domain.",
-  ],
-  connectNext: [
-    "Connect a simple contact form to your inbox so enquiries land in one place.",
-    "Add privacy-friendly analytics so you can see what's actually working.",
-  ],
-  addLater: [
-    "Start a short email newsletter to stay in touch with the people who visit.",
-    "Add booking or checkout once there's steady demand for it.",
-  ],
-  relevantCapabilities: ["Website & landing pages", "Domain & email setup", "Analytics"],
-  exampleTools: ["Google Workspace", "Cloudflare", "Plausible"],
-  expectedOutcomes: [
-    "A website you own and control.",
-    "A professional email address on your own domain.",
-    "A clear view of your first visitors.",
-  ],
-  howWeHelp:
-    "We'd set up the first version with you, then hand over the controls so you keep ownership of everything.",
-};
+const PLAN_REVEAL_PREVIEW: GrowthPlanResult = resolve(
+  { businessType: "ecommerce", mainGoal: "launch-professional-store", existingSetup: "Nothing built yet" },
+  growthPlanRuleSet,
+);
 
 export default async function DesignPreviewPage() {
   const { hero, editorial } = await getHomepageOpening();

@@ -10,7 +10,9 @@ export type CardOption = {
   value: string;
   label: string;
   description?: string;
-  /** Domain hue token; falls back to a cycled hue when omitted. */
+  /** Optional wayfinding tone. A supplied legacy/domain token is mapped to an accessible V2 ink
+   *  through `domainInk`; when omitted, one restrained V2 fallback ink is used. There is no palette
+   *  cycle. */
   color?: string;
   /** Optional Icon-primitive name. */
   icon?: string;

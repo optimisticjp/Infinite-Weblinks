@@ -32,7 +32,8 @@ ids/precedence, the recommendation ordering and the API response codes are uncha
   success state and the `PlanReveal` framing were all re-worded to be truthful, and the same false
   "yours to keep" claim was removed from `llms.txt`.
 - **Centralised the growth-plan presentation content** into a typed, server-safe module (§D).
-- **Migrated `/growth-plan`** off the cosmic hero + starfield onto `PageHeader` (server H1 = LCP) →
+- **Migrated `/growth-plan`** off the cosmic hero + starfield onto `PageHeader` (a server-rendered
+  H1, a likely LCP candidate — not a measured LCP result) →
   the builder on a light `SectionShell` → a "what your plan can include" grid → the single reserved
   dark `FinalCtaSection` (§E, §F, §K, §L).
 - **Migrated `PlanBuilder`'s presentation** to V2 (§G, §H, §I): `GlowButton` → the shared `Button`
@@ -110,8 +111,9 @@ constraint so no keep/download/email-copy claim is authored there.
 
 ## 6. Route migration (§E, §K, §L, §P)
 
-`/growth-plan` is now `PageHeader` (server H1 = LCP, breadcrumb, eyebrow, truthful lead, two CTAs,
-trust note) → the builder on a light `SectionShell` (`id="builder"`) → a "what your plan can include"
+`/growth-plan` is now `PageHeader` (a server-rendered H1 — a likely LCP candidate, not a measured LCP
+result — breadcrumb, eyebrow, truthful lead, two CTAs, trust note) → the builder on a light
+`SectionShell` (`id="builder"`) → a "what your plan can include"
 grid of `PlanIncludeCard`s on a light `SectionShell` (`id="what-your-plan-includes"`) → the single
 reserved-night `FinalCtaSection` (`id="get-started"`, builder anchor + `/contact` fallback). The
 metadata is byte-preserved: title, description, `robots: { index: false, follow: true }` and the
@@ -233,7 +235,7 @@ mocked states, no-JS, axe on first/last/plan/success/delivery-unavailable, no ov
 | O | Engine / rule / API invariants (git diff proof) | ✅ §11 |
 | P | Metadata / SEO (noindex,follow + self-canonical preserved) | ✅ §6 |
 | Q | CSS / token hygiene | ✅ §10 |
-| R | Performance (server H1 = LCP; heavy motion removed; no CLS/overflow) | ✅ §6, §13 |
+| R | Performance (server-rendered H1 — a likely LCP candidate, not measured; heavy motion removed) | ✅ §6, §13 |
 | S | Design preview | ✅ §10 |
 | T | Unit tests (content / builder / PlanReveal / truthful / API-safety) | ✅ §10, §11 |
 | U | E2E / accessibility | ✅ §13 |

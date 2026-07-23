@@ -29,16 +29,13 @@ export const growthPlanHeroTrustPoints: string[] = [
   "Honest advice, not a sales pitch",
 ];
 
-/** What the plan will contain — the hero/plan-preview list (five items, source order). */
-export const growthPlanPreviewItems: string[] = [
-  "A recommended starting point",
-  "A connected roadmap in phases",
-  "The services and ways we can deliver them",
-  "The right tools for your setup",
-  "An honest note on how we'd help",
-];
-
 /**
+ * NOTE (Phase 2Q): the old decorative five-line hero preview list (`growthPlanPreviewItems`) was
+ * intentionally retired — it had no route or design-preview consumer and duplicated, at less depth,
+ * the six-item `growthPlanIncludes` section below. `growthPlanIncludes` is the retained,
+ * non-duplicative explanation of what a plan may contain (rendered in the "what your plan can
+ * include" section on /growth-plan and in the design preview).
+ *
  * What a plan can include — six items in source order. The exact recommendation depends on the
  * visitor's answers, so not every plan contains all six.
  */

@@ -1,16 +1,16 @@
 import { describe, it, expect } from "vitest";
-import {
-  growthPlanHeroTrustPoints,
-  growthPlanPreviewItems,
-  growthPlanIncludes,
-} from "@/lib/content/data/growth-plan";
+import * as growthPlanContent from "@/lib/content/data/growth-plan";
+import { growthPlanHeroTrustPoints, growthPlanIncludes } from "@/lib/content/data/growth-plan";
 import { hasIcon } from "@/components/primitives/Icon";
 
 /**
- * Phase 2P — the centralised growth-plan presentation content. Locks the exact copy, counts and
- * source order of the hero trust points, the preview items and the six "what your plan can include"
- * cards, and guards that no invented price/result/proof or persistence/download/email-copy claim
- * appears.
+ * Phase 2P/2Q — the centralised growth-plan presentation content. Locks the exact copy, counts and
+ * source order of the hero trust points and the six "what your plan can include" cards, and guards
+ * that no invented price/result/proof or persistence/download/email-copy claim appears.
+ *
+ * Phase 2Q retirement: the old decorative five-line hero preview list (`growthPlanPreviewItems`) was
+ * removed — it had no route or design-preview consumer and duplicated, at less depth, the six-item
+ * `growthPlanIncludes`. This test guards that it stays gone (no near-duplicate five-item section).
  */
 
 describe("hero trust points", () => {
@@ -23,15 +23,9 @@ describe("hero trust points", () => {
   });
 });
 
-describe("plan preview items", () => {
-  it("are the five approved items in source order", () => {
-    expect(growthPlanPreviewItems).toEqual([
-      "A recommended starting point",
-      "A connected roadmap in phases",
-      "The services and ways we can deliver them",
-      "The right tools for your setup",
-      "An honest note on how we'd help",
-    ]);
+describe("retired preview list", () => {
+  it("no longer exports the unused decorative five-line preview list", () => {
+    expect("growthPlanPreviewItems" in growthPlanContent).toBe(false);
   });
 });
 
@@ -58,7 +52,6 @@ describe("what the plan can include", () => {
 describe("no invented figure or unsupported claim", () => {
   const allText = [
     ...growthPlanHeroTrustPoints,
-    ...growthPlanPreviewItems,
     ...growthPlanIncludes.flatMap((i) => [i.title, i.body]),
   ].join(" ");
 

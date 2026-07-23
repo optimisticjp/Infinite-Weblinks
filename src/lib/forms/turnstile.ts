@@ -32,8 +32,11 @@ export type TurnstileOutcome =
   | "missing-config" // keys expected but absent — a server misconfiguration, treated as unavailable
   | "missing-token" // keys present, the client sent no token
   | "invalid-token" // Cloudflare rejected the token (bad / expired / already-redeemed)
-  | "action-mismatch" // token valid but issued for a different action than this form
-  | "hostname-mismatch" // token valid but solved on a hostname we don't allow
+  | "action-missing" // success but no/blank/non-string action — our widget always sets one, so this
+  // is a malformed/misconfigured upstream response, NOT the visitor's fault → unavailable (fail closed)
+  | "action-mismatch" // token valid but issued for a DIFFERENT action than this form → human-failed
+  | "hostname-missing" // enforcement active but success carried no/blank/non-string hostname → unavailable
+  | "hostname-mismatch" // token valid but solved on a hostname we don't allow → human-failed
   | "malformed" // siteverify returned an unparseable / unexpected body
   | "http-failure" // siteverify returned a non-2xx status
   | "timeout" // siteverify exceeded TURNSTILE_TIMEOUT_MS
@@ -74,6 +77,8 @@ function dispositionFor(outcome: TurnstileOutcome): TurnstileDisposition {
     case "hostname-mismatch":
       return "human-failed";
     case "missing-config":
+    case "action-missing":
+    case "hostname-missing":
     case "malformed":
     case "http-failure":
     case "timeout":
@@ -155,21 +160,31 @@ export async function verifyTurnstile(
   const errorCodes = data["error-codes"];
   if (!data.success) return result("invalid-token", errorCodes);
 
-  // Verified by Cloudflare. Now pin the token to THIS form's action and (when configured) an allowed
-  // hostname, so a token solved for another action/origin can't be replayed against this endpoint.
+  // Verified by Cloudflare. Now STRICTLY pin the token to THIS form's action and (when configured) an
+  // allowed hostname, so a token solved for another action/origin can't be replayed against this
+  // endpoint. Our widget always sets an action, so a missing/blank action is a malformed upstream
+  // response (fail closed → unavailable), while a present-but-wrong action is a replay the visitor
+  // could retry past (human-failed).
   const expected = turnstileActionFor(expectedAction);
-  if (typeof data.action === "string" && data.action.length > 0 && data.action !== expected) {
+  if (typeof data.action !== "string" || data.action.length === 0) {
+    return result("action-missing", errorCodes);
+  }
+  if (data.action !== expected) {
     return result("action-mismatch", errorCodes);
   }
 
+  // Hostname enforcement only applies when a policy is configured (canonical site URL and/or
+  // TURNSTILE_ALLOWED_HOSTNAMES). With no policy, enforcement is intentionally disabled and NO
+  // hostname pinning is claimed. When active, a missing/blank hostname is malformed (unavailable) and
+  // an unlisted hostname is a wrong-origin token (human-failed).
   const allowedHosts = allowedTurnstileHostnames();
-  if (
-    allowedHosts.length > 0 &&
-    typeof data.hostname === "string" &&
-    data.hostname.length > 0 &&
-    !allowedHosts.includes(data.hostname)
-  ) {
-    return result("hostname-mismatch", errorCodes);
+  if (allowedHosts.length > 0) {
+    if (typeof data.hostname !== "string" || data.hostname.length === 0) {
+      return result("hostname-missing", errorCodes);
+    }
+    if (!allowedHosts.includes(data.hostname)) {
+      return result("hostname-mismatch", errorCodes);
+    }
   }
 
   return result("verified", errorCodes);

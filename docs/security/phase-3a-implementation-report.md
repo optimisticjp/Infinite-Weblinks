@@ -60,17 +60,27 @@
 
 ## Validation results (this session)
 
-| Check                                 | Result                                                                          | Evidence              |
-| ------------------------------------- | ------------------------------------------------------------------------------- | --------------------- |
-| `npm run lint`                        | pass                                                                            | [locally-verified]    |
-| `npm run typecheck`                   | pass                                                                            | [locally-verified]    |
-| `npm run test` (unit)                 | **1949 passed** (79 files)                                                      | [locally-verified]    |
-| `npm run build`                       | pass                                                                            | [locally-verified]    |
-| `npm run cf:build` (OpenNext bundle)  | pass — `.open-next/worker.js` written                                           | [locally-verified]    |
-| `npm run test:e2e` (Playwright + axe) | **768 passed**                                                                  | [locally-verified]    |
-| `npx wrangler deploy --dry-run`       | pass (non-mutating); all 4 bindings resolve (ASSETS, R2, D1, FORM_RATE_LIMITER) | [externally-verified] |
-| `npm run cf:verify --bundle`          | **0 blockers** (10 verified locally, 4 external)                                | [locally-verified]    |
-| `npm audit` / `--omit=dev`            | recorded exactly (see the security review)                                      | [externally-verified] |
+| Check                                 | Result                                                                                                                                                                                                                                                                                                   | Evidence                                     |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `npm run lint`                        | pass                                                                                                                                                                                                                                                                                                     | [locally-verified]                           |
+| `npm run typecheck`                   | pass                                                                                                                                                                                                                                                                                                     | [locally-verified]                           |
+| `npm run test` (unit)                 | **1949 passed** (79 files)                                                                                                                                                                                                                                                                               | [locally-verified]                           |
+| `npm run build`                       | pass                                                                                                                                                                                                                                                                                                     | [locally-verified]                           |
+| `npm run cf:build` (OpenNext bundle)  | pass — `.open-next/worker.js` written                                                                                                                                                                                                                                                                    | [locally-verified]                           |
+| `npm run test:e2e` (Playwright + axe) | **768 passed**                                                                                                                                                                                                                                                                                           | [locally-verified]                           |
+| `npx wrangler deploy --dry-run`       | pass (non-mutating): validated the **local** wrangler config and **bundled** the Worker, and the **4 binding declarations** (ASSETS, R2, D1, FORM_RATE_LIMITER) are included in the bundle. It does **NOT** resolve or confirm the account-side resources or secrets — those stay externally unverified. | [locally-verified] (local config + bundling) |
+| `npm run cf:verify --bundle`          | **0 blockers** (10 verified locally, 4 external)                                                                                                                                                                                                                                                         | [locally-verified]                           |
+| `npm audit` / `--omit=dev`            | recorded exactly (see the security review)                                                                                                                                                                                                                                                               | [externally-verified]                        |
+
+> **Cloudflare evidence, precisely (Phase 3B §A4 correction).** The dry-run verifies **local
+> configuration and Worker bundling** and that the **binding declarations are present in the bundle**.
+> It performs **no** account API calls, so the R2 bucket, the D1 database and its real id, the
+> rate-limit rule, and all secrets **remain externally unverified** — see the production-readiness
+> runbook §3. Earlier phrasing that read as "all 4 bindings resolve" overstated this and is corrected.
+
+## Branch comparison at Phase 3A completion
+
+- Head `e513d78`: **151 ahead of `main`, 0 behind** (`git rev-list --count origin/main..HEAD`).
 
 New tests added this phase: `config-boundary`, `request-reader`, `form-observability`,
 `security-headers`, `cloudflare-config-verify` (unit) and `security-headers` (e2e); the Turnstile /

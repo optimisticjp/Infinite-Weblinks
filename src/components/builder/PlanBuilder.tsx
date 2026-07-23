@@ -432,8 +432,8 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
               />
               {turnstileSkipped ? (
                 <p className={styles.skipNote}>
-                  Human verification isn&apos;t active in this preview. Your submission is still
-                  checked server-side.
+                  Human verification is currently unavailable. If the form can&apos;t be sent,
+                  please email <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
                 </p>
               ) : null}
 

@@ -234,7 +234,10 @@ describe("verifyTurnstile (Phase 3A — fail-closed, typed, action + hostname pi
     global.fetch = fetchMock as unknown as typeof fetch;
 
     const { verifyTurnstile } = await import("@/lib/forms/turnstile");
-    const result = await verifyTurnstile("good-token", { expectedAction: "contact", ip: "1.2.3.4" });
+    const result = await verifyTurnstile("good-token", {
+      expectedAction: "contact",
+      ip: "1.2.3.4",
+    });
 
     expect(result.ok).toBe(true);
     expect(result.outcome).toBe("verified");
@@ -262,6 +265,46 @@ describe("verifyTurnstile (Phase 3A — fail-closed, typed, action + hostname pi
     expect(result.disposition).toBe("human-failed");
   });
 
+  // Strict action checking (Phase 3B §A1): a verified token MUST carry a non-empty action string that
+  // exactly matches this form. A missing / blank / non-string action is a malformed upstream response
+  // (our widget always sets an action) → fail closed as unavailable.
+  for (const [label, action] of [
+    ["absent", undefined],
+    ["an empty string", ""],
+    ["a non-string", 123],
+  ] as const) {
+    it(`fails as 'action-missing' (unavailable) when the returned action is ${label}`, async () => {
+      vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
+      vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: true, ...(action === undefined ? {} : { action }) }),
+      }) as unknown as typeof fetch;
+
+      const { verifyTurnstile } = await import("@/lib/forms/turnstile");
+      const result = await verifyTurnstile("token", { expectedAction: "contact" });
+
+      expect(result.ok).toBe(false);
+      expect(result.outcome).toBe("action-missing");
+      expect(result.disposition).toBe("unavailable");
+    });
+  }
+
+  it("verifies when the returned action exactly matches the expected form action", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true, action: "growth-plan" }),
+    }) as unknown as typeof fetch;
+
+    const { verifyTurnstile } = await import("@/lib/forms/turnstile");
+    const result = await verifyTurnstile("token", { expectedAction: "growth-plan" });
+
+    expect(result.ok).toBe(true);
+    expect(result.outcome).toBe("verified");
+  });
+
   it("rejects a token solved on a hostname we don't allow when hostname enforcement is on", async () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
@@ -277,6 +320,72 @@ describe("verifyTurnstile (Phase 3A — fail-closed, typed, action + hostname pi
     expect(result.ok).toBe(false);
     expect(result.outcome).toBe("hostname-mismatch");
     expect(result.disposition).toBe("human-failed");
+  });
+
+  // Strict hostname checking (Phase 3B §A2): with enforcement active, a missing / blank / non-string
+  // hostname is malformed → unavailable (fail closed), NOT a silent pass.
+  for (const [label, hostname] of [
+    ["absent", undefined],
+    ["an empty string", ""],
+    ["a non-string", 42],
+  ] as const) {
+    it(`fails as 'hostname-missing' (unavailable) when enforcement is on and the hostname is ${label}`, async () => {
+      vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
+      vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
+      vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://infiniteweblinks.com");
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          success: true,
+          action: "contact",
+          ...(hostname === undefined ? {} : { hostname }),
+        }),
+      }) as unknown as typeof fetch;
+
+      const { verifyTurnstile } = await import("@/lib/forms/turnstile");
+      const result = await verifyTurnstile("token", { expectedAction: "contact" });
+
+      expect(result.ok).toBe(false);
+      expect(result.outcome).toBe("hostname-missing");
+      expect(result.disposition).toBe("unavailable");
+    });
+  }
+
+  it("verifies when the returned hostname is the allowed canonical host", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://infiniteweblinks.com");
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true, action: "contact", hostname: "infiniteweblinks.com" }),
+    }) as unknown as typeof fetch;
+
+    const { verifyTurnstile } = await import("@/lib/forms/turnstile");
+    const result = await verifyTurnstile("token", { expectedAction: "contact" });
+
+    expect(result.ok).toBe(true);
+    expect(result.outcome).toBe("verified");
+  });
+
+  it("verifies when an allowed preview hostname is configured via TURNSTILE_ALLOWED_HOSTNAMES", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://infiniteweblinks.com");
+    vi.stubEnv("TURNSTILE_ALLOWED_HOSTNAMES", "preview.infiniteweblinks.com");
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        success: true,
+        action: "contact",
+        hostname: "preview.infiniteweblinks.com",
+      }),
+    }) as unknown as typeof fetch;
+
+    const { verifyTurnstile } = await import("@/lib/forms/turnstile");
+    const result = await verifyTurnstile("token", { expectedAction: "contact" });
+
+    expect(result.ok).toBe(true);
+    expect(result.outcome).toBe("verified");
   });
 
   it("fails as 'invalid-token' (human-failed) when Cloudflare rejects the token", async () => {

@@ -1,3 +1,6 @@
+/* OptionCards — V2 light single-select cards. V2 tokens only; the per-option accent arrives as a
+   mapped V2 ink in `--opt-ink`. Selection is shown by a tick AND a border (never colour alone). No
+   glow, glass or gradient; no fixed card height; ≥44px targets; long labels/descriptions wrap. */
 .fieldset {
   margin: 0;
   padding: 0;
@@ -8,7 +11,7 @@
   padding: 0;
   margin-bottom: var(--space-4);
   font-family: var(--font-display);
-  font-weight: var(--fw-bold);
+  font-weight: var(--v2-fw-heading);
   font-size: var(--fs-h4);
   color: var(--text-heading);
 }
@@ -40,9 +43,9 @@
   min-height: var(--target-min);
   padding: var(--space-4) var(--space-5);
   padding-right: var(--space-8);
-  border-radius: var(--radius-md);
-  background: var(--surface-raised);
-  border: 1.5px solid var(--hairline-strong);
+  border-radius: var(--v2-radius-md);
+  background: var(--v2-paper);
+  border: 1.5px solid var(--hairline);
   cursor: pointer;
   transition:
     border-color var(--dur-fast) var(--ease-out),
@@ -50,24 +53,18 @@
     box-shadow var(--dur-fast) var(--ease-out),
     transform var(--dur-fast) var(--ease-out);
 }
-.card:hover {
-  border-color: color-mix(in srgb, var(--opt-hue) 55%, var(--hairline-strong));
-  transform: translateY(-1px);
-}
-@media (prefers-reduced-motion: reduce) {
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .card:hover {
-    transform: none;
+    border-color: color-mix(in srgb, var(--opt-ink) 45%, var(--hairline));
+    transform: translateY(-2px);
   }
 }
 .checked {
-  border-color: var(--opt-hue);
-  background: color-mix(in srgb, var(--opt-hue) 10%, var(--surface-raised));
-  box-shadow: 0 0 0 1px var(--opt-hue);
+  border-color: var(--opt-ink);
+  background: color-mix(in srgb, var(--opt-ink) 8%, var(--v2-paper));
 }
 
-/* The real radio, visually hidden but focusable. The focus ring frames the whole option
-   card (not just the small tick badge), so a low-vision keyboard user sees the ring around
-   the option they're actually on. */
+/* The real radio, visually hidden but focusable. The focus ring frames the whole option card. */
 .input {
   position: absolute;
   opacity: 0;
@@ -76,15 +73,13 @@
   margin: 0;
 }
 .card:has(.input:focus-visible) {
-  box-shadow: var(--ring);
-}
-.checked:has(.input:focus-visible) {
-  box-shadow: var(--ring), 0 0 0 1px var(--opt-hue);
+  outline: none;
+  box-shadow: var(--v2-ring);
 }
 /* Fallback for browsers without :has() — keep the ring on the tick badge. */
 @supports not (selector(:has(*))) {
   .input:focus-visible + .check {
-    box-shadow: var(--ring);
+    box-shadow: var(--v2-ring);
   }
 }
 
@@ -98,8 +93,8 @@
   width: 22px;
   height: 22px;
   flex: none;
-  border-radius: var(--radius-pill);
-  border: 1.5px solid var(--hairline-strong);
+  border-radius: var(--v2-radius-pill);
+  border: 1.5px solid var(--hairline);
   background: transparent;
   color: transparent;
   transition:
@@ -108,9 +103,9 @@
     color var(--dur-fast) var(--ease-out);
 }
 .checked .check {
-  background: var(--opt-hue);
-  border-color: var(--opt-hue);
-  color: var(--white);
+  background: var(--opt-ink);
+  border-color: var(--opt-ink);
+  color: var(--v2-paper);
 }
 
 .icon {
@@ -120,10 +115,9 @@
   width: 34px;
   height: 34px;
   flex: none;
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--opt-hue) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--opt-hue) 32%, transparent);
-  color: color-mix(in srgb, var(--opt-hue) 74%, var(--text-heading));
+  border-radius: var(--v2-radius-sm);
+  background: color-mix(in srgb, var(--opt-ink) 12%, transparent);
+  color: var(--opt-ink);
 }
 .icon :global(svg) {
   width: 18px;
@@ -140,6 +134,7 @@
   font-weight: var(--fw-semibold);
   color: var(--text-heading);
   line-height: var(--lh-snug);
+  overflow-wrap: anywhere;
 }
 .description {
   font-size: var(--fs-sm);
@@ -150,5 +145,5 @@
   margin: var(--space-3) 0 0;
   font-size: var(--fs-sm);
   font-weight: var(--fw-semibold);
-  color: var(--danger);
+  color: var(--v2-danger);
 }

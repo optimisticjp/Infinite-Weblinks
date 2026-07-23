@@ -1,3 +1,6 @@
+/* Stepper — V2 numbered progress. One restrained brand accent for done/current; V2 tokens only. No
+   horizontal scroll (it wraps to a compact dotted row on narrow widths), no giant rail, no fake
+   percentage, no continuous animation. */
 .stepper {
   list-style: none;
   margin: 0;
@@ -21,11 +24,11 @@
   flex: 1 1 auto;
   height: 2px;
   min-width: 12px;
-  border-radius: var(--radius-pill);
-  background: var(--hairline-strong);
+  border-radius: var(--v2-radius-pill);
+  background: var(--hairline);
 }
 .done:not(:last-child)::after {
-  background: var(--domain-strategy);
+  background: var(--v2-brand);
 }
 
 .node {
@@ -35,27 +38,27 @@
   flex: none;
   width: 30px;
   height: 30px;
-  border-radius: var(--radius-pill);
+  border-radius: var(--v2-radius-pill);
   font-family: var(--font-mono);
   font-size: var(--fs-sm);
   font-weight: var(--fw-bold);
-  border: 1.5px solid var(--hairline-strong);
+  border: 1.5px solid var(--hairline);
   color: var(--text-muted);
   background: transparent;
   transition:
-    background var(--dur-base) var(--ease-out),
-    border-color var(--dur-base) var(--ease-out),
-    color var(--dur-base) var(--ease-out);
+    background var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
 }
 .done .node {
-  background: var(--domain-strategy);
-  border-color: var(--domain-strategy);
-  color: var(--white);
+  background: var(--v2-brand);
+  border-color: var(--v2-brand);
+  color: var(--v2-paper);
 }
 .current .node {
-  border-color: var(--domain-strategy);
+  border-color: var(--v2-brand);
   color: var(--text-heading);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--domain-strategy) 22%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--v2-brand) 18%, transparent);
 }
 
 .label {

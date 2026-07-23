@@ -1,0 +1,82 @@
+/* ContactFormSection — V2 form band. Two-column on wide screens (form dominant), one column with the
+   form first below the tablet breakpoint. V2 tokens only; no sticky card, no fixed height, no glow/
+   glass/gradient, no horizontal scroller. */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+  align-items: start;
+}
+@media (min-width: 60rem) {
+  .layout {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: var(--space-8);
+  }
+}
+
+.formCol {
+  display: grid;
+  gap: var(--space-5);
+  min-width: 0;
+}
+.formHead {
+  display: grid;
+  gap: var(--space-2);
+}
+.formTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h3);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+}
+.formSub {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+.formCard {
+  padding: var(--space-7) var(--space-6);
+}
+
+/* Guidance column — quiet, secondary. */
+.guide {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+}
+.guideTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+}
+.trust {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+.trustItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.trustLabel {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-body);
+}
+.fallback {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+.fallback a {
+  font-weight: var(--fw-semibold);
+  overflow-wrap: anywhere;
+}

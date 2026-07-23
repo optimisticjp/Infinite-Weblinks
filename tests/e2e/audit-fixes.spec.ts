@@ -8,10 +8,11 @@ import { test, expect } from "@playwright/test";
  */
 
 // Legacy (non-migrated) surfaces still resolve `--ring: 0 0 0 3px rgba(168, 85, 247, 0.65)` — the
-// ring colour appears in the element's computed box-shadow when it shows. /contact is not migrated.
-const RING_RGB = /168,\s*85,\s*247/;
+// ring colour appears in the element's computed box-shadow when it shows.
+// (Retained for reference; /contact was migrated to the V2 Button in Phase 2O and no longer uses it.)
 // V2 theme surfaces resolve `--ring: var(--v2-ring)`, built on `--v2-brand: #5b3df5` (rgb 91,61,245).
-// The migrated homepage hero uses the standard V2 Button, so its focus ring carries this colour.
+// The migrated homepage hero and the migrated /contact submit use the standard V2 Button, so their
+// focus ring carries this colour.
 const V2_RING_RGB = /91,\s*61,\s*245/;
 
 test.describe("keyboard focus ring survives on the primary CTAs", () => {
@@ -32,13 +33,13 @@ test.describe("keyboard focus ring survives on the primary CTAs", () => {
     expect(resting).not.toMatch(V2_RING_RGB);
   });
 
-  test("contact form submit (GlowButton) shows the ring on focus", async ({ page }) => {
+  test("contact form submit (V2 Button) shows the V2 ring on focus", async ({ page }) => {
     await page.goto("/contact");
-    const submit = page.locator('button[type="submit"]').first();
+    const submit = page.locator("#contact-form button[type=submit]");
     await submit.focus();
     await expect
       .poll(() => submit.evaluate((el) => getComputedStyle(el).boxShadow))
-      .toMatch(RING_RGB);
+      .toMatch(V2_RING_RGB);
   });
 });
 

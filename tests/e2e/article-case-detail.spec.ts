@@ -1,5 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { setViewportAndWaitForStableLayout, expectNoHorizontalOverflow } from "./helpers/layout";
 
 /**
  * Phase 2G — the Learn article and case-scenario DETAIL templates migrated to V2, plus the
@@ -23,12 +24,6 @@ const SCENARIO_SLUGS = [
 ];
 const RESPONSIVE_WIDTHS = [320, 360, 390, 768, 1024, 1160, 1280, 1440];
 
-async function documentOverflow(page: Page) {
-  return page.evaluate(
-    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-  );
-}
-
 async function commonInvariants(page: Page, path: string) {
   const res = await page.goto(path);
   expect(res?.status(), `${path} should not error`).toBeLessThan(400);
@@ -51,8 +46,8 @@ test.describe("Learn article detail — crawl of all five routes", () => {
       // organisation byline, no fabricated individual
       await expect(article.getByText("Infinite Weblinks").first()).toBeVisible();
       for (const width of [360, 1280]) {
-        await page.setViewportSize({ width, height: 900 });
-        expect(await documentOverflow(page), `/learn/${slug} overflow @ ${width}`).toBeLessThanOrEqual(1);
+        await setViewportAndWaitForStableLayout(page, width);
+        await expectNoHorizontalOverflow(page, `/learn/${slug} @ ${width}`);
       }
     });
   }
@@ -101,8 +96,8 @@ test.describe("case-scenario detail — crawl of all five routes", () => {
       expect(ldTypes).not.toContain("Review");
       expect(ldTypes).not.toContain("AggregateRating");
       for (const width of [360, 1280]) {
-        await page.setViewportSize({ width, height: 900 });
-        expect(await documentOverflow(page), `/case-studies/${slug} overflow @ ${width}`).toBeLessThanOrEqual(1);
+        await setViewportAndWaitForStableLayout(page, width);
+        await expectNoHorizontalOverflow(page, `/case-studies/${slug} @ ${width}`);
       }
     });
   }
@@ -175,9 +170,9 @@ test.describe("detail responsive — no overflow across all widths", () => {
   for (const path of ["/learn/understanding-delivery-models", "/case-studies/established-earn-more-per-customer"]) {
     for (const width of RESPONSIVE_WIDTHS) {
       test(`${path} @ ${width}px`, async ({ page }) => {
-        await page.setViewportSize({ width, height: 900 });
         await page.goto(path);
-        expect(await documentOverflow(page), `${path} overflow @ ${width}`).toBeLessThanOrEqual(1);
+        await setViewportAndWaitForStableLayout(page, width);
+        await expectNoHorizontalOverflow(page, `${path} @ ${width}`);
       });
     }
   }

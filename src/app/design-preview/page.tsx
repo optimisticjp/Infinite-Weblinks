@@ -22,6 +22,7 @@ import { GoalCard } from "@/components/cards/GoalCard";
 import { ServiceCard } from "@/components/cards/ServiceCard";
 import { JourneyStageCard } from "@/components/cards/JourneyStageCard";
 import { StartingPointCard } from "@/components/cards/StartingPointCard";
+import { ExampleCard } from "@/components/cards/ExampleCard";
 import { BusinessTypeCard } from "@/components/cards/BusinessTypeCard";
 import { CrossCuttingSystemCard } from "@/components/cards/CrossCuttingSystemCard";
 import { GoalPath } from "@/components/routes/GoalPath";
@@ -1783,6 +1784,34 @@ export default async function DesignPreviewPage() {
             <span className={styles.cardTitle}>{spLong.label}</span>
             <Callout tone="information">{spLong.recommendation}</Callout>
           </div>
+        </section>
+
+        {/* 24 · Phase 2S — status + gated examples. The restrained proof card is shown here; the
+            gated /examples index + proof detail and the 404/error status surfaces are verified via
+            unit fixtures + e2e, not rendered inline (they own their own <main> + H1). */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Phase 2S · Status &amp; gated examples</h2>
+          <p className={styles.subTitle}>
+            ExampleCard — the restrained whole-card proof link for the gated /examples index (title +
+            honest summary only; no fabricated metric, rating, logo or client name)
+          </p>
+          <CardGrid layout="equal" aria-label="Example proof cards (preview)">
+            <ExampleCard
+              title="A connected store"
+              summary="Store, email and analytics working together as one system."
+              href="#"
+            />
+            <ExampleCard
+              title="A local service site"
+              summary="A site built to turn local searches into real enquiries."
+              href="#"
+            />
+            <ExampleCard
+              title="A content-led launch"
+              summary="Guides and pages that earn discovery and answer real questions."
+              href="#"
+            />
+          </CardGrid>
         </section>
       </div>
     </main>

@@ -1,16 +1,23 @@
+.body {
+  display: grid;
+  gap: var(--space-3);
+  max-width: var(--measure);
+}
+
 .meta {
+  margin: 0;
   font-family: var(--font-label);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-semibold);
+  letter-spacing: var(--ls-eyebrow);
   text-transform: uppercase;
-  color: var(--violet-deep);
-  margin-bottom: var(--space-3);
+  color: var(--v2-brand);
 }
 
 .prose {
-  max-width: 72ch;
+  margin: 0;
+  max-width: none;
   color: var(--text-body);
   font-size: var(--fs-lead);
-  line-height: 1.65;
+  line-height: var(--lh-body);
 }

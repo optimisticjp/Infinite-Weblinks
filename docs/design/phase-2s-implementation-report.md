@@ -170,10 +170,13 @@ the per-route 200%-text/reduced-motion checks in the existing detail specs.
 
 ## 22. Screenshot / visual-review findings
 
-See `docs/design/phase-2s-visual-review.md`: light default everywhere, ≤1 night section per ordinary
-page (0 on legal/404), no cosmic/canvas/SVG-gradient, one H1, no overflow. Inspected by eye: the 404,
-homepage, pricing and starting-point templates. The only exceptions are the internal noindex
-design-preview surfaces.
+See `docs/design/phase-2s-visual-review.md`. The evidence is **automated structural acceptance across
+every representative template family** (light default everywhere, ≤1 night section per ordinary page —
+0 on legal/404, no cosmic/canvas/SVG-gradient, one H1, no overflow) **plus a four-template visual
+spot-check** inspected by eye: the 404, homepage, pricing and starting-point templates. This does **not**
+claim every live and gated template received manual visual approval — **complete manual visual
+certification is deferred to Phase 3C**. The only exceptions are the internal noindex design-preview
+surfaces.
 
 ## 23. Client-boundary and canvas results
 
@@ -202,7 +205,9 @@ acceptance + 5 status/examples) and the migrated 404's axe check.
 
 ## 27. Branch comparison with main
 
-`origin/main...HEAD`: 0 behind, **141 ahead** — the whole V2 redesign (421 files, +31,873 / −12,188).
+`origin/main...HEAD`: 0 behind, **142 ahead** — the whole V2 redesign (421 files, +31,873 / −12,188). (The
+reviewed GitHub comparison at the Phase 2S head is 142/0; an earlier draft said 141 — corrected in Phase 3A.
+The Phase 3A implementation report records the new count after 3A's commits.)
 Phase 2S itself is 10 commits on top of `10722f0`.
 
 ## 28. Known non-design limitations

@@ -162,12 +162,6 @@ select:-webkit-autofill {
   color: var(--text-body);
   max-width: var(--measure);
 }
-.iw-gradient-text {
-  background: var(--grad-text);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
 .iw-mono {
   font-family: var(--font-mono);
   font-size: var(--fs-mono);

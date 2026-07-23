@@ -79,8 +79,9 @@ Every token below had **no** consumer outside its own definition (searched acros
 | `SectionShell`, `PageHeader`, `Card`, `CardGrid`, `Callout`, `Button`, `FinalCtaSection` | the V2 kit |
 | The 7 `--domain-*` constellation hues | pervasive wayfinding (~150 refs across `lib/services/domains.ts`, content data, the domain bridge) |
 | `theme-light`, `theme-light-alt`, `theme-night` | the V2 surfaces |
-| `theme-band` (+ `--band*`, `--grad-*`, `--glow-*` it consumes) | still applied by live light sections: `EditorialStatement` (homepage problem) and `ProcessStepsSection` (`/how-it-works`) |
-| `theme-dark`, `theme-band-bright` | **re-censused after Cluster A**; retained only if a live consumer remains, else removed with their exclusive tokens (see Commit 8 notes) |
+| `theme-band` (+ its exclusive `--band` / `--band-ink` / `--band-ink-2`) | **LIVE — retained.** Real consumers: `EditorialStatement.tsx:44` (rendered by the homepage `HomepageProblemSection`) and `ProcessStepsSection.tsx:31` (rendered by `WorkProcessSection` on `/how-it-works`). |
+| `theme-dark` (+ `hero/Hero.tsx`) | **DEAD — removed (Phase 3A).** Its only reference was `hero/Hero.tsx`, which had **zero importers** (orphaned). The class + `hero/Hero.tsx`/`.module.css` were removed; the cascade also freed `.iw-gradient-text` (Hero was its sole consumer) and `--grad-text`, both removed. |
+| `theme-band-bright` (+ `--band-bright` / `--band-bright-raised` / `--band-ink-3`) | **DEAD — removed (Phase 3A).** After the Cluster A/B deletions it had **no consumer at all** (only its own definition). The class and its three exclusive tokens were removed. |
 | `GlobeArc`/`Starfield` **were** kept until the cosmic cascade proved them dead in Commit 8 | — |
 | `lib/design/domainColor.ts` (migration bridge) | live: maps legacy + base tokens to accessible V2 inks, used across the card set |
 

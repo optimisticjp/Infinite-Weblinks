@@ -2,7 +2,8 @@ import { test, expect, type Page } from "@playwright/test";
 import { setViewportAndWaitForStableLayout, expectNoHorizontalOverflow } from "./helpers/layout";
 
 /**
- * Phase 2S (§H) — the final V2 visual-acceptance contract, enforced across every template family.
+ * Phase 2S (§H) — automated STRUCTURAL visual-acceptance across every representative template family
+ * (not a manual visual sign-off; complete manual visual certification is deferred to Phase 3C).
  * The document root is light-first, dark is one reserved section on ordinary pages (zero on legal /
  * status), and no route renders a cosmic canvas, starfield/globe, gradient content heading or the
  * removed legacy hero. One H1 per page; no horizontal overflow at 390 / 768 / 1440.

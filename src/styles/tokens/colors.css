@@ -1,11 +1,12 @@
-/* Colours — Infinite Weblinks
-   A "living connected digital universe": deep navy/near-black lit by electric violet,
-   hot pink, orange, cyan, lime and blue.
-   Rebuilt cleanly from the approved handoff, WITH the two accessibility fixes from the
-   planning review baked in:
-     - R-A11Y-1 (CHK-A12): primary CTA gradient uses DARK ink text, not white.
-     - R-A11Y-2 (CHK-A13): section-scoped text colours (on-dark / on-band / on-statement)
-       instead of one global default that fails on the bright editorial band. */
+/* Colours — Infinite Weblinks (LEGACY BASE PALETTE — compatibility source only).
+   The retired dark/cosmic "Constellation" palette below is NOT the document design. Since the
+   Phase 2S convergence the document default is V2 light via `body.theme-light` (see tokens/v2.css),
+   and `theme-night` is the single explicitly-scoped reserved dark surface. This file survives only
+   as the compatibility source for the individual legacy tokens that still have PROVEN live consumers
+   — chiefly the `--domain-*` wayfinding hues, the `theme-band` light class (EditorialStatement +
+   ProcessStepsSection), and the base `--ink-*` / `--text-*` / gradient tokens the Button + a few
+   primitives still read. It defines no document-wide default. (The two baked-in a11y fixes remain:
+   the CTA gradient uses dark ink, and text colour is section-scoped, never one global default.) */
 
 :root {
   /* ---- Core neutral scale (navy-black, faintly violet) ---- */
@@ -53,11 +54,10 @@
   --blue-soft: rgba(59, 130, 246, 0.14);
 
   /* ---- Signature gradients (legacy — retained only where a live component still consumes them:
-     --grad-brand / --grad-cta on the Button, --grad-text on the Hero. The unused violet-pink /
-     cyan-blue / lime / banner / spectrum gradients were removed at Phase 2S convergence). ---- */
+     --grad-brand / --grad-cta on the Button. The unused violet-pink / cyan-blue / lime / banner /
+     spectrum / text gradients were removed at Phase 2S/3A convergence). ---- */
   --grad-brand: linear-gradient(120deg, #7c3aed 0%, #f5197e 52%, #ff7a18 100%);
   --grad-cta: linear-gradient(90deg, #f5197e 0%, #ff7a18 100%);
-  --grad-text: linear-gradient(100deg, #ff2e93 0%, #ff7a18 100%); /* on dark: 5.8–7.8:1 */
 
   /* ---- Borders & lines ---- */
   --border-1: rgba(255, 255, 255, 0.08);
@@ -100,15 +100,6 @@
      (White would fail: 2.6:1 at the orange end.) */
   --cta-text: var(--ink-950);
 
-  /* ---- Brighter daylight band (redesign) ----
-     The reference cream/light sections (starting-point selector, the "digital world"
-     band, the light growth journey) read as near-white daylight, airier than the
-     editorial band. A separate, brighter surface — still glow-free by rule (daylight
-     is what makes the dark sections read as dark). */
-  --band-bright: #f7f6fc; /* near-white, faint violet undertone */
-  --band-bright-raised: #ffffff;
-  --band-ink-3: #4a4566; /* tertiary ink on the bright band (~8.4:1) */
-
   /* ---- Connection lines & orbit strokes (constellations, journeys) ----
      The recurring "everything connects" motif is drawn with tinted strokes, not glows.
      On dark they are faint white; on daylight they are faint ink. */
@@ -123,24 +114,11 @@
 }
 
 /* ============================================================
-   SECTION THEMES — set on a section wrapper; override the
-   semantic tokens so nested components render correct contrast.
+   SECTION THEME — the one retained legacy light band. `.theme-dark` and
+   `.theme-band-bright` (+ their exclusive --band-bright* tokens) were proven dead
+   and removed at Phase 3A; `.theme-band` remains, consumed by EditorialStatement
+   (homepage problem) and ProcessStepsSection (/how-it-works).
    ============================================================ */
-
-.theme-dark {
-  --surface: var(--ink-950);
-  --surface-raised: var(--ink-800);
-  --surface-hover: rgba(255, 255, 255, 0.1); /* white wash on dark */
-  --text-heading: var(--text-1);
-  --text-body: var(--text-2);
-  --text-muted: var(--text-3);
-  --hairline: var(--border-1);
-  --hairline-strong: var(--border-2);
-  --link: var(--violet-bright);
-  --link-hover: var(--pink-bright);
-  background-color: var(--surface);
-  color: var(--text-body);
-}
 
 /* Bright editorial band — dark text on cream (all pass ≥ 7:1). Accents are for
    non-text decoration only on this surface. */

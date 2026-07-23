@@ -51,7 +51,8 @@ lint · typecheck · `npm run test` (74 files / 1,898 unit tests) · `npm run bu
 
 ## 7. Branch divergence from main
 
-`origin/main...HEAD`: 0 behind, **141 ahead** (the full V2 redesign; 421 files, +31,873 / −12,188).
+`origin/main...HEAD`: 0 behind, **142 ahead** (the full V2 redesign; 421 files, +31,873 / −12,188). (An
+earlier draft said 141; the reviewed GitHub comparison at the Phase 2S head is 142/0 — corrected in Phase 3A.)
 Phase 2S is 10 commits on top of `10722f0`.
 
 ## 8. Known non-design limitations

@@ -2,8 +2,12 @@
 
 Final review of the converged V2 system against the acceptance contract (Part H). Metrics were
 captured from a **production build** (`next build` → `next start`) with the pre-installed Chromium at
-**390 / 768 / 1440** across every unique route/template family; the two edge widths were also
-screenshotted full-page and a representative sample was inspected by eye (not just generated).
+**390 / 768 / 1440** across every unique route/template family. To be precise about the evidence: this
+was **automated structural acceptance across every representative template family, plus a four-template
+visual spot-check** — only four templates (homepage, pricing, starting-point detail, 404) were inspected
+by eye at the edge widths. **Complete manual visual certification of every remaining live and gated
+template family (and their states) is deferred to Phase 3C** (release certification); this review does
+not claim every template received manual visual approval.
 
 **Method.** A Playwright pass loaded each route at all three widths and measured, per page:
 `document.body` computed background, `.theme-cosmic` count, `.theme-night` section count, `<canvas>`
@@ -84,5 +88,8 @@ Legend: **bg** = body background · **cosmic/canvas/svcGrad** = must be 0 · **n
 No LCP / CLS / INP / JavaScript-byte / Lighthouse numbers are claimed — those were not run. The
 metrics above are DOM/computed-style facts captured from the production build, not performance scores.
 
-**Result:** every live and gated template family passes the Part-H acceptance contract; no fix was
-required. The two design-preview night counts are accepted as internal-preview exceptions.
+**Result:** the **automated structural acceptance** contract (Part H) passes on every representative
+template family; the **manual visual spot-check** covered four templates (homepage, pricing,
+starting-point detail, 404) with no fix required. Complete manual visual certification of the remaining
+families is **deferred to Phase 3C**. The two design-preview night counts are accepted as
+internal-preview exceptions.

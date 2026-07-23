@@ -54,9 +54,12 @@ export function FormField({
   const describedBy = [hintId, errorId].filter(Boolean).join(" ") || undefined;
   const requiredClass = appearance === "v2" ? v2.required : styles.required;
   const errorClass = appearance === "v2" ? v2.error : styles.error;
+  // Invalid-control border: the V2 appearance uses the V2 danger wrapper (--v2-danger); legacy keeps
+  // the existing --danger rule. Exactly one is applied, so there is no specificity conflict.
+  const hasErrorClass = error ? (appearance === "v2" ? v2.hasError : styles.hasError) : "";
 
   return (
-    <div className={[styles.field, error ? styles.hasError : "", className].filter(Boolean).join(" ")}>
+    <div className={[styles.field, hasErrorClass, className].filter(Boolean).join(" ")}>
       <label htmlFor={fieldId} className={styles.label}>
         {label}
         {required ? (

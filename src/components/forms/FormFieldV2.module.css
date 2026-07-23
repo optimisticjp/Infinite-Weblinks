@@ -48,3 +48,12 @@ textarea.control {
   font-weight: var(--fw-semibold);
   color: var(--v2-danger);
 }
+
+/* Invalid-control border for the V2 appearance. FormField applies THIS wrapper class instead of the
+   legacy `.hasError` (never both), so there is no cross-module specificity tie and no !important. A
+   focused invalid V2 control still shows its focus ring (.control:focus-visible wins over this). */
+.hasError :global(input),
+.hasError :global(textarea),
+.hasError :global(select) {
+  border-color: var(--v2-danger);
+}

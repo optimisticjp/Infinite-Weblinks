@@ -18,10 +18,12 @@ unchanged. No root colour-scheme flip, no legacy-component deletion, no deploy, 
   typed `EngagementShapeCard.note`, and corrected centralisation/duration documentation.
 - **Centralised the contact presentation content** into a typed, server-safe module.
 - **Added the V2 form-control appearance** as an additive, opt-in prop (default legacy) and migrated
-  `ContactForm`'s visuals with its behaviour byte-for-byte intact.
+  `ContactForm`'s visuals with its behaviour preserved (behavior-for-behavior — see §11).
 - **Built `ContactFormSection`** (form-first two-column) and **`ContactPathCard`** (whole-card link).
 - **Migrated `/contact`** off the cosmic hero + globe + glass + banner onto PageHeader + the V2 form
-  section + ProcessStepList + ContactPathCard + the single reserved-night FinalCtaSection, preserving
+  section + ProcessStepList + ContactPathCard + a **new** single reserved-night FinalCtaSection
+  (the old route had no `FinalCtaBannerSection`, so this adds a closing CTA rather than replacing one),
+  preserving
   the URL, metadata, canonical, ContactPage JSON-LD, goal-prefill query, field ids/order,
   `#contact-form` and the support-email fallback.
 - Updated `/design-preview`, extended token-hygiene, and added contact route/form/API and E2E coverage.
@@ -119,9 +121,11 @@ surface.
 
 ## 11. ContactForm visual migration
 
-Behaviour is byte-for-byte intact (state, field order/ids, honeypot/Turnstile/elapsed, `safeParse`,
-JSON payload, `/api/forms/contact` fetch, status machine, focus management, privacy/mailto/success
-links). Visually: `GlowButton` → the shared `Button` loading contract (`type=submit`, `size=lg`,
+Behaviour is preserved **behavior-for-behavior** — the state, JSON payload, response-code handling and
+focus contracts are retained (field order/ids, honeypot/Turnstile/elapsed, `safeParse`, `/api/forms/
+contact` fetch, status machine, privacy/mailto/success links), while the **presentation markup and
+styles were intentionally changed**; the production API/schema/security files remained unchanged (§17).
+Visually: `GlowButton` → the shared `Button` loading contract (`type=submit`, `size=lg`,
 `loading={status === "submitting"}`, full-width, the existing Send icon and idle/submitting labels);
 the InfinityMark + SVG-gradient success decoration → a flat success `IconTile` (keeping `role=status`,
 `tabIndex=-1` and the exact success copy/links); and the module rebuilt on V2 semantic status surfaces
@@ -195,7 +199,9 @@ duplicate or hidden empty target.
 ## 20. No-JavaScript result and explicit submission limitation
 
 With JavaScript disabled the server response contains the H1, the approved lead, both PageHeader
-destinations, the complete form (all eight fields, every select option, required/optional labels), the
+destinations, the complete form (all eight fields; **all three selects' options — exact value, label
+and order against the source datasets, including the placeholder — asserted exhaustively** in Phase
+2P, not merely a non-empty count; required/optional labels), the
 privacy link, the support-email fallback, the four trust points, the three process steps, both
 alternative paths, the final CTA and every fragment target — and the `mailto:` fallback is usable.
 **The page content and form fields are server-rendered; the form's fetch-based submission requires

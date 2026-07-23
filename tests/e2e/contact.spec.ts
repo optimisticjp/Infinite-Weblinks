@@ -10,6 +10,12 @@ import {
   contactProcessSteps,
   contactAlternativePaths,
 } from "../../src/lib/content/data/contact";
+import { businessTypes } from "../../src/lib/content/data/business-types";
+import { stages } from "../../src/lib/content/data/stages";
+import { goals } from "../../src/lib/content/data/goals";
+
+/** Same public-status gate the content getters apply, so the expected options match what renders. */
+const renderable = <T extends { status: string }>(x: T) => x.status === "verified" || x.status === "readyToPublish";
 
 /**
  * /contact — the V2 contact experience. Structure, responsive/zoom/no-JS behaviour, accessibility,
@@ -255,9 +261,18 @@ test.describe("contact page — without JavaScript", () => {
     for (const label of ["Your name", "Email", "Business name", "Website", "Business type", "Where you are now", "Your main goal", "Your message"]) {
       await expect(page.getByLabel(label), label).toBeVisible();
     }
-    // Every option in one of the selects renders server-side (goal options are the largest set).
-    const goalOptionCount = await page.locator("#contact-main-goal option").count();
-    expect(goalOptionCount, "goal select has its options").toBeGreaterThan(1);
+    // Every option in all three selects renders server-side — exact value + label + order, including
+    // the leading "Select an option" placeholder — compared against the real source datasets.
+    const expectSelect = async (selector: string, items: { value: string; label: string }[]) => {
+      const opts = await page
+        .locator(`${selector} option`)
+        .evaluateAll((els) => els.map((e) => ({ value: (e as HTMLOptionElement).value, label: (e.textContent ?? "").trim() })));
+      expect(opts, selector).toEqual([{ value: "", label: "Select an option" }, ...items]);
+    };
+    await expectSelect("#contact-business-type", businessTypes.filter(renderable).map((b) => ({ value: b.slug, label: b.name })));
+    await expectSelect("#contact-current-stage", stages.filter(renderable).map((s) => ({ value: s.slug, label: s.name })));
+    await expectSelect("#contact-main-goal", goals.filter(renderable).map((g) => ({ value: g.slug, label: g.title })));
+
     await expect(main).toContainText("are required");
     await expect(page.locator('a[href="/privacy"]').first()).toBeVisible();
     await expect(page.locator(`a[href="mailto:${SUPPORT_EMAIL}"]`).first()).toBeVisible();
@@ -275,7 +290,9 @@ test.describe("contact page — without JavaScript", () => {
     for (const id of [...SECTION_FRAGMENTS, "contact-form"]) {
       expect(await page.locator(`[id="${id}"]`).count(), `#${id} (no JS)`).toBe(1);
     }
+    // Both final-CTA destinations, including the mailto secondary.
     expect(await page.locator('[id="get-started"] a[href="#contact-form"]').count()).toBeGreaterThan(0);
+    expect(await page.locator(`[id="get-started"] a[href="mailto:${SUPPORT_EMAIL}"]`).count()).toBeGreaterThan(0);
   });
 });
 

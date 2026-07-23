@@ -10,6 +10,7 @@ import { stages } from "../../src/lib/content/data/stages";
 import { services } from "../../src/lib/content/data/services";
 import { serviceCategories } from "../../src/lib/content/data/service-categories";
 import { isRenderable } from "../../src/lib/content/types";
+import { deliveryModelMeta } from "../../src/lib/design/deliveryModel";
 
 /**
  * /starting-points/[slug] — the eight V2 starting-point detail pages. Structure, the exact recommended
@@ -31,8 +32,11 @@ function resolve(sp: (typeof SPs)[number]) {
     return {
       slug: service.slug,
       name: service.name,
+      description: service.plainDescription,
       href: `/services/${service.categorySlug}#${service.slug}`,
       categoryLabel: category.name,
+      // The delivery-model label comes from the single source of truth, never re-typed here.
+      deliveryLabel: deliveryModelMeta(service.deliveryModel).label,
     };
   });
   return { stage, stageServices };
@@ -88,15 +92,19 @@ test.describe("starting-point detail — content & structure (all eight)", () =>
       await expect(recSection).toContainText(sp.recommendation);
       await expect(recSection).toContainText("Your plan is tailored to your specifics during discovery.");
 
-      // Stage services — exact set + order + destinations.
+      // Stage services — exact set + order + destinations, and each card's full content.
       const svcSection = page.locator("#stage-services");
       const hrefs = await svcSection.locator("a[href^='/services/']").evaluateAll((els) =>
         els.map((e) => (e as HTMLAnchorElement).getAttribute("href")),
       );
       expect(hrefs, `${sp.slug} service order`).toEqual(stageServices.map((s) => s.href));
       for (const s of stageServices) {
+        // Exactly one whole-card link per service, to its exact destination.
+        expect(await svcSection.locator(`a[href="${s.href}"]`).count(), `${s.slug} one card`).toBe(1);
         await expect(svcSection, s.name).toContainText(s.name);
-        await expect(svcSection, s.categoryLabel).toContainText(s.categoryLabel);
+        await expect(svcSection, `${s.slug} description`).toContainText(s.description);
+        await expect(svcSection, `${s.slug} category`).toContainText(s.categoryLabel);
+        await expect(svcSection, `${s.slug} delivery model`).toContainText(s.deliveryLabel);
       }
 
       // Final CTA (primary /growth-plan + secondary /contact).
@@ -165,10 +173,15 @@ test.describe("starting-point detail — without JavaScript (all eight)", () => 
       await expect(page.locator(`#recommended-stage a[href="/how-it-works#${stage.slug}"]`)).toHaveCount(1);
       await expect(page.locator("#recommendation")).toContainText(sp.recommendation);
       await expect(page.locator("#recommendation")).toContainText("Your plan is tailored to your specifics during discovery.");
-      // Every stage service card + destination.
+      // Every stage service card renders its full content from the server (name, description,
+      // category label, delivery-model label) as exactly one whole-card link to its destination.
+      const noJsSvc = page.locator("#stage-services");
       for (const s of stageServices) {
-        await expect(page.locator("#stage-services"), s.name).toContainText(s.name);
-        expect(await page.locator(`#stage-services a[href="${s.href}"]`).count(), s.href).toBe(1);
+        expect(await noJsSvc.locator(`a[href="${s.href}"]`).count(), `${s.slug} one card (no JS)`).toBe(1);
+        await expect(noJsSvc, s.name).toContainText(s.name);
+        await expect(noJsSvc, `${s.slug} description (no JS)`).toContainText(s.description);
+        await expect(noJsSvc, `${s.slug} category (no JS)`).toContainText(s.categoryLabel);
+        await expect(noJsSvc, `${s.slug} delivery model (no JS)`).toContainText(s.deliveryLabel);
       }
       // Final CTA both destinations + every fragment.
       expect(await page.locator('[id="get-started"] a[href="/growth-plan"]').count()).toBeGreaterThan(0);

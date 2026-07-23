@@ -172,10 +172,15 @@ guarantee/certainty, and the integrity test fails on a planted defect.
 ## 19. Legacy-route safety
 
 `/growth-plan`, `/contact`, `/pricing`, `/services` and `/troubleshooter` are untouched beyond the
-contained Phase 2Q corrections. No unrelated component was deleted. `FinalCtaBannerSection` remains live
-in the homepage section registry; `CosmicPageHero` is retained but is now unreachable (a Phase 2S
-removal candidate, not deleted here). The route-local `starting-point.module.css` is rewritten to V2
-(only the recommendation block's layout remains), not removed.
+contained Phase 2Q corrections. No unrelated component was deleted. Legacy-reachability wording is
+corrected to the proven, repository-wide import graph (established in Phase 2S): `CosmicPageHero` has
+**zero real importers** (only a comment reference in `PageHeader`) — it is genuinely unreachable, not
+merely "not-yet-imported". `FinalCtaBannerSection` is imported **only** by the homepage section
+registry (`sections/registry.tsx`), and that registry is **itself orphaned** — no route renders
+`HomepageSections`, so `FinalCtaBannerSection` is registry-only dead code, not "live in the registry".
+Both were **retained** in Phase 2R (not deleted there) and are Phase 2S removal candidates. The
+route-local `starting-point.module.css` is rewritten to V2 (only the recommendation block's layout
+remains), not removed.
 
 ## 20. Canvas/client/presentation-cost changes
 

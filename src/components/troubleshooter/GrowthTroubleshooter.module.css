@@ -1,23 +1,17 @@
-.root {
-  display: block;
-}
+/* GrowthTroubleshooter — V2 light-first styling. The SectionShells own the surfaces; this module lays
+   out the problem selector and the active guidance region. V2 tokens only — the per-problem tone comes
+   in as an accessible V2 ink (`--btn-ink` / `--active-ink`) + tint (`--btn-tint`) via the domain
+   bridge. No legacy domain or base-palette tokens, no --accent, no --white, no --danger, no glow,
+   glass or gradient, no backdrop-filter, no raw colour, no theme-band-bright, no fixed viewport
+   heights, no horizontal scroller, no sticky result. */
 
 /* ---- problem selector ---- */
-.selectHeading {
-  font-size: var(--fs-h2);
-  margin: 0;
-}
-.selectIntro {
-  color: var(--text-muted);
-  margin: var(--space-2) 0 var(--space-8);
-}
-
-.grid {
+.problemsList {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
   gap: var(--space-4);
 }
 
@@ -28,214 +22,101 @@
   align-items: center;
   gap: var(--space-4);
   text-align: start;
-  padding: var(--space-5);
+  padding: var(--space-4) var(--space-5);
   min-height: var(--target-min);
-  border-radius: var(--radius-lg);
+  border-radius: var(--v2-radius-lg);
   background: var(--surface-raised);
   border: 1px solid var(--hairline);
   color: var(--text-body);
   cursor: pointer;
   transition:
-    border-color var(--dur-base) var(--ease-out),
-    transform var(--dur-base) var(--ease-out),
-    background-color var(--dur-base) var(--ease-out);
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
 }
-.problem:hover {
-  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+.problem:focus-visible {
+  outline: none;
+  box-shadow: var(--v2-ring);
+}
+@media (hover: hover) {
+  .problem:hover {
+    border-color: color-mix(in srgb, var(--btn-ink) 45%, var(--hairline));
+    transform: translateY(-2px);
+  }
 }
 .problemActive {
-  border-color: color-mix(in srgb, var(--accent) 70%, transparent);
-  background:
-    radial-gradient(120% 120% at 0% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 60%),
-    var(--surface-raised);
-  box-shadow: 0 0 26px -10px var(--accent);
+  border-color: var(--btn-ink);
+  background: color-mix(in srgb, var(--btn-tint) 60%, var(--surface-raised));
 }
-.problemIcon {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
+.problemTile {
   flex: none;
-  border-radius: var(--radius-md);
-  color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 15%, transparent);
-}
-.problemIcon svg {
-  width: 22px;
-  height: 22px;
 }
 .problemLabel {
-  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-body);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-sm);
+  line-height: var(--lh-snug);
   color: var(--text-heading);
-  font-size: 0.95rem;
-  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
-.problemTick {
+.problemMark {
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
-  margin-left: auto;
   flex: none;
-  border-radius: 50%;
-  color: var(--cta-text);
-  background: var(--accent);
-}
-.problemTick svg {
-  width: 15px;
-  height: 15px;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--v2-radius-pill);
+  background: var(--btn-ink);
+  color: var(--surface-raised);
 }
 @media (prefers-reduced-motion: reduce) {
-  .problem {
+  .problem,
+  .problem:hover {
     transition: none;
+    transform: none;
   }
 }
 
-/* ---- why this happens ---- */
-.reasonsHead {
-  max-width: 60ch;
-  margin-bottom: var(--space-8);
-}
-.reasonsHeading {
-  font-size: var(--fs-h3);
-  margin: var(--space-2) 0 var(--space-3);
-  color: var(--text-heading);
-}
-.reasonsIntro {
-  color: var(--text-body);
-}
-.reasons {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+/* ---- active guidance ---- */
+.result {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: var(--space-4);
+  gap: var(--space-8);
+  outline: none;
 }
-.reason {
-  padding: var(--space-6);
-  border-radius: var(--radius-lg);
-  background: var(--surface-raised);
-  border: 1px solid var(--hairline);
-  border-top: 3px solid var(--accent);
-}
-.reasonIcon {
+.activeHead {
   display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-md);
-  color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 15%, transparent);
-  margin-bottom: var(--space-3);
-}
-.reasonIcon svg {
-  width: 20px;
-  height: 20px;
-}
-.reasonTitle {
-  font-family: var(--font-display);
-  font-weight: 700;
-  color: var(--text-heading);
-  margin: 0 0 var(--space-1);
-}
-.reasonBody {
-  color: var(--text-body);
-  font-size: 0.9rem;
-  line-height: 1.5;
-}
-
-/* ---- things to check (daylight) ---- */
-.checksHeading {
-  font-size: var(--fs-h3);
-  margin: 0 0 var(--space-6);
-}
-.checks {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: var(--space-4);
-  counter-reset: none;
-}
-.check {
-  display: flex;
-  gap: var(--space-4);
-  align-items: flex-start;
-  padding: var(--space-5);
-  border-radius: var(--radius-lg);
-  background: var(--surface-raised);
-  border: 1px solid var(--hairline);
-}
-.checkNum {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  flex: none;
-  border-radius: 50%;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: 0.85rem;
-  color: var(--white);
-  background: var(--accent);
-}
-.checkText {
-  color: var(--text-body);
-  font-size: 0.92rem;
-  line-height: 1.5;
-}
-
-/* ---- focus first ---- */
-.focusInner {
-  display: grid;
-  gap: var(--space-6);
-  align-items: center;
-  padding: var(--space-8);
-  border-radius: var(--radius-xl);
-  background: var(--surface-raised);
-  border: 1px solid var(--hairline);
-}
-@media (min-width: 820px) {
-  .focusInner {
-    grid-template-columns: 1fr auto;
-    gap: var(--space-10);
-    padding: var(--space-10);
-  }
-}
-.focusText {
-  font-size: var(--fs-lead);
-  color: var(--text-heading);
-  font-weight: 500;
-  margin: var(--space-2) 0 0;
-}
-.focusCtas {
-  display: flex;
-  flex-direction: column;
   gap: var(--space-3);
-  align-items: flex-start;
+  max-width: 62ch;
+  padding-top: var(--space-3);
+  border-top: 3px solid var(--active-ink);
+}
+.activeTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h3);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+  overflow-wrap: anywhere;
+}
+.activeExplanation {
+  margin: 0;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--text-body);
 }
 
-/* Narrow phones: the panel's 32px padding plus a long primary-CTA label
-   ("Build My Digital Growth Plan") forced the button's min-width past the ~320px
-   viewport. Trim the padding and let the buttons take the full column so they can't
-   push the panel wider than the screen. */
-@media (max-width: 560px) {
-  .focusInner {
-    padding: var(--space-5);
-  }
-  .focusCtas {
-    align-self: stretch;
-    width: 100%;
-  }
-  /* Higher specificity than the global .btn so the long CTA label may wrap and shrink
-     to the column instead of forcing its nowrap min-width past the viewport. */
-  .focusInner .focusCtas > * {
-    width: 100%;
-    min-width: 0;
-    white-space: normal;
-    text-align: center;
-    justify-content: center;
-  }
+.block {
+  display: grid;
+  gap: var(--space-5);
+}
+.blockHeading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
 }

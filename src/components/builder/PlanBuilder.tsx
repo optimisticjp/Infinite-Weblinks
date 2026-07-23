@@ -166,9 +166,9 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
   }
 
   function focusFirstError(e: FieldErrors) {
-    const first = (["businessType", "mainGoal", "existingSetup", "engagement", "timeline"] as const).find(
-      (k) => e[k],
-    );
+    const first = (
+      ["businessType", "mainGoal", "existingSetup", "engagement", "timeline"] as const
+    ).find((k) => e[k]);
     if (first) {
       const el = document.querySelector<HTMLInputElement>(`input[name="${first}"]`);
       el?.focus();
@@ -266,10 +266,11 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
       } else if (
         data.code === "delivery-unavailable" ||
         data.code === "delivery-failed" ||
-        data.code === "security-unavailable"
+        data.code === "security-unavailable" ||
+        data.code === "rate-limit-unavailable"
       ) {
-        // Truthful "try again / email us" notice — delivery isn't set up, upstream failed, or the
-        // human check couldn't run. Never presented as success.
+        // Truthful "try again / email us" notice — delivery isn't set up, upstream failed, or a
+        // fail-closed security/rate-limit check couldn't run. Never presented as success.
         setStatus("delivery-unavailable");
         setStatusMessage(
           data.message ??
@@ -277,7 +278,9 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
         );
       } else {
         setStatus("error");
-        setStatusMessage(data.message ?? "Something went wrong. Please try again, or email us directly.");
+        setStatusMessage(
+          data.message ?? "Something went wrong. Please try again, or email us directly.",
+        );
       }
     } catch {
       setStatus("delivery-unavailable");
@@ -298,7 +301,13 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
   if (phase === "plan" && result) {
     return (
       <div className={styles.builder}>
-        <div ref={planHeadingRef} tabIndex={-1} className={styles.planRegion} role="region" aria-label="Your growth plan">
+        <div
+          ref={planHeadingRef}
+          tabIndex={-1}
+          className={styles.planRegion}
+          role="region"
+          aria-label="Your growth plan"
+        >
           <PlanReveal result={result} />
         </div>
 
@@ -346,7 +355,11 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
               ) : null}
 
               <p className={styles.requiredNote}>
-                Fields marked <span className={styles.req} aria-hidden="true">*</span> are required.
+                Fields marked{" "}
+                <span className={styles.req} aria-hidden="true">
+                  *
+                </span>{" "}
+                are required.
               </p>
 
               <div className={styles.emailGrid}>
@@ -472,7 +485,12 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
   const meta = STEP_META[stepIndex];
   return (
     <div className={styles.builder}>
-      <Stepper steps={STEP_META.map((s) => s.short)} current={stepIndex} ariaLabel="Growth plan steps" className={styles.stepper} />
+      <Stepper
+        steps={STEP_META.map((s) => s.short)}
+        current={stepIndex}
+        ariaLabel="Growth plan steps"
+        className={styles.stepper}
+      />
 
       <div className={styles.columns}>
         <div className={styles.main}>

@@ -169,10 +169,11 @@ export function ContactForm({
       } else if (
         data.code === "delivery-unavailable" ||
         data.code === "delivery-failed" ||
-        data.code === "security-unavailable"
+        data.code === "security-unavailable" ||
+        data.code === "rate-limit-unavailable"
       ) {
-        // A truthful "try again / email us" notice — delivery isn't set up, upstream failed, or the
-        // human check couldn't run. Never presented as success.
+        // A truthful "try again / email us" notice — delivery isn't set up, upstream failed, or a
+        // fail-closed security/rate-limit check couldn't run. Never presented as success.
         setStatus("delivery-unavailable");
         setStatusMessage(
           data.message ??
@@ -289,7 +290,11 @@ export function ContactForm({
       ) : null}
 
       <p className={styles.requiredNote}>
-        Fields marked <span className={styles.req} aria-hidden="true">*</span> are required.
+        Fields marked{" "}
+        <span className={styles.req} aria-hidden="true">
+          *
+        </span>{" "}
+        are required.
       </p>
 
       <div className={styles.grid}>

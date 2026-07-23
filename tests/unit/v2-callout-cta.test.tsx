@@ -15,10 +15,6 @@ vi.mock("next/link", () => ({
     );
   },
 }));
-vi.mock("@/components/viz/CosmicBackground", () => ({
-  CosmicBackground: () => <div data-testid="cosmic-bg" />,
-}));
-
 afterEach(cleanup);
 
 describe("Callout", () => {

@@ -117,19 +117,23 @@ describe("/pricing — FAQPage structured-data contract", () => {
 
 describe("legacy-route safety — nothing removed or migrated beyond /pricing", () => {
   it("the removed-from-pricing components still exist for their other consumers", () => {
-    // NodeOrb/BentoCard/BentoGrid are retained-live (resources); the cosmic hero/PageHero/
-    // CosmicBackground are retained until the Phase 2S cosmic cascade (Commit 8). FinalCtaBannerSection
-    // was removed in Phase 2S Commit 7 (dead registry cluster).
+    // NodeOrb/BentoCard/BentoGrid are retained-live (resources). The cosmic hero, PageHero,
+    // CosmicBackground, GlowButton and the dead registry were removed in Phase 2S (Commits 7–8).
     for (const rel of [
-      "../../src/components/routes/CosmicPageHero.tsx",
-      "../../src/components/routes/PageHero.tsx",
-      "../../src/components/viz/CosmicBackground.tsx",
       "../../src/components/primitives/NodeOrb.tsx",
-      "../../src/components/primitives/GlowButton.tsx",
       "../../src/components/primitives/BentoCard.tsx",
       "../../src/components/primitives/BentoGrid.tsx",
     ]) {
       expect(() => read(rel), `${rel} still exists`).not.toThrow();
+    }
+    for (const rel of [
+      "../../src/components/routes/CosmicPageHero.tsx",
+      "../../src/components/routes/PageHero.tsx",
+      "../../src/components/viz/CosmicBackground.tsx",
+      "../../src/components/primitives/GlowButton.tsx",
+      "../../src/components/sections/FinalCtaBannerSection.tsx",
+    ]) {
+      expect(() => read(rel), `${rel} removed in 2S`).toThrow();
     }
     // DELIVERY_COLOR is still exported for its remaining consumers.
     expect(read("../../src/components/primitives/Badge.tsx")).toMatch(/export const DELIVERY_COLOR/);

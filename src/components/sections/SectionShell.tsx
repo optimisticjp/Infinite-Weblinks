@@ -1,21 +1,14 @@
 import { useId, type ReactNode } from "react";
-import { CosmicBackground } from "@/components/viz/CosmicBackground";
 import styles from "./SectionShell.module.css";
 
 /**
- * Section surface.
- * - `legacy` (default): the existing Constellation behaviour — `.theme-cosmic`, the optional
- *   CosmicBackground layer, and the gradient eyebrow. Unchanged, so current callers are
- *   byte-identical. (The cosmic `background` options are DEPRECATED for new V2 use.)
- * - `light` / `alt` / `night`: V2 surfaces — no cosmic layer, no gradient eyebrow.
- *
- * The default stays `legacy` during the phased migration; it becomes `light` only at final
- * convergence, once every consumer has migrated.
+ * Section surface (V2, converged). `light` (default) / `alt` (alternating band) / `night` (the
+ * reserved dark signature section). No cosmic layer, no gradient eyebrow — the legacy Constellation
+ * surface was removed at Phase 2S convergence once every consumer had migrated.
  */
-type Surface = "legacy" | "light" | "alt" | "night";
+type Surface = "light" | "alt" | "night";
 
 const SURFACE_THEME: Record<Surface, string> = {
-  legacy: "theme-cosmic",
   light: "theme-light",
   alt: "theme-light-alt",
   night: "theme-night",
@@ -25,9 +18,9 @@ type SectionShellProps = {
   children: ReactNode;
   /** DOM id for the section (used for in-page anchors). */
   id?: string;
-  /** Small uppercase kicker above the title. Gradient on `legacy`; plain accent on V2. */
+  /** Small uppercase kicker above the title (plain accent). */
   eyebrow?: ReactNode;
-  /** Section title. Pass a node so a word can be wrapped in `.iw-gradient-word` (legacy only). */
+  /** Section title. */
   title?: ReactNode;
   /** Heading level for the title — 1 for a page hero, 2 elsewhere. */
   titleLevel?: 1 | 2;
@@ -37,10 +30,8 @@ type SectionShellProps = {
   labelledBy?: string;
   /** Accessible name for a headingless section (used only when no title/labelledBy is set). */
   ariaLabel?: string;
-  /** V2 surface. Defaults to `legacy` (current behaviour). */
+  /** V2 surface. Defaults to `light`. */
   surface?: Surface;
-  /** Cosmic deep-space background — LEGACY ONLY. Ignored on V2 surfaces. */
-  background?: boolean | "horizon";
   /** Header alignment. */
   align?: "center" | "start";
   container?: "default" | "wide";
@@ -52,10 +43,9 @@ type SectionShellProps = {
 };
 
 /**
- * SectionShell — the reusable section wrapper. It owns the surface theme, an optional header
- * (eyebrow + title + lead), consistent vertical rhythm, and the container. On `legacy` it
- * keeps the Constellation cosmic surface + optional deep-space background; on the V2 surfaces
- * it renders a clean light/alt/night band with no cosmic layer.
+ * SectionShell — the reusable V2 section wrapper. It owns the surface theme (light/alt/night), an
+ * optional header (eyebrow + title + lead), consistent vertical rhythm, and the container. No
+ * cosmic layer.
  *
  * Accessibility: a titled section is labelled by its heading; a headingless section passes
  * `labelledBy` or `ariaLabel` so the landmark still has an accessible name.
@@ -69,15 +59,13 @@ export function SectionShell({
   lead,
   labelledBy,
   ariaLabel,
-  surface = "legacy",
-  background = false,
+  surface = "light",
   align = "center",
   container = "wide",
   spacing = "default",
   className,
   contentClassName,
 }: SectionShellProps) {
-  const isV2 = surface !== "legacy";
   // Stable, unique heading id via useId (SSR/hydration-safe, never derived from title
   // content). An explicit `id` still yields a readable `${id}-title`; without one, several
   // untitled shells on a page never collide. useId's colons are stripped so the value is a
@@ -91,7 +79,6 @@ export function SectionShell({
     "iw-section",
     spacing === "tight" ? "iw-section--tight" : spacing === "loose" ? "iw-section--loose" : "",
     styles.section,
-    surface === "legacy" ? styles.legacyClip : "",
     className,
   ]
     .filter(Boolean)
@@ -112,16 +99,10 @@ export function SectionShell({
       aria-labelledby={headingId ?? labelledBy}
       aria-label={!headingId && !labelledBy ? ariaLabel : undefined}
     >
-      {/* Cosmic background is legacy-only and never rendered on V2 surfaces. */}
-      {surface === "legacy" && background ? (
-        <CosmicBackground horizon={background === "horizon"} />
-      ) : null}
       <div className={containerClass}>
         {title || eyebrow || lead ? (
           <header className={[styles.head, align === "center" ? styles.center : styles.start].join(" ")}>
-            {eyebrow ? (
-              <p className={isV2 ? styles.eyebrowV2 : styles.eyebrow}>{eyebrow}</p>
-            ) : null}
+            {eyebrow ? <p className={styles.eyebrowV2}>{eyebrow}</p> : null}
             {title ? (
               <Heading id={headingId} className={styles.title}>
                 {title}

@@ -16,11 +16,6 @@ vi.mock("next/link", () => ({
   },
 }));
 
-// Marker so we can assert whether the cosmic background layer was rendered.
-vi.mock("@/components/viz/CosmicBackground", () => ({
-  CosmicBackground: () => <div data-testid="cosmic-bg" />,
-}));
-
 afterEach(cleanup);
 
 describe("PageHeader", () => {
@@ -59,7 +54,6 @@ describe("PageHeader", () => {
       const section = container.querySelector("section")!;
       expect(section.className).toContain(cls);
       expect(section.className).not.toContain("theme-cosmic");
-      expect(screen.queryByTestId("cosmic-bg")).toBeNull();
       unmount();
     }
   });
@@ -71,20 +65,15 @@ describe("PageHeader", () => {
 });
 
 describe("SectionShell", () => {
-  it("defaults to the legacy cosmic surface for existing callers", () => {
-    const { container } = render(
-      <SectionShell title="Legacy" background>
-        child
-      </SectionShell>,
-    );
+  it("defaults to the V2 light surface (the legacy cosmic surface was removed in Phase 2S)", () => {
+    const { container } = render(<SectionShell title="Default">child</SectionShell>);
     const section = container.querySelector("section")!;
-    expect(section.className).toContain("theme-cosmic");
-    // legacy background still renders the cosmic layer
-    expect(screen.getByTestId("cosmic-bg")).toBeInTheDocument();
+    expect(section.className).toContain("theme-light");
+    expect(section.className).not.toContain("theme-cosmic");
     expect(screen.getByText("child")).toBeInTheDocument();
   });
 
-  it("maps explicit surfaces to the right theme class", () => {
+  it("maps explicit surfaces to the right theme class and never a cosmic surface", () => {
     for (const [surface, cls] of [
       ["light", "theme-light"],
       ["alt", "theme-light-alt"],
@@ -95,18 +84,11 @@ describe("SectionShell", () => {
           x
         </SectionShell>,
       );
-      expect(container.querySelector("section")!.className).toContain(cls);
+      const section = container.querySelector("section")!;
+      expect(section.className).toContain(cls);
+      expect(section.className).not.toContain("theme-cosmic");
       unmount();
     }
-  });
-
-  it("never renders the cosmic background on V2 surfaces, even if background is passed", () => {
-    render(
-      <SectionShell surface="light" background="horizon" title="T">
-        x
-      </SectionShell>,
-    );
-    expect(screen.queryByTestId("cosmic-bg")).toBeNull();
   });
 
   it("gives multiple untitled-id titled shells UNIQUE heading ids, each referenced by aria-labelledby", () => {
@@ -138,21 +120,17 @@ describe("SectionShell", () => {
     expect(container.querySelector("section")!.getAttribute("aria-labelledby")).toBe("areas-title");
   });
 
-  it("uses a plain (non-gradient) eyebrow on V2 surfaces and the gradient eyebrow on legacy", () => {
-    const v2 = render(
-      <SectionShell surface="light" eyebrow="Kicker" title="T">
-        x
-      </SectionShell>,
-    );
-    // non-scoped CSS-module names in tests: gradient eyebrow === "eyebrow", V2 === "eyebrowV2"
-    expect(within(v2.container).getByText("Kicker").className).toBe("eyebrowV2");
-    v2.unmount();
-
-    const legacy = render(
-      <SectionShell eyebrow="Kicker" title="T">
-        x
-      </SectionShell>,
-    );
-    expect(within(legacy.container).getByText("Kicker").className).toBe("eyebrow");
+  it("uses a plain (non-gradient) eyebrow on every V2 surface (the legacy gradient eyebrow was removed)", () => {
+    for (const surface of ["light", "alt", "night"] as const) {
+      const { container, unmount } = render(
+        <SectionShell surface={surface} eyebrow="Kicker" title="T">
+          x
+        </SectionShell>,
+      );
+      // non-scoped CSS-module names in tests: the V2 eyebrow is "eyebrowV2"; the legacy gradient
+      // "eyebrow" class no longer exists.
+      expect(within(container).getByText("Kicker").className).toBe("eyebrowV2");
+      unmount();
+    }
   });
 });

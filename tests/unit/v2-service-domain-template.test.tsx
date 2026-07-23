@@ -161,21 +161,22 @@ describe("/services/[category] route — source contract", () => {
 });
 
 describe("legacy safety — removed-from-service components remain for their other consumers", () => {
-  it("the retained legacy hero / viz components still exist (Phase 2S kept these)", () => {
-    // Retained after Phase 2S: the cosmic hero/PageHero/CosmicBackground survive until the Commit-8
-    // cosmic cascade; NodeOrb/BentoCard are live via /resources; ScrollThread/StageMarker remain.
-    // ConnectorPath + FinalCtaBannerSection were removed with the dead registry cluster (Commit 7).
+  it("retains the live primitives (NodeOrb/BentoCard) and confirms the cosmic viz was removed", () => {
+    // Retained-live via /resources: NodeOrb + BentoCard. The whole cosmic viz chain (CosmicPageHero,
+    // PageHero, CosmicBackground, GlobeArc, Starfield, StarfieldLazy, ScrollThread, StageMarker,
+    // ConnectorPath) and GlowButton were proven dead and removed in Phase 2S.
+    for (const rel of ["../../src/components/primitives/NodeOrb.tsx", "../../src/components/primitives/BentoCard.tsx"]) {
+      expect(() => read(rel), `${rel} still exists`).not.toThrow();
+    }
     for (const rel of [
       "../../src/components/routes/CosmicPageHero.tsx",
       "../../src/components/routes/PageHero.tsx",
       "../../src/components/viz/CosmicBackground.tsx",
       "../../src/components/viz/ScrollThread.tsx",
       "../../src/components/viz/StageMarker.tsx",
-      "../../src/components/primitives/NodeOrb.tsx",
       "../../src/components/primitives/GlowButton.tsx",
-      "../../src/components/primitives/BentoCard.tsx",
     ]) {
-      expect(() => read(rel), `${rel} still exists`).not.toThrow();
+      expect(() => read(rel), `${rel} removed in 2S`).toThrow();
     }
   });
 

@@ -1,22 +1,17 @@
 /* ============================================================
-   Constellation design system — additive token layer ("Option C").
-   Layered on top of the existing token set for the rebrand. Every value
-   here is a NEW variable (or a NEW helper class): nothing existing is
-   redefined, so pages that predate the rebrand render exactly as before.
-   New pages opt in by using these tokens and the .theme-cosmic surface.
+   Constellation tokens — RESIDUAL, post-Phase-2S convergence.
+   The cosmic surface (.theme-cosmic), the gradient-word helper, and the deep-space / line /
+   panel-radius / panel-glow / brand-gradient tokens were all removed once their consumers were
+   deleted at final convergence. What remains is only what a LIVE component still reads:
+     - the seven --domain-* wayfinding hues (pervasive across lib/services + content data), and
+     - the four NodeOrb tokens (--space-surface, --radius-orb, --glow-orb, --glow-orb-soft),
+       used by the retained BentoCard → NodeOrb on /resources.
    ============================================================ */
 
 :root {
-  /* ---- Deep-space canvas ---- */
-  --space-navy: #0a0715; /* base background (matches --ink-900) */
-  --space-surface: #141026; /* floating surface (matches --ink-800) */
-  --space-surface-2: #1b1633; /* raised surface (matches --ink-700) */
-  --space-input: #241d40; /* input surface — deeper than the raised card */
-
-  /* ---- Text (bright, near-white — never mid-neon for copy) ---- */
-  --space-heading: #f6f4ff;
-  --space-body: #c4bedc;
-  --space-muted: #928bb0;
+  /* ---- Retained surface + radius the NodeOrb still reads ---- */
+  --space-surface: #141026; /* NodeOrb inner fill (matches --ink-800) */
+  --radius-orb: 999px;
 
   /* ---- Domain hues: one hue per service world, reused everywhere as wayfinding ---- */
   --domain-strategy: #8b3bff; /* Strategy */
@@ -27,53 +22,7 @@
   --domain-retain: #22c55e; /* Retain */
   --domain-ai: #14b8a6; /* AI & Data */
 
-  /* ---- Constellation brand gradient — primary button + gradient headline word ---- */
-  --grad-constellation: linear-gradient(120deg, #8b3bff 0%, #f5197e 55%, #ff7a18 100%);
-
-  /* ---- Lines ---- */
-  --line-soft: rgba(255, 255, 255, 0.08);
-  --line-strong: rgba(255, 255, 255, 0.14);
-
-  /* ---- Radii (aliases + panel scale) ---- */
-  --radius-orb: 999px;
-  --radius-panel: 28px; /* glossy floating panels (matches --radius-xl) */
-
-  /* ---- Glow + elevation, formalised for the Constellation system ----
-     Node glows read the local --orb-hue so a single token tints to any domain.
-     The "one bright element per section" budget still holds: heroes own the full
-     glow, supporting orbs run soft. */
+  /* ---- Node glows the NodeOrb reads (tint to the local --orb-hue) ---- */
   --glow-orb: 0 0 26px -4px color-mix(in srgb, var(--orb-hue, var(--domain-strategy)) 62%, transparent);
   --glow-orb-soft: 0 0 18px -6px color-mix(in srgb, var(--orb-hue, var(--domain-strategy)) 42%, transparent);
-  --glow-panel: 0 30px 80px -34px rgba(0, 0, 0, 0.78);
-  --glow-float: 0 22px 60px -26px rgba(0, 0, 0, 0.72);
-  --glow-brand: 0 14px 40px -8px rgba(139, 59, 255, 0.42), 0 8px 24px -10px rgba(245, 25, 126, 0.34);
-}
-
-/* Cosmic surface — a deep-space section. Sets the section-scoped semantic tokens the
-   shared components already read (surface / text / hairline), plus the deeper input
-   surface, so any component nested inside renders on the Constellation palette without
-   knowing about it. Mirrors the .theme-dark contract, just with the deeper input well. */
-.theme-cosmic {
-  --surface: var(--space-navy);
-  --surface-raised: var(--space-surface);
-  --surface-input: var(--space-input);
-  --surface-hover: rgba(255, 255, 255, 0.08);
-  --text-heading: var(--space-heading);
-  --text-body: var(--space-body);
-  --text-muted: var(--space-muted);
-  --hairline: var(--line-soft);
-  --hairline-strong: var(--line-strong);
-  --link: var(--violet-bright);
-  --link-hover: var(--pink-bright);
-  background-color: var(--surface);
-  color: var(--text-body);
-}
-
-/* Reusable gradient headline word — the Constellation counterpart to .iw-gradient-text.
-   Applied to a large, bold heading span only (large-text contrast), never body copy. */
-.iw-gradient-word {
-  background: var(--grad-constellation);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
 }

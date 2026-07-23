@@ -7,13 +7,9 @@
   --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.55);
   --shadow-card: 0 18px 44px rgba(0, 0, 0, 0.42);
 
-  /* Neon glows — the signature light */
+  /* Neon glow — retained for the legacy Button hover only (the other hue glows were removed at
+     Phase 2S convergence: dead, no consumer). */
   --glow-violet: 0 0 32px rgba(168, 85, 247, 0.55);
-  --glow-pink: 0 0 32px rgba(245, 25, 126, 0.55);
-  --glow-orange: 0 0 32px rgba(255, 122, 24, 0.5);
-  --glow-cyan: 0 0 32px rgba(34, 211, 238, 0.5);
-  --glow-lime: 0 0 32px rgba(52, 211, 153, 0.5);
-  --glow-blue: 0 0 32px rgba(59, 130, 246, 0.5);
 
   /* CTA button glow (pink→orange) */
   --glow-cta: 0 10px 30px rgba(245, 25, 126, 0.4), 0 6px 18px rgba(255, 122, 24, 0.28);
@@ -28,12 +24,6 @@
   --blur-panel: 18px;
   --glass-bg: rgba(12, 9, 26, 0.72);
   --glass-border: rgba(255, 255, 255, 0.12);
-
-  /* Soft / ambient glows — for SECONDARY lit elements only. The one bright element per
-     section owns the full-strength --glow-*; supporting nodes run at ≤40% via these so
-     they read as lit without competing (the light budget). */
-  --glow-node-soft: 0 0 16px -2px rgba(168, 85, 247, 0.28);
-  --glow-ambient: 0 0 44px -10px rgba(168, 85, 247, 0.2);
 
   /* Glass panel elevation — cards, phone frames, floating notification chips. */
   --glass-shadow: 0 20px 50px -18px rgba(0, 0, 0, 0.72);

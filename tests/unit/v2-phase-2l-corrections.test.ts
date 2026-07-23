@@ -3,36 +3,31 @@ import { fileURLToPath } from "node:url";
 import { describe, it, expect } from "vitest";
 
 /**
- * Phase 2M §A — regression guards for the Phase 2L corrections. These pin the real legacy
- * starfield dependency chain (so the corrected performance narrative cannot drift while those
- * components remain in the repo), and prove the Phase 2L report + tests were corrected.
+ * Phase 2M §A — regression guards for the Phase 2L corrections. The legacy cosmic/starfield
+ * dependency chain these once pinned was proven dead and removed in Phase 2S; this now asserts the
+ * whole chain is gone, and still proves the Phase 2L report + tests were corrected.
  */
 const read = (rel: string) => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), "utf8");
+const missing = (rel: string) => {
+  try {
+    read(rel);
+    return false;
+  } catch {
+    return true;
+  }
+};
 
-describe("legacy cosmic hero dependency chain (client starfield boundary + canvas)", () => {
-  it("CosmicPageHero renders CosmicBackground", () => {
-    const src = read("../../src/components/routes/CosmicPageHero.tsx");
-    expect(src).toMatch(/import\s*\{\s*CosmicBackground\s*\}/);
-    expect(src).toMatch(/<CosmicBackground/);
-  });
-
-  it("CosmicBackground renders the StarfieldLazy boundary by default (stars defaults to true)", () => {
-    const src = read("../../src/components/viz/CosmicBackground.tsx");
-    expect(src).toMatch(/import\s*\{\s*StarfieldLazy\s*\}/);
-    expect(src).toMatch(/stars\s*=\s*true/);
-    expect(src).toMatch(/stars\s*\?\s*<StarfieldLazy/);
-  });
-
-  it("StarfieldLazy is a client boundary that dynamically loads the Starfield", () => {
-    const src = read("../../src/components/viz/StarfieldLazy.tsx");
-    expect(src.trimStart().startsWith('"use client"'), "StarfieldLazy is a client component").toBe(true);
-    expect(src).toMatch(/dynamic\(\(\)\s*=>\s*import\(".\/Starfield"\)/);
-  });
-
-  it("Starfield is a client component that paints a <canvas>", () => {
-    const src = read("../../src/components/viz/Starfield.tsx");
-    expect(src.trimStart().startsWith('"use client"'), "Starfield is a client component").toBe(true);
-    expect(src).toMatch(/<canvas/);
+describe("the legacy cosmic hero dependency chain was removed in Phase 2S", () => {
+  it("CosmicPageHero, CosmicBackground, StarfieldLazy and Starfield no longer exist", () => {
+    for (const rel of [
+      "../../src/components/routes/CosmicPageHero.tsx",
+      "../../src/components/viz/CosmicBackground.tsx",
+      "../../src/components/viz/StarfieldLazy.tsx",
+      "../../src/components/viz/Starfield.tsx",
+      "../../src/components/viz/GlobeArc.tsx",
+    ]) {
+      expect(missing(rel), `${rel} removed`).toBe(true);
+    }
   });
 });
 

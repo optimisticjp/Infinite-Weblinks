@@ -52,15 +52,12 @@
   --lime-soft: rgba(52, 211, 153, 0.14);
   --blue-soft: rgba(59, 130, 246, 0.14);
 
-  /* ---- Signature gradients ---- */
+  /* ---- Signature gradients (legacy — retained only where a live component still consumes them:
+     --grad-brand / --grad-cta on the Button, --grad-text on the Hero. The unused violet-pink /
+     cyan-blue / lime / banner / spectrum gradients were removed at Phase 2S convergence). ---- */
   --grad-brand: linear-gradient(120deg, #7c3aed 0%, #f5197e 52%, #ff7a18 100%);
   --grad-cta: linear-gradient(90deg, #f5197e 0%, #ff7a18 100%);
-  --grad-violet-pink: linear-gradient(120deg, #8b3bff 0%, #f5197e 100%);
-  --grad-cyan-blue: linear-gradient(120deg, #22d3ee 0%, #3b82f6 100%);
-  --grad-lime: linear-gradient(120deg, #34d399 0%, #22d3ee 100%);
-  --grad-banner: linear-gradient(100deg, #6d28d9 0%, #f5197e 55%, #ff7a18 100%);
   --grad-text: linear-gradient(100deg, #ff2e93 0%, #ff7a18 100%); /* on dark: 5.8–7.8:1 */
-  --grad-spectrum: linear-gradient(90deg, #a855f7, #f5197e, #ff7a18, #facc15, #34d399, #22d3ee, #3b82f6);
 
   /* ---- Borders & lines ---- */
   --border-1: rgba(255, 255, 255, 0.08);
@@ -75,12 +72,10 @@
 
   /* ---- Domain colour-coding (hero nodes / illustrated scenes) ---- */
   --domain-website: var(--blue); /* Website or Store */
-  --domain-search: var(--violet); /* Search & Advertising */
   --domain-social: var(--pink); /* Social & Content */
   --domain-customer: var(--orange); /* Customer Tools */
   --domain-analytics: var(--cyan); /* Analytics */
   --domain-automation: var(--violet-bright); /* Automation & AI */
-  --domain-ecom: var(--lime); /* commerce / customer relationships */
 
   /* ---- Global page defaults (dark) ---- */
   --bg-page: var(--ink-950);
@@ -123,7 +118,7 @@
   --conn-line-dark: rgba(196, 190, 220, 0.28);
   --conn-line-band: rgba(74, 69, 102, 0.28);
 
-  /* Full-spectrum stroke for a connected rail/path (matches --grad-spectrum hues). */
+  /* Full-spectrum stroke for a connected rail/path (JourneyTimeline). */
   --grad-path: linear-gradient(90deg, #a855f7, #f5197e, #ff7a18, #34d399, #22d3ee, #3b82f6);
 }
 
@@ -185,19 +180,3 @@
   color: var(--text-body);
 }
 
-/* Bold full-colour statement — white text on a deep violet→pink field (avoids the
-   bright-orange end for text). Reserved for statement bands; large text preferred. */
-.theme-statement {
-  --surface: var(--violet-deep);
-  --surface-raised: rgba(255, 255, 255, 0.12);
-  --surface-hover: rgba(255, 255, 255, 0.16); /* white wash on the violet banner */
-  --text-heading: #ffffff;
-  --text-body: rgba(255, 255, 255, 0.94);
-  --text-muted: rgba(255, 255, 255, 0.82);
-  --hairline: rgba(255, 255, 255, 0.24);
-  --hairline-strong: rgba(255, 255, 255, 0.4);
-  --link: #ffffff;
-  --link-hover: #ffe9f4;
-  background-image: var(--grad-violet-pink);
-  color: var(--text-body);
-}

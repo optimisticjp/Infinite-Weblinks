@@ -65,9 +65,9 @@ describe("form-field source contract — legacy default, v2 opt-in", () => {
     }
   });
 
-  it("the growth-plan builder passes no appearance prop, so its fields stay legacy", () => {
+  it("the growth-plan builder opts its five follow-up fields into the v2 appearance (Phase 2P)", () => {
     const plan = read("../../src/components/builder/PlanBuilder.tsx");
-    expect(plan).not.toContain("appearance=");
+    expect((plan.match(/appearance="v2"/g) ?? []).length, "five follow-up fields opt into v2").toBe(5);
   });
 });
 

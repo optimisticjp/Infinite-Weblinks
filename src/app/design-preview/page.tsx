@@ -25,6 +25,10 @@ import { StartingPointCard } from "@/components/cards/StartingPointCard";
 import { BusinessTypeCard } from "@/components/cards/BusinessTypeCard";
 import { CrossCuttingSystemCard } from "@/components/cards/CrossCuttingSystemCard";
 import { GoalPath } from "@/components/routes/GoalPath";
+import { Stepper } from "@/components/primitives/Stepper";
+import { ProgressChecklist } from "@/components/primitives/ProgressChecklist";
+import { PlanIncludeCard } from "@/components/cards/PlanIncludeCard";
+import { PlanReveal } from "@/components/builder/PlanReveal";
 import { GrowthJourneyList } from "@/components/routes/GrowthJourneyList";
 import { ConnectedSystemFlow } from "@/components/routes/ConnectedSystemFlow";
 import { ProcessStepList } from "@/components/routes/ProcessStepList";
@@ -78,7 +82,10 @@ import {
   contactProcessSteps,
   contactAlternativePaths,
 } from "@/lib/content/data/contact";
+import { growthPlanIncludes } from "@/lib/content/data/growth-plan";
+import type { GrowthPlanResult } from "@/lib/growth-plan/types";
 import { FilterChipDemo } from "./FilterChipDemo";
+import { GrowthPlanPreviewDemo } from "./GrowthPlanPreviewDemo";
 import styles from "./design-preview.module.css";
 
 /**
@@ -111,6 +118,36 @@ const STATUSES = [
   { key: "danger", label: "Danger", icon: "help-circle" },
   { key: "info", label: "Information", icon: "sparkles" },
 ] as const;
+
+/**
+ * A representative Growth Plan result, for previewing PlanReveal with every section populated. This is
+ * an illustrative fixture — NOT a real recommendation — so a human and the axe scan can see the full
+ * result view. The real result comes from the deterministic engine on /growth-plan.
+ */
+const PLAN_REVEAL_PREVIEW: GrowthPlanResult = {
+  matchedRuleId: "preview-fixture",
+  startHere: [
+    "Publish a clear one-page website that explains what you do and who it's for.",
+    "Set up a business email address on your own domain.",
+  ],
+  connectNext: [
+    "Connect a simple contact form to your inbox so enquiries land in one place.",
+    "Add privacy-friendly analytics so you can see what's actually working.",
+  ],
+  addLater: [
+    "Start a short email newsletter to stay in touch with the people who visit.",
+    "Add booking or checkout once there's steady demand for it.",
+  ],
+  relevantCapabilities: ["Website & landing pages", "Domain & email setup", "Analytics"],
+  exampleTools: ["Google Workspace", "Cloudflare", "Plausible"],
+  expectedOutcomes: [
+    "A website you own and control.",
+    "A professional email address on your own domain.",
+    "A clear view of your first visitors.",
+  ],
+  howWeHelp:
+    "We'd set up the first version with you, then hand over the controls so you keep ownership of everything.",
+};
 
 export default async function DesignPreviewPage() {
   const { hero, editorial } = await getHomepageOpening();
@@ -1515,6 +1552,56 @@ export default async function DesignPreviewPage() {
 
           <p className={styles.subTitle}>V2 form controls, long error text, success + delivery-unavailable panels</p>
           <ContactPreviewDemo />
+        </section>
+
+        {/* 21 · Phase 2P — growth plan builder experience (real components; the full PlanBuilder is
+            previewed at /growth-plan to avoid duplicate production ids. Its primitives, the plan-include
+            cards and the deterministic result view are shown here with preview ids / an illustrative
+            fixture). */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Phase 2P · Growth plan builder</h2>
+
+          <p className={styles.subTitle}>Stepper — four steps, current marked, completed shown with a check + status word</p>
+          <Stepper
+            steps={["Business", "Goal", "Setup", "How we'd work"]}
+            current={1}
+            ariaLabel="Growth plan steps (preview)"
+          />
+
+          <p className={styles.subTitle}>ProgressChecklist — explicit status words (Done / In progress / To do)</p>
+          <div className={styles.previewNarrow}>
+            <ProgressChecklist
+              title="Your plan is taking shape"
+              items={[
+                { label: "Business", state: "done" },
+                { label: "Goal", state: "current" },
+                { label: "Setup", state: "pending" },
+                { label: "How we'd work", state: "pending" },
+              ]}
+              note="Your information is safe. We'll never share your details."
+            />
+          </div>
+
+          <p className={styles.subTitle}>
+            OptionCards (selected + error), the V2 follow-up controls, and the review-request success and
+            delivery-unavailable panels
+          </p>
+          <GrowthPlanPreviewDemo />
+
+          <p className={styles.subTitle}>PlanIncludeCard — what a plan can include (six illustrative items)</p>
+          <CardGrid layout="equal" aria-label="Plan include cards (preview)">
+            {growthPlanIncludes.map((item) => (
+              <PlanIncludeCard key={item.title} title={item.title} body={item.body} icon={item.icon} tone={item.tone} />
+            ))}
+          </CardGrid>
+
+          <p className={styles.subTitle}>
+            PlanReveal — the deterministic result view on flat V2 cards (illustrative fixture; every
+            section shown, with the truthful reusable-model framing and the example-tools disclaimer)
+          </p>
+          <div className={`theme-light-alt ${styles.surfacePanel}`}>
+            <PlanReveal result={PLAN_REVEAL_PREVIEW} />
+          </div>
         </section>
       </div>
     </main>

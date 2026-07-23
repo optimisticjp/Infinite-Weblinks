@@ -131,6 +131,14 @@ const V2_DETAIL_MODULES = [
   "../../src/components/sections/ContactFormSection.module.css",
   "../../src/components/cards/ContactPathCard.module.css",
   "../../src/app/(convert)/contact/contact.module.css",
+  // Phase 2P §Q: the V2 growth plan builder experience.
+  "../../src/components/primitives/OptionCards.module.css",
+  "../../src/components/primitives/Stepper.module.css",
+  "../../src/components/primitives/ProgressChecklist.module.css",
+  "../../src/components/builder/PlanBuilder.module.css",
+  "../../src/components/builder/PlanReveal.module.css",
+  "../../src/components/cards/PlanIncludeCard.module.css",
+  "../../src/app/(convert)/growth-plan/growth-plan.module.css",
 ];
 const BANNED_V2 = [
   ...BANNED,

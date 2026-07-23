@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowRight } from "lucide-react";
-import { CosmicPageHero } from "@/components/routes/CosmicPageHero";
+import { PageHeader } from "@/components/routes/PageHeader";
+import { Button } from "@/components/primitives/Button";
 import { SectionShell } from "@/components/sections/SectionShell";
 import { BentoGrid } from "@/components/primitives/BentoGrid";
 import { BentoCard } from "@/components/primitives/BentoCard";
-import { GlowButton } from "@/components/primitives/GlowButton";
-import { NodeOrb } from "@/components/primitives/NodeOrb";
-import { Icon } from "@/components/primitives/Icon";
 import { FinalCtaBannerSection } from "@/components/sections/FinalCtaBannerSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
@@ -55,47 +52,34 @@ export default async function StartingPointDetailPage({
     .filter((sv): sv is NonNullable<typeof sv> => Boolean(sv))
     .map((sv) => ({ name: sv.name, href: `/services/${sv.categorySlug}#${sv.slug}`, hint: sv.plainDescription }));
 
-  const ctaVariant = startingPoint.cta.style === "primary" ? "primary" : "ghost";
-
   return (
     <>
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Home", path: "/" },
-          { name: "Starting points", path: "/starting-points" },
+          { name: "Goals", path: "/goals" },
           { name: startingPoint.label, path: `/starting-points/${startingPoint.slug}` },
         ])}
       />
 
-      <CosmicPageHero
+      <PageHeader
         id="starting-point-hero"
+        surface="light"
         breadcrumbs={[{ name: "Goals", path: "/goals" }, { name: startingPoint.label }]}
         eyebrow="Where you're starting"
-        hue={startingPoint.color}
         title={startingPoint.label}
         lead={startingPoint.situation}
         actions={
           <>
-            <GlowButton
-              href={startingPoint.cta.route}
-              variant={ctaVariant}
-              size="lg"
-              iconRight={<ArrowRight size={18} aria-hidden="true" />}
-            >
+            <Button href={startingPoint.cta.route} size="lg">
               {startingPoint.cta.label}
-            </GlowButton>
-            <GlowButton href="/goals" variant="ghost" size="lg">
-              See all goals
-            </GlowButton>
+            </Button>
+            <Button href="/goals#by-where-you-are" variant="secondary" size="lg">
+              See other starting points
+            </Button>
           </>
         }
-        aside={
-          <span aria-hidden="true">
-            <NodeOrb hue={startingPoint.color} size={128} emphasis="bright">
-              <Icon name={startingPoint.icon} />
-            </NodeOrb>
-          </span>
-        }
+        trustNote="Most businesses sit in more than one situation at once, and that's normal."
       />
 
       {stage && (

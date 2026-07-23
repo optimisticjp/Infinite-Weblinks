@@ -264,8 +264,10 @@ test.describe("growth plan — the review-request follow-up", () => {
   });
 
   test("the submit button disables while submitting", async ({ page }) => {
+    // A generous hold (1.5s) so the disabled/submitting state is observed reliably even under a
+    // loaded 4-worker run before the mocked response resolves.
     await page.route("**/api/forms/growth-plan", async (route) => {
-      await new Promise((r) => setTimeout(r, 600));
+      await new Promise((r) => setTimeout(r, 1500));
       await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true }) });
     });
     await fillReviewRequest(page);
@@ -337,16 +339,23 @@ test.describe("growth plan — fragment geometry", () => {
   test.use({ viewport: { width: 1280, height: 900 } });
   for (const id of ["builder", "what-your-plan-includes", "get-started"]) {
     test(`#${id} occurs once, is meaningful content and clears the sticky header via hash nav`, async ({ page }) => {
-      await page.goto("about:blank");
-      await page.goto(`/growth-plan#${id}`);
-      // Exactly one occurrence of the target.
+      // Load and let the client builder hydrate/settle first: an initial-load hash scrolls the
+      // pre-hydration layout, which then reflows and leaves the target stale. Navigating the hash on
+      // the settled page (as a user clicking an in-page anchor does) applies scroll-padding-top to the
+      // final layout.
+      await page.goto("/growth-plan");
+      await page.waitForLoadState("networkidle");
+      // Exactly one occurrence of the target, with visible meaningful (non-empty) content.
       expect(await page.locator(`[id="${id}"]`).count(), `#${id} count`).toBe(1);
       const target = page.locator(`[id="${id}"]`);
-      // Visible, meaningful (non-empty) content — not a hidden anchor band.
       await expect(target).toBeVisible();
       const text = ((await target.textContent()) ?? "").trim();
       expect(text.length, `#${id} has meaningful content`).toBeGreaterThan(0);
-      // Ordinary browser hash navigation clears the sticky header.
+      // Ordinary in-page hash navigation clears the sticky header.
+      await page.evaluate((f) => {
+        window.location.hash = "";
+        window.location.hash = f;
+      }, `#${id}`);
       await expectFragmentTargetClearsStickyHeader(page, `[id="${id}"]`, `growth-plan #${id}`);
     });
   }

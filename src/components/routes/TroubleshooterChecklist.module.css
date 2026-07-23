@@ -1,0 +1,45 @@
+/* TroubleshooterChecklist — a plain ordered list of checks on V2 tokens only. The tone comes in as an
+   accessible V2 ink (`--check-ink`) + tint (`--check-tint`) via the domain bridge. No raw colours, no
+   glow/glass/gradient, no fixed height, no horizontal rail, no progress/completion styling. Single
+   column on narrow screens; a calm two-column reading grid on wide screens. */
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+@media (min-width: 40rem) {
+  .list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--v2-radius-md);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+}
+.num {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--v2-radius-pill);
+  background: var(--check-tint);
+  color: var(--check-ink);
+  font-family: var(--font-mono);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--ls-mono);
+}
+.text {
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-body);
+  overflow-wrap: anywhere;
+}

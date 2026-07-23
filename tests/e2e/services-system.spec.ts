@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import {
   setViewportAndWaitForStableLayout,
   expectNoHorizontalOverflow,
@@ -57,18 +57,6 @@ const WIDTHS = [320, 360, 390, 768, 1024, 1160, 1280, 1440];
 const byCount = [...CATEGORIES].sort((a, b) => servicesFor(a.slug).length - servicesFor(b.slug).length);
 const REPRESENTATIVE = [...new Set([byCount[0].slug, byCount[byCount.length - 1].slug, "websites-development"])];
 
-/** Assert a fragment on the already-loaded category page clears the sticky header, grouped per
- *  category (one page load), driving the jump via the real hash so scroll-margin geometry applies —
- *  but the assertion measures the rendered top edge, not merely computed scroll-padding. */
-async function expectHashFragmentClears(page: Page, id: string, ctx: string) {
-  await page.evaluate((frag) => {
-    // Reset then set so re-visiting the same id still re-triggers the fragment scroll.
-    if (window.location.hash === `#${frag}`) window.location.hash = "";
-    window.location.hash = frag;
-  }, id);
-  await expectFragmentTargetClearsStickyHeader(page, `[id="${id}"]`, ctx);
-}
-
 test("all 70 folded service URLs 308 to their exact category anchor", async ({ request }) => {
   expect(SERVICES).toHaveLength(70);
   for (const s of SERVICES) {
@@ -101,11 +89,14 @@ for (const c of CATEGORIES) {
 
     test("every section fragment and every service fragment clears the sticky header", async ({ page }) => {
       await page.setViewportSize({ width: 1280, height: 900 });
-      await page.goto(`/services/${c.slug}`);
       const ids = [...sectionFragments, ...catServices.map((s) => s.slug)];
+      // Navigate to each fragment on the same (reused) server — a real hash navigation so the
+      // browser applies scroll-margin geometry — and measure the rendered top edge, not scroll-padding.
       for (const id of ids) {
+        await page.goto("about:blank");
+        await page.goto(`/services/${c.slug}#${id}`);
         expect(await page.locator(`[id="${id}"]`).count(), `${c.slug} #${id} unique`).toBe(1);
-        await expectHashFragmentClears(page, id, `${c.slug} #${id}`);
+        await expectFragmentTargetClearsStickyHeader(page, `[id="${id}"]`, `${c.slug} #${id}`);
       }
     });
 

@@ -51,14 +51,27 @@ import { ConnectedGrowthExamplesSection } from "@/components/sections/ConnectedG
 import { ServiceCategoryCard } from "@/components/cards/ServiceCategoryCard";
 import { ServiceOfferingCard } from "@/components/cards/ServiceOfferingCard";
 import { ServiceConnectionList } from "@/components/routes/ServiceConnectionList";
+import { PricingFactorCard } from "@/components/cards/PricingFactorCard";
+import { PricingDeliveryCard } from "@/components/cards/PricingDeliveryCard";
+import { EngagementShapeCard } from "@/components/cards/EngagementShapeCard";
+import { QuoteProcessList } from "@/components/routes/QuoteProcessList";
+import { PricingFaqList } from "@/components/routes/PricingFaqList";
 import {
   getHomepageOpening,
   getAccountOwnership,
   getCustomerJourney,
   getServiceCategories,
   getServices,
+  getDeliveryModels,
 } from "@/lib/content";
 import { getServiceDomainConfig } from "@/lib/services/domains";
+import {
+  pricingFactors,
+  pricingDeliveryCostNotes,
+  pricingEngagementShapes,
+  pricingQuoteSteps,
+  pricingFaqs,
+} from "@/lib/content/data/pricing";
 import { FilterChipDemo } from "./FilterChipDemo";
 import styles from "./design-preview.module.css";
 
@@ -104,6 +117,9 @@ export default async function DesignPreviewPage() {
   const strategyCategory = svcCategories.find((c) => c.slug === "strategy-discovery");
   const strategyServices = allServices.filter((s) => s.categorySlug === "strategy-discovery");
   const websitesCategory = svcCategories.find((c) => c.slug === "websites-development");
+  const deliveryModels = await getDeliveryModels();
+  // The real factor with the longest blurb, to show long-copy wrapping in a PricingFactorCard.
+  const longFactor = [...pricingFactors].sort((a, b) => b.blurb.length - a.blurb.length)[0];
 
   return (
     <main id="main" className={`theme-light ${styles.wrap}`}>
@@ -1388,6 +1404,70 @@ export default async function DesignPreviewPage() {
             </nav>
           </section>
         ) : null}
+
+        {/* 19 · Phase 2N — pricing & quoting (real exported pricing content; no fake price, package,
+            discount, delivery model, FAQ, urgency or proof). */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Phase 2N · Pricing &amp; quoting</h2>
+
+          <p className={styles.subTitle}>PricingFactorCard — a quote factor, plus a long-copy case</p>
+          <CardGrid layout="equal" aria-label="Pricing factor cards (preview)">
+            <PricingFactorCard
+              title={pricingFactors[0].title}
+              body={pricingFactors[0].blurb}
+              icon={pricingFactors[0].icon}
+              tone={pricingFactors[0].tone}
+            />
+            <PricingFactorCard
+              title={longFactor.title}
+              body={longFactor.blurb}
+              icon={longFactor.icon}
+              tone={longFactor.tone}
+            />
+          </CardGrid>
+
+          <p className={styles.subTitle}>PricingDeliveryCard — all four ways of working (exact cost notes)</p>
+          <CardGrid layout="equal" aria-label="Pricing delivery cards (preview)">
+            {deliveryModels.map((model) => (
+              <PricingDeliveryCard
+                key={model.key}
+                modelKey={model.key}
+                tagline={model.tagline}
+                costNote={pricingDeliveryCostNotes[model.key]}
+              />
+            ))}
+          </CardGrid>
+
+          <p className={styles.subTitle}>EngagementShapeCard — the three shapes (quoted to scope)</p>
+          <CardGrid layout="equal" aria-label="Engagement shape cards (preview)">
+            {pricingEngagementShapes.map((shape) => (
+              <EngagementShapeCard
+                key={shape.title}
+                title={shape.title}
+                body={shape.blurb}
+                note={shape.note}
+                icon={shape.icon}
+                tone={shape.tone}
+              />
+            ))}
+          </CardGrid>
+
+          <p className={styles.subTitle}>QuoteProcessList — the four steps to a written quote</p>
+          <QuoteProcessList steps={pricingQuoteSteps} />
+
+          <p className={styles.subTitle}>PricingFaqList — the five pricing questions (always visible)</p>
+          <PricingFaqList faqs={pricingFaqs} />
+
+          <p className={styles.subTitle}>Pricing page-jump navigation</p>
+          <nav aria-label="Pricing sections (preview)" className={styles.row}>
+            <LinkChip href="#main">Why we quote</LinkChip>
+            <LinkChip href="#main">What shapes a quote</LinkChip>
+            <LinkChip href="#main">Ways of working</LinkChip>
+            <LinkChip href="#main">Engagement shapes</LinkChip>
+            <LinkChip href="#main">Getting a price</LinkChip>
+            <LinkChip href="#main">Pricing questions</LinkChip>
+          </nav>
+        </section>
       </div>
     </main>
   );

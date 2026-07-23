@@ -33,8 +33,8 @@ import styles from "./pricing.module.css";
  * model shapes cost (PricingDeliveryCard) → engagement shapes (EngagementShapeCard) → getting a price
  * (QuoteProcessList) → pricing FAQ (PricingFaqList) → the single reserved dark final CTA. Every word
  * comes from the centralised pricing content; the same pricingFaqs array feeds the visible list and
- * the FAQPage JSON-LD. No CosmicPageHero, starfield, GlowButton, NodeOrb, BentoCard, DELIVERY_COLOR,
- * gradient word, invented price or featured-first content. Server Component.
+ * the FAQPage JSON-LD. No cosmic hero, starfield, glow button, node orb, bento card, legacy
+ * delivery-colour map, gradient word, invented price or featured-first content. Server Component.
  */
 export const metadata: Metadata = pageMetadata({
   title: "How pricing works",

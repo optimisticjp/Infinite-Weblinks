@@ -178,10 +178,12 @@ describe("legacy safety — removed-from-service components remain for their oth
     }
   });
 
-  it("the non-migrated service consumers (/pricing) still use the legacy cosmic hero + banner", () => {
-    const pricing = read("../../src/app/(marketing)/pricing/page.tsx");
-    expect(pricing).toContain("CosmicPageHero");
-    expect(pricing).toContain("FinalCtaBannerSection");
+  it("a non-migrated route (/starting-points/[slug]) still uses the legacy cosmic hero + banner", () => {
+    // /pricing was migrated in Phase 2N; /starting-points/[slug] remains on the legacy kit until its
+    // own phase, proving the cosmic hero + banner components are not deleted.
+    const startingPoint = read("../../src/app/(marketing)/starting-points/[slug]/page.tsx");
+    expect(startingPoint).toContain("CosmicPageHero");
+    expect(startingPoint).toContain("FinalCtaBannerSection");
   });
 
   it("DELIVERY_COLOR is still exported for its remaining consumers", () => {

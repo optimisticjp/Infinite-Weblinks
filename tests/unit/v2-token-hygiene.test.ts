@@ -118,6 +118,13 @@ const V2_DETAIL_MODULES = [
   "../../src/components/routes/ServiceConnectionList.module.css",
   "../../src/components/routes/ServiceDomainTemplate.module.css",
   "../../src/app/(marketing)/services/services.module.css",
+  // Phase 2N §K: the pricing / quoting experience.
+  "../../src/components/cards/PricingFactorCard.module.css",
+  "../../src/components/cards/PricingDeliveryCard.module.css",
+  "../../src/components/cards/EngagementShapeCard.module.css",
+  "../../src/components/routes/QuoteProcessList.module.css",
+  "../../src/components/routes/PricingFaqList.module.css",
+  "../../src/app/(marketing)/pricing/pricing.module.css",
 ];
 const BANNED_V2 = [
   ...BANNED,

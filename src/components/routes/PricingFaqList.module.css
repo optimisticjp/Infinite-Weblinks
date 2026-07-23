@@ -1,0 +1,30 @@
+/* PricingFaqList — a definition list of pricing questions. V2 tokens only; every answer is always
+   visible (no accordion, no client state). No glow/glass/gradient, no fixed height. */
+.faq {
+  margin: 0;
+  display: grid;
+  gap: 0;
+}
+.item {
+  padding: var(--space-5) 0;
+  border-top: 1px solid var(--hairline);
+}
+.item:last-child {
+  border-bottom: 1px solid var(--hairline);
+}
+.question {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-semibold);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+  overflow-wrap: anywhere;
+}
+.answer {
+  margin: var(--space-2) 0 0;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-body);
+  max-width: var(--measure);
+}

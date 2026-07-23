@@ -28,6 +28,7 @@ describe("growth-plan API route — preserved contract", () => {
       "invalid-json",
       "validation-error",
       "rate-limited",
+      "rate-limit-unavailable",
       "turnstile-failed",
       "security-unavailable",
       "delivery-unavailable",
@@ -35,6 +36,14 @@ describe("growth-plan API route — preserved contract", () => {
     ]) {
       expect(route, code).toContain(`code: "${code}"`);
     }
+  });
+
+  it("fails the rate-limit gate CLOSED and advises Retry-After on both throttle outcomes", () => {
+    // An unavailable required limiter is a 503, a genuine throttle is a 429, and both carry Retry-After.
+    expect(route).toContain('rate.disposition === "unavailable"');
+    expect(route).toContain('code: "rate-limit-unavailable"');
+    expect(route).toContain('rate.disposition === "limited"');
+    expect(route).toContain('"Retry-After": String(rate.retryAfterSeconds)');
   });
 
   it("fails the Turnstile gate CLOSED — an unavailable human-check is a 503 security-unavailable", () => {

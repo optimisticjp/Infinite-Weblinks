@@ -26,6 +26,7 @@ const MIN_HUMAN_MS = 1500;
 
 const DELIVERY_UNAVAILABLE_MESSAGE = `Form delivery isn't set up on this preview yet. Please email ${supportEmail} and we'll pick it up.`;
 const SECURITY_UNAVAILABLE_MESSAGE = `We couldn't run the security check just now. Please try again shortly, or email ${supportEmail} and we'll pick it up.`;
+const RATE_LIMIT_UNAVAILABLE_MESSAGE = `We couldn't process your enquiry just now. Please try again shortly, or email ${supportEmail} and we'll pick it up.`;
 
 function formatRecommendationForEmail(result: GrowthPlanResult): string {
   const lines = [
@@ -43,8 +44,8 @@ function formatRecommendationForEmail(result: GrowthPlanResult): string {
 
 export async function POST(req: Request) {
   const requestId = newRequestId();
-  const respond = (body: Record<string, unknown>, status = 200) =>
-    NextResponse.json(body, { status, headers: { "X-Request-ID": requestId } });
+  const respond = (body: Record<string, unknown>, status = 200, headers: Record<string, string> = {}) =>
+    NextResponse.json(body, { status, headers: { "X-Request-ID": requestId, ...headers } });
 
   // Bounded request read: application/json only, small size cap, streamed-safe (§C).
   const read = await readJsonBody(req);
@@ -85,10 +86,19 @@ export async function POST(req: Request) {
 
   const ip = clientIpFromHeaders(req.headers);
   const rate = await rateLimit(`growth-plan:${ip}`);
-  if (!rate.allowed) {
+  if (rate.disposition === "unavailable") {
+    // The required rate limiter couldn't run — fail closed rather than accept unlimited traffic.
+    return respond(
+      { ok: false, code: "rate-limit-unavailable", message: RATE_LIMIT_UNAVAILABLE_MESSAGE },
+      503,
+      { "Retry-After": String(rate.retryAfterSeconds) },
+    );
+  }
+  if (rate.disposition === "limited") {
     return respond(
       { ok: false, code: "rate-limited", message: "Please wait a moment before trying again." },
       429,
+      { "Retry-After": String(rate.retryAfterSeconds) },
     );
   }
 

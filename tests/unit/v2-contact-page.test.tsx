@@ -136,6 +136,7 @@ describe("API safety — the production form pipeline is unchanged", () => {
       "invalid-json",
       "validation-error",
       "rate-limited",
+      "rate-limit-unavailable",
       "turnstile-failed",
       "security-unavailable",
       "delivery-unavailable",
@@ -143,8 +144,10 @@ describe("API safety — the production form pipeline is unchanged", () => {
     ]) {
       expect(route, `code ${code}`).toContain(code);
     }
-    // The Turnstile gate fails closed: an unavailable human-check is a distinct 503, not a 400.
+    // The security gates fail closed: an unavailable human-check or limiter is a distinct 503, not a 400.
     expect(route).toContain('turnstile.disposition === "unavailable"');
+    expect(route).toContain('rate.disposition === "unavailable"');
+    expect(route).toContain('"Retry-After": String(rate.retryAfterSeconds)');
     // Every response carries a request id, and the direct req.json() is gone.
     expect(route).toContain('"X-Request-ID": requestId');
     expect(route).not.toContain("req.json()");

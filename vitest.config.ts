@@ -15,6 +15,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+      // `server-only` throws unless the bundler sets the `react-server` export condition (Next does,
+      // vitest doesn't). Alias it to a no-op stub so server-only modules are importable in tests; the
+      // real guard still applies at Next build time. See tests/setup/server-only-stub.ts.
+      "server-only": fileURLToPath(new URL("./tests/setup/server-only-stub.ts", import.meta.url)),
     },
   },
 });

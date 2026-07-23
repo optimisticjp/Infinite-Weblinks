@@ -21,7 +21,7 @@ import { SelectField, type SelectOption } from "@/components/forms/fields/Select
 import { TextAreaField } from "@/components/forms/fields/TextAreaField";
 import { TurnstileField } from "@/components/forms/Turnstile";
 import { contactSchema } from "@/lib/validation/forms";
-import { supportEmail } from "@/lib/forms/config";
+import { supportEmail } from "@/lib/forms/config.public";
 import styles from "./ContactForm.module.css";
 
 export interface ContactFormProps {

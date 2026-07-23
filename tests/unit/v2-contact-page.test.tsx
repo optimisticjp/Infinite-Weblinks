@@ -133,7 +133,7 @@ describe("API safety — the production form pipeline is unchanged", () => {
 
   it("the schema, config, formspree, rate-limit and turnstile modules still expose their contract", () => {
     expect(read("../../src/lib/validation/forms.ts")).toContain("export const contactSchema");
-    expect(read("../../src/lib/forms/config.ts")).toContain('export const supportEmail = "support@infiniteweblinks.com"');
+    expect(read("../../src/lib/forms/config.public.ts")).toContain('export const supportEmail = "support@infiniteweblinks.com"');
     expect(read("../../src/lib/forms/formspree.ts")).toContain("forwardToFormspree");
     expect(read("../../src/lib/forms/rate-limit.ts")).toContain("clientIpFromHeaders");
     expect(read("../../src/lib/forms/turnstile.ts")).toContain("verifyTurnstile");

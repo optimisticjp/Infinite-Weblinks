@@ -1,4 +1,4 @@
-import { supportEmail } from "@/lib/forms/config";
+import { supportEmail } from "@/lib/forms/config.public";
 
 /**
  * Contact presentation content — the repeated, server-safe data for /contact.

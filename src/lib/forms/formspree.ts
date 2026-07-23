@@ -4,7 +4,7 @@
  * not here) to deliver every submission to support@infiniteweblinks.com only; this
  * module never talks to any other recipient and never runs client-side.
  */
-import { deliveryEnabled, formspreeIdFor, type FormName } from "./config";
+import { deliveryEnabled, formspreeIdFor, type FormName } from "./config.server";
 
 /** Same anti header-injection guard as the shared Zod schemas — belt and braces, since
  * this is the last stop before an email actually gets sent. Only applied to fields that

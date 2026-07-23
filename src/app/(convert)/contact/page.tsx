@@ -14,7 +14,7 @@ import { getBusinessTypes, getGoals, getStages } from "@/lib/content";
 import { contactProcessSteps, contactAlternativePaths, contactClosingNote } from "@/lib/content/data/contact";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { contactPageJsonLd } from "@/lib/seo/jsonld";
-import { supportEmail } from "@/lib/forms/config";
+import { supportEmail } from "@/lib/forms/config.public";
 import styles from "./contact.module.css";
 
 /**

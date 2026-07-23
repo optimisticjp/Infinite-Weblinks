@@ -4,7 +4,8 @@ import { verifyTurnstile } from "@/lib/forms/turnstile";
 import { forwardToFormspree } from "@/lib/forms/formspree";
 import { clientIpFromHeaders } from "@/lib/forms/rate-limit";
 import { rateLimit } from "@/lib/forms/rate-limit-adapter";
-import { deliveryEnabled, supportEmail } from "@/lib/forms/config";
+import { deliveryEnabled } from "@/lib/forms/config.server";
+import { supportEmail } from "@/lib/forms/config.public";
 
 /**
  * POST /api/forms/contact — Contact form submission ("Send us your goals"). The visitor

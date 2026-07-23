@@ -275,8 +275,8 @@ describe("forwardToFormspree", () => {
   });
 
   it("reports not-configured (never a false positive) when no Formspree id is set", async () => {
-    vi.stubEnv("NEXT_PUBLIC_FORMSPREE_CONTACT_ID", "");
-    vi.stubEnv("NEXT_PUBLIC_FORMSPREE_GROWTH_PLAN_ID", "");
+    vi.stubEnv("FORMSPREE_CONTACT_ID", "");
+    vi.stubEnv("FORMSPREE_GROWTH_PLAN_ID", "");
     const fetchSpy = vi.fn();
     global.fetch = fetchSpy as unknown as typeof fetch;
 
@@ -288,7 +288,7 @@ describe("forwardToFormspree", () => {
   });
 
   it("delivers successfully when configured and Formspree accepts the payload", async () => {
-    vi.stubEnv("NEXT_PUBLIC_FORMSPREE_CONTACT_ID", "abcd1234");
+    vi.stubEnv("FORMSPREE_CONTACT_ID", "abcd1234");
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) });
     global.fetch = fetchMock as unknown as typeof fetch;
 
@@ -307,7 +307,7 @@ describe("forwardToFormspree", () => {
   });
 
   it("reports failure when Formspree responds with a non-2xx status", async () => {
-    vi.stubEnv("NEXT_PUBLIC_FORMSPREE_CONTACT_ID", "abcd1234");
+    vi.stubEnv("FORMSPREE_CONTACT_ID", "abcd1234");
     global.fetch = vi.fn().mockResolvedValue({ ok: false, status: 500 }) as unknown as typeof fetch;
 
     const { forwardToFormspree } = await import("@/lib/forms/formspree");
@@ -318,7 +318,7 @@ describe("forwardToFormspree", () => {
   });
 
   it("reports failure on a network error rather than claiming delivery", async () => {
-    vi.stubEnv("NEXT_PUBLIC_FORMSPREE_CONTACT_ID", "abcd1234");
+    vi.stubEnv("FORMSPREE_CONTACT_ID", "abcd1234");
     global.fetch = vi.fn().mockRejectedValue(new Error("down")) as unknown as typeof fetch;
 
     const { forwardToFormspree } = await import("@/lib/forms/formspree");
@@ -328,7 +328,7 @@ describe("forwardToFormspree", () => {
   });
 
   it("rejects header injection in an email-like field before ever calling fetch", async () => {
-    vi.stubEnv("NEXT_PUBLIC_FORMSPREE_CONTACT_ID", "abcd1234");
+    vi.stubEnv("FORMSPREE_CONTACT_ID", "abcd1234");
     const fetchMock = vi.fn();
     global.fetch = fetchMock as unknown as typeof fetch;
 

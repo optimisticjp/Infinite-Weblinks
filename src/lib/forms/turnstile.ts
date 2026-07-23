@@ -4,7 +4,7 @@
  * that decides whether it's valid. Never trust the client result alone
  * (contracts/forms-and-email.md).
  */
-import { turnstileConfigured, turnstileSecretKey } from "./config";
+import { turnstileConfigured, turnstileSecretKey } from "./config.server";
 
 const SITEVERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
@@ -35,7 +35,8 @@ export async function verifyTurnstile(
   token: string | undefined,
   ip?: string,
 ): Promise<TurnstileResult> {
-  if (!turnstileConfigured || !turnstileSecretKey) {
+  const secret = turnstileSecretKey();
+  if (!turnstileConfigured() || !secret) {
     return { success: true, skipped: true };
   }
 
@@ -44,7 +45,7 @@ export async function verifyTurnstile(
   }
 
   const body = new URLSearchParams();
-  body.set("secret", turnstileSecretKey);
+  body.set("secret", secret);
   body.set("response", token);
   if (ip) body.set("remoteip", ip);
 

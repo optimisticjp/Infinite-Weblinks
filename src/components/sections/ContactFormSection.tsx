@@ -5,7 +5,7 @@ import { Icon } from "@/components/primitives/Icon";
 import { ContactForm } from "@/components/forms/ContactForm";
 import type { SelectOption } from "@/components/forms/fields/SelectField";
 import { contactTrustPoints } from "@/lib/content/data/contact";
-import { supportEmail } from "@/lib/forms/config";
+import { supportEmail } from "@/lib/forms/config.public";
 import { domainInk } from "@/lib/design/domainColor";
 import styles from "./ContactFormSection.module.css";
 

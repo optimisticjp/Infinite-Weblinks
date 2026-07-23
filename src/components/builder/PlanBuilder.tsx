@@ -33,7 +33,7 @@ import {
   type Timeline,
   type GrowthPlanResult,
 } from "@/lib/growth-plan/types";
-import { supportEmail } from "@/lib/forms/config";
+import { supportEmail } from "@/lib/forms/config.public";
 import type { BusinessType, Goal } from "@/lib/content/types";
 import styles from "./PlanBuilder.module.css";
 

@@ -5,7 +5,7 @@ import {
   contactAlternativePaths,
   contactClosingNote,
 } from "@/lib/content/data/contact";
-import { supportEmail } from "@/lib/forms/config";
+import { supportEmail } from "@/lib/forms/config.public";
 import { hasIcon } from "@/components/primitives/Icon";
 
 /**

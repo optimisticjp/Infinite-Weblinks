@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
-import { turnstileSiteKey } from "@/lib/forms/config";
+import { turnstileSiteKey } from "@/lib/forms/config.public";
 import styles from "./Turnstile.module.css";
 
 export interface TurnstileFieldProps {

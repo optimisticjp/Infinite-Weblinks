@@ -7,6 +7,7 @@ import { SectionShell } from "@/components/sections/SectionShell";
 import { CardGrid } from "@/components/primitives/CardGrid";
 import { IconTile } from "@/components/primitives/IconTile";
 import { Icon } from "@/components/primitives/Icon";
+import { Button } from "@/components/primitives/Button";
 import { TroubleshooterReasonCard } from "@/components/cards/TroubleshooterReasonCard";
 import { TroubleshooterChecklist } from "@/components/routes/TroubleshooterChecklist";
 import { domainInk, domainTint } from "@/lib/design/domainColor";
@@ -117,6 +118,24 @@ export function GrowthTroubleshooter({ problems }: { problems: TroubleshooterPro
               Things you can check today
             </h3>
             <TroubleshooterChecklist checks={active.checks} tone={active.color} />
+          </section>
+
+          {/* Focus first — a restrained panel, not a dark hero. A sensible place to start plus the two
+              contextual next steps (the guided plan + the connected stage). No "only fix" or
+              guaranteed-result claim; the stage destination is exact (integrity-tested). */}
+          <section className={styles.focusFirst} aria-labelledby="ts-focus-eyebrow">
+            <p id="ts-focus-eyebrow" className={styles.focusEyebrow}>
+              Focus first
+            </p>
+            <p className={styles.focusText}>{active.focusFirst}</p>
+            <div className={styles.focusActions}>
+              <Button href="/growth-plan" variant="primary">
+                Build my growth plan
+              </Button>
+              <Button href={`/how-it-works#${active.recommendedStageSlug}`} variant="secondary">
+                See the connected stage
+              </Button>
+            </div>
           </section>
         </div>
       </SectionShell>

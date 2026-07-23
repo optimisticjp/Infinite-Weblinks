@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ArrowDown } from "lucide-react";
 import { PageHeader } from "@/components/routes/PageHeader";
 import { Button } from "@/components/primitives/Button";
+import { FinalCtaSection } from "@/components/sections/FinalCtaSection";
 import { GrowthTroubleshooter } from "@/components/troubleshooter/GrowthTroubleshooter";
 import { getTroubleshooterProblems } from "@/lib/content";
 import { canonical } from "@/lib/seo/metadata";
@@ -49,6 +50,14 @@ export default async function TroubleshooterPage() {
       />
 
       <GrowthTroubleshooter problems={problems} />
+
+      <FinalCtaSection
+        id="get-started"
+        title="Ready to turn the first check into a plan?"
+        lead="Use the guided builder to put the next steps in a sensible order, or talk the situation through with a real person."
+        primary={{ href: "/growth-plan", label: "Build my growth plan" }}
+        secondary={{ href: "/contact", label: "Talk it through" }}
+      />
     </>
   );
 }

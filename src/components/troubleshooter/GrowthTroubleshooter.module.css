@@ -120,3 +120,40 @@
   line-height: var(--lh-heading);
   color: var(--text-heading);
 }
+
+/* ---- focus first (a restrained panel, never a dark hero) ---- */
+.focusFirst {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border-radius: var(--v2-radius-lg);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--active-ink);
+}
+@media (min-width: 48rem) {
+  .focusFirst {
+    padding: var(--space-8);
+  }
+}
+.focusEyebrow {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--active-ink);
+}
+.focusText {
+  margin: 0;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-body);
+  color: var(--text-heading);
+  max-width: 62ch;
+}
+.focusActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}

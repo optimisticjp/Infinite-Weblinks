@@ -6,13 +6,18 @@ import { SectionShell } from "@/components/sections/SectionShell";
 import { CardGrid } from "@/components/primitives/CardGrid";
 import { Callout } from "@/components/primitives/Callout";
 import { JourneyStageCard } from "@/components/cards/JourneyStageCard";
-import { BentoGrid } from "@/components/primitives/BentoGrid";
-import { BentoCard } from "@/components/primitives/BentoCard";
-import { FinalCtaBannerSection } from "@/components/sections/FinalCtaBannerSection";
+import { ServiceCard } from "@/components/cards/ServiceCard";
+import { FinalCtaSection } from "@/components/sections/FinalCtaSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
-import { getServices, getStages, getStartingPoint, getStartingPoints } from "@/lib/content";
+import {
+  getServiceCategories,
+  getServices,
+  getStages,
+  getStartingPoint,
+  getStartingPoints,
+} from "@/lib/content";
 import styles from "./starting-point.module.css";
 
 export async function generateStaticParams() {
@@ -41,10 +46,11 @@ export default async function StartingPointDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [startingPoint, stages, services] = await Promise.all([
+  const [startingPoint, stages, services, serviceCategories] = await Promise.all([
     getStartingPoint(slug),
     getStages(),
     getServices(),
+    getServiceCategories(),
   ]);
   if (!startingPoint) notFound();
 
@@ -57,10 +63,30 @@ export default async function StartingPointDetailPage({
     );
   }
 
-  const stageServices = (stage.serviceSlugs ?? [])
-    .map((s) => services.find((sv) => sv.slug === s))
-    .filter((sv): sv is NonNullable<typeof sv> => Boolean(sv))
-    .map((sv) => ({ name: sv.name, href: `/services/${sv.categorySlug}#${sv.slug}`, hint: sv.plainDescription }));
+  // Resolve every stage service + its category STRICTLY, in stage.serviceSlugs order — an unresolved
+  // service or category fails the build rather than dropping a card.
+  const stageServices = (stage.serviceSlugs ?? []).map((serviceSlug) => {
+    const service = services.find((sv) => sv.slug === serviceSlug);
+    if (!service) {
+      throw new Error(
+        `Stage "${stage.slug}" references an unresolved service "${serviceSlug}" (starting point "${startingPoint.slug}").`,
+      );
+    }
+    const category = serviceCategories.find((c) => c.slug === service.categorySlug);
+    if (!category) {
+      throw new Error(`Service "${service.slug}" references an unresolved category "${service.categorySlug}".`);
+    }
+    return {
+      slug: service.slug,
+      name: service.name,
+      description: service.plainDescription,
+      href: `/services/${service.categorySlug}#${service.slug}`,
+      categoryLabel: category.name,
+      categoryIcon: category.icon,
+      categoryTone: category.color,
+      deliveryModel: service.deliveryModel,
+    };
+  });
 
   return (
     <>
@@ -130,31 +156,38 @@ export default async function StartingPointDetailPage({
         </div>
       </SectionShell>
 
-      {stageServices.length > 0 && (
-        <SectionShell
-          id="stage-services"
-          eyebrow="Services in this stage"
-          title="What we'd likely work on first"
-          lead="Each links to where it sits in the service list. We'd connect the ones that move you forward."
-          align="start"
-        >
-          <BentoGrid>
-            {stageServices.map((sv, i) => (
-              <BentoCard
-                key={sv.href}
-                href={sv.href}
-                hue={startingPoint.color}
-                icon="link"
-                title={sv.name}
-                blurb={sv.hint}
-                variant={i === 0 ? "featured" : "compact"}
-              />
-            ))}
-          </BentoGrid>
-        </SectionShell>
-      )}
+      <SectionShell
+        surface="alt"
+        id="stage-services"
+        eyebrow="Services in this stage"
+        title="What we'd likely work on first"
+        lead="Each links to where it sits in the service list. We'd connect the ones that move you forward."
+        align="start"
+        spacing="tight"
+      >
+        <CardGrid layout="equal" aria-label="Services in this stage">
+          {stageServices.map((sv) => (
+            <ServiceCard
+              key={sv.slug}
+              title={sv.name}
+              description={sv.description}
+              href={sv.href}
+              categoryLabel={sv.categoryLabel}
+              categoryIcon={sv.categoryIcon}
+              categoryTone={sv.categoryTone}
+              deliveryModel={sv.deliveryModel}
+            />
+          ))}
+        </CardGrid>
+      </SectionShell>
 
-      <FinalCtaBannerSection anchorId="get-started" />
+      <FinalCtaSection
+        id="get-started"
+        title="Ready to turn this starting point into a plan?"
+        lead="Answer a few guided questions and see what to do first, what connects next, and what can wait."
+        primary={{ href: "/growth-plan", label: "Build my growth plan" }}
+        secondary={{ href: "/contact", label: "Talk it through" }}
+      />
     </>
   );
 }

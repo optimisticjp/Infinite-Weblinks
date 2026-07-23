@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowRight, Plus, Search, Settings, X, Download } from "lucide-react";
+import { ArrowRight, Plus, Search, Settings, X, Download, Check } from "lucide-react";
 import { SectionHeader } from "@/components/primitives/SectionHeader";
 import { Icon } from "@/components/primitives/Icon";
 import { Button } from "@/components/primitives/Button";
@@ -28,6 +28,8 @@ import { GoalPath } from "@/components/routes/GoalPath";
 import { Stepper } from "@/components/primitives/Stepper";
 import { ProgressChecklist } from "@/components/primitives/ProgressChecklist";
 import { PlanIncludeCard } from "@/components/cards/PlanIncludeCard";
+import { TroubleshooterReasonCard } from "@/components/cards/TroubleshooterReasonCard";
+import { TroubleshooterChecklist } from "@/components/routes/TroubleshooterChecklist";
 import { PlanReveal } from "@/components/builder/PlanReveal";
 import { GrowthJourneyList } from "@/components/routes/GrowthJourneyList";
 import { ConnectedSystemFlow } from "@/components/routes/ConnectedSystemFlow";
@@ -83,6 +85,9 @@ import {
   contactAlternativePaths,
 } from "@/lib/content/data/contact";
 import { growthPlanIncludes } from "@/lib/content/data/growth-plan";
+import { troubleshooterProblems } from "@/lib/content/data/troubleshooter";
+import { domainInk, domainTint } from "@/lib/design/domainColor";
+import tsStyles from "@/components/troubleshooter/GrowthTroubleshooter.module.css";
 import type { GrowthPlanResult } from "@/lib/growth-plan/types";
 import { resolve } from "@/lib/growth-plan/engine";
 import { growthPlanRuleSet } from "@/lib/growth-plan/rules";
@@ -1586,6 +1591,95 @@ export default async function DesignPreviewPage() {
           <div className={`theme-light-alt ${styles.surfacePanel}`}>
             <PlanReveal result={PLAN_REVEAL_PREVIEW} />
           </div>
+        </section>
+
+        {/* 22 · Phase 2Q — growth troubleshooter. Real public problem data; STATIC treatments only
+            (the live selector interaction is previewed at /troubleshooter). No invented problem /
+            reason / check / result, no duplicate production fragment ids, no second H1. */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Phase 2Q · Growth troubleshooter</h2>
+
+          <p className={styles.subTitle}>
+            Selector buttons — unselected and selected treatment, and a long real label wrapping
+            (static preview; the live, interactive selector is at /troubleshooter)
+          </p>
+          <div className={`theme-light-alt ${styles.surfacePanel}`}>
+            <ul className={tsStyles.problemsList} role="list">
+              {[troubleshooterProblems[0], troubleshooterProblems[1], troubleshooterProblems[5]].map((p, i) => {
+                const selected = i === 0;
+                const ink = domainInk(p.color);
+                const tint = domainTint(p.color);
+                return (
+                  <li key={p.slug}>
+                    <button
+                      type="button"
+                      className={[tsStyles.problem, selected ? tsStyles.problemActive : ""].filter(Boolean).join(" ")}
+                      style={{ ["--btn-ink" as string]: ink, ["--btn-tint" as string]: tint }}
+                      aria-pressed={selected}
+                    >
+                      <IconTile color={ink} size="sm" className={tsStyles.problemTile}>
+                        <Icon name={p.icon} />
+                      </IconTile>
+                      <span className={tsStyles.problemLabel}>{p.label}</span>
+                      {selected ? (
+                        <span className={tsStyles.problemMark} aria-hidden="true">
+                          <Check size={16} strokeWidth={3} />
+                        </span>
+                      ) : null}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          <p className={styles.subTitle}>
+            Concise selection-update status (shown here; visually hidden + aria-live=&quot;polite&quot; in the live tool)
+          </p>
+          <p className={styles.cardBody}>Showing guidance for: {troubleshooterProblems[0].label}</p>
+
+          <p className={styles.subTitle}>
+            TroubleshooterReasonCard — static reason cards for {troubleshooterProblems[0].label} (possible
+            reasons, never a certain diagnosis)
+          </p>
+          <CardGrid layout="equal" aria-label="Troubleshooter reason cards (preview)">
+            {troubleshooterProblems[0].reasons.map((r) => (
+              <TroubleshooterReasonCard
+                key={r.title}
+                title={r.title}
+                body={r.body}
+                icon={r.icon}
+                tone={troubleshooterProblems[0].color}
+              />
+            ))}
+          </CardGrid>
+
+          <p className={styles.subTitle}>TroubleshooterChecklist — ordered checks, no progress/completion state</p>
+          <TroubleshooterChecklist
+            checks={troubleshooterProblems[0].checks}
+            tone={troubleshooterProblems[0].color}
+          />
+
+          <p className={styles.subTitle}>Focus-first — the restrained panel with the two contextual next steps</p>
+          <section
+            className={tsStyles.focusFirst}
+            style={{ ["--active-ink" as string]: domainInk(troubleshooterProblems[0].color) }}
+            aria-label="Focus first (preview)"
+          >
+            <p className={tsStyles.focusEyebrow}>Focus first</p>
+            <p className={tsStyles.focusText}>{troubleshooterProblems[0].focusFirst}</p>
+            <div className={tsStyles.focusActions}>
+              <Button href="/growth-plan" variant="primary">
+                Build my growth plan
+              </Button>
+              <Button
+                href={`/how-it-works#${troubleshooterProblems[0].recommendedStageSlug}`}
+                variant="secondary"
+              >
+                See the connected stage
+              </Button>
+            </div>
+          </section>
         </section>
       </div>
     </main>

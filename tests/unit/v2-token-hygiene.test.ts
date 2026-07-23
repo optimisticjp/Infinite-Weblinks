@@ -139,6 +139,11 @@ const V2_DETAIL_MODULES = [
   "../../src/components/builder/PlanReveal.module.css",
   "../../src/components/cards/PlanIncludeCard.module.css",
   "../../src/app/(convert)/growth-plan/growth-plan.module.css",
+  // Phase 2Q §N: the V2 growth troubleshooter (the route-local module was removed — the route now
+  // composes shared V2 components, so only these three migrated/new modules exist).
+  "../../src/components/troubleshooter/GrowthTroubleshooter.module.css",
+  "../../src/components/cards/TroubleshooterReasonCard.module.css",
+  "../../src/components/routes/TroubleshooterChecklist.module.css",
 ];
 const BANNED_V2 = [
   ...BANNED,

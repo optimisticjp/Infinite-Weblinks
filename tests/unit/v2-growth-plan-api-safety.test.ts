@@ -21,8 +21,10 @@ describe("growth-plan API route — preserved contract", () => {
     expect(route).toMatch(/resolve\(\s*\{[\s\S]*?\},\s*growthPlanRuleSet,?\s*\)/);
   });
 
-  it("keeps all six response codes", () => {
+  it("keeps every response code (the six original + the Phase 3A request-boundary codes)", () => {
     for (const code of [
+      "unsupported-media-type",
+      "payload-too-large",
       "invalid-json",
       "validation-error",
       "rate-limited",
@@ -32,6 +34,14 @@ describe("growth-plan API route — preserved contract", () => {
     ]) {
       expect(route, code).toContain(`code: "${code}"`);
     }
+  });
+
+  it("reads the body through the bounded reader and returns a request id on every response", () => {
+    expect(route).toContain("readJsonBody(req)");
+    expect(route).toContain("newRequestId()");
+    expect(route).toContain('"X-Request-ID": requestId');
+    // No direct req.json() — the bounded reader replaces it (§C).
+    expect(route).not.toContain("req.json()");
   });
 
   it("keeps the bot gates (honeypot, human-timing, rate limit, Turnstile)", () => {
@@ -52,8 +62,10 @@ describe("growth-plan API route — preserved contract", () => {
     // Three references, all server→inbox: the email body line, and the forward payload key + value.
     // A client NextResponse.json(...) referencing it would push this higher.
     expect((route.match(/matchedRuleId/g) ?? []).length).toBe(3);
-    // The delivered response carries no plan/rule payload — it is exactly {ok:true}.
-    expect(route).toContain("return NextResponse.json({ ok: true });");
+    // The delivered response carries no plan/rule payload — it is exactly {ok:true} (via the
+    // request-id `respond` helper, which is the only place that builds a NextResponse).
+    expect(route).toContain("return respond({ ok: true });");
+    expect(route).not.toMatch(/respond\(\{[^}]*matchedRuleId/);
     expect(route).not.toMatch(/NextResponse\.json\(\{[^}]*matchedRuleId/);
   });
 

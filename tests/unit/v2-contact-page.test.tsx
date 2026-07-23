@@ -108,10 +108,10 @@ describe("API safety — the production form pipeline is unchanged", () => {
   const route = read("../../src/app/api/forms/contact/route.ts");
 
   it("keeps the defence-in-depth flow and response codes in order", () => {
-    // JSON → schema → honeypot → timing → rate limit → turnstile → delivery config → forward → fail → ok.
+    // bounded read → schema → honeypot → timing → rate limit → turnstile → delivery config → forward → fail → ok.
     const order = [
-      "await req.json()",
-      "contactSchema.safeParse(body)",
+      "readJsonBody(req)",
+      "contactSchema.safeParse(read.data)",
       "values._gotcha",
       "values.elapsedMs < MIN_HUMAN_MS",
       "rateLimit(`contact:${ip}`)",
@@ -126,9 +126,21 @@ describe("API safety — the production form pipeline is unchanged", () => {
       expect(i, `flow step "${marker}" in order`).toBeGreaterThanOrEqual(0);
       pos = i + marker.length;
     }
-    for (const code of ["invalid-json", "validation-error", "rate-limited", "turnstile-failed", "delivery-unavailable", "delivery-failed"]) {
+    for (const code of [
+      "unsupported-media-type",
+      "payload-too-large",
+      "invalid-json",
+      "validation-error",
+      "rate-limited",
+      "turnstile-failed",
+      "delivery-unavailable",
+      "delivery-failed",
+    ]) {
       expect(route, `code ${code}`).toContain(code);
     }
+    // Every response carries a request id, and the direct req.json() is gone.
+    expect(route).toContain('"X-Request-ID": requestId');
+    expect(route).not.toContain("req.json()");
   });
 
   it("the schema, config, formspree, rate-limit and turnstile modules still expose their contract", () => {

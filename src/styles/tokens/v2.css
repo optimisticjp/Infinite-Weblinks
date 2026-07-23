@@ -1,24 +1,23 @@
 /* ============================================================
    V2 FOUNDATION TOKENS — "Clear Systems"  (Stripe ~70% / Clay ~30%)
-   Approved: docs/design/v2-design-spec.md  ·  Phase 1 (foundation + canary)
+   Approved: docs/design/v2-design-spec.md  ·  CONVERGED (Phase 2S — redesign complete)
 
-   COMPATIBILITY-FIRST & ADDITIVE. This file only:
-     1. adds NEW `--v2-*` primitive tokens under :root, and
-     2. adds THREE opt-in theme classes (.theme-light / .theme-light-alt /
-        .theme-night) that map the EXISTING semantic tokens components already
-        read (--surface, --text-heading, --hairline, --shadow-*, --ring, …).
-   It does NOT redefine the :root dark defaults, the `body`, or any legacy
-   theme class (.theme-dark / .theme-band / .theme-band-bright / .theme-statement
-   / .theme-cosmic), so every untouched route renders exactly as before. A page
-   or section becomes V2 only by explicitly opting into a `.theme-*` class here.
+   This file:
+     1. defines the `--v2-*` primitive tokens under :root, and
+     2. defines the three theme classes (.theme-light / .theme-light-alt /
+        .theme-night) that map the semantic tokens components read
+        (--surface, --text-heading, --hairline, --shadow-*, --ring, …).
 
-   Legacy tokens (--glow-*, --grad-spectrum/path/constellation, constellation.css,
-   the dark :root surface defaults) are DEPRECATED for V2 but intentionally
-   RETAINED this phase — their physical removal is the final convergence phase,
-   after every consumer has migrated.
+   CONVERGED STATE (Phase 2S): the document root <body> carries `.theme-light`
+   (see app/layout.tsx), so LIGHT is the default surface for the whole site and
+   `.theme-night` is the reserved, explicitly-scoped dark section. The `:root`
+   dark scale in colors.css is no longer the document default; it survives only
+   as the source for the individual legacy tokens that still have live consumers
+   (e.g. the --domain-* wayfinding hues and the theme-band light class). The
+   proven-dead cosmic/registry tokens and classes were physically removed in 2S.
 
    All contrast pairs below were measured (WCAG 2.2 AA): body text ≥ 4.5:1,
-   large/UI/non-text ≥ 3:1. See the Phase 1 implementation report.
+   large/UI/non-text ≥ 3:1.
    ============================================================ */
 
 :root {

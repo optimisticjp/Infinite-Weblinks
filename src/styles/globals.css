@@ -5,7 +5,9 @@
 @import "./tokens/effects.css";
 @import "./tokens/constellation.css";
 @import "./tokens/base.css";
-/* V2 foundation ("Clear Systems") — additive, opt-in. Adds --v2-* tokens and the
-   .theme-light / .theme-light-alt / .theme-night classes. Imported LAST so its
-   theme-scoped overrides win inside V2 surfaces; legacy routes are untouched. */
+/* V2 foundation ("Clear Systems") — the CONVERGED default system. Adds the --v2-* tokens and the
+   .theme-light / .theme-light-alt / .theme-night classes. Imported LAST so its semantic mapping wins.
+   Since Phase 2S the document root (<body>) carries .theme-light, so light is the default surface;
+   dark is the reserved, explicitly-scoped .theme-night section. The remaining colors.css/effects.css/
+   constellation.css tokens are only those with live consumers (proven-dead ones were removed in 2S). */
 @import "./tokens/v2.css";

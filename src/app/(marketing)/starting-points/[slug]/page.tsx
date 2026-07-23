@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/routes/PageHeader";
 import { Button } from "@/components/primitives/Button";
 import { SectionShell } from "@/components/sections/SectionShell";
+import { CardGrid } from "@/components/primitives/CardGrid";
+import { Callout } from "@/components/primitives/Callout";
+import { JourneyStageCard } from "@/components/cards/JourneyStageCard";
 import { BentoGrid } from "@/components/primitives/BentoGrid";
 import { BentoCard } from "@/components/primitives/BentoCard";
 import { FinalCtaBannerSection } from "@/components/sections/FinalCtaBannerSection";
@@ -45,9 +48,16 @@ export default async function StartingPointDetailPage({
   ]);
   if (!startingPoint) notFound();
 
+  // Resolve the recommended stage STRICTLY: a broken relationship must fail the static build, never
+  // render a partially-empty page (proven whole by tests/unit/starting-point-content.test.ts).
   const stage = stages.find((st) => st.slug === startingPoint.recommendedStageSlug);
+  if (!stage) {
+    throw new Error(
+      `Starting point "${startingPoint.slug}" references an unresolved recommended stage "${startingPoint.recommendedStageSlug}".`,
+    );
+  }
 
-  const stageServices = (stage?.serviceSlugs ?? [])
+  const stageServices = (stage.serviceSlugs ?? [])
     .map((s) => services.find((sv) => sv.slug === s))
     .filter((sv): sv is NonNullable<typeof sv> => Boolean(sv))
     .map((sv) => ({ name: sv.name, href: `/services/${sv.categorySlug}#${sv.slug}`, hint: sv.plainDescription }));
@@ -82,40 +92,42 @@ export default async function StartingPointDetailPage({
         trustNote="Most businesses sit in more than one situation at once, and that's normal."
       />
 
-      {stage && (
-        <SectionShell
-          id="recommended-stage"
-          eyebrow="Recommended starting stage"
-          title="The best place to begin"
-          lead="Based on where you are now, this is the stage of the growth journey we'd start from."
-          align="start"
-          spacing="tight"
-        >
-          <BentoGrid>
-            <BentoCard
-              href={`/how-it-works#${stage.slug}`}
-              hue={startingPoint.color}
-              icon="compass"
-              eyebrow="Start here"
-              title={stage.name}
-              blurb={stage.summary}
-              variant="featured"
-            />
-          </BentoGrid>
-        </SectionShell>
-      )}
+      <SectionShell
+        surface="alt"
+        id="recommended-stage"
+        eyebrow="Recommended starting stage"
+        title="The best place to begin"
+        lead="Based on where you are now, this is the stage of the growth journey we'd start from."
+        align="start"
+        spacing="tight"
+      >
+        <CardGrid layout="equal" aria-label="Recommended starting stage">
+          <JourneyStageCard
+            order={stage.order}
+            title={stage.name}
+            summary={stage.summary}
+            href={`/how-it-works#${stage.slug}`}
+            icon={stage.icon}
+            tone={stage.color}
+          />
+        </CardGrid>
+      </SectionShell>
 
       <SectionShell
+        surface="light"
         id="recommendation"
         eyebrow="What we'd recommend"
         title="Our honest take on your next move"
         align="start"
+        spacing="tight"
       >
-        <p className={styles.prose}>{startingPoint.recommendation}</p>
-        <p className={styles.reassure}>
-          Most businesses sit in more than one situation at once, and that&apos;s normal. Your plan is
-          tailored to your specifics during discovery.
-        </p>
+        <div className={styles.recommendation}>
+          <Callout tone="information">{startingPoint.recommendation}</Callout>
+          <p className={styles.reassure}>
+            Most businesses sit in more than one situation at once, and that&apos;s normal. Your plan is
+            tailored to your specifics during discovery.
+          </p>
+        </div>
       </SectionShell>
 
       {stageServices.length > 0 && (

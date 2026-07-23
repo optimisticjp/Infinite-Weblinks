@@ -125,6 +125,12 @@ const V2_DETAIL_MODULES = [
   "../../src/components/routes/QuoteProcessList.module.css",
   "../../src/components/routes/PricingFaqList.module.css",
   "../../src/app/(marketing)/pricing/pricing.module.css",
+  // Phase 2O §O: the V2 contact experience + form-control appearance.
+  "../../src/components/forms/FormFieldV2.module.css",
+  "../../src/components/forms/ContactForm.module.css",
+  "../../src/components/sections/ContactFormSection.module.css",
+  "../../src/components/cards/ContactPathCard.module.css",
+  "../../src/app/(convert)/contact/contact.module.css",
 ];
 const BANNED_V2 = [
   ...BANNED,

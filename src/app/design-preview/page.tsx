@@ -56,6 +56,8 @@ import { PricingDeliveryCard } from "@/components/cards/PricingDeliveryCard";
 import { EngagementShapeCard } from "@/components/cards/EngagementShapeCard";
 import { QuoteProcessList } from "@/components/routes/QuoteProcessList";
 import { PricingFaqList } from "@/components/routes/PricingFaqList";
+import { ContactPathCard } from "@/components/cards/ContactPathCard";
+import { ContactPreviewDemo } from "./ContactPreviewDemo";
 import {
   getHomepageOpening,
   getAccountOwnership,
@@ -71,6 +73,11 @@ import {
   pricingQuoteSteps,
   pricingFaqs,
 } from "@/lib/content/data/pricing";
+import {
+  contactTrustPoints,
+  contactProcessSteps,
+  contactAlternativePaths,
+} from "@/lib/content/data/contact";
 import { FilterChipDemo } from "./FilterChipDemo";
 import styles from "./design-preview.module.css";
 
@@ -1461,6 +1468,53 @@ export default async function DesignPreviewPage() {
             <LinkChip href="#main">Getting a price</LinkChip>
             <LinkChip href="#main">Pricing questions</LinkChip>
           </nav>
+        </section>
+
+        {/* 20 · Phase 2O — contact experience (real seed content; no fake enquiry, success delivery,
+            response time, contact channel, office or phone). ContactForm itself is previewed at
+            /contact to avoid duplicate production ids; its visual sub-blocks are shown here. */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Phase 2O · Contact experience</h2>
+
+          <p className={styles.subTitle}>Trust points — flat IconTiles, mapped V2 tones</p>
+          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: "var(--space-4)" }}>
+            {contactTrustPoints.map((t) => (
+              <li key={t.label} style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
+                <IconTile color={t.tone} size="sm">
+                  <Icon name={t.icon} />
+                </IconTile>
+                <span className={styles.cardBody}>{t.label}</span>
+              </li>
+            ))}
+          </ul>
+
+          <p className={styles.subTitle}>ProcessStepList — the three contact steps</p>
+          <ProcessStepList
+            steps={contactProcessSteps.map((s) => ({
+              order: s.order,
+              title: s.title,
+              description: s.body,
+              icon: s.icon,
+            }))}
+          />
+
+          <p className={styles.subTitle}>ContactPathCard — email (mailto) and growth plan</p>
+          <CardGrid layout="equal" aria-label="Contact paths (preview)">
+            {contactAlternativePaths.map((p) => (
+              <ContactPathCard
+                key={p.title}
+                title={p.title}
+                body={p.body}
+                href={p.href}
+                icon={p.icon}
+                tone={p.tone}
+                external={p.external}
+              />
+            ))}
+          </CardGrid>
+
+          <p className={styles.subTitle}>V2 form controls, long error text, success + delivery-unavailable panels</p>
+          <ContactPreviewDemo />
         </section>
       </div>
     </main>

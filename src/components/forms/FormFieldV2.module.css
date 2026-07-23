@@ -39,3 +39,12 @@ textarea.control {
 .required {
   color: var(--v2-brand-strong);
 }
+
+/* Inline field error text — the accessible V2 danger ink (the legacy --danger is a low-contrast
+   pink on the light surface). Same size/weight/margin as the legacy rule so only the colour moves. */
+.error {
+  margin: 0;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--v2-danger);
+}

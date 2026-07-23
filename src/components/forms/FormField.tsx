@@ -53,6 +53,7 @@ export function FormField({
   const errorId = error ? `${fieldId}-error` : undefined;
   const describedBy = [hintId, errorId].filter(Boolean).join(" ") || undefined;
   const requiredClass = appearance === "v2" ? v2.required : styles.required;
+  const errorClass = appearance === "v2" ? v2.error : styles.error;
 
   return (
     <div className={[styles.field, error ? styles.hasError : "", className].filter(Boolean).join(" ")}>
@@ -81,7 +82,7 @@ export function FormField({
           render a single assertive error summary/notice on submit and move focus to it, so
           per-field alerts would just clobber that one announcement with a competing burst. */}
       {error ? (
-        <p id={errorId} className={styles.error}>
+        <p id={errorId} className={errorClass}>
           {error}
         </p>
       ) : null}

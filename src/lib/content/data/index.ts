@@ -26,3 +26,10 @@ export { faqs } from "./faqs";
 export { learnArticles } from "./learn";
 export { caseStudies, testimonials, examples } from "./proof";
 export { legalPages } from "./legal";
+export {
+  pricingFactors,
+  pricingDeliveryCostNotes,
+  pricingEngagementShapes,
+  pricingQuoteSteps,
+  pricingFaqs,
+} from "./pricing";

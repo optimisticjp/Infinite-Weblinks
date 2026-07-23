@@ -1,9 +1,31 @@
 # Infinite Weblinks — V2 Design Specification
 
-**Status:** Approved for phased implementation · **Type:** Design-definition + phased build
+**Status:** ✅ **Implemented — redesign complete (Phase 2S).** · **Type:** Design-definition + phased build
 **Branch:** `claude/infinite-weblinks-v2-design-yb1yi3`
-**Approved decisions:** §15 (locked) · **Phase 1 implemented:** token foundation (`src/styles/tokens/v2.css`), theme classes, legal canary, design preview — see `docs/design/phase-1-implementation-report.md`
+**Approved decisions:** §15 (locked) · **Implemented:** the full V2 system across every route/template (Phases 1 → 2A–2S). Root converged to light-first in Phase 2S; the legacy cosmic system is retired.
 **Author role:** Principal product designer · design-system architect · senior frontend engineer · conversion strategist · accessibility reviewer
+
+> **Phase 2S convergence (redesign complete).** Implementation ran strictly phased and
+> compatibility-first from Phase 1 (additive V2 foundation + canary) through Phases 2A–2R (route and
+> component migration) to **Phase 2S**, which converged the document root to **light-first**
+> (`viewport.colorScheme:"light"`, paper `themeColor`, `theme-light` on `<body>`; night sections stay
+> explicitly scoped), migrated the final two legacy surface families (the 404/error status screens and
+> the gated `/examples` proof templates), and removed the proven-dead cosmic/registry visual legacy
+> code and tokens. **No route URLs, form APIs, Formspree/Turnstile behaviour, rate limiting, validation
+> schemas, CSP/security headers, Sanity delivery, legal wording, proof statuses, pricing, analytics or
+> deployment config were changed** — those are the separate Phase 3 (3A security/infrastructure,
+> 3B legal/proof/trust, 3C release/CI/deploy) work, which this redesign does not begin.
+>
+> - **Final route/template inventory:** [`docs/design/v2-final-route-inventory.md`](v2-final-route-inventory.md)
+> - **Legacy-reachability proof + removals:** [`docs/design/v2-legacy-reachability.md`](v2-legacy-reachability.md)
+> - **Visual/responsive/a11y review:** [`docs/design/phase-2s-visual-review.md`](phase-2s-visual-review.md)
+> - **Redesign handoff (+ Phase 3 scopes):** [`docs/design/v2-redesign-handoff.md`](v2-redesign-handoff.md)
+>
+> **Retained intentional exceptions** (documented, not dead code): `InfinityMark` (learn article +
+> the restrained status mark), `BentoGrid`/`BentoCard` on the light `/resources` surface, the seven
+> `--domain-*` wayfinding hues, and the `theme-band` legacy class still used by a small number of
+> live light sections (EditorialStatement, ProcessStepsSection). See the reachability report for the
+> per-item reasons.
 
 > This document defines the target for a V2 redesign of the Infinite Weblinks marketing site. The direction and the §15 decisions are **approved for phased implementation**. Implementation is **strictly phased and compatibility-first**: Phase 1 (this pass) adds an additive V2 foundation and migrates only a canary; it changes no APIs, forms, business logic, content data, SEO behaviour or route URLs, and removes no legacy tokens or components. It is written in the Spec Kit `specify → clarify → plan → tasks → implement` frame and draws on the `frontend-design`, `ui-ux-pro-max`, `design-system`, `accessibility` and `cro` skills.
 >

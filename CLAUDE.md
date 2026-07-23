@@ -88,7 +88,8 @@ src/styles/         globals.css + tokens/ (base, colors, effects, spacing, typog
 studio/             Sanity Studio: schemaTypes/, structure/, seed/
 tests/unit/         Vitest unit tests           tests/e2e/  Playwright + axe specs
 public/             static assets (brand-logos/, …)
-docs/design-references/  target visual direction (reference images + README)
+docs/design/           v2-design-spec.md (source of truth), v2-final-route-inventory.md,
+                    v2-legacy-reachability.md, v2-redesign-handoff.md, phase-*-reports
 scripts/            export-sanity-seed.ts, fetch-brand-logos.mjs
 ```
 
@@ -98,20 +99,52 @@ Config lives at the root: `next.config.ts`, `tsconfig.json`, `eslint.config.mjs`
 
 ---
 
-## Design Direction
+## Design Direction — "Clear Systems" (V2, implemented)
 
-The target visual direction lives in **`docs/design-references/`** (reference images + a
-`README.md`). Review the references before making major design decisions. The direction is
-deliberately **vibrant and experimental**:
+The redesign is **complete**. The approved, implemented direction is **"Clear Systems"**: roughly
+**70% Stripe** (structure, restraint, product clarity, typographic confidence) + **30% Clay**
+(warmth, colour, bento character), rendered as original Infinite Weblinks branding. The earlier
+dark/neon/space "Constellation" system is **retired** — it is no longer the target and must not be
+reintroduced.
 
-- dark, space-inspired backgrounds; neon blue/purple/pink/cyan/orange lighting; glowing
-  gradients; connected-systems and journey visuals; large bold headings; premium cards and
-  panels; rounded borders; subtle glass effects; illustrated digital ecosystems; strong CTAs;
-  alternating dark/light sections; polished desktop **and** mobile layouts.
+The source of truth is **[`docs/design/v2-design-spec.md`](docs/design/v2-design-spec.md)**, and the
+built system is browsable at **`/design-preview`** and **`/design-preview/shells`** (internal,
+noindex). There is no `docs/design-references/` directory — do not cite one.
 
-You have real creative freedom here — see [Creative Freedom](#creative-freedom). Use the
-references for direction, then create original content and layouts that fit Infinite Weblinks;
-do not copy reference text verbatim.
+The direction, in principles:
+
+- **Light-first.** The document root is light (V2 paper canvas); light is the default surface.
+- **Dark is reserved** for meaningful signature sections only (the single `theme-night`
+  `FinalCtaSection`), never a page default and never a full-screen decorative scene.
+- **Colour is wayfinding**, not atmosphere — the seven `--domain-*` hues code the service worlds;
+  colour reinforces meaning, it does not decorate.
+- **No cosmic/starfield/globe background** as a default (or anywhere on ordinary pages); **no glow**
+  as standard elevation (use neutral shadows); **no gradient headings on content pages**.
+- **One signature gradient**, used sparingly — reserved for selected top-level CTAs
+  (`Button variant="signature"`), never on ordinary cards, icons, headings or backgrounds.
+- **Restrained motion**; **one clear visual idea per section**; premium cards use semantic borders +
+  neutral elevation; polished at ~360/390px mobile through desktop with no horizontal overflow.
+
+Creative freedom still applies **within** this direction (see [Creative Freedom](#creative-freedom)):
+build boldly and expressively, but in the light-first "Clear Systems" language, not the retired
+cosmic one.
+
+### Settled implementation stack
+
+The redesign is implemented with — and future work continues on — this stack:
+
+- **CSS Modules** (per-component) + a **CSS-variable token system** (`src/styles/tokens/`, with the
+  V2 layer in `v2.css`).
+- **V2 semantic components** — `PageHeader`, `SectionShell` (`light`/`alt`/`night`), `Card`,
+  `CardGrid`, `Callout`, `Button`, `FinalCtaSection`, and the feature card set.
+- **lucide-react** for icons.
+
+This is a **completed** redesign. **Tailwind and shadcn/ui must not be introduced as an incidental
+component choice** here — the site does not use them, and reaching for one to add a single component
+would fork the styling system. A future move to a different styling architecture is possible but
+requires an **explicitly scoped project decision** (its own spec, migration path and rollback), not
+an ad-hoc introduction. (This narrows nothing in the constitution's outcome-based Principle XV — it
+records the settled choice for *this* completed redesign.)
 
 ---
 

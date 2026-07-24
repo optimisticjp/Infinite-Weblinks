@@ -31,8 +31,11 @@ export async function sanityFetch<T>(
       next: { revalidate: SANITY_REVALIDATE_SECONDS },
     });
   } catch (err) {
-    // Never let a Sanity outage take down a page — degrade to seed.
-    console.warn("[sanity] query failed; falling back to seed content.", err);
+    // Never let a Sanity outage take down a page — degrade to seed. Keep the fallback OPERATIONALLY
+    // VISIBLE (a warn line so an outage isn't silently disguised as a healthy empty result), but log
+    // ONLY a short reason — never the query, params, or any document body/PII.
+    const reason = err instanceof Error ? err.name : "unknown-error";
+    console.warn(`[sanity] live query failed (${reason}); falling back to seed content.`);
     return null;
   }
 }

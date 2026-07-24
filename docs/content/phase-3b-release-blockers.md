@@ -10,6 +10,41 @@ Every remaining item before an honest production launch, classified by who/what 
 - **[cloudflare]** Cloudflare external verification / provisioning required
 - **[3C]** Phase 3C technical release task
 
+## Hard go-live blockers vs optional (may remain gated)
+
+So nothing here is overstated as mandatory, every item is additionally graded:
+
+- **HARD** — must be resolved before an honest go-live.
+- **OPTIONAL / MAY REMAIN GATED** — the site can launch truthfully without it; it stays safely gated or is
+  intentionally withheld and can be enabled later. **Not a launch blocker.**
+
+### HARD go-live blockers
+
+- Professional legal review of the 5 legal pages, plus the entity / data-controller identity, address,
+  jurisdiction, lawful basis, retention, access/deletion, transfers, and DPAs. **[legal]/[owner]**
+- Production Cloudflare provisioning + secrets: R2 bucket, D1 database + **real id** (the shipped id is a
+  local placeholder), rate-limit rule, Turnstile keys, Formspree ids, `APP_ENV=production`, site URL —
+  forms fail closed until set. **[cloudflare]**
+- Next.js security patch (`16.2.10 → 16.2.11`). **[3C]/[repo]**
+- Final visual + accessibility certification, PR + green CI, and the **authorized** merge + deploy.
+  **[3C]/[owner]**
+- The business-policy **owner sign-offs** (ownership / no-lock-in / won't-sell / positioning / delivery
+  model / quote process): they gate an honest launch but are resolved by owner confirmation (not repo
+  work), recorded in `docs/release/phase-3c-owner-decisions.md`. **[owner]**
+
+### OPTIONAL / MAY REMAIN GATED (not mandatory for launch)
+
+- **Real proof** (case studies / testimonials / examples): double-gated and hidden; the site launches
+  truthfully with none published. Publish later via the proof checklist. **Not a launch blocker.**
+- **Numeric pricing ranges**: the qualitative, quoted-to-scope model is a deliberate, honest state; ranges
+  are intentionally withheld pending owner figures. Launching qualitative is fine. **Not a launch blocker.**
+- **Enabling live Sanity content**: off by default; seed is the production default. Optional, after preview
+  verification. **Not a launch blocker.**
+- **Cloudflare Web Analytics activation**: token unset; the owner activates it or amends the copy — either
+  is launch-safe as long as copy and activation stay consistent. **Not a launch blocker on its own.**
+- **Scheduled dev-only wrangler / miniflare / sharp upgrade**: build tooling only, no Worker-runtime
+  exposure. Schedule post-launch. **Not a launch blocker.**
+
 ## Legal
 
 | Item                                                                                             | Class                     | Status / notes                                                                                      |
@@ -58,6 +93,8 @@ Every remaining item before an honest production launch, classified by who/what 
 
 **Summary.** Everything resolvable in the repository for legal-status clarity, proof gating, claims
 truthfulness, pricing honesty, content-source model, and search-intent distinctness is **done**. The
-remaining blockers are genuinely external: professional legal review, owner confirmations of business
-policy + pricing, real proof + consent, Cloudflare provisioning, and the Phase 3C release tasks. No
-external item is marked resolved without evidence.
+remaining **hard** blockers are external: professional legal review, the owner business-policy sign-offs,
+Cloudflare provisioning, the `next@16.2.11` patch, and the Phase 3C release tasks (see the hard/optional
+split above). The optional items — real proof, numeric pricing ranges, live Sanity content, analytics
+activation — are **not** launch blockers; each stays safely gated or intentionally withheld and can be
+enabled later. No external item is marked resolved without evidence.

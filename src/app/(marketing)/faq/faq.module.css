@@ -1,2 +1,2 @@
-/* /faq — V2 canary. Layout only; surfaces come from PageHeader + SectionShell.
-   The final CTA now uses the shared FinalCtaSection, so no page-local CTA layout is needed. */
+/* /faq — layout only; surfaces come from PageHeader + SectionShell.
+   The final CTA uses the shared FinalCtaSection, so no page-local CTA layout is needed. */

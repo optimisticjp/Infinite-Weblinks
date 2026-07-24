@@ -18,8 +18,8 @@ export const metadata: Metadata = pageMetadata({
 });
 
 // Category order + wayfinding hue. Categories come from faqs.ts; anything unmapped falls to
-// a neutral hue and sorts last, so adding a category never breaks the page. V2 canary: the
-// hues are the accessible V2 domain inks (measured for light surfaces).
+// a neutral hue and sorts last, so adding a category never breaks the page. The hues are the
+// accessible V2 domain inks (measured for light surfaces).
 const CATEGORY_ORDER = ["Getting started", "How we work", "Pricing", "Timelines", "Ownership"];
 const CATEGORY_HUE: Record<string, string> = {
   "Getting started": "var(--v2-domain-strategy-ink)",

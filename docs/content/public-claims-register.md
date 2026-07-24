@@ -24,6 +24,22 @@ Phase 3B, and its final status. This is the trust-audit record for an honest lau
 - No numeric price, testimonial, client name, logo, or metric was invented. Placeholder proof stays
   hidden behind the strengthened publication gate.
 
+**Phase 3C classification refinements**
+
+A second pass tightened four classifications so none reads as more code-provable than it is:
+
+- **"No obligation" / "no pressure"** — split: the on-site part (no auto-signup, no purchase mechanism)
+  is an **implemented-fact**; the after-contact "no pressure" conduct is a **business-policy-commitment**
+  (owner-confirm).
+- **"A real person will read it and reply"** — reclassified from implemented-fact to
+  **business-policy-commitment**: the code provably forwards to the support inbox, but that a person reads
+  and replies is an operational commitment (owner-confirm). No response-time/SLA is claimed.
+- **"Takes a few minutes"** — reclassified to **illustrative-educational (soft estimate)**: an approximate
+  guide, not a measured or guaranteed duration.
+- **Cloudflare Web Analytics "does not track individuals"** — split: our repo sets no tracking cookies
+  (implemented-fact), but the "does not track individuals" characteristic is Cloudflare's documented
+  product behaviour (professional-review-required) and is contingent on activation (currently inactive).
+
 ---
 
 ## 1. Ownership / "in your name" / no lock-in
@@ -40,28 +56,28 @@ Phase 3B, and its final status. This is the trust-audit record for an honest lau
 
 ## 2. No-obligation / no-pressure / no mailing list / won't-sell
 
-| Wording                                            | Route / source                                            | Category                   | Action                                        | Final status                        |
-| -------------------------------------------------- | --------------------------------------------------------- | -------------------------- | --------------------------------------------- | ----------------------------------- |
-| "No pressure and no obligation" / "No obligation." | /contact, /faq, /how-it-works, /case-studies, growth-plan | implemented-fact           | Kept (accurate — no auto-signup, no purchase) | OK                                  |
-| "nothing gets added to a mailing list"             | ContactForm success                                       | implemented-fact           | Kept (no mailing-list integration exists)     | OK                                  |
-| "We'll never sell your details."                   | ContactForm consent                                       | business-policy-commitment | Kept                                          | Owner-confirm (data-selling policy) |
-| "Your details stay private, never sold"            | contact guidance                                          | business-policy-commitment | Kept                                          | Owner-confirm                       |
+| Wording                                            | Route / source                                            | Category                                                          | Action                                                                                                                        | Final status                        |
+| -------------------------------------------------- | --------------------------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| "No pressure and no obligation" / "No obligation." | /contact, /faq, /how-it-works, /case-studies, growth-plan | implemented-fact (on-site) + business-policy-commitment (conduct) | On-site part accurate (no auto-signup, no purchase mechanism); the after-contact "no pressure" conduct is a policy commitment | Owner-confirm (no-pressure conduct) |
+| "nothing gets added to a mailing list"             | ContactForm success                                       | implemented-fact                                                  | Kept (no mailing-list integration exists)                                                                                     | OK                                  |
+| "We'll never sell your details."                   | ContactForm consent                                       | business-policy-commitment                                        | Kept                                                                                                                          | Owner-confirm (data-selling policy) |
+| "Your details stay private, never sold"            | contact guidance                                          | business-policy-commitment                                        | Kept                                                                                                                          | Owner-confirm                       |
 
 ## 3. Privacy / cookies / analytics
 
-| Wording                                                                                | Route / source     | Category                     | Action                                                                            | Final status                              |
-| -------------------------------------------------------------------------------------- | ------------------ | ---------------------------- | --------------------------------------------------------------------------------- | ----------------------------------------- |
-| "Cloudflare Web Analytics, a cookieless analytics service" (present tense)             | /privacy, /cookies | professional-review-required | Kept; flagged in legal handoff — analytics is **inactive** until the token is set | Owner-confirm (activation) + legal review |
-| "does not use tracking cookies… does not track individual visitors"                    | /privacy, /cookies | implemented-fact             | Kept (cookieless beacon; no cookie code)                                          | OK (legal review)                         |
-| "no advertising cookies, cross-site tracking pixels, or third-party marketing cookies" | /cookies           | implemented-fact             | Kept (none implemented)                                                           | OK (legal review)                         |
+| Wording                                                                                | Route / source     | Category                                                                                          | Action                                                                                                                                                                                   | Final status                                   |
+| -------------------------------------------------------------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| "Cloudflare Web Analytics, a cookieless analytics service" (present tense)             | /privacy, /cookies | professional-review-required                                                                      | Kept; flagged in legal handoff — analytics is **inactive** until the token is set                                                                                                        | Owner-confirm (activation) + legal review      |
+| "does not use tracking cookies… does not track individual visitors"                    | /privacy, /cookies | implemented-fact (our code sets no cookies) + professional-review-required (Cloudflare behaviour) | Our repo sets no tracking cookies; "Cloudflare … does not track individuals" describes Cloudflare's documented cookieless behaviour and is contingent on activation (currently inactive) | OK (legal review) + owner-confirm (activation) |
+| "no advertising cookies, cross-site tracking pixels, or third-party marketing cookies" | /cookies           | implemented-fact                                                                                  | Kept (none implemented)                                                                                                                                                                  | OK (legal review)                              |
 
 ## 4. Free / time-to-complete
 
-| Wording                                                            | Route / source                             | Category                         | Action                                            | Final status      |
-| ------------------------------------------------------------------ | ------------------------------------------ | -------------------------------- | ------------------------------------------------- | ----------------- |
-| "free" (growth plan, guidance)                                     | /pricing, /refunds, /growth-plan, llms.txt | implemented-fact                 | Kept (no payment on site)                         | OK                |
-| "takes a few minutes" / "Takes a couple of minutes" (inconsistent) | /pricing vs /growth-plan                   | implemented-fact (soft estimate) | **Reconciled** to "a few minutes" for consistency | OK                |
-| "It is yours to keep…" (free plan)                                 | /refunds                                   | business-policy-commitment       | Kept (free, no obligation)                        | OK (legal review) |
+| Wording                                                            | Route / source                             | Category                                 | Action                                                                                         | Final status      |
+| ------------------------------------------------------------------ | ------------------------------------------ | ---------------------------------------- | ---------------------------------------------------------------------------------------------- | ----------------- |
+| "free" (growth plan, guidance)                                     | /pricing, /refunds, /growth-plan, llms.txt | implemented-fact                         | Kept (no payment on site)                                                                      | OK                |
+| "takes a few minutes" / "Takes a couple of minutes" (inconsistent) | /pricing vs /growth-plan                   | illustrative-educational (soft estimate) | **Reconciled** to "a few minutes"; an approximate guide, not a measured or guaranteed duration | OK                |
+| "It is yours to keep…" (free plan)                                 | /refunds                                   | business-policy-commitment               | Kept (free, no obligation)                                                                     | OK (legal review) |
 
 ## 5. Pricing (decision section)
 
@@ -104,9 +120,9 @@ Whether deposits, recurring fees, or minimum commitments must be disclosed is an
 
 ## 9. Support / response / reply
 
-| Wording                                                                   | Route / source  | Category         | Action                                       | Final status |
-| ------------------------------------------------------------------------- | --------------- | ---------------- | -------------------------------------------- | ------------ |
-| "A real person… reply by email with a practical next step" (no timeframe) | /contact, forms | implemented-fact | Kept (no SLA/response-time claimed anywhere) | OK           |
+| Wording                                                                   | Route / source  | Category                   | Action                                                                                                                                           | Final status                                    |
+| ------------------------------------------------------------------------- | --------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------- |
+| "A real person… reply by email with a practical next step" (no timeframe) | /contact, forms | business-policy-commitment | Code provably forwards to the support inbox; that a person reads and replies is an operational commitment. No SLA/response-time claimed anywhere | Owner-confirm (inbox is monitored and answered) |
 
 ## 10. Delivery / handover
 

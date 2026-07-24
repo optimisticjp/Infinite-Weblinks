@@ -23,9 +23,6 @@ function slugify(heading: string): string {
  * clear heading hierarchy, so long legal copy stays legible. On longer pages a sticky table
  * of contents rides alongside the text. The `reviewNote` is surfaced as a visible editorial
  * notice so the draft wording is never mistaken for finalised legal terms.
- *
- * V2 Phase 1 canary: this shared template is the first surface migrated to the light system;
- * chrome (header/footer) is migrated in a later phase.
  */
 export async function LegalPageView({ slug }: { slug: string }) {
   const page = await getLegalPage(slug);

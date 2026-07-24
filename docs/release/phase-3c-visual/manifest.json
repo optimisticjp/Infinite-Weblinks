@@ -1,0 +1,1064 @@
+{
+  "generatedBy": "Playwright chromium + @axe-core/playwright (Phase 3C §D)",
+  "mode": "next start, APP_ENV=development, FORMS_ALLOW_INSECURE_BYPASS=true (forms render exercisable)",
+  "reducedMotion": "reduce (whole run)",
+  "viewports": [
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "name": "tablet",
+      "width": 768,
+      "height": 1024
+    },
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900
+    }
+  ],
+  "routeCount": 28,
+  "proofLeak": {
+    "examplesIndexStatus": 404,
+    "caseStudiesHasIllustrativeDisclaimer": true,
+    "caseStudiesMentionsNoClientNames": true
+  },
+  "formMsg": {
+    "contactHasSupportMailto": true,
+    "contactNoFakeSuccessOnLoad": true,
+    "contactHasConsentCopy": true,
+    "growthPlanHasSupportMailto": true
+  },
+  "keyboardFocusFirstTab": {
+    "tag": "a",
+    "text": "Skip to main content",
+    "href": "#main",
+    "outline": "none 0px"
+  },
+  "interactiveStates": {
+    "mobileNavOpen": "state-mobile-nav-open-390.jpg",
+    "contactErrors": "state-contact-validation-390.jpg",
+    "growthPlanStep": "state-growth-plan-step-390.jpg",
+    "troubleshooter": "state-troubleshooter-select-390.jpg"
+  },
+  "routes": [
+    {
+      "path": "/",
+      "family": "homepage",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "home-390.jpg"
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "home-1440.jpg"
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": false
+      }
+    },
+    {
+      "path": "/goals",
+      "family": "goals-hub",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "goals-390.jpg"
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "goals-1440.jpg"
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": false
+      }
+    },
+    {
+      "path": "/goals/launch-professional-store",
+      "family": "goal-detail",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "goals-launch-professional-store-390.jpg"
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "goals-launch-professional-store-1440.jpg"
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": true
+      }
+    },
+    {
+      "path": "/business-types/ecommerce",
+      "family": "business-type-detail",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        }
+      },
+      "special": {
+        "cosmic": [
+          "svg.[object SVGAnimatedString]"
+        ],
+        "text200Overflow": true
+      }
+    },
+    {
+      "path": "/starting-points/nothing-built-yet",
+      "family": "starting-point-detail",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": false
+      }
+    },
+    {
+      "path": "/services",
+      "family": "services-hub",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "services-390.jpg"
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "services-1440.jpg"
+        }
+      },
+      "special": {
+        "cosmic": [
+          "svg.[object SVGAnimatedString]"
+        ],
+        "text200Overflow": false
+      }
+    },
+    {
+      "path": "/services/websites-development",
+      "family": "service-category",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "services-websites-development-390.jpg"
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "services-websites-development-1440.jpg"
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": true
+      }
+    },
+    {
+      "path": "/tools",
+      "family": "tools-hub",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "tools-390.jpg"
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "tools-1440.jpg"
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": false
+      }
+    },
+    {
+      "path": "/tools/websites-hosting-performance",
+      "family": "tool-detail",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": false
+      }
+    },
+    {
+      "path": "/roadmaps",
+      "family": "roadmaps-hub",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": false
+      }
+    },
+    {
+      "path": "/roadmaps/ecommerce",
+      "family": "roadmap-detail",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": true
+      }
+    },
+    {
+      "path": "/learn",
+      "family": "learn-hub",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": true
+      }
+    },
+    {
+      "path": "/learn/how-online-growth-works-as-one-system",
+      "family": "article-detail",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "learn-how-online-growth-works-as-one-system-390.jpg"
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "learn-how-online-growth-works-as-one-system-1440.jpg"
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": false
+      }
+    },
+    {
+      "path": "/case-studies",
+      "family": "case-study-hub",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "case-studies-390.jpg"
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "case-studies-1440.jpg"
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": false
+      }
+    },
+    {
+      "path": "/case-studies/ecommerce-turn-browsers-into-buyers",
+      "family": "scenario-detail",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": true
+      }
+    },
+    {
+      "path": "/resources",
+      "family": "resources",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": true
+      }
+    },
+    {
+      "path": "/faq",
+      "family": "faq",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "faq-390.jpg"
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "faq-1440.jpg"
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": false
+      }
+    },
+    {
+      "path": "/pricing",
+      "family": "pricing",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "pricing-390.jpg"
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "pricing-1440.jpg"
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": false
+      }
+    },
+    {
+      "path": "/how-it-works",
+      "family": "how-it-works",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": false
+      }
+    },
+    {
+      "path": "/about",
+      "family": "about",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": false
+      }
+    },
+    {
+      "path": "/connected-growth",
+      "family": "connected-growth",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": true
+      }
+    },
+    {
+      "path": "/account-ownership",
+      "family": "account-ownership",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": false
+      }
+    },
+    {
+      "path": "/contact",
+      "family": "contact",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "contact-390.jpg"
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "contact-1440.jpg"
+        }
+      },
+      "special": {
+        "cosmic": [
+          "svg.[object SVGAnimatedString]"
+        ],
+        "text200Overflow": false
+      }
+    },
+    {
+      "path": "/growth-plan",
+      "family": "growth-plan",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "growth-plan-390.jpg"
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "growth-plan-1440.jpg"
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": false
+      }
+    },
+    {
+      "path": "/troubleshooter",
+      "family": "troubleshooter",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "troubleshooter-390.jpg"
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "troubleshooter-1440.jpg"
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": false
+      }
+    },
+    {
+      "path": "/privacy",
+      "family": "legal",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "privacy-390.jpg"
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "privacy-1440.jpg"
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": true
+      }
+    },
+    {
+      "path": "/terms",
+      "family": "legal-terms",
+      "viewports": {
+        "mobile": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        },
+        "tablet": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 200,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": true
+      }
+    },
+    {
+      "path": "/this-route-does-not-exist-404-check",
+      "family": "status-404",
+      "viewports": {
+        "mobile": {
+          "status": 404,
+          "overflow": false,
+          "scrollW": 390,
+          "clientW": 390,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "this-route-does-not-exist-404-check-390.jpg"
+        },
+        "tablet": {
+          "status": 404,
+          "overflow": false,
+          "scrollW": 768,
+          "clientW": 768,
+          "h1": 1
+        },
+        "desktop": {
+          "status": 404,
+          "overflow": false,
+          "scrollW": 1440,
+          "clientW": 1440,
+          "h1": 1,
+          "axeViolations": [],
+          "axeSerious": 0,
+          "screenshot": "this-route-does-not-exist-404-check-1440.jpg"
+        }
+      },
+      "special": {
+        "cosmic": [],
+        "text200Overflow": false
+      }
+    }
+  ]
+}

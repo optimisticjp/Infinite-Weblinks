@@ -1,0 +1,384 @@
+{
+  "method": "real narrow viewport 320 & 360 CSS px; header probes excluded (offscreen/clipped); assert no horizontal scroll & no unclipped content crosser",
+  "pass": true,
+  "results": [
+    {
+      "w": 320,
+      "path": "/",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/goals",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/goals/launch-professional-store",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/business-types/ecommerce",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/starting-points/nothing-built-yet",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/services",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/services/websites-development",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/tools",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/tools/websites-hosting-performance",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/roadmaps",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/roadmaps/ecommerce",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/learn",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/learn/how-online-growth-works-as-one-system",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/case-studies",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/case-studies/ecommerce-turn-browsers-into-buyers",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/resources",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/faq",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/pricing",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/how-it-works",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/about",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/connected-growth",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/account-ownership",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/contact",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/growth-plan",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/troubleshooter",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/privacy",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 320,
+      "path": "/terms",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/goals",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/goals/launch-professional-store",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/business-types/ecommerce",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/starting-points/nothing-built-yet",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/services",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/services/websites-development",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/tools",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/tools/websites-hosting-performance",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/roadmaps",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/roadmaps/ecommerce",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/learn",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/learn/how-online-growth-works-as-one-system",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/case-studies",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/case-studies/ecommerce-turn-browsers-into-buyers",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/resources",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/faq",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/pricing",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/how-it-works",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/about",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/connected-growth",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/account-ownership",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/contact",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/growth-plan",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/troubleshooter",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/privacy",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    },
+    {
+      "w": 360,
+      "path": "/terms",
+      "pass": true,
+      "canScrollX": false,
+      "contentCrossers": 0
+    }
+  ]
+}

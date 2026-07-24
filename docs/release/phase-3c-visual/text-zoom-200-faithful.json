@@ -1,0 +1,221 @@
+{
+  "method": "root font 200% + real resize + settle; assert no horizontal scroll & no unclipped crossers",
+  "results": [
+    {
+      "path": "/",
+      "pass": true,
+      "scrollW": 390,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/goals",
+      "pass": true,
+      "scrollW": 390,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/goals/launch-professional-store",
+      "pass": false,
+      "scrollW": 416,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/business-types/ecommerce",
+      "pass": false,
+      "scrollW": 397,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/starting-points/nothing-built-yet",
+      "pass": true,
+      "scrollW": 390,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/services",
+      "pass": true,
+      "scrollW": 390,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/services/websites-development",
+      "pass": false,
+      "scrollW": 450,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/tools",
+      "pass": true,
+      "scrollW": 390,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/tools/websites-hosting-performance",
+      "pass": true,
+      "scrollW": 390,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/roadmaps",
+      "pass": true,
+      "scrollW": 390,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/roadmaps/ecommerce",
+      "pass": false,
+      "scrollW": 397,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/learn",
+      "pass": false,
+      "scrollW": 395,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/learn/how-online-growth-works-as-one-system",
+      "pass": true,
+      "scrollW": 390,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/case-studies",
+      "pass": true,
+      "scrollW": 390,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/case-studies/ecommerce-turn-browsers-into-buyers",
+      "pass": false,
+      "scrollW": 408,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/resources",
+      "pass": false,
+      "scrollW": 395,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/faq",
+      "pass": true,
+      "scrollW": 390,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/pricing",
+      "pass": true,
+      "scrollW": 390,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/how-it-works",
+      "pass": true,
+      "scrollW": 390,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/about",
+      "pass": true,
+      "scrollW": 390,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/connected-growth",
+      "pass": false,
+      "scrollW": 463,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/account-ownership",
+      "pass": true,
+      "scrollW": 390,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/contact",
+      "pass": true,
+      "scrollW": 390,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/growth-plan",
+      "pass": true,
+      "scrollW": 390,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/troubleshooter",
+      "pass": true,
+      "scrollW": 390,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/privacy",
+      "pass": false,
+      "scrollW": 493,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    },
+    {
+      "path": "/terms",
+      "pass": false,
+      "scrollW": 493,
+      "clientW": 390,
+      "canScrollX": false,
+      "unclippedCrossers": 0
+    }
+  ]
+}

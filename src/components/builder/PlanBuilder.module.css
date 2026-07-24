@@ -1,3 +1,8 @@
+/* PlanBuilder — V2 light-first styling for the Growth Plan Builder. The route panel (growth-plan.module.css)
+   owns the raised surface around this; here we lay out the four-step form, the progress rail and the plan
+   screen's review-request panel. V2 tokens only — no legacy domain or base-palette tokens (no --orange,
+   --domain-*, --danger, --hairline-strong), no glow, glass or gradient, no backdrop-filter, no raw colour,
+   no sticky sidebar, no fixed viewport heights. */
 .builder {
   display: grid;
   gap: var(--space-8);
@@ -37,13 +42,17 @@
 }
 .stepHeading {
   margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
   font-size: var(--fs-h3);
+  line-height: var(--lh-heading);
   color: var(--text-heading);
   outline: none;
 }
 .stepSubtitle {
   margin: 0;
   font-size: var(--fs-body);
+  line-height: var(--lh-body);
   color: var(--text-body);
   max-width: 54ch;
 }
@@ -63,9 +72,10 @@
   gap: var(--space-4);
 }
 
+/* Progress rail — a plain in-flow column on desktop (no sticky), hidden on narrow screens
+   where the top Stepper already carries step progress. */
 .sidebar {
-  position: sticky;
-  top: calc(var(--header-h) + var(--space-6));
+  min-width: 0;
 }
 @media (max-width: 1023px) {
   .sidebar {
@@ -81,11 +91,9 @@
   display: grid;
   gap: var(--space-5);
   padding: var(--space-8);
-  border-radius: var(--radius-xl);
-  background:
-    radial-gradient(70% 90% at 100% 0%, color-mix(in srgb, var(--domain-strategy) 12%, transparent), transparent 60%),
-    var(--surface-raised);
-  border: 1px solid var(--hairline-strong);
+  border-radius: var(--v2-radius-lg);
+  background: var(--v2-brand-tint);
+  border: 1px solid var(--hairline);
 }
 
 .honeypotWrap {
@@ -110,12 +118,16 @@
 }
 .emailTitle {
   margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
   font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
   color: var(--text-heading);
 }
 .emailSub {
   margin: 0;
   font-size: var(--fs-sm);
+  line-height: var(--lh-body);
   color: var(--text-body);
   max-width: 60ch;
 }
@@ -128,7 +140,7 @@
   color: var(--text-muted);
 }
 .requiredNote .req {
-  color: var(--danger);
+  color: var(--v2-brand-strong);
   font-weight: var(--fw-bold);
 }
 
@@ -148,9 +160,9 @@
 
 .notice {
   padding: var(--space-4) var(--space-5);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--orange);
-  background: color-mix(in srgb, var(--orange) 14%, transparent);
+  border-radius: var(--v2-radius-md);
+  border: 1px solid var(--v2-warning);
+  background: var(--v2-warning-tint);
   color: var(--text-heading);
   font-weight: var(--fw-semibold);
   outline: none;
@@ -160,11 +172,20 @@
   font-size: var(--fs-sm);
   color: var(--text-muted);
 }
+/* Inline mailto link inside the muted note: inherit the text colour and underline so it is
+   distinguishable without relying on colour (axe link-in-text-block). */
+.skipNote a {
+  color: inherit;
+  text-decoration: underline;
+}
 
 .emailActions {
   display: grid;
   gap: var(--space-3);
   justify-items: center;
+}
+.submit {
+  width: 100%;
 }
 .reassure {
   margin: 0;
@@ -177,7 +198,7 @@
 }
 .reassureIcon {
   flex: none;
-  color: var(--domain-retain);
+  color: var(--v2-success);
 }
 
 /* Success */
@@ -194,12 +215,16 @@
 }
 .successTitle {
   margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
   font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
   color: var(--text-heading);
 }
 .successBody {
   margin: 0;
   font-size: var(--fs-sm);
+  line-height: var(--lh-body);
   color: var(--text-body);
   max-width: 46ch;
 }
@@ -220,7 +245,7 @@
   gap: var(--space-1);
   font-size: var(--fs-sm);
   font-weight: var(--fw-semibold);
-  color: var(--link);
+  color: var(--v2-brand-strong);
   background: none;
   border: none;
   padding: 0;
@@ -235,8 +260,10 @@
 .planLink svg {
   transition: transform var(--dur-fast) var(--ease-out);
 }
-.planLink:hover svg {
-  transform: translate(2px, -2px);
+@media (hover: hover) {
+  .planLink:hover svg {
+    transform: translate(2px, -2px);
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .planLink:hover svg {

@@ -1,14 +1,26 @@
-import type { ReactNode } from "react";
-import { CosmicBackground } from "@/components/viz/CosmicBackground";
+import { useId, type ReactNode } from "react";
 import styles from "./SectionShell.module.css";
+
+/**
+ * Section surface (V2, converged). `light` (default) / `alt` (alternating band) / `night` (the
+ * reserved dark signature section). No cosmic layer, no gradient eyebrow — the legacy Constellation
+ * surface was removed at Phase 2S convergence once every consumer had migrated.
+ */
+type Surface = "light" | "alt" | "night";
+
+const SURFACE_THEME: Record<Surface, string> = {
+  light: "theme-light",
+  alt: "theme-light-alt",
+  night: "theme-night",
+};
 
 type SectionShellProps = {
   children: ReactNode;
   /** DOM id for the section (used for in-page anchors). */
   id?: string;
-  /** Small uppercase kicker above the title; rendered in the brand gradient. */
+  /** Small uppercase kicker above the title (plain accent). */
   eyebrow?: ReactNode;
-  /** Section title. Pass a node so a word can be wrapped in `.iw-gradient-word`. */
+  /** Section title. */
   title?: ReactNode;
   /** Heading level for the title — 1 for a page hero, 2 elsewhere. */
   titleLevel?: 1 | 2;
@@ -16,8 +28,10 @@ type SectionShellProps = {
   lead?: ReactNode;
   /** When there is no built-in title, point the section's label at an existing id. */
   labelledBy?: string;
-  /** Cosmic deep-space background: `true` for aurora + stars, `"horizon"` to add the globe. */
-  background?: boolean | "horizon";
+  /** Accessible name for a headingless section (used only when no title/labelledBy is set). */
+  ariaLabel?: string;
+  /** V2 surface. Defaults to `light`. */
+  surface?: Surface;
   /** Header alignment. */
   align?: "center" | "start";
   container?: "default" | "wide";
@@ -29,13 +43,12 @@ type SectionShellProps = {
 };
 
 /**
- * SectionShell — the reusable section wrapper for the Constellation system. It owns the
- * cosmic surface (`.theme-cosmic`), the optional deep-space background layer, consistent
- * vertical rhythm, and an optional header (eyebrow + gradient-capable title + lead). Page
- * content is passed as children and rendered inside the container, below the header.
+ * SectionShell — the reusable V2 section wrapper. It owns the surface theme (light/alt/night), an
+ * optional header (eyebrow + title + lead), consistent vertical rhythm, and the container. No
+ * cosmic layer.
  *
- * Accessibility: when a `title` is provided the section is labelled by that heading; a
- * headingless section must pass `labelledBy` so the landmark still has an accessible name.
+ * Accessibility: a titled section is labelled by its heading; a headingless section passes
+ * `labelledBy` or `ariaLabel` so the landmark still has an accessible name.
  */
 export function SectionShell({
   children,
@@ -45,18 +58,24 @@ export function SectionShell({
   titleLevel = 2,
   lead,
   labelledBy,
-  background = false,
+  ariaLabel,
+  surface = "light",
   align = "center",
   container = "wide",
   spacing = "default",
   className,
   contentClassName,
 }: SectionShellProps) {
-  const headingId = title ? (id ? `${id}-title` : "section-title") : undefined;
+  // Stable, unique heading id via useId (SSR/hydration-safe, never derived from title
+  // content). An explicit `id` still yields a readable `${id}-title`; without one, several
+  // untitled shells on a page never collide. useId's colons are stripped so the value is a
+  // valid CSS/aria id fragment.
+  const reactId = useId().replace(/:/g, "");
+  const headingId = title ? (id ? `${id}-title` : `section-${reactId}-title`) : undefined;
   const Heading = (titleLevel === 1 ? "h1" : "h2") as "h1" | "h2";
 
   const sectionClass = [
-    "theme-cosmic",
+    SURFACE_THEME[surface],
     "iw-section",
     spacing === "tight" ? "iw-section--tight" : spacing === "loose" ? "iw-section--loose" : "",
     styles.section,
@@ -65,9 +84,6 @@ export function SectionShell({
     .filter(Boolean)
     .join(" ");
 
-  // Base `iw-container` stays on the same token as the `--wide` modifier so the modifier is
-  // never emitted alone (see container-contract.test.ts — a modifier-only container loses its
-  // gutter + centring and goes flush to the viewport edge).
   const containerClass = [
     container === "wide" ? "iw-container iw-container--wide" : "iw-container",
     styles.inner,
@@ -77,12 +93,16 @@ export function SectionShell({
     .join(" ");
 
   return (
-    <section id={id} className={sectionClass} aria-labelledby={headingId ?? labelledBy}>
-      {background ? <CosmicBackground horizon={background === "horizon"} /> : null}
+    <section
+      id={id}
+      className={sectionClass}
+      aria-labelledby={headingId ?? labelledBy}
+      aria-label={!headingId && !labelledBy ? ariaLabel : undefined}
+    >
       <div className={containerClass}>
         {title || eyebrow || lead ? (
           <header className={[styles.head, align === "center" ? styles.center : styles.start].join(" ")}>
-            {eyebrow ? <p className={styles.eyebrow}>{eyebrow}</p> : null}
+            {eyebrow ? <p className={styles.eyebrowV2}>{eyebrow}</p> : null}
             {title ? (
               <Heading id={headingId} className={styles.title}>
                 {title}

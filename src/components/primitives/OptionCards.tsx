@@ -3,13 +3,16 @@
 import { useId } from "react";
 import { Check } from "lucide-react";
 import { Icon } from "./Icon";
+import { domainInk } from "@/lib/design/domainColor";
 import styles from "./OptionCards.module.css";
 
 export type CardOption = {
   value: string;
   label: string;
   description?: string;
-  /** Domain hue token; falls back to a cycled hue when omitted. */
+  /** Optional wayfinding tone. A supplied legacy/domain token is mapped to an accessible V2 ink
+   *  through `domainInk`; when omitted, one restrained V2 fallback ink is used. There is no palette
+   *  cycle. */
   color?: string;
   /** Optional Icon-primitive name. */
   icon?: string;
@@ -27,21 +30,17 @@ type OptionCardsProps = {
   className?: string;
 };
 
-const CYCLE = [
-  "var(--domain-strategy)",
-  "var(--domain-build)",
-  "var(--domain-discover)",
-  "var(--domain-convert)",
-  "var(--domain-operate)",
-  "var(--domain-retain)",
-  "var(--domain-ai)",
-];
+/** One restrained V2 fallback accent for options that carry no tone of their own (business type,
+ *  setup, engagement, timeline) — no arbitrary palette cycle. Goal options carry a legacy colour,
+ *  mapped to an accessible V2 ink through the domain bridge. */
+const FALLBACK_INK = "var(--v2-brand)";
 
 /**
- * OptionCards — an accessible single-select group rendered as domain-tinted cards. Real
- * radio inputs (visually hidden) provide native keyboard operation and group semantics
- * inside a fieldset/legend; the checked state is shown with a tick and a ring, never colour
- * alone. The error is tied to every input via aria-describedby.
+ * OptionCards — an accessible single-select group rendered as light V2 cards. Real radio inputs
+ * (visually hidden) provide native keyboard operation and group semantics inside a fieldset/legend;
+ * the checked state is shown with a tick AND a border, never colour alone. Each option's accent is a
+ * mapped V2 ink (goal colours via the domain bridge, everything else the single fallback). The error
+ * is tied to every input via aria-describedby.
  */
 export function OptionCards({
   legend,
@@ -60,16 +59,16 @@ export function OptionCards({
     <fieldset className={[styles.fieldset, className].filter(Boolean).join(" ")}>
       <legend className={styles.legend}>{legend}</legend>
       <div className={`${styles.grid} ${columns === 3 ? styles.cols3 : styles.cols2}`}>
-        {options.map((opt, i) => {
+        {options.map((opt) => {
           const id = `${name}-${opt.value}`;
           const checked = value === opt.value;
-          const hue = opt.color ?? CYCLE[i % CYCLE.length];
+          const ink = opt.color ? domainInk(opt.color) : FALLBACK_INK;
           return (
             <label
               key={opt.value}
               htmlFor={id}
               className={[styles.card, checked ? styles.checked : ""].filter(Boolean).join(" ")}
-              style={{ ["--opt-hue" as string]: hue }}
+              style={{ ["--opt-ink" as string]: ink }}
             >
               <input
                 type="radio"

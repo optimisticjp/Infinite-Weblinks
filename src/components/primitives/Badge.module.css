@@ -23,3 +23,51 @@
   color: var(--text-body);
   border: 1px solid var(--hairline-strong);
 }
+
+.icon {
+  display: inline-flex;
+}
+.icon :global(svg) {
+  width: 0.9em;
+  height: 0.9em;
+}
+
+/* ---- V2 tones (opt-in via `tone`). Tints/inks are fixed, measured AA on white and on
+   their own tint, so a tone pill is legible on any surface; `neutral` adapts to the theme. */
+.neutral {
+  background: color-mix(in srgb, var(--text-heading) 7%, var(--surface));
+  color: var(--text-body);
+  border: 1px solid var(--hairline-strong);
+}
+.brand {
+  background: var(--v2-brand-tint);
+  color: var(--v2-brand-strong);
+  border: 1px solid color-mix(in srgb, var(--v2-brand) 24%, transparent);
+}
+.domain {
+  /* 8% tint keeps every domain ink ≥ 4.6:1 as small badge text (14% dropped
+     operate/discover/retain below 4.5 — measured; do not darken). */
+  background: color-mix(in srgb, var(--badge-color) 8%, white);
+  color: var(--badge-color);
+  border: 1px solid color-mix(in srgb, var(--badge-color) 32%, transparent);
+}
+.success {
+  background: var(--v2-success-tint);
+  color: var(--v2-success);
+  border: 1px solid color-mix(in srgb, var(--v2-success) 30%, transparent);
+}
+.warning {
+  background: var(--v2-warning-tint);
+  color: var(--v2-warning);
+  border: 1px solid color-mix(in srgb, var(--v2-warning) 30%, transparent);
+}
+.danger {
+  background: var(--v2-danger-tint);
+  color: var(--v2-danger);
+  border: 1px solid color-mix(in srgb, var(--v2-danger) 30%, transparent);
+}
+.information {
+  background: var(--v2-info-tint);
+  color: var(--v2-info);
+  border: 1px solid color-mix(in srgb, var(--v2-info) 30%, transparent);
+}

@@ -1,0 +1,88 @@
+/* CustomerJourneyList — vertical ordered list of illustrative journey cards. V2 tokens only.
+   No horizontal strip, no scrollable region, no fake device chrome, no animation. */
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+@media (min-width: 52rem) {
+  .list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border-radius: var(--v2-radius-lg);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  border-top: 3px solid var(--step-ink);
+  box-shadow: var(--v2-shadow-sm);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.marker {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--step-ink);
+}
+
+.phase {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+}
+.caption {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-body);
+}
+
+.touchpoint {
+  margin-top: var(--space-2);
+  padding: var(--space-4);
+  border-radius: var(--v2-radius-md);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+}
+.touchpointLabel {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.screenHeading {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  color: var(--text-heading);
+}
+.screenLines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.screenLine {
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}

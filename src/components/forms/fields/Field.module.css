@@ -1,6 +1,6 @@
-/* Shared adornments for the Constellation field primitives. The control itself is styled by
-   FormField.module.css `.control`, which reads `--surface-input` from the section theme —
-   so on `.theme-cosmic` these inputs sit on the deep #241D40 well automatically. */
+/* Shared adornments for the field primitives. The control itself is styled by
+   FormField.module.css `.control`, which reads `--surface-input` from the V2 section theme,
+   so these inputs pick up the right well on light / alt / night surfaces automatically. */
 
 .wrap {
   position: relative;

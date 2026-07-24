@@ -1,7 +1,0 @@
-.section {
-  overflow: hidden; /* the timeline scrolls inside its own container, never the page */
-}
-
-.timeline {
-  margin-top: clamp(32px, 5vw, 56px);
-}

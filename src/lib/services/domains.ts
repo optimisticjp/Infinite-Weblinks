@@ -1169,3 +1169,6 @@ const CONFIGS: Record<string, DomainConfig> = {
 export function getServiceDomainConfig(slug: string): DomainConfig | undefined {
   return CONFIGS[slug];
 }
+
+/** Every domain config, in definition order — for integrity coverage (orphan/duplicate detection). */
+export const serviceDomainConfigs: DomainConfig[] = Object.values(CONFIGS);

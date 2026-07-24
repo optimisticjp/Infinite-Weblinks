@@ -1,0 +1,28 @@
+/* HomepageGoalRouterSection — the goal grid uses CardGrid/GoalCard; this module lays out the
+   "not sure which fits?" panel below it. V2 tokens only; no theme-band, glow/glass/gradient,
+   raw colour. */
+.notSure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  padding: var(--space-6);
+  border-radius: var(--v2-radius-lg);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+}
+.notSureText {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-body);
+  color: var(--text-heading);
+  max-width: 42ch;
+}
+.notSureActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}

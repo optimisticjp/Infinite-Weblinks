@@ -1,3 +1,7 @@
+/* ContactForm — V2 light-first presentation. Semantic status surfaces (danger/warning/success tints
+   + accessible inks), a flat success IconTile (no SVG gradient / InfinityMark), and a full-width
+   shared Button. V2 tokens only — no legacy domain or base-palette tokens, no glow, glass or
+   gradient, no backdrop-filter, no raw colour, no fixed viewport height. */
 .wrap {
   display: grid;
   gap: var(--space-6);
@@ -33,9 +37,9 @@
 /* ---- Error summary ---- */
 .errorSummary {
   padding: var(--space-5);
-  border: 1px solid var(--danger);
-  border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  border: 1px solid var(--v2-danger);
+  border-radius: var(--v2-radius-md);
+  background: var(--v2-danger-tint);
   outline: none;
 }
 .errorSummaryHeading {
@@ -51,23 +55,22 @@
   gap: var(--space-1);
 }
 .errorLink {
-  color: var(--text-body);
+  color: var(--v2-danger);
   text-decoration: underline;
-  text-decoration-color: color-mix(in srgb, var(--danger) 70%, transparent);
   text-underline-offset: 3px;
   font-weight: var(--fw-medium);
 }
 .errorLink:hover,
 .errorLink:focus-visible {
   color: var(--text-heading);
-  text-decoration-color: var(--danger);
 }
 
+/* ---- Delivery-unavailable / server notice (a warning, not an error of the user's) ---- */
 .notice {
   padding: var(--space-5);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--orange);
-  background: color-mix(in srgb, var(--orange) 14%, transparent);
+  border-radius: var(--v2-radius-md);
+  border: 1px solid var(--v2-warning);
+  background: var(--v2-warning-tint);
   color: var(--text-heading);
   font-weight: var(--fw-semibold);
   outline: none;
@@ -80,48 +83,15 @@
   text-align: center;
   gap: var(--space-3);
   padding: var(--space-8) var(--space-6);
-  border-radius: var(--radius-lg);
-  border: 1px solid color-mix(in srgb, var(--domain-retain) 40%, var(--hairline-strong));
-  background:
-    radial-gradient(80% 60% at 50% 0%, color-mix(in srgb, var(--domain-strategy) 16%, transparent), transparent 70%),
-    color-mix(in srgb, var(--domain-retain) 8%, transparent);
+  border-radius: var(--v2-radius-lg);
+  border: 1px solid var(--v2-success);
+  background: var(--v2-success-tint);
   outline: none;
 }
 .successVisual {
-  position: relative;
   display: inline-grid;
   place-items: center;
-  width: 100%;
-  max-width: 220px;
-  margin-bottom: var(--space-2);
-}
-.successConnector {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-/* Connector "completing" animation — the two strands draw in toward the mark. Resting
-   state is fully drawn (dashoffset 0), so reduced-motion and no-JS both show the completed
-   connection; only the draw-in is gated behind a motion preference. */
-.successLine {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0;
-}
-@media (prefers-reduced-motion: no-preference) {
-  .successLine {
-    stroke-dashoffset: 1;
-    animation: connectorDraw 0.7s var(--ease-out) 0.1s forwards;
-  }
-}
-@keyframes connectorDraw {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-.successMark {
-  position: relative;
-  z-index: 1;
+  margin-bottom: var(--space-1);
 }
 .successTitle {
   margin: 0;
@@ -131,6 +101,7 @@
 .successBody {
   margin: 0;
   font-size: var(--fs-sm);
+  line-height: var(--lh-body);
   color: var(--text-body);
   max-width: 44ch;
 }
@@ -154,16 +125,21 @@
   font-size: var(--fs-sm);
   color: var(--text-muted);
 }
+/* Inline mailto link inside the muted note: inherit the text colour and underline so it is
+   distinguishable without relying on colour (axe link-in-text-block). */
+.hintNote a {
+  color: inherit;
+  text-decoration: underline;
+}
 
-/* Visible key for the "*" convention, so sighted users know what it means (required-ness is
-   also conveyed programmatically via the native required attribute on each control). */
+/* Visible key for the "*" convention (required-ness is also conveyed via the native required attr). */
 .requiredNote {
   margin: 0 0 var(--space-4);
   font-size: var(--fs-sm);
   color: var(--text-muted);
 }
 .requiredNote .req {
-  color: var(--danger);
+  color: var(--v2-danger);
   font-weight: var(--fw-bold);
 }
 
@@ -172,6 +148,9 @@
   display: grid;
   gap: var(--space-3);
   justify-items: center;
+}
+.submit {
+  width: 100%;
 }
 .reassure {
   margin: 0;
@@ -184,7 +163,7 @@
 }
 .reassureIcon {
   flex: none;
-  color: var(--domain-retain);
+  color: var(--v2-success);
 }
 .consent {
   margin: 0;

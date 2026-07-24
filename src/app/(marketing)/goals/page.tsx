@@ -1,25 +1,27 @@
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
-import { CosmicPageHero } from "@/components/routes/CosmicPageHero";
+import { PageHeader } from "@/components/routes/PageHeader";
 import { SectionShell } from "@/components/sections/SectionShell";
-import { BentoGrid } from "@/components/primitives/BentoGrid";
-import { BentoCard } from "@/components/primitives/BentoCard";
-import { GlowButton } from "@/components/primitives/GlowButton";
-import { NodeOrb } from "@/components/primitives/NodeOrb";
-import { Icon } from "@/components/primitives/Icon";
+import { FinalCtaSection } from "@/components/sections/FinalCtaSection";
+import { CardGrid } from "@/components/primitives/CardGrid";
+import { Button } from "@/components/primitives/Button";
+import { LinkChip } from "@/components/primitives/LinkChip";
+import { GoalCard } from "@/components/cards/GoalCard";
+import { BusinessTypeCard } from "@/components/cards/BusinessTypeCard";
 import { StartingPointSelectorSection } from "@/components/sections/StartingPointSelectorSection";
-import { FinalCtaBannerSection } from "@/components/sections/FinalCtaBannerSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getGoals, getBusinessTypes } from "@/lib/content";
+import styles from "./goals.module.css";
 
 /**
- * /goals — the front door for a cold visitor, on the Constellation kit. Three ways in, each
- * its own clearly-headed facet: start with the goal you want (bento → each goal's page), or
- * pick where you are right now (the reused starting-point selector), or come in by business
- * type. The by-where-you-are and by-business-type section ids are the permanent redirect
- * targets for the retired /starting-points and /business-types index URLs, so they stay put.
+ * /goals — the routing hub for a cold visitor, on the V2 light-first system. Three ways in, each
+ * its own clearly-headed facet: start with the goal you want (GoalCards → each goal's page), pick
+ * where you are right now (the rebuilt starting-point selector), or come in by business type
+ * (BusinessTypeCards). A compact hub-jump nav after the header links straight to the three facets.
+ * The by-where-you-are and by-business-type section ids are the permanent redirect targets for the
+ * retired /starting-points and /business-types index URLs, so they stay put.
  */
 export const metadata: Metadata = pageMetadata({
   title: "Your goal",
@@ -46,99 +48,95 @@ export default async function GoalsPage() {
         ])}
       />
 
-      <CosmicPageHero
+      <PageHeader
         id="goals-hero"
+        surface="light"
         breadcrumbs={[{ name: "Your goal" }]}
         eyebrow="Start with your goal"
-        title={
-          <>
-            What do you want to <span className="iw-gradient-word">achieve</span> right now?
-          </>
-        }
+        title="What do you want to achieve right now?"
         lead="Growth is easier when you start from the outcome you're after, not a list of tools. Pick the goal that fits, or come in by where you are or the kind of business you run."
         actions={
           <>
-            <GlowButton href="/growth-plan" size="lg" iconRight={<ArrowRight size={18} aria-hidden="true" />}>
+            <Button href="/growth-plan" iconRight={<ArrowRight size={16} aria-hidden="true" />}>
               Build my growth plan
-            </GlowButton>
-            <GlowButton href="#by-goal" variant="ghost" size="lg">
+            </Button>
+            <Button href="#by-goal" variant="secondary">
               Browse goals
-            </GlowButton>
+            </Button>
           </>
-        }
-        aside={
-          <span aria-hidden="true">
-            <NodeOrb hue="var(--violet)" size={128} emphasis="bright">
-              <Icon name="target" />
-            </NodeOrb>
-          </span>
         }
       />
 
-      {/* By goal — the outcome-first router. Cards open each goal's page, which routes onward
-          to the services that help and into the plan builder. */}
+      {/* Compact hub-jump nav — links between the three facets, not an interactive filter. */}
+      <div className={`theme-light ${styles.hubNavBand}`}>
+        <div className="iw-container iw-container--wide">
+          <nav aria-label="Choose how to start" className={styles.hubNav}>
+            <LinkChip href="#by-goal">Start with a goal</LinkChip>
+            <LinkChip href="#by-where-you-are">Start with where I am</LinkChip>
+            <LinkChip href="#by-business-type">Start with my business type</LinkChip>
+          </nav>
+        </div>
+      </div>
+
+      {/* By goal — the outcome-first router. Cards open each goal's page. */}
       <SectionShell
+        surface="alt"
         id="by-goal"
         eyebrow="By goal"
-        title={
-          <>
-            Pick the <span className="iw-gradient-word">outcome</span>{" "}
-            you&apos;re after
-          </>
-        }
+        title="Pick the outcome you're after"
         lead="Each goal opens a short, honest read of what it takes, the services that help, and where it fits in the journey."
         align="start"
       >
-        <BentoGrid>
-          {goals.map((goal, i) => (
-            <BentoCard
+        <CardGrid layout="equal" aria-label="Goals">
+          {goals.map((goal) => (
+            <GoalCard
               key={goal.slug}
               href={`/goals/${goal.slug}`}
-              hue={goal.color}
-              icon={goal.icon}
-              index={String(i + 1).padStart(2, "0")}
-              eyebrow={goal.audienceHint}
               title={goal.title}
-              blurb={goal.outcome}
-              variant={i === 0 ? "featured" : "medium"}
+              outcome={goal.outcome}
+              icon={goal.icon}
+              tone={goal.color}
+              audienceHint={goal.audienceHint}
             />
           ))}
-        </BentoGrid>
+        </CardGrid>
       </SectionShell>
 
-      {/* By where you are — the reused starting-point selector. #by-where-you-are is the
+      {/* By where you are — the rebuilt starting-point selector. #by-where-you-are is the
           permanent target for the retired /starting-points index. */}
       <StartingPointSelectorSection anchorId="by-where-you-are" />
 
       {/* By business type — #by-business-type is the permanent target for the retired
           /business-types index. */}
       <SectionShell
+        surface="alt"
         id="by-business-type"
         eyebrow="By business type"
-        title={
-          <>
-            Or come in by <span className="iw-gradient-word">who you are</span>
-          </>
-        }
+        title="Or come in by who you are"
         lead="The same connected system, framed for the kind of business you run: the situation, the goals that matter most, and a roadmap in phases."
         align="start"
       >
-        <BentoGrid>
-          {businessTypes.map((bt, i) => (
-            <BentoCard
+        <CardGrid layout="equal" aria-label="Business types">
+          {businessTypes.map((bt) => (
+            <BusinessTypeCard
               key={bt.slug}
               href={`/business-types/${bt.slug}`}
-              hue={bt.color}
-              icon={bt.icon}
               title={bt.name}
-              blurb={bt.summary}
-              variant={i === 0 ? "featured" : "medium"}
+              summary={bt.summary}
+              icon={bt.icon}
+              tone={bt.color}
             />
           ))}
-        </BentoGrid>
+        </CardGrid>
       </SectionShell>
 
-      <FinalCtaBannerSection anchorId="get-started" />
+      <FinalCtaSection
+        id="get-started"
+        title="Not sure which way in is yours?"
+        lead="Whichever route you pick, we'll map a connected plan around your goals — tailored to your business during discovery. No obligation."
+        primary={{ href: "/growth-plan", label: "Build my growth plan" }}
+        secondary={{ href: "/contact", label: "Talk it through" }}
+      />
     </>
   );
 }

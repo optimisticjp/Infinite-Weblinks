@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
-import { CosmicPageHero } from "@/components/routes/CosmicPageHero";
+import { PageHeader } from "@/components/routes/PageHeader";
+import { Button } from "@/components/primitives/Button";
 import { SectionShell } from "@/components/sections/SectionShell";
-import { BentoGrid } from "@/components/primitives/BentoGrid";
-import { BentoCard } from "@/components/primitives/BentoCard";
-import { GlowButton } from "@/components/primitives/GlowButton";
-import { InfinityMark } from "@/components/brand/InfinityMark";
-import { DeliveryModelsSection } from "@/components/sections/DeliveryModelsSection";
-import { HonestExpectationsSection } from "@/components/sections/home/HonestExpectationsSection";
-import { FinalCtaBannerSection } from "@/components/sections/FinalCtaBannerSection";
+import { CardGrid } from "@/components/primitives/CardGrid";
+import { PrincipleCard } from "@/components/cards/PrincipleCard";
+import { DeliveryModelsExplainerSection } from "@/components/sections/DeliveryModelsExplainerSection";
+import { HonestExpectationsPanel } from "@/components/routes/HonestExpectationsPanel";
+import { FinalCtaSection } from "@/components/sections/FinalCtaSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -55,6 +54,13 @@ const PRINCIPLES: { title: string; body: string; icon: string; color: string }[]
   },
 ];
 
+/**
+ * /about — the V2 light-first brand-story page. PageHeader (server H1 = LCP text) → who-we-are →
+ * the five positioning principles → the four ways of working (delivery models, ownership strip
+ * shown once here) → honest expectations → the single reserved dark final CTA. No cosmic hero,
+ * GlowButton, InfinityMark aside, BentoCard, gradient word or NodeOrb; the approved copy is
+ * unchanged. Server Component.
+ */
 export default function AboutPage() {
   return (
     <>
@@ -65,35 +71,26 @@ export default function AboutPage() {
         ])}
       />
 
-      <CosmicPageHero
+      <PageHeader
         id="about-hero"
         breadcrumbs={[{ name: "About" }]}
         eyebrow="About us"
-        hue="var(--cyan)"
-        title={
-          <>
-            Your <span className="iw-gradient-word">digital growth</span> partner
-          </>
-        }
+        title="Your digital growth partner"
         lead="Infinite Weblinks is a full-stack web development and digital marketing company. We help businesses decide what they actually need, build or set it up, and connect everything around their goals, so the website, marketing and tools pull in the same direction."
         actions={
           <>
-            <GlowButton href="/growth-plan" size="lg" iconRight={<ArrowRight size={18} aria-hidden="true" />}>
+            <Button href="/growth-plan" size="lg" iconRight={<ArrowRight size={18} aria-hidden="true" />}>
               Build my growth plan
-            </GlowButton>
-            <GlowButton href="/how-it-works" variant="ghost" size="lg">
+            </Button>
+            <Button href="/how-it-works" variant="secondary" size="lg">
               See how we work
-            </GlowButton>
+            </Button>
           </>
-        }
-        aside={
-          <span aria-hidden="true">
-            <InfinityMark size={168} glow />
-          </span>
         }
       />
 
       <SectionShell
+        surface="alt"
         id="who-we-are"
         eyebrow="Who we are"
         title="One partner for the whole picture, not another point tool"
@@ -109,37 +106,49 @@ export default function AboutPage() {
       </SectionShell>
 
       <SectionShell
+        surface="light"
         id="principles"
         eyebrow="How we think"
-        title={
-          <>
-            The <span className="iw-gradient-word">principles</span> behind every plan
-          </>
-        }
+        title="The principles behind every plan"
         lead="These aren't slogans we bolt on afterwards. They decide what we recommend, and what we tell you to skip."
         align="start"
       >
-        <BentoGrid>
-          {PRINCIPLES.map((principle, i) => (
-            <BentoCard
+        <CardGrid layout="equal" aria-label="Our positioning principles">
+          {PRINCIPLES.map((principle) => (
+            <PrincipleCard
               key={principle.title}
-              hue={principle.color}
-              icon={principle.icon}
               title={principle.title}
-              blurb={principle.body}
-              variant={i === 0 ? "featured" : "medium"}
+              body={principle.body}
+              icon={principle.icon}
+              tone={principle.color}
             />
           ))}
-        </BentoGrid>
+        </CardGrid>
       </SectionShell>
 
-      {/* The four ways we can be involved. */}
-      <DeliveryModelsSection anchorId="ways-of-working" />
+      {/* The four ways we can be involved. Ownership is covered here once (the ownership strip),
+          so it isn't repeated elsewhere on the page. Delivery cards carry no fragment target — the
+          delivery-<key> anchors are page-scoped to /how-it-works. */}
+      <DeliveryModelsExplainerSection id="ways-of-working" surface="alt" cardFragmentTargets={false} />
 
-      {/* The honest positioning: what we promise, and what we won't. */}
-      <HonestExpectationsSection />
+      <SectionShell
+        surface="light"
+        id="honest"
+        eyebrow="Honest expectations"
+        title="What we promise, and what we won't."
+        lead="We sell honesty as much as we sell growth. Here's the plain version, so there are no surprises later."
+        align="start"
+      >
+        <HonestExpectationsPanel columnLevel={3} />
+      </SectionShell>
 
-      <FinalCtaBannerSection anchorId="get-started" />
+      <FinalCtaSection
+        id="get-started"
+        title="Build your digital growth plan, one connected step at a time."
+        lead="Tell us where you are and what you want to achieve. We'll help you find the right starting point, then map what to build first and what to connect next."
+        primary={{ href: "/growth-plan", label: "Build my growth plan" }}
+        secondary={{ href: "/how-it-works", label: "See how we work" }}
+      />
     </>
   );
 }

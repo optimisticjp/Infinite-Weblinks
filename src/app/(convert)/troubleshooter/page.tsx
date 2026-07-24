@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { ShieldCheck, ArrowDown } from "lucide-react";
+import { ArrowDown } from "lucide-react";
+import { PageHeader } from "@/components/routes/PageHeader";
 import { Button } from "@/components/primitives/Button";
-import { Icon } from "@/components/primitives/Icon";
-import { GlobeArc } from "@/components/viz/GlobeArc";
+import { FinalCtaSection } from "@/components/sections/FinalCtaSection";
 import { GrowthTroubleshooter } from "@/components/troubleshooter/GrowthTroubleshooter";
 import { getTroubleshooterProblems } from "@/lib/content";
 import { canonical } from "@/lib/seo/metadata";
-import styles from "./troubleshooter.module.css";
 
 // A conversion utility, like the growth-plan builder — crawlable but noindex.
 export const metadata: Metadata = {
@@ -17,67 +16,48 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 };
 
-const JOURNEY = [
-  { label: "Traffic", icon: "users", broken: false },
-  { label: "Website", icon: "monitor", broken: false },
-  { label: "Product page", icon: "shopping-bag", broken: false },
-  { label: "Checkout", icon: "credit-card", broken: true },
-  { label: "Purchase", icon: "check", broken: false },
-];
-
+/**
+ * /troubleshooter — the Digital Growth Troubleshooter, on the V2 light-first system. `noindex, follow`
+ * (a conversion tool kept out of the index; link equity still flows). A server-rendered PageHeader
+ * (breadcrumb + plain H1 + lead + two CTAs + a no-email trust note) opens the page; the interactive
+ * GrowthTroubleshooter (the one Client Component) renders the selector + the active problem's
+ * guidance. No cosmic hero/starfield, GlobeArc, broken-journey diagram, gradient accent word, glow or
+ * SVG gradient. Server Component.
+ */
 export default async function TroubleshooterPage() {
   const problems = await getTroubleshooterProblems();
 
   return (
     <>
-      <section className={`theme-dark iw-section ${styles.hero}`} aria-labelledby="ts-hero-heading">
-        <GlobeArc />
-        <div className={`iw-container iw-container--wide ${styles.heroInner}`}>
-          <div className={styles.heroCopy}>
-            <p className="iw-eyebrow">The digital growth troubleshooter</p>
-            <h1 id="ts-hero-heading" className={styles.heroHeading}>
-              Tell us what is not working.
-              <br />
-              <span className={styles.heroAccent}>We&apos;ll show you where to look first.</span>
-            </h1>
-            <p className={`iw-lead ${styles.heroLead}`}>
-              Choose a business problem and get a simple explanation, useful checks and a sensible next step —
-              built around the connected growth journey.
-            </p>
-            <div className={styles.heroActions}>
-              <Button
-                href="#ts-select-heading"
-                variant="primary"
-                size="lg"
-                iconRight={<ArrowDown aria-hidden="true" />}
-              >
-                Diagnose my growth problem
-              </Button>
-            </div>
-            <p className={styles.heroReassure}>
-              <ShieldCheck aria-hidden="true" />
-              See useful guidance without entering an email address.
-            </p>
-          </div>
-
-          {/* Decorative journey with one broken link. */}
-          <div className={styles.diagram} aria-hidden="true">
-            <ul className={styles.diagramRow}>
-              {JOURNEY.map((n) => (
-                <li key={n.label} className={`${styles.diagramNode} ${n.broken ? styles.broken : ""}`}>
-                  <span className={styles.diagramIcon}>
-                    <Icon name={n.icon} />
-                  </span>
-                  <span className={styles.diagramLabel}>{n.label}</span>
-                </li>
-              ))}
-            </ul>
-            <p className={styles.diagramNote}>Finding the break. Reconnecting the path.</p>
-          </div>
-        </div>
-      </section>
+      <PageHeader
+        id="troubleshooter-hero"
+        surface="light"
+        breadcrumbs={[{ name: "Growth troubleshooter" }]}
+        eyebrow="The digital growth troubleshooter"
+        title="Tell us what is not working. We'll show you where to look first."
+        lead="Choose a business problem and get a simple explanation, useful checks and a sensible next step — built around the connected growth journey."
+        actions={
+          <>
+            <Button href="#diagnose" size="lg" iconRight={<ArrowDown size={18} aria-hidden="true" />}>
+              Diagnose my growth problem
+            </Button>
+            <Button href="/growth-plan" variant="secondary" size="lg">
+              Build my growth plan
+            </Button>
+          </>
+        }
+        trustNote="Useful guidance without entering an email address — a practical place to look first, not a guaranteed diagnosis."
+      />
 
       <GrowthTroubleshooter problems={problems} />
+
+      <FinalCtaSection
+        id="get-started"
+        title="Ready to turn the first check into a plan?"
+        lead="Use the guided builder to put the next steps in a sensible order, or talk the situation through with a real person."
+        primary={{ href: "/growth-plan", label: "Build my growth plan" }}
+        secondary={{ href: "/contact", label: "Talk it through" }}
+      />
     </>
   );
 }

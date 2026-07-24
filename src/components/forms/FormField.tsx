@@ -2,6 +2,7 @@
 
 import { useId, type ReactNode } from "react";
 import styles from "./FormField.module.css";
+import v2 from "./FormFieldV2.module.css";
 
 export interface FieldControlProps {
   id: string;
@@ -9,6 +10,11 @@ export interface FieldControlProps {
   "aria-invalid"?: boolean;
   required?: boolean;
 }
+
+/** Control appearance. `legacy` (default) keeps the existing Constellation input look for its
+ *  current consumers (e.g. the Growth Plan builder); `v2` opts into the light-first V2 control
+ *  styling. This is additive — a caller that passes nothing is byte-identical to before. */
+export type FieldAppearance = "legacy" | "v2";
 
 interface FormFieldProps {
   label: string;
@@ -18,6 +24,9 @@ interface FormFieldProps {
   /** Stable id for the control; auto-generated (via useId) when omitted. */
   id?: string;
   className?: string;
+  /** V2 vs legacy control appearance (affects only the required marker here; the control element
+   *  itself picks its class in the field component). Defaults to legacy. */
+  appearance?: FieldAppearance;
   /** Render-prop so any control (input/textarea/select) can consume the wired-up
    * id/aria-describedby/aria-invalid without this wrapper knowing its element type. */
   children: (controlProps: FieldControlProps) => ReactNode;
@@ -35,6 +44,7 @@ export function FormField({
   required,
   id,
   className,
+  appearance = "legacy",
   children,
 }: FormFieldProps) {
   const generatedId = useId();
@@ -42,13 +52,18 @@ export function FormField({
   const hintId = hint ? `${fieldId}-hint` : undefined;
   const errorId = error ? `${fieldId}-error` : undefined;
   const describedBy = [hintId, errorId].filter(Boolean).join(" ") || undefined;
+  const requiredClass = appearance === "v2" ? v2.required : styles.required;
+  const errorClass = appearance === "v2" ? v2.error : styles.error;
+  // Invalid-control border: the V2 appearance uses the V2 danger wrapper (--v2-danger); legacy keeps
+  // the existing --danger rule. Exactly one is applied, so there is no specificity conflict.
+  const hasErrorClass = error ? (appearance === "v2" ? v2.hasError : styles.hasError) : "";
 
   return (
-    <div className={[styles.field, error ? styles.hasError : "", className].filter(Boolean).join(" ")}>
+    <div className={[styles.field, hasErrorClass, className].filter(Boolean).join(" ")}>
       <label htmlFor={fieldId} className={styles.label}>
         {label}
         {required ? (
-          <span className={styles.required} aria-hidden="true">
+          <span className={requiredClass} aria-hidden="true">
             {" "}
             *
           </span>
@@ -70,7 +85,7 @@ export function FormField({
           render a single assertive error summary/notice on submit and move focus to it, so
           per-field alerts would just clobber that one announcement with a competing burst. */}
       {error ? (
-        <p id={errorId} className={styles.error}>
+        <p id={errorId} className={errorClass}>
           {error}
         </p>
       ) : null}

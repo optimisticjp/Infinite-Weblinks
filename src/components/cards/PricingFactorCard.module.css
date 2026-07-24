@@ -1,0 +1,25 @@
+/* PricingFactorCard — static quote-factor card. The Card shell owns the raised surface, radius,
+   semantic border and neutral shadow; this module lays out the content on V2 tokens only (the mapped
+   `--card-accent` ink). No raw colours, no glow/glass/gradient, no fixed height, no featured state. */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  height: 100%;
+  padding: var(--space-6);
+}
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+  overflow-wrap: anywhere;
+}
+.body {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-body);
+}

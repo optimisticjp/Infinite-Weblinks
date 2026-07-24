@@ -32,7 +32,7 @@ import {
 } from "@/lib/sanity/queries";
 import { seedChrome, seedEditorial, seedHero } from "./seed";
 import * as data from "./data";
-import { isRenderable, type Statused } from "./types";
+import { isPublishableProof, isRenderable, type Statused } from "./types";
 import type {
   AccountOwnership,
   BusinessType,
@@ -53,7 +53,6 @@ import type {
   LegalPage,
   ProcessStep,
   Roadmap,
-  SectionConfig,
   Service,
   ServiceCategory,
   SiteChrome,
@@ -94,7 +93,8 @@ function bySlug<T extends { slug: string }>(items: readonly T[], slug: string): 
  *    models, process steps, value props. These are seeded (so they exist as reference
  *    targets and are visible in Studio) but the site renders them from code.
  *  - Brand-locked chrome/hero/editorial and the growth-plan rule set.
- *  - Legal pages — lawyer-reviewed, lowest-churn; rendered from code with a review note.
+ *  - Legal pages — code-authoritative drafts PENDING professional review (legalReviewStatus:"draft"),
+ *    lowest-churn; rendered from code with a visible review note. Not yet professionally reviewed.
  */
 export { isSanityConfigured };
 export const sanityWiredTypes = [
@@ -275,32 +275,39 @@ export async function getLearnArticles(): Promise<LearnArticle[]> {
 export async function getLearnArticle(slug: string): Promise<LearnArticle | undefined> {
   return bySlug(await getLearnArticles(), slug);
 }
-/* Legal pages stay code-authoritative (lawyer-reviewed, lowest-churn — not seeded to Sanity). */
+/* Legal pages stay code-authoritative (drafts pending professional review, lowest-churn — not
+   seeded to Sanity). Renders when its render status is verified; the WORDING's legal-review state is
+   the separate `legalReviewStatus` field. */
 export async function getLegalPage(slug: string): Promise<LegalPage | undefined> {
   const l = bySlug(data.legalPages, slug);
   return l && isRenderable(l) ? l : undefined;
 }
 
-/* ---- proof (placeholder-gated → empty until Verified/ReadyToPublish, in seed OR Sanity) ---- */
+/* ---- proof (double-gated → hidden until a renderable status AND complete publication
+   verification, in seed OR Sanity). `isPublishableProof` is the single gate for both modes:
+   consent + identity + claims + owner approval + a non-empty evidence reference. ---- */
 export async function getCaseStudies(): Promise<CaseStudy[]> {
   return fromSanityOrSeed<CaseStudy, CaseStudy>({
     query: caseStudyQuery,
     map: mapCaseStudies,
-    seed: renderable(data.caseStudies),
+    seed: data.caseStudies.filter(isPublishableProof),
+    gate: isPublishableProof,
   });
 }
 export async function getTestimonials(): Promise<Testimonial[]> {
   return fromSanityOrSeed<Testimonial, Testimonial>({
     query: testimonialQuery,
     map: mapTestimonials,
-    seed: renderable(data.testimonials),
+    seed: data.testimonials.filter(isPublishableProof),
+    gate: isPublishableProof,
   });
 }
 export async function getExamples(): Promise<Example[]> {
   return fromSanityOrSeed<Example, Example>({
     query: exampleQuery,
     map: mapExamples,
-    seed: renderable(data.examples),
+    seed: data.examples.filter(isPublishableProof),
+    gate: isPublishableProof,
   });
 }
 /* Single-item proof getters resolve against the status-gated list, so a placeholder /
@@ -310,53 +317,4 @@ export async function getCaseStudy(slug: string): Promise<CaseStudy | undefined>
 }
 export async function getExample(slug: string): Promise<Example | undefined> {
   return (await getExamples()).find((e) => e.slug === slug);
-}
-
-/* ---- homepage section order (data-driven; each section owns its theme) ----
- *
- * Phase 2 — the homepage summarises and routes; inner pages are exhaustive. The
- * narrative is hook → tension → one big idea → proof → permission, with two routers
- * that don't stack and proof sitting immediately after the claim it proves.
- *
- * Deliberately NOT on the homepage any more (each is rendered in full on an inner
- * page, so this is de-duplication, not deletion):
- *   growthJourney, connectedSystem's twin, deliveryModels, processSteps → /how-it-works
- *   startingPointSelector → /goals (by where you are)   ·   toolUniverse → /tools
- *   faqSection → /faq
- * Hero + editorialStatement are rendered explicitly by the page (GATE-1 opening);
- * editorialStatement stays in this list only to document its position — the registry
- * skips it. Proof (caseStudyShowcase, testimonialWall) is status-gated and renders
- * nothing today; its slot is positioned now, right after the claim, ready for Sanity.
- */
-export function getHomepageSections(): SectionConfig[] {
-  // Redesign v2 — recomposed to the reference plan's *focused growth narrative* rather than
-  // a catalogue. The previous order told the "connected systems / journey" idea three times
-  // (growthJourney + connectedSystem + customerJourney), routed three ways (goal + services +
-  // starting-point), and stated ownership twice (deliveryModels strip + accountOwnership).
-  // Those redundancies are removed HERE (the components stay in the codebase and on their
-  // dedicated inner pages — this is de-duplication of the homepage, not deletion):
-  //   growthJourney, customerJourney, startingPointSelector, connectedExamples,
-  //   whyInfiniteWeblinks  →  not on the homepage any more.
-  //
-  // The result is one beat per idea, in the plan's sequence — hook → tension → one
-  // connected-system explanation → goal router → service router → ways of working →
-  // ownership → proof → practical learning → final action — and a strict dark/light
-  // alternation (never two dark sections in a row), so every section has one clear job.
-  // Rendered rhythm (proof is status-gated to null today):
-  //   Hero(dark) · editorial(cream) · goals(dark) · connected-system(cream) ·
-  //   services(dark) · ways-of-working(cream) · ownership(dark) · learn(cream) · CTA(dark).
-  // Hero + editorialStatement (the "digital world" cream band, ref 18) are rendered
-  // explicitly by the page; editorialStatement stays here only to document its slot.
-  return [
-    { type: "editorialStatement", enabled: true, anchorId: "why-it-matters" }, // cream — the digital world (ref 18)
-    { type: "goalExplorer", enabled: true, anchorId: "goals" }, // router #1 — by goal (ref 10)
-    { type: "connectedSystem", enabled: true, anchorId: "how-it-connects" }, // cream — the one connected-system explanation
-    { type: "servicesExplorer", enabled: true, anchorId: "services" }, // router #2 — services constellation (ref 12)
-    { type: "deliveryModels", enabled: true, anchorId: "ways-of-working" }, // cream — ways of working (ref 01)
-    { type: "accountOwnership", enabled: true, anchorId: "ownership" }, // you own it (ref 13)
-    { type: "caseStudyShowcase", enabled: true, anchorId: "case-studies" }, // proof — status-gated (null today)
-    { type: "testimonialWall", enabled: true, anchorId: "testimonials" }, // proof — status-gated (null today)
-    { type: "learningResources", enabled: true, anchorId: "learn" }, // cream — practical guides
-    { type: "finalCtaBanner", enabled: true, anchorId: "get-started" }, // permission to act (ref 19)
-  ];
 }

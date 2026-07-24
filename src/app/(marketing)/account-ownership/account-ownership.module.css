@@ -1,0 +1,4 @@
+/* /account-ownership — layout spacing only; the content uses shared V2 components + tokens. */
+.note {
+  margin-top: var(--space-8);
+}

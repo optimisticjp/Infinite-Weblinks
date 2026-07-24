@@ -1,7 +1,8 @@
 "use client";
 
-import { FormField } from "@/components/forms/FormField";
+import { FormField, type FieldAppearance } from "@/components/forms/FormField";
 import controlStyles from "@/components/forms/FormField.module.css";
+import v2Control from "@/components/forms/FormFieldV2.module.css";
 import styles from "./Field.module.css";
 
 export interface TextAreaFieldProps {
@@ -15,6 +16,8 @@ export interface TextAreaFieldProps {
   required?: boolean;
   placeholder?: string;
   rows?: number;
+  /** V2 vs legacy control appearance (default legacy — existing callers are unchanged). */
+  appearance?: FieldAppearance;
   className?: string;
 }
 
@@ -35,17 +38,19 @@ export function TextAreaField({
   required,
   placeholder,
   rows = 6,
+  appearance = "legacy",
   className,
 }: TextAreaFieldProps) {
   const length = value.length;
   const atLimit = length >= maxLength;
+  const control = appearance === "v2" ? v2Control.control : controlStyles.control;
   return (
-    <FormField id={id} label={label} hint={hint} error={error} required={required} className={className}>
+    <FormField id={id} label={label} hint={hint} error={error} required={required} appearance={appearance} className={className}>
       {(controlProps) => (
         <span className={styles.textareaWrap}>
           <textarea
             {...controlProps}
-            className={controlStyles.control}
+            className={control}
             placeholder={placeholder}
             value={value}
             onChange={(e) => onChange(e.target.value)}

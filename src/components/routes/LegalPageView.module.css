@@ -1,27 +1,13 @@
-/* Quiet dark reading surface for the legal pages: calm, legible, no starfield or globe. */
+/* V2 quiet LIGHT reading surface for the legal pages: calm, legible, no starfield,
+   globe or decorative wash. The min-height keeps the light canvas filling the viewport
+   below the sticky header on short pages, so the (still-dark) page body never peeks. */
 .page {
   position: relative;
-  overflow: hidden;
-  isolation: isolate;
-}
-
-/* A single, very subtle top wash so the page isn't flat, without the full cosmic scene. */
-.wash {
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 420px;
-  background: radial-gradient(
-    120% 100% at 50% -20%,
-    color-mix(in srgb, var(--violet) 16%, transparent),
-    transparent 70%
-  );
-  pointer-events: none;
-  z-index: 0;
+  min-height: calc(100dvh - var(--header-h));
 }
 
 .container {
   position: relative;
-  z-index: 1;
 }
 
 /* ---- Header ---- */
@@ -36,7 +22,7 @@
   font-weight: var(--fw-bold);
   letter-spacing: var(--ls-eyebrow);
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--violet-bright) 60%, var(--text-heading));
+  color: var(--link); /* V2 brand accent — measured 6.12:1 on paper */
 }
 .title {
   margin: 0;
@@ -64,8 +50,8 @@
   margin: var(--space-5) 0 0;
   padding: var(--space-4) var(--space-5);
   border-radius: var(--radius-md);
-  background: var(--orange-soft);
-  border: 1px solid color-mix(in srgb, var(--orange) 34%, transparent);
+  background: var(--v2-warning-tint);
+  border: 1px solid color-mix(in srgb, var(--v2-warning) 34%, transparent);
   color: var(--text-body);
   font-size: var(--fs-sm);
   line-height: 1.5;
@@ -74,7 +60,7 @@
   width: 20px;
   height: 20px;
   flex: none;
-  color: var(--orange);
+  color: var(--v2-warning);
   margin-top: 1px;
 }
 

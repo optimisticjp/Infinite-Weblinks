@@ -1,8 +1,11 @@
+/* ProgressChecklist — V2 quiet supporting panel that tracks step progress. V2 tokens only; each item
+   carries an explicit status word so state is never colour-only. No sticky position, no glow, no
+   giant nodes, no false completion claim (the bar reflects real steps done), no "saved" claim. */
 .wrap {
   display: grid;
   gap: var(--space-5);
   padding: var(--space-6);
-  border-radius: var(--radius-lg);
+  border-radius: var(--v2-radius-lg);
   background: var(--surface-raised);
   border: 1px solid var(--hairline);
 }
@@ -10,7 +13,7 @@
 .title {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: var(--fw-bold);
+  font-weight: var(--v2-fw-heading);
   font-size: var(--fs-h4);
   color: var(--text-heading);
 }
@@ -35,17 +38,17 @@
   width: 24px;
   height: 24px;
   flex: none;
-  border-radius: var(--radius-pill);
-  border: 1.5px solid var(--hairline-strong);
-  color: var(--white);
+  border-radius: var(--v2-radius-pill);
+  border: 1.5px solid var(--hairline);
+  color: var(--v2-paper);
 }
 .done .marker {
-  background: var(--domain-retain);
-  border-color: var(--domain-retain);
+  background: var(--v2-success);
+  border-color: var(--v2-success);
 }
 .current .marker {
-  border-color: var(--domain-strategy);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--domain-strategy) 20%, transparent);
+  border-color: var(--v2-brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--v2-brand) 18%, transparent);
 }
 .itemLabel {
   font-size: var(--fs-sm);
@@ -63,12 +66,10 @@
   color: var(--text-muted);
 }
 .done .status {
-  /* Mix toward the heading ink (like .current below) so the small status text keeps AA
-     contrast on any surface, instead of the raw hue which only passes on a dark panel. */
-  color: color-mix(in srgb, var(--domain-retain) 60%, var(--text-heading));
+  color: var(--v2-success);
 }
 .current .status {
-  color: color-mix(in srgb, var(--domain-strategy) 78%, var(--text-heading));
+  color: var(--v2-brand-strong);
 }
 
 .note {
@@ -84,7 +85,7 @@
 .noteIcon {
   flex: none;
   margin-top: 1px;
-  color: var(--domain-retain);
+  color: var(--v2-success);
 }
 
 /* ---- Compact (mobile) ---- */
@@ -100,7 +101,7 @@
 }
 .compactTitle {
   font-family: var(--font-display);
-  font-weight: var(--fw-bold);
+  font-weight: var(--v2-fw-heading);
   font-size: var(--fs-sm);
   color: var(--text-heading);
 }
@@ -112,16 +113,16 @@
 }
 .bar {
   height: 8px;
-  border-radius: var(--radius-pill);
-  background: var(--hairline-strong);
+  border-radius: var(--v2-radius-pill);
+  background: var(--hairline);
   overflow: hidden;
 }
 .barFill {
   display: block;
   height: 100%;
-  border-radius: var(--radius-pill);
-  background: var(--grad-constellation);
-  transition: width var(--dur-base) var(--ease-out);
+  border-radius: var(--v2-radius-pill);
+  background: var(--v2-brand);
+  transition: width var(--dur-fast) var(--ease-out);
 }
 
 /* Show compact on mobile, full on desktop. */

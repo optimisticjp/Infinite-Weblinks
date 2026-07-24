@@ -1,0 +1,38 @@
+/* GrowthJourneyOverviewSection (V2) — the SectionShell, list and cards own most styling; this
+   module lays out the stage-jump nav, the map note, the cross-cutting-systems group and the
+   actions. V2 tokens only: no theme-band, no glow/glass/gradient, no raw colour. */
+.stageNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.mapNote {
+  margin-bottom: var(--space-6);
+}
+
+.systems {
+  margin-top: var(--space-8);
+}
+.systemsHeading {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h3);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+}
+.systemsIntro {
+  margin: 0 0 var(--space-5);
+  font-size: var(--fs-body);
+  color: var(--text-body);
+  max-width: var(--measure);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+}

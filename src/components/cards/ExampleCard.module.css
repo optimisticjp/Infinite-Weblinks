@@ -1,0 +1,38 @@
+.card {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+  height: 100%;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+  text-wrap: balance;
+}
+
+.summary {
+  margin: 0;
+  color: var(--text-body);
+  line-height: var(--lh-body);
+  max-width: none;
+}
+
+.more {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+  font-weight: var(--fw-semibold);
+  color: var(--link);
+}
+.moreIcon {
+  width: 1em;
+  height: 1em;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.card:hover .moreIcon,
+.card:focus-visible .moreIcon {
+  transform: translateX(3px);
+}

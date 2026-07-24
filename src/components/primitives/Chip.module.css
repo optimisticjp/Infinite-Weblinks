@@ -1,0 +1,23 @@
+/* Chip — static informational label (V2). Semantic tokens, so it adapts to any surface. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--v2-radius-pill);
+  border: 1px solid var(--hairline-strong);
+  background: var(--surface-raised);
+  color: var(--text-body);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.icon {
+  display: inline-flex;
+  color: var(--text-muted);
+}
+.icon :global(svg) {
+  width: 0.95em;
+  height: 0.95em;
+}

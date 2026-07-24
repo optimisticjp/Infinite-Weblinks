@@ -1,0 +1,74 @@
+/* ProcessStepList — a restrained numbered vertical sequence with a neutral connector rail. V2
+   tokens only; one coherent brand accent for the markers and tiles. No per-index palette, no
+   theme-band, no glow/glass/gradient, no fixed height, no progress styling. */
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-4);
+}
+/* Neutral connector rail linking the step numbers into one sequence (static, not a progress bar). */
+.step:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 19px;
+  top: 44px;
+  bottom: calc(-1 * var(--space-5));
+  width: 2px;
+  background: var(--hairline-strong);
+}
+
+.marker {
+  position: relative;
+  z-index: 1;
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--v2-radius-pill);
+  background: color-mix(in srgb, var(--v2-brand-strong) 12%, var(--v2-paper));
+  border: 1px solid color-mix(in srgb, var(--v2-brand-strong) 30%, transparent);
+  color: var(--v2-brand-strong);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  line-height: 1;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  padding-bottom: var(--space-2);
+}
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+  overflow-wrap: anywhere;
+}
+.description {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}

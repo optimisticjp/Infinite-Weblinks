@@ -1,0 +1,68 @@
+/* ScenarioApproachList — a wrapping grid of restrained light step panels. V2 tokens only; the
+   per-step ink comes from `--step-ink` (a mapped V2 domain ink). No connector path, no glow,
+   no fixed height; simple grid rhythm that never forces a single overflowing row. */
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+@media (min-width: 40rem) {
+  .list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+}
+@media (min-width: 60rem) {
+  .list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-6);
+  border-radius: var(--v2-radius-lg);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--v2-shadow-sm);
+}
+.top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+/* Compact visible sequence number in the step tone (aria-hidden — order comes from the <ol>). */
+.num {
+  display: inline-grid;
+  place-items: center;
+  min-width: 28px;
+  height: 24px;
+  padding-inline: var(--space-1);
+  border-radius: var(--v2-radius-sm);
+  background: color-mix(in srgb, var(--step-ink) 12%, var(--surface));
+  color: var(--step-ink);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  line-height: 1;
+}
+.label {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+  overflow-wrap: anywhere;
+}
+.detail {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}

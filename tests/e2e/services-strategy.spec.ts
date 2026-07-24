@@ -1,12 +1,12 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { setViewportAndWaitForStableLayout, expectNoHorizontalOverflow } from "./helpers/layout";
 
 /**
- * Strategy & Discovery — the first instance of the reusable service-domain template. It must
- * show the FULL service list, grouped and bento-styled with delivery-model badges and #slug
- * anchors (the 301 target for the old service URLs), open with the "where this sits" marker,
- * and close with the next domain in the journey. Accessibility and no-overflow are part of
- * the sell.
+ * Strategy & Discovery — the first instance of the reusable V2 ServiceDomainTemplate. It must
+ * show the FULL service list, grouped into clusters with delivery-model badges and #slug article
+ * anchors (the 308 target for the old service URLs), name the growth stage it connects to, and
+ * close with the next area in the journey. Accessibility and no-overflow are part of the sell.
  */
 
 const PATH = "/services/strategy-discovery";
@@ -28,9 +28,9 @@ test.describe("service domain template — Strategy & Discovery", () => {
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Strategy & Discovery");
     await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toBeVisible();
 
-    // Every service in the domain is present as a li[id=<slug>] (the anchor the old URLs 301 to).
+    // Every service in the area is present as an article[id=<slug>] (the anchor old URLs 308 to).
     for (const slug of SERVICES) {
-      await expect(page.locator(`main li#${slug}`)).toHaveCount(1);
+      await expect(page.locator(`main article#${slug}`)).toHaveCount(1);
       await expect(page.locator(`#${slug}`)).toContainText(/\w/);
     }
   });
@@ -53,12 +53,9 @@ test.describe("service domain template — Strategy & Discovery", () => {
 
   for (const width of [360, 768, 1024, 1440]) {
     test(`no horizontal overflow at ${width}px`, async ({ page }) => {
-      await page.setViewportSize({ width, height: 900 });
       await page.goto(PATH);
-      const overflow = await page.evaluate(
-        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-      );
-      expect(overflow, `overflow at ${width}px`).toBeLessThanOrEqual(1);
+      await setViewportAndWaitForStableLayout(page, width);
+      await expectNoHorizontalOverflow(page, `strategy-discovery @ ${width}px`);
     });
   }
 

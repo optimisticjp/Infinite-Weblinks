@@ -10,12 +10,13 @@ import {
   RotateCcw,
   ArrowUpRight,
   ShieldCheck,
+  Check,
 } from "lucide-react";
 import { Stepper } from "@/components/primitives/Stepper";
 import { ProgressChecklist, type ChecklistItem } from "@/components/primitives/ProgressChecklist";
 import { OptionCards, type CardOption } from "@/components/primitives/OptionCards";
-import { GlowButton } from "@/components/primitives/GlowButton";
-import { InfinityMark } from "@/components/brand/InfinityMark";
+import { Button } from "@/components/primitives/Button";
+import { IconTile } from "@/components/primitives/IconTile";
 import { TextField } from "@/components/forms/fields/TextField";
 import { TextAreaField } from "@/components/forms/fields/TextAreaField";
 import { TurnstileField } from "@/components/forms/Turnstile";
@@ -32,7 +33,7 @@ import {
   type Timeline,
   type GrowthPlanResult,
 } from "@/lib/growth-plan/types";
-import { supportEmail } from "@/lib/forms/config";
+import { supportEmail } from "@/lib/forms/config.public";
 import type { BusinessType, Goal } from "@/lib/content/types";
 import styles from "./PlanBuilder.module.css";
 
@@ -165,9 +166,9 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
   }
 
   function focusFirstError(e: FieldErrors) {
-    const first = (["businessType", "mainGoal", "existingSetup", "engagement", "timeline"] as const).find(
-      (k) => e[k],
-    );
+    const first = (
+      ["businessType", "mainGoal", "existingSetup", "engagement", "timeline"] as const
+    ).find((k) => e[k]);
     if (first) {
       const el = document.querySelector<HTMLInputElement>(`input[name="${first}"]`);
       el?.focus();
@@ -262,7 +263,14 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
       if (data.ok) {
         setStatus("success");
         setStatusMessage(null);
-      } else if (data.code === "delivery-unavailable" || data.code === "delivery-failed") {
+      } else if (
+        data.code === "delivery-unavailable" ||
+        data.code === "delivery-failed" ||
+        data.code === "security-unavailable" ||
+        data.code === "rate-limit-unavailable"
+      ) {
+        // Truthful "try again / email us" notice — delivery isn't set up, upstream failed, or a
+        // fail-closed security/rate-limit check couldn't run. Never presented as success.
         setStatus("delivery-unavailable");
         setStatusMessage(
           data.message ??
@@ -270,7 +278,9 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
         );
       } else {
         setStatus("error");
-        setStatusMessage(data.message ?? "Something went wrong. Please try again, or email us directly.");
+        setStatusMessage(
+          data.message ?? "Something went wrong. Please try again, or email us directly.",
+        );
       }
     } catch {
       setStatus("delivery-unavailable");
@@ -291,20 +301,28 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
   if (phase === "plan" && result) {
     return (
       <div className={styles.builder}>
-        <div ref={planHeadingRef} tabIndex={-1} className={styles.planRegion} role="region" aria-label="Your growth plan">
+        <div
+          ref={planHeadingRef}
+          tabIndex={-1}
+          className={styles.planRegion}
+          role="region"
+          aria-label="Your growth plan"
+        >
           <PlanReveal result={result} />
         </div>
 
         <div className={styles.emailCard}>
           {status === "success" ? (
             <div ref={emailStatusRef} tabIndex={-1} role="status" className={styles.success}>
-              <span className={styles.successMark} aria-hidden="true">
-                <InfinityMark size={64} luminous />
+              <span className={styles.successMark}>
+                <IconTile color="var(--v2-success)" size="lg">
+                  <Check aria-hidden="true" />
+                </IconTile>
               </span>
-              <h3 className={styles.successTitle}>Thanks, your plan is on its way.</h3>
+              <h3 className={styles.successTitle}>Thanks, your plan was sent to our team.</h3>
               <p className={styles.successBody}>
-                We&apos;ve sent this plan to your email and a real person will follow up with a
-                practical next step. No obligation.
+                A real person will review it and reply by email with a practical next step. The plan
+                above remains available on screen.
               </p>
             </div>
           ) : (
@@ -323,10 +341,10 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
               </div>
 
               <div className={styles.emailHead}>
-                <h3 className={styles.emailTitle}>Get this plan by email</h3>
+                <h3 className={styles.emailTitle}>Ask us to review this plan</h3>
                 <p className={styles.emailSub}>
-                  Want a copy to keep, and a practical next step from a real person? Add your details.
-                  The plan above is yours either way.
+                  The plan above is already yours to read on screen. Add your details if you would
+                  like a real person to review it and reply by email with a practical next step.
                 </p>
               </div>
 
@@ -337,13 +355,18 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
               ) : null}
 
               <p className={styles.requiredNote}>
-                Fields marked <span className={styles.req} aria-hidden="true">*</span> are required.
+                Fields marked{" "}
+                <span className={styles.req} aria-hidden="true">
+                  *
+                </span>{" "}
+                are required.
               </p>
 
               <div className={styles.emailGrid}>
                 <TextField
                   id="gp-name"
                   label="Your name"
+                  appearance="v2"
                   required
                   value={form.name}
                   onChange={(v) => update("name", v)}
@@ -354,6 +377,7 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
                 <TextField
                   id="gp-email"
                   label="Email"
+                  appearance="v2"
                   type="email"
                   inputMode="email"
                   required
@@ -366,6 +390,7 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
                 <TextField
                   id="gp-business"
                   label="Business name"
+                  appearance="v2"
                   hint="Optional"
                   value={form.company}
                   onChange={(v) => update("company", v)}
@@ -376,6 +401,7 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
                 <TextField
                   id="gp-website"
                   label="Website"
+                  appearance="v2"
                   type="url"
                   inputMode="url"
                   hint="Optional"
@@ -388,6 +414,7 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
                 <TextAreaField
                   id="gp-message"
                   label="Anything else?"
+                  appearance="v2"
                   hint="Optional. Anything that would help us tailor the plan."
                   value={form.message}
                   onChange={(v) => update("message", v)}
@@ -398,25 +425,28 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
                 />
               </div>
 
-              <TurnstileField onToken={setTurnstileToken} onSkipped={() => setTurnstileSkipped(true)} />
+              <TurnstileField
+                action="growth-plan"
+                onToken={setTurnstileToken}
+                onSkipped={() => setTurnstileSkipped(true)}
+              />
               {turnstileSkipped ? (
                 <p className={styles.skipNote}>
-                  Human verification isn&apos;t active in this preview. Your submission is still
-                  checked server-side.
+                  Human verification is currently unavailable. If the form can&apos;t be sent,
+                  please email <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
                 </p>
               ) : null}
 
               <div className={styles.emailActions}>
-                <GlowButton
+                <Button
                   type="submit"
                   size="lg"
-                  block
+                  className={styles.submit}
                   iconLeft={<Send size={18} aria-hidden="true" />}
-                  aria-busy={status === "submitting"}
-                  disabled={status === "submitting"}
+                  loading={status === "submitting"}
                 >
-                  {status === "submitting" ? "Sending…" : "Send my plan by email"}
-                </GlowButton>
+                  {status === "submitting" ? "Sending…" : "Send my plan for review"}
+                </Button>
                 <p className={styles.reassure}>
                   <ShieldCheck size={15} aria-hidden="true" className={styles.reassureIcon} />
                   Your information is safe. We&apos;ll never share your details.
@@ -455,7 +485,12 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
   const meta = STEP_META[stepIndex];
   return (
     <div className={styles.builder}>
-      <Stepper steps={STEP_META.map((s) => s.short)} current={stepIndex} ariaLabel="Growth plan steps" className={styles.stepper} />
+      <Stepper
+        steps={STEP_META.map((s) => s.short)}
+        current={stepIndex}
+        ariaLabel="Growth plan steps"
+        className={styles.stepper}
+      />
 
       <div className={styles.columns}>
         <div className={styles.main}>
@@ -534,24 +569,24 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
 
           <div className={styles.nav}>
             {stepIndex > 0 ? (
-              <GlowButton
+              <Button
                 type="button"
-                variant="ghost"
+                variant="secondary"
                 onClick={goBack}
                 iconLeft={<ArrowLeft size={18} aria-hidden="true" />}
               >
                 Back
-              </GlowButton>
+              </Button>
             ) : (
               <span />
             )}
-            <GlowButton
+            <Button
               type="button"
               onClick={goNext}
               iconRight={<ArrowRight size={18} aria-hidden="true" />}
             >
               {meta.next}
-            </GlowButton>
+            </Button>
           </div>
         </div>
 

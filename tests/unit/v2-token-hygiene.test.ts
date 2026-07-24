@@ -1,0 +1,210 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { describe, it, expect } from "vitest";
+
+/** Guards the Phase 2A/2B token hygiene: the night link/accent colour is a central token,
+ *  and no raw #cdbcff (or other raw hex) is reintroduced into the component modules. */
+
+const readRaw = (rel: string) => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), "utf8");
+/** Read a CSS module with /* … *​/ comments stripped, so hygiene checks the declarations,
+ *  not the documentation comment that lists the banned tokens. */
+const read = (rel: string) => readRaw(rel).replace(/\/\*[\s\S]*?\*\//g, "");
+
+const v2 = read("../../src/styles/tokens/v2.css");
+const card = read("../../src/components/primitives/Card.module.css");
+const bento = read("../../src/components/primitives/Bento.module.css");
+
+// Rebuilt V2 chrome modules — must not reintroduce legacy/raw colour values.
+const CHROME_MODULES = [
+  "../../src/components/chrome/SiteHeader.module.css",
+  "../../src/components/chrome/MobileNav.module.css",
+  "../../src/components/chrome/SiteFooter.module.css",
+];
+// Banned in rebuilt V2 chrome CSS (see Phase 2C §F). color-mix() with V2 tokens is allowed.
+const BANNED = [
+  /var\(--ink-[a-z0-9-]+\)/i, // --ink-* scale
+  /var\(--text-[1-4]\)/i, // --text-1..4 (semantic --text-heading/body/muted are fine)
+  /var\(--border-[a-z0-9-]+\)/i, // --border-1/2/glow
+  /var\(--grad-[a-z0-9-]+\)/i, // gradients
+  /var\(--glow-[a-z0-9-]+\)/i, // glows
+  /var\(--glass-[a-z0-9-]+\)/i, // glass
+  /backdrop-filter/i,
+  /#[0-9a-fA-F]{3,8}\b/, // raw hex
+  /\brgba?\s*\(/i, // raw rgb/rgba (color-mix with tokens is used instead)
+];
+
+describe("V2 chrome token hygiene", () => {
+  for (const rel of CHROME_MODULES) {
+    const css = read(rel);
+    const name = rel.split("/").pop();
+    for (const pattern of BANNED) {
+      it(`${name} contains no ${pattern}`, () => {
+        expect(css).not.toMatch(pattern);
+      });
+    }
+  }
+});
+
+/**
+ * Raw named colours (Phase 2I §I): `white` / `black` as literal colour values are banned in the
+ * migrated V2 modules — use the semantic paper/ink tokens (or `color-mix` against them). The
+ * lookarounds keep this from matching hyphenated identifiers such as `white-space` or
+ * `blackboard`.
+ *
+ * Policy note on the two named values deliberately NOT banned:
+ *   • `currentColor` is a semantic keyword (it resolves to the element's own `color`), not a
+ *     hard-coded colour, so it is allowed.
+ *   • `transparent` is allowed — it is the project's established way to fade a token to nothing
+ *     inside `color-mix(..., transparent)` (used across the V2 modules) and carries no hue.
+ */
+const NAMED_COLOUR = /(?<![\w-])(white|black)(?![\w-])/i;
+
+// Phase 2F §G: the new detail-page components and both rewritten detail-route modules must use
+// V2 semantic surfaces / domain ink+tint mapping only — additionally banning the legacy
+// --domain-*, --hue, and base accent-palette tokens (never a legacy hue as V2 text).
+const V2_DETAIL_MODULES = [
+  "../../src/components/primitives/LinkChip.module.css",
+  "../../src/components/cards/RelationshipCard.module.css",
+  "../../src/components/cards/DomainCard.module.css",
+  "../../src/components/routes/RoadmapPhaseList.module.css",
+  "../../src/components/routes/ArticleMetaLine.module.css",
+  "../../src/components/routes/ScenarioApproachList.module.css",
+  "../../src/app/(marketing)/tools/[slug]/tool.module.css",
+  "../../src/app/(marketing)/roadmaps/[slug]/roadmap.module.css",
+  "../../src/app/(marketing)/learn/[slug]/article.module.css",
+  "../../src/app/(marketing)/case-studies/case.module.css",
+  // Phase 2H §I: the goal/business-type detail components and both rewritten detail modules.
+  "../../src/components/routes/GoalPath.module.css",
+  "../../src/components/cards/GoalCard.module.css",
+  "../../src/components/cards/ServiceCard.module.css",
+  "../../src/components/cards/JourneyStageCard.module.css",
+  "../../src/app/(marketing)/goals/[slug]/goal.module.css",
+  "../../src/app/(marketing)/business-types/[slug]/business-type.module.css",
+  // Phase 2I §I: the goals-hub / starting-point system.
+  "../../src/components/cards/StartingPointCard.module.css",
+  "../../src/components/cards/BusinessTypeCard.module.css",
+  "../../src/components/sections/StartingPointSelectorSection.module.css",
+  "../../src/app/(marketing)/goals/goals.module.css",
+  // Phase 2J §M: the how-it-works explainer system.
+  "../../src/components/routes/GrowthJourneyList.module.css",
+  "../../src/components/cards/CrossCuttingSystemCard.module.css",
+  "../../src/components/sections/GrowthJourneyOverviewSection.module.css",
+  "../../src/components/routes/ConnectedSystemFlow.module.css",
+  "../../src/components/routes/ProcessStepList.module.css",
+  "../../src/components/cards/DeliveryModelCard.module.css",
+  "../../src/components/sections/DeliveryModelsExplainerSection.module.css",
+  "../../src/app/(marketing)/how-it-works/how-it-works.module.css",
+  // Phase 2K §O: the V2 homepage spine components.
+  "../../src/components/routes/GrowthPlanPreview.module.css",
+  "../../src/components/sections/home/HomepageHeroSection.module.css",
+  "../../src/components/sections/home/HomepageProblemSection.module.css",
+  "../../src/components/sections/home/HomepageGoalRouterSection.module.css",
+  "../../src/components/sections/home/HomepageConnectedSystemSection.module.css",
+  "../../src/components/sections/home/HomepageTrustSection.module.css",
+  "../../src/components/sections/home/HomepageLearningSection.module.css",
+  // Phase 2L §K: the brand / ownership / connected-growth building blocks + migrated routes.
+  "../../src/components/routes/OwnershipDetails.module.css",
+  "../../src/components/routes/HonestExpectationsPanel.module.css",
+  "../../src/components/cards/PrincipleCard.module.css",
+  "../../src/components/routes/CustomerJourneyList.module.css",
+  "../../src/components/cards/ConnectedExampleCard.module.css",
+  "../../src/components/sections/ConnectedGrowthExamplesSection.module.css",
+  "../../src/app/(marketing)/about/about.module.css",
+  "../../src/app/(marketing)/account-ownership/account-ownership.module.css",
+  "../../src/app/(marketing)/connected-growth/connected-growth.module.css",
+  // Phase 2M §K: the services hub + service-domain system.
+  "../../src/components/cards/ServiceCategoryCard.module.css",
+  "../../src/components/cards/ServiceOfferingCard.module.css",
+  "../../src/components/routes/ServiceConnectionList.module.css",
+  "../../src/components/routes/ServiceDomainTemplate.module.css",
+  "../../src/app/(marketing)/services/services.module.css",
+  // Phase 2N §K: the pricing / quoting experience.
+  "../../src/components/cards/PricingFactorCard.module.css",
+  "../../src/components/cards/PricingDeliveryCard.module.css",
+  "../../src/components/cards/EngagementShapeCard.module.css",
+  "../../src/components/routes/QuoteProcessList.module.css",
+  "../../src/components/routes/PricingFaqList.module.css",
+  "../../src/app/(marketing)/pricing/pricing.module.css",
+  // Phase 2O §O: the V2 contact experience + form-control appearance.
+  "../../src/components/forms/FormFieldV2.module.css",
+  "../../src/components/forms/ContactForm.module.css",
+  "../../src/components/sections/ContactFormSection.module.css",
+  "../../src/components/cards/ContactPathCard.module.css",
+  "../../src/app/(convert)/contact/contact.module.css",
+  // Phase 2P §Q: the V2 growth plan builder experience.
+  "../../src/components/primitives/OptionCards.module.css",
+  "../../src/components/primitives/Stepper.module.css",
+  "../../src/components/primitives/ProgressChecklist.module.css",
+  "../../src/components/builder/PlanBuilder.module.css",
+  "../../src/components/builder/PlanReveal.module.css",
+  "../../src/components/cards/PlanIncludeCard.module.css",
+  "../../src/app/(convert)/growth-plan/growth-plan.module.css",
+  // Phase 2Q §N: the V2 growth troubleshooter (the route-local module was removed — the route now
+  // composes shared V2 components, so only these three migrated/new modules exist).
+  "../../src/components/troubleshooter/GrowthTroubleshooter.module.css",
+  "../../src/components/cards/TroubleshooterReasonCard.module.css",
+  "../../src/components/routes/TroubleshooterChecklist.module.css",
+  // Phase 2R §L: the V2 starting-point detail route (composes shared V2 components; only the
+  // recommendation block's local layout remains in the route-local module).
+  "../../src/app/(marketing)/starting-points/[slug]/starting-point.module.css",
+];
+const BANNED_V2 = [
+  ...BANNED,
+  /var\(--domain-[a-z0-9-]+\)/i, // legacy domain tokens
+  /var\(--hue\b/i, // legacy per-route --hue variable
+  /var\(--(violet|pink|blue|cyan|lime|orange|yellow)(-[a-z]+)?\)/i, // base accent palette
+  /theme-band-bright/, // legacy daylight band surface class
+  NAMED_COLOUR,
+];
+
+describe("V2 detail-route + new-component token hygiene", () => {
+  for (const rel of V2_DETAIL_MODULES) {
+    const css = read(rel);
+    const name = rel.split("/").slice(-2).join("/");
+    for (const pattern of BANNED_V2) {
+      it(`${name} contains no ${pattern}`, () => {
+        expect(css).not.toMatch(pattern);
+      });
+    }
+  }
+});
+
+describe("V2 night link token hygiene", () => {
+  it("defines --v2-link-night centrally in v2.css", () => {
+    expect(v2).toMatch(/--v2-link-night:\s*#[0-9a-f]{6}/i);
+  });
+
+  it("theme-night uses the token for --link (no raw hex link value)", () => {
+    expect(v2).toContain("--link: var(--v2-link-night)");
+  });
+
+  it("Card.module.css .night uses the token and contains no raw #cdbcff", () => {
+    expect(card).toContain("--link: var(--v2-link-night)");
+    expect(card.toLowerCase()).not.toContain("#cdbcff");
+  });
+
+  it("BentoCard night styling references the night accent token", () => {
+    expect(bento).toContain("var(--v2-link-night)");
+    expect(bento.toLowerCase()).not.toContain("#cdbcff");
+  });
+});
+
+describe("V2 named-colour hygiene rule (Phase 2I §I)", () => {
+  it("catches raw white and black as colour values", () => {
+    expect("background: white;").toMatch(NAMED_COLOUR);
+    expect("color: black;").toMatch(NAMED_COLOUR);
+    expect("border: 1px solid White;").toMatch(NAMED_COLOUR); // case-insensitive
+    expect("color-mix(in srgb, var(--path-ink) 8%, white)").toMatch(NAMED_COLOUR);
+  });
+
+  it("does not flag semantic keywords or hyphenated identifiers", () => {
+    expect("color: currentColor;").not.toMatch(NAMED_COLOUR);
+    expect("color-mix(in srgb, var(--accent) 20%, transparent)").not.toMatch(NAMED_COLOUR);
+    expect("white-space: nowrap;").not.toMatch(NAMED_COLOUR);
+    expect("background: var(--v2-paper);").not.toMatch(NAMED_COLOUR);
+  });
+
+  it("is part of the banned set applied to the V2 detail modules", () => {
+    expect(BANNED_V2).toContain(NAMED_COLOUR);
+  });
+});

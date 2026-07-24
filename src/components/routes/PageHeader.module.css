@@ -1,0 +1,86 @@
+/* PageHeader — V2 light-first page opener. Content-driven height; no cosmic layers, no
+   gradient heading text, no forced viewport height. Sets its own V2 surface via the theme
+   class the component adds (theme-light / -alt / -night). */
+.header {
+  position: relative;
+  padding-block: var(--section-y);
+  background-color: var(--surface);
+  color: var(--text-body);
+}
+.compact {
+  padding-block: var(--section-y-tight);
+}
+
+.inner {
+  display: grid;
+  gap: var(--space-10);
+}
+/* Two-column only when an aside is present, and only from tablet up. Text stays dominant and
+   the aside width is capped so it never overpowers the title. */
+@media (min-width: 60rem) {
+  .split .inner {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.9fr);
+    gap: var(--space-16);
+    align-items: center;
+  }
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+  max-width: 44rem; /* readable measure for the whole copy column */
+}
+
+.eyebrow {
+  margin: 0;
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--ph-accent, var(--link)); /* the one restrained accent; theme link is AA-safe */
+}
+
+.title {
+  margin: 0;
+  color: var(--text-heading);
+  /* Confident, not cinematic — the base h1 clamp (32→56) already avoids oversized mobile type. */
+  max-width: 22ch;
+}
+
+.lead {
+  margin: 0;
+  font-size: var(--fs-lead);
+  color: var(--text-body);
+  max-width: 60ch;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.trustNote {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  max-width: 60ch;
+}
+
+.aside {
+  min-width: 0;
+}
+@media (min-width: 60rem) {
+  .aside {
+    justify-self: end;
+    width: 100%;
+    max-width: 30rem;
+  }
+}

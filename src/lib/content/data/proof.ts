@@ -1,11 +1,14 @@
 import type { CaseStudy, Example, Testimonial } from "@/lib/content/types";
 
 /**
- * Proof content. Status is deliberately "placeholder" on every item here, which
- * keeps it hidden from public rendering (see RENDERABLE_STATUSES in types.ts).
- * Text is obviously non-real by design — no fabricated client names, quotes, or
- * numbers — so this never gets mistaken for genuine proof if the status gate
- * is ever bypassed accidentally during development.
+ * Proof content. DOUBLE-gated and hidden by BOTH gates:
+ *  1. status is deliberately "placeholder" on every item (fails the render gate,
+ *     RENDERABLE_STATUSES in types.ts); and
+ *  2. no item carries `verification` metadata, so it also fails `isPublishableProof`
+ *     (consent + identity + claims + owner approval + evidence reference).
+ * So even if a status were flipped to "verified" by mistake, the item still stays hidden until
+ * genuine publication-verification metadata is added. Text is obviously non-real by design — no
+ * fabricated client names, quotes, or numbers.
  */
 
 export const caseStudies: CaseStudy[] = [
@@ -28,12 +31,14 @@ export const caseStudies: CaseStudy[] = [
 export const testimonials: Testimonial[] = [
   {
     status: "placeholder",
-    quote: "Placeholder testimonial — not yet published. This is not a real quote from a real client.",
+    quote:
+      "Placeholder testimonial — not yet published. This is not a real quote from a real client.",
     attribution: "Placeholder — not a real client",
   },
   {
     status: "placeholder",
-    quote: "Placeholder testimonial — not yet published. Structural example only, used to test layout and content length.",
+    quote:
+      "Placeholder testimonial — not yet published. Structural example only, used to test layout and content length.",
     attribution: "Placeholder — not a real client",
   },
 ];

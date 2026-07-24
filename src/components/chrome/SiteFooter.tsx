@@ -1,24 +1,25 @@
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
-import { GlobeArc } from "@/components/viz/GlobeArc";
 import type { FooterContent } from "@/lib/content/types";
 import styles from "./SiteFooter.module.css";
 
-/** Per-column heading accent, cycled — a small non-glowing tick, not a light source. */
-const FOOTER_COL_ACCENTS = ["var(--blue)", "var(--violet)", "var(--pink)", "var(--orange)"];
+/** Per-column heading accent, cycled — a small flat V2 domain tick, not a light source. */
+const FOOTER_COL_ACCENTS = [
+  "var(--v2-domain-build-ink)",
+  "var(--v2-domain-strategy-ink)",
+  "var(--v2-domain-convert-ink)",
+  "var(--v2-domain-operate-ink)",
+];
 
 export function SiteFooter({ footer }: { footer: FooterContent }) {
   // Social links render only once a valid URL exists (brief §23). No phone anywhere.
   const social = footer.social.filter((s) => Boolean(s.url));
-  const year = 2026;
+  // Current year, computed at render (build time for static routes) — no future hardcoded date.
+  const year = new Date().getFullYear();
 
   return (
-    <footer className={`theme-dark ${styles.footer}`}>
-      <div className={styles.globe} aria-hidden="true">
-        <GlobeArc />
-      </div>
-
+    <footer className={`theme-light ${styles.footer}`}>
       <div className={`iw-container iw-container--wide ${styles.inner}`}>
         <div className={styles.brand}>
           <Logo href="/" size={30} className={styles.logo} />

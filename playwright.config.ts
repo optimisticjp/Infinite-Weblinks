@@ -29,6 +29,14 @@ export default defineConfig({
   },
   webServer: {
     command: `PORT=${PORT} npm run start`,
+    // Exercise the form pipeline as a preview-WITHOUT-keys deployment: the in-memory rate limiter and
+    // a Turnstile dev-bypass, so a real submission reaches the truthful delivery-unavailable path
+    // instead of failing closed on the production-only required Cloudflare bindings. `next start` runs
+    // as NODE_ENV=production, so APP_ENV=development is what selects the non-fail-closed policy here.
+    env: {
+      APP_ENV: "development",
+      FORMS_ALLOW_INSECURE_BYPASS: "true",
+    },
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 90_000,

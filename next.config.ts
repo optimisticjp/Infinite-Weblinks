@@ -3,26 +3,38 @@ import { serviceRedirects } from "./src/lib/seo/service-redirects";
 
 /**
  * Content-Security-Policy and security headers.
- * Allowances: Sanity (API/CDN/image), Formspree (form POST), Cloudflare Turnstile
- * (challenge script + iframe) and Cloudflare Web Analytics (beacon). Fonts are self-hosted
- * via next/font, so no font-CDN allowance is needed.
  *
- * Note: `script-src` includes 'unsafe-inline' as a pragmatic allowance for Next.js's inline
- * hydration/bootstrap scripts. Hardening to per-request nonces is a Worker-level follow-up
- * (Node middleware is unsupported by the Cloudflare adapter). Tracked as a security TODO.
+ * Allowances, and why each exists:
+ *  - Sanity (connect/img) — live CMS reads + image CDN when NEXT_PUBLIC_SANITY_LIVE_CONTENT_ENABLED.
+ *  - Cloudflare Turnstile (script + frame) — the human-verification widget.
+ *  - Cloudflare Web Analytics (script + connect beacon) — privacy-friendly page analytics.
+ *  - Fonts are self-hosted via next/font, so no font-CDN allowance is needed.
+ *
+ * Formspree is intentionally ABSENT: the browser posts same-origin to /api/forms/*, and the server
+ * forwards to Formspree server-to-server — a request the browser CSP never governs. So it belongs in
+ * neither connect-src nor form-action.
+ *
+ * `script-src` keeps 'unsafe-inline' ONLY for Next.js's inline bootstrap/hydration scripts — the one
+ * remaining relaxation. Removal criterion: switch to per-request 'nonce-<value>' once the Cloudflare
+ * adapter can stamp a nonce per response (the usual Node-middleware nonce path is unsupported by
+ * @opennextjs/cloudflare today). Tracked as a security TODO. `script-src-attr 'none'` already blocks
+ * inline event-handler attributes, which Next never emits (it hydrates via addEventListener).
  */
 const csp = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://static.cloudflareinsights.com",
+  "script-src-attr 'none'",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https://cdn.sanity.io",
   "font-src 'self'",
-  "connect-src 'self' https://*.sanity.io https://formspree.io https://challenges.cloudflare.com https://cloudflareinsights.com",
+  "media-src 'self'",
+  "manifest-src 'self'",
+  "connect-src 'self' https://*.sanity.io https://challenges.cloudflare.com https://cloudflareinsights.com",
   "frame-src https://challenges.cloudflare.com",
   "frame-ancestors 'none'",
   "object-src 'none'",
   "base-uri 'self'",
-  "form-action 'self' https://formspree.io",
+  "form-action 'self'",
   "upgrade-insecure-requests",
 ].join("; ");
 

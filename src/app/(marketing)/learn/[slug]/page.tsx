@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Clock } from "lucide-react";
-import { Breadcrumbs } from "@/components/primitives/Breadcrumbs";
-import { BentoGrid } from "@/components/primitives/BentoGrid";
-import { BentoCard } from "@/components/primitives/BentoCard";
-import { InfinityMark } from "@/components/brand/InfinityMark";
-import { ScrollThread } from "@/components/viz/ScrollThread";
-import { CosmicBackground } from "@/components/viz/CosmicBackground";
+import { PageHeader } from "@/components/routes/PageHeader";
 import { SectionShell } from "@/components/sections/SectionShell";
-import { FinalCtaBannerSection } from "@/components/sections/FinalCtaBannerSection";
+import { FinalCtaSection } from "@/components/sections/FinalCtaSection";
+import { CardGrid } from "@/components/primitives/CardGrid";
+import { ArticleCard } from "@/components/cards/ArticleCard";
+import { RelationshipCard } from "@/components/cards/RelationshipCard";
+import { LinkChip } from "@/components/primitives/LinkChip";
+import { ArticleMetaLine } from "@/components/routes/ArticleMetaLine";
+import { Icon } from "@/components/primitives/Icon";
+import { InfinityMark } from "@/components/brand/InfinityMark";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { blogPostingJsonLd, breadcrumbJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
+import { domainInk } from "@/lib/design/domainColor";
 import { getGoals, getLearnArticle, getLearnArticles } from "@/lib/content";
 import styles from "./article.module.css";
-
-const HUE = "var(--domain-discover)";
 
 export async function generateStaticParams() {
   const articles = await getLearnArticles();
@@ -52,15 +52,19 @@ export default async function LearnArticlePage({
   if (!article) notFound();
 
   const goalBySlug = new Map(goals.map((g) => [g.slug, g] as const));
-  const relatedGoal = article.relatedGoalSlugs?.map((s) => goalBySlug.get(s)).find(Boolean);
-  const tag = relatedGoal ? relatedGoal.title : "Guide";
+  // All resolved related goals (not only the first); the first drives the header eyebrow/accent.
+  const relatedGoals = (article.relatedGoalSlugs ?? [])
+    .map((s) => goalBySlug.get(s))
+    .filter((g): g is NonNullable<typeof g> => Boolean(g));
+  const primaryGoal = relatedGoals[0];
+  const eyebrow = primaryGoal ? primaryGoal.title : "Guide";
+  const accent = domainInk(primaryGoal?.color ?? "var(--domain-discover)");
 
-  // Up to three other guides, so the read ends with somewhere to go next.
+  // The current deterministic selection: up to three other guides in source order.
   const related = articles.filter((a) => a.slug !== article.slug).slice(0, 3);
 
   return (
     <>
-      <ScrollThread hue={HUE} />
       <JsonLd
         data={blogPostingJsonLd({
           title: article.title,
@@ -77,74 +81,85 @@ export default async function LearnArticlePage({
         ])}
       />
 
-      <article className={styles.article} style={{ ["--hue" as string]: HUE }}>
-        <header className={`theme-cosmic iw-section iw-section--tight ${styles.header}`}>
-          <CosmicBackground />
-          <div className={`iw-container ${styles.narrow} ${styles.headerInner}`}>
-            <Breadcrumbs trail={[{ name: "Learn", path: "/learn" }, { name: article.title }]} />
-            <p className={styles.eyebrow}>{tag}</p>
-            <h1 className={styles.title}>{article.title}</h1>
-            <div className={styles.meta}>
-              {article.readMinutes ? (
-                <span className={styles.metaItem}>
-                  <Clock className={styles.metaIcon} aria-hidden="true" />
-                  {article.readMinutes} min read
-                </span>
-              ) : null}
-              <span className={styles.metaItem}>By Infinite Weblinks</span>
-            </div>
-          </div>
-        </header>
+      <article className={styles.article}>
+        <PageHeader
+          id="article-hero"
+          spacing="compact"
+          breadcrumbs={[{ name: "Learn", path: "/learn" }, { name: article.title }]}
+          eyebrow={eyebrow}
+          accent={accent}
+          title={article.title}
+          lead={article.excerpt}
+          trustNote={<ArticleMetaLine readMinutes={article.readMinutes} publishedAt={article.publishedAt} />}
+        />
 
-        <div className={`theme-cosmic iw-section ${styles.body}`}>
+        <section className={`theme-light iw-section ${styles.reading}`} aria-label="Article">
           <div className={`iw-container ${styles.narrow}`}>
-            <p className={styles.standfirst}>{article.excerpt}</p>
             <div className={styles.prose}>
               {article.body.map((para, i) => (
                 <p key={i}>{para}</p>
               ))}
             </div>
 
-            <div className={styles.byline}>
-              <InfinityMark size={40} glow aria-hidden="true" />
+            <footer className={styles.byline}>
+              <InfinityMark size={32} glow={false} className={styles.bylineMark} />
               <span className={styles.bylineText}>
                 <span className={styles.bylineName}>Infinite Weblinks</span>
                 <span className={styles.bylineRole}>Your digital growth partner</span>
               </span>
-            </div>
+            </footer>
           </div>
-        </div>
+        </section>
       </article>
 
-      {related.length > 0 ? (
-        <SectionShell
-          id="related"
-          eyebrow="Keep reading"
-          title="More on connected growth"
-          align="start"
-        >
-          <BentoGrid>
-            {related.map((a) => {
-              const g = a.relatedGoalSlugs?.map((s) => goalBySlug.get(s)).find(Boolean);
-              const read = a.readMinutes ? `${a.readMinutes} min read` : "Guide";
-              return (
-                <BentoCard
-                  key={a.slug}
-                  href={`/learn/${a.slug}`}
-                  hue={g ? g.color : HUE}
-                  icon="book-open"
-                  eyebrow={`${g ? g.title : "Guide"} · ${read}`}
-                  title={a.title}
-                  blurb={a.excerpt}
-                  variant="medium"
-                />
-              );
-            })}
-          </BentoGrid>
+      {relatedGoals.length > 0 || related.length > 0 ? (
+        <SectionShell surface="alt" id="keep-going" eyebrow="Where next" title="Keep going" align="start">
+          <div className={styles.keepGoing}>
+            {relatedGoals.length > 0 ? (
+              <RelationshipCard
+                title="Put this guide into practice"
+                description="The goals this guide relates to."
+                icon={<Icon name="target" />}
+                tone={primaryGoal?.color}
+              >
+                {relatedGoals.map((g) => (
+                  <LinkChip key={g.slug} href={`/goals/${g.slug}`} tone={g.color}>
+                    {g.title}
+                  </LinkChip>
+                ))}
+              </RelationshipCard>
+            ) : null}
+
+            {related.length > 0 ? (
+              <CardGrid layout="equal" aria-label="More guides">
+                {related.map((a) => {
+                  const g = a.relatedGoalSlugs?.map((s) => goalBySlug.get(s)).find(Boolean);
+                  return (
+                    <ArticleCard
+                      key={a.slug}
+                      href={`/learn/${a.slug}`}
+                      title={a.title}
+                      excerpt={a.excerpt}
+                      goalLabel={g ? g.title : "Guide"}
+                      goalTone={g ? g.color : "var(--domain-discover)"}
+                      readingTime={a.readMinutes ? `${a.readMinutes} min read` : undefined}
+                      icon="book-open"
+                    />
+                  );
+                })}
+              </CardGrid>
+            ) : null}
+          </div>
         </SectionShell>
       ) : null}
 
-      <FinalCtaBannerSection anchorId="get-started" />
+      <FinalCtaSection
+        id="get-started"
+        title="Turn the thinking into a plan"
+        lead="Reading is a start — the next step is a plan built around your goals. We'll help you find the smallest useful first move. No obligation."
+        primary={{ href: "/growth-plan", label: "Build my growth plan" }}
+        secondary={{ href: "/learn", label: "Back to the guides" }}
+      />
     </>
   );
 }

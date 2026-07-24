@@ -1,26 +1,14 @@
+/* SiteFooter — V2 light chrome. The <footer> carries `.theme-light`; this module reads V2
+   semantic tokens only (no --ink-*, --text-1..4, --border-*, --grad-*, --glow-*, --glass-*,
+   backdrop-filter, or raw colours). No GlobeArc, no overflow clipping for decoration. */
 .footer {
   position: relative;
-  overflow: hidden;
-  background: var(--ink-950);
-  border-top: 1px solid var(--border-1);
+  background: var(--surface);
+  border-top: 1px solid var(--hairline);
   color: var(--text-body);
 }
 
-/* The footer's single restrained glow: the lit-world horizon, low and dim, behind the
-   legal bar. Everything else in the footer is unlit text. */
-.globe {
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  height: 260px;
-  opacity: 0.5;
-  pointer-events: none;
-  z-index: 0;
-}
-
 .inner {
-  position: relative;
-  z-index: 1;
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--space-12);
@@ -31,7 +19,7 @@
   max-width: 24rem;
 }
 .logo {
-  color: var(--text-1);
+  color: var(--text-heading);
 }
 .tagline {
   margin: var(--space-5) 0 var(--space-6);
@@ -46,15 +34,24 @@
   font-size: var(--fs-sm);
   font-weight: var(--fw-semibold);
   color: var(--text-heading);
+  border-radius: var(--v2-radius-sm);
+  overflow-wrap: anywhere;
 }
-.email:hover {
-  color: var(--link-hover);
+.email:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
 }
 .emailIcon {
   width: 18px;
   height: 18px;
   flex: none;
-  color: var(--violet-bright);
+  color: var(--v2-brand);
+}
+@media (hover: hover) and (pointer: fine) {
+  .email:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
 }
 .social {
   display: flex;
@@ -69,8 +66,8 @@
   justify-content: center;
   width: var(--target-min);
   height: var(--target-min);
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-2);
+  border-radius: var(--v2-radius-pill);
+  border: 1px solid var(--hairline-strong);
   color: var(--text-body);
   font-weight: var(--fw-semibold);
   font-size: var(--fs-sm);
@@ -79,16 +76,27 @@
     border-color var(--dur-fast) var(--ease-out),
     background-color var(--dur-fast) var(--ease-out);
 }
-.socialLink:hover {
-  color: var(--text-heading);
-  border-color: var(--border-glow);
-  background: var(--surface-hover);
+.socialLink:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+@media (hover: hover) and (pointer: fine) {
+  .socialLink:hover {
+    color: var(--text-heading);
+    border-color: var(--v2-brand);
+    background: var(--surface-hover);
+  }
 }
 
 .cols {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr; /* one column at very narrow / zoomed widths */
   gap: var(--space-8) var(--space-6);
+}
+@media (min-width: 26rem) {
+  .cols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 .col {
   min-width: 0;
@@ -110,8 +118,8 @@
   left: 0;
   width: 20px;
   height: 2px;
-  border-radius: var(--radius-pill);
-  background: var(--col-accent, var(--violet));
+  border-radius: var(--v2-radius-pill);
+  background: var(--col-accent, var(--v2-brand));
 }
 .colLinks {
   list-style: none;
@@ -121,25 +129,35 @@
   gap: var(--space-1);
 }
 .link {
-  display: inline-flex;
+  display: flex;
   min-height: 36px;
+  min-width: 0;
   align-items: center;
   color: var(--text-body);
   font-size: var(--fs-sm);
+  border-radius: var(--v2-radius-sm);
+  overflow-wrap: anywhere; /* long labels wrap within the column at 200% zoom */
 }
-.link:hover {
-  color: var(--text-heading);
+.link:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+@media (hover: hover) and (pointer: fine) {
+  .link:hover {
+    color: var(--text-heading);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
 }
 
 .bottom {
   position: relative;
-  z-index: 1;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-4) var(--space-6);
   padding-block: var(--space-6);
-  border-top: 1px solid var(--border-1);
+  border-top: 1px solid var(--hairline);
 }
 .copy {
   font-size: var(--fs-xs);
@@ -158,9 +176,18 @@
 .legalLink {
   font-size: var(--fs-xs);
   color: var(--text-muted);
+  border-radius: var(--v2-radius-sm);
 }
-.legalLink:hover {
-  color: var(--text-heading);
+.legalLink:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+@media (hover: hover) and (pointer: fine) {
+  .legalLink:hover {
+    color: var(--text-heading);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
 }
 
 @media (min-width: 640px) {

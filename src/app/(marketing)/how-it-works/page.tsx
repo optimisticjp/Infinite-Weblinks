@@ -1,27 +1,27 @@
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
-import { CosmicPageHero } from "@/components/routes/CosmicPageHero";
-import { GlowButton } from "@/components/primitives/GlowButton";
-import { InfinityMark } from "@/components/brand/InfinityMark";
-import { ConnectedGrowthSection } from "@/components/sections/home/ConnectedGrowthSection";
-import { OneSystemSection } from "@/components/sections/home/OneSystemSection";
-import { ProcessStepsSection } from "@/components/sections/ProcessStepsSection";
-import { DeliveryModelsSection } from "@/components/sections/DeliveryModelsSection";
-import { FinalCtaBannerSection } from "@/components/sections/FinalCtaBannerSection";
+import { PageHeader } from "@/components/routes/PageHeader";
+import { FinalCtaSection } from "@/components/sections/FinalCtaSection";
+import { Button } from "@/components/primitives/Button";
+import { LinkChip } from "@/components/primitives/LinkChip";
+import { GrowthJourneyOverviewSection } from "@/components/sections/GrowthJourneyOverviewSection";
+import { ConnectedSystemExplainerSection } from "@/components/sections/ConnectedSystemExplainerSection";
+import { WorkProcessSection } from "@/components/sections/WorkProcessSection";
+import { DeliveryModelsExplainerSection } from "@/components/sections/DeliveryModelsExplainerSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
-import { getStages, getSystems } from "@/lib/content";
 import styles from "./how-it-works.module.css";
 
 /**
- * /how-it-works — the story of the connected system, fully on the Constellation kit (no more
- * legacy PageHero shell). The spine: cosmic hero (H1 = LCP text) → the 8-stage growth journey
- * as the interactive StageTimeline with its three cross-cutting rails → "one system, not
- * silos" (the connected-system diagram) → the steady process → the four delivery models →
- * closing CTA. A thin, aria-hidden anchor band above the journey preserves the mega-menu's
- * deep links to every stage (#discovery-plan …) and cross-cutting system (#ai-automation …);
- * ProcessSteps/DeliveryModels keep #process, #delivery and #delivery-<key>.
+ * /how-it-works — the connected-system explainer on the V2 light-first system. PageHeader → a
+ * compact page-jump nav → the growth-journey overview (eight stages + three cross-cutting systems)
+ * → the connected-system explainer → the work process → the four delivery models → the closing
+ * CTA. Every mega-menu deep link is preserved by moving each id onto real content: the eight stage
+ * slugs live on the GrowthJourneyList items, the three system keys on the CrossCuttingSystemCards,
+ * the four delivery keys on the DeliveryModelCards, and the section ids on their sections — the old
+ * hidden anchor band is removed. Server-rendered; metadata, canonical and breadcrumb structured
+ * data are unchanged.
  */
 export const metadata: Metadata = pageMetadata({
   title: "How It Works",
@@ -31,8 +31,6 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default async function HowItWorksPage() {
-  const [stages, systems] = await Promise.all([getStages(), getSystems()]);
-
   return (
     <>
       <JsonLd
@@ -42,62 +40,49 @@ export default async function HowItWorksPage() {
         ])}
       />
 
-      <CosmicPageHero
+      <PageHeader
         id="how-it-works-hero"
+        surface="light"
         breadcrumbs={[{ name: "How it works" }]}
         eyebrow="How it works"
-        hue="var(--pink)"
-        title={
-          <>
-            One connected system, built around your <span className="iw-gradient-word">growth</span>
-          </>
-        }
+        title="One connected system, built around your growth"
         lead="We start with your goals, find the smallest useful next step, and connect each stage so the work builds on itself over time. Seeing the whole path is what tells you where to start, and what can wait."
         actions={
           <>
-            <GlowButton href="/growth-plan" size="lg" iconRight={<ArrowRight size={18} aria-hidden="true" />}>
+            <Button href="/growth-plan" iconRight={<ArrowRight size={16} aria-hidden="true" />}>
               Build my growth plan
-            </GlowButton>
-            <GlowButton href="#growth-journey" variant="ghost" size="lg">
+            </Button>
+            <Button href="#growth-journey" variant="secondary">
               Explore the journey
-            </GlowButton>
+            </Button>
           </>
-        }
-        aside={
-          <span aria-hidden="true">
-            <InfinityMark size={168} glow />
-          </span>
         }
       />
 
-      {/*
-        Deep-link anchor band. The mega-menu links to each stage (#discovery-plan …) and each
-        cross-cutting system (#ai-automation …); these thin, aria-hidden targets sit just above
-        the journey so every link lands at the top of it. They inherit the page scroll-padding
-        offset, so the sticky header never covers the landing point.
-      */}
-      <div className={styles.anchors} aria-hidden="true">
-        {stages.map((stage) => (
-          <span key={stage.slug} id={stage.slug} className={styles.anchor} />
-        ))}
-        {systems.map((system) => (
-          <span key={system.key} id={system.key} className={styles.anchor} />
-        ))}
+      {/* Compact page-jump nav — links between the four sections, not tabs or a filter. */}
+      <div className={`theme-light ${styles.jumpNavBand}`}>
+        <div className="iw-container iw-container--wide">
+          <nav aria-label="How it works sections" className={styles.jumpNav}>
+            <LinkChip href="#growth-journey">Growth journey</LinkChip>
+            <LinkChip href="#how-it-connects">How it connects</LinkChip>
+            <LinkChip href="#process">Our process</LinkChip>
+            <LinkChip href="#delivery">Ways of working</LinkChip>
+          </nav>
+        </div>
       </div>
 
-      {/* The 8-stage growth journey (interactive StageTimeline) + the three cross-cutting rails. */}
-      <ConnectedGrowthSection />
+      <GrowthJourneyOverviewSection surface="alt" />
+      <ConnectedSystemExplainerSection surface="light" />
+      <WorkProcessSection surface="alt" />
+      <DeliveryModelsExplainerSection surface="light" />
 
-      {/* One system, not silos — the connected-system diagram. */}
-      <OneSystemSection />
-
-      {/* The steady process behind every project (#process). */}
-      <ProcessStepsSection anchorId="process" />
-
-      {/* The four delivery models; each card carries id="delivery-<key>" for the mega-menu. */}
-      <DeliveryModelsSection anchorId="delivery" />
-
-      <FinalCtaBannerSection anchorId="get-started" />
+      <FinalCtaSection
+        id="get-started"
+        title="Start from where you are"
+        lead="You don't need every stage — just the smallest useful next step. Tell us your goals and we'll map a connected plan around them, with the sequence and scope tailored to your business during discovery. No obligation."
+        primary={{ href: "/growth-plan", label: "Build my growth plan" }}
+        secondary={{ href: "/goals#by-where-you-are", label: "Find where you are" }}
+      />
     </>
   );
 }

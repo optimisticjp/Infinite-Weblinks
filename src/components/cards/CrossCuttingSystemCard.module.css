@@ -1,0 +1,46 @@
+/* CrossCuttingSystemCard — static explanatory card. The Card shell owns the raised surface,
+   radius, semantic border and neutral shadow; this module lays out the content on V2 tokens
+   (mapped `--card-accent` ink; the IconTile carries the ink-derived tint) — no raw colours, no
+   glow/glass, no gradient, no fixed height. The root carries scroll-margin so a deep link to its
+   system id clears the sticky header. */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  height: 100%;
+  padding: var(--space-6);
+  scroll-margin-top: calc(var(--header-h) + var(--space-4));
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.kicker {
+  min-width: 0;
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--card-accent);
+  overflow-wrap: anywhere;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+  overflow-wrap: anywhere;
+}
+
+.description {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}

@@ -18,11 +18,11 @@ function slugify(heading: string): string {
  * Content is status-gated, code-authoritative seed data; if a page isn't renderable it 404s
  * rather than showing an empty shell.
  *
- * These are deliberately a QUIET reading surface, not the full cosmic kit: a calm dark band
- * (no starfield or globe), a comfortable measure, and a clear heading hierarchy, so long legal
- * copy stays legible. On longer pages a sticky table of contents rides alongside the text. The
- * `reviewNote` is surfaced as a visible editorial notice so the draft wording is never mistaken
- * for finalised legal terms.
+ * These are deliberately a QUIET reading surface: the V2 "Clear Systems" light band
+ * (`.theme-light`, no starfield, globe or decorative wash), a comfortable measure, and a
+ * clear heading hierarchy, so long legal copy stays legible. On longer pages a sticky table
+ * of contents rides alongside the text. The `reviewNote` is surfaced as a visible editorial
+ * notice so the draft wording is never mistaken for finalised legal terms.
  */
 export async function LegalPageView({ slug }: { slug: string }) {
   const page = await getLegalPage(slug);
@@ -34,8 +34,7 @@ export async function LegalPageView({ slug }: { slug: string }) {
   const showToc = toc.length >= 4;
 
   return (
-    <section className={`theme-cosmic iw-section ${styles.page}`} aria-labelledby="legal-heading">
-      <div className={styles.wash} aria-hidden="true" />
+    <section className={`theme-light iw-section ${styles.page}`} aria-labelledby="legal-heading">
       <div className={`iw-container ${styles.container}`}>
         <header className={styles.header}>
           <Breadcrumbs trail={[{ name: page.title }]} />
@@ -45,10 +44,25 @@ export async function LegalPageView({ slug }: { slug: string }) {
           </h1>
           <p className={styles.intro}>{page.intro}</p>
           <p className={styles.updated}>Last updated: {page.updated}</p>
-          {page.reviewNote && (
+          {/* Review state is driven by the EXPLICIT `legalReviewStatus`, never inferred from the
+              render status. Drafts carry a visible, accessible notice; a professionally-reviewed page
+              (owner-confirmed only) states that plainly instead. */}
+          {page.legalReviewStatus === "professionallyReviewed" ? (
             <p className={styles.reviewNote} role="note">
               <Info aria-hidden="true" className={styles.reviewIcon} />
-              <span>{page.reviewNote}</span>
+              <span>
+                <span className="iw-visually-hidden">Legal review status: </span>
+                Professionally reviewed
+                {page.reviewedAt ? ` (${page.reviewedAt})` : ""}.
+              </span>
+            </p>
+          ) : (
+            <p className={styles.reviewNote} role="note">
+              <Info aria-hidden="true" className={styles.reviewIcon} />
+              <span>
+                <span className="iw-visually-hidden">Legal review status: </span>
+                {page.reviewNote ?? "Draft — requires professional legal review before launch."}
+              </span>
             </p>
           )}
         </header>

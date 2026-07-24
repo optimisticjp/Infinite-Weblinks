@@ -1,0 +1,5 @@
+/* HomepageLearningSection — the article grid uses CardGrid/ArticleCard; this module only places
+   the closing CTA. V2 tokens only. */
+.cta {
+  margin-top: var(--space-6);
+}

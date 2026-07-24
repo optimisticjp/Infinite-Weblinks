@@ -1,11 +1,9 @@
 .section {
   position: relative;
-  overflow: hidden;
 }
 
 .inner {
   position: relative;
-  z-index: 1; /* sit above the cosmic background layer */
 }
 
 .head {
@@ -24,17 +22,15 @@
   text-align: left;
 }
 
-.eyebrow {
+/* V2 eyebrow — plain accent, no gradient text. */
+.eyebrowV2 {
   margin: 0;
   font-family: var(--font-label);
   font-size: var(--fs-eyebrow);
   font-weight: var(--fw-bold);
   letter-spacing: var(--ls-eyebrow);
   text-transform: uppercase;
-  background: var(--grad-constellation);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--link);
 }
 
 .title {

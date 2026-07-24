@@ -4,107 +4,165 @@ import { verifyTurnstile } from "@/lib/forms/turnstile";
 import { forwardToFormspree } from "@/lib/forms/formspree";
 import { clientIpFromHeaders } from "@/lib/forms/rate-limit";
 import { rateLimit } from "@/lib/forms/rate-limit-adapter";
-import { deliveryEnabled, supportEmail } from "@/lib/forms/config";
+import { deliveryEnabled } from "@/lib/forms/config.server";
+import { supportEmail } from "@/lib/forms/config.public";
+import { readJsonBody, newRequestId } from "@/lib/forms/request";
+import { logFormEvent, type FormLifecycleEvent } from "@/lib/forms/observability";
 
 /**
  * POST /api/forms/contact — Contact form submission ("Send us your goals"). The visitor
  * sends their details and message, with optional business-type / stage / goal context to
- * help us tailor the reply. Same defence-in-depth flow as the Growth Plan route
- * (contracts/forms-and-email.md); never claims success when nothing was actually delivered.
+ * help us tailor the reply. Same defence-in-depth flow as the Growth Plan route; never
+ * claims success when nothing was actually delivered. Every response carries an X-Request-ID
+ * for safe log correlation, and each lifecycle step emits a PII-free structured log line.
  */
 
 const MIN_HUMAN_MS = 1500;
 
 const DELIVERY_UNAVAILABLE_MESSAGE = `Form delivery isn't set up on this preview yet. Please email ${supportEmail} and we'll pick it up.`;
+const SECURITY_UNAVAILABLE_MESSAGE = `We couldn't run the security check just now. Please try again shortly, or email ${supportEmail} and we'll pick it up.`;
+const RATE_LIMIT_UNAVAILABLE_MESSAGE = `We couldn't process your message just now. Please try again shortly, or email ${supportEmail} and we'll pick it up.`;
 
 export async function POST(req: Request) {
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json(
+  const requestId = newRequestId();
+  const respond = (
+    body: Record<string, unknown>,
+    status = 200,
+    headers: Record<string, string> = {},
+  ) => NextResponse.json(body, { status, headers: { "X-Request-ID": requestId, ...headers } });
+  // PII-free lifecycle log, correlated by requestId (never carries visitor data).
+  const log = (event: FormLifecycleEvent, outcome?: string) =>
+    logFormEvent({ form: "contact", requestId, event, ...(outcome ? { outcome } : {}) });
+
+  log("received");
+
+  // Bounded request read: application/json only, small size cap, streamed-safe (§C).
+  const read = await readJsonBody(req);
+  if (!read.ok) {
+    log("rejected", read.kind);
+    if (read.kind === "unsupported-media-type") {
+      return respond(
+        {
+          ok: false,
+          code: "unsupported-media-type",
+          message: "Please send this form as application/json.",
+        },
+        415,
+      );
+    }
+    if (read.kind === "payload-too-large") {
+      return respond(
+        { ok: false, code: "payload-too-large", message: "That request was too large." },
+        413,
+      );
+    }
+    return respond(
       { ok: false, code: "invalid-json", message: "The request body must be valid JSON." },
-      { status: 400 },
+      400,
     );
   }
 
-  const parsed = contactSchema.safeParse(body);
+  const parsed = contactSchema.safeParse(read.data);
   if (!parsed.success) {
-    return NextResponse.json(
+    log("rejected", "validation-error");
+    return respond(
       {
         ok: false,
         code: "validation-error",
         message: "Please check the highlighted fields and try again.",
         fieldErrors: parsed.error.flatten().fieldErrors,
       },
-      { status: 400 },
+      400,
     );
   }
   const values = parsed.data;
 
   if (values._gotcha) {
-    return NextResponse.json({ ok: true });
+    log("rejected", "honeypot");
+    return respond({ ok: true });
   }
   if (typeof values.elapsedMs === "number" && values.elapsedMs < MIN_HUMAN_MS) {
-    return NextResponse.json({ ok: true });
+    log("rejected", "timing");
+    return respond({ ok: true });
   }
 
   const ip = clientIpFromHeaders(req.headers);
   const rate = await rateLimit(`contact:${ip}`);
-  if (!rate.allowed) {
-    return NextResponse.json(
-      {
-        ok: false,
-        code: "rate-limited",
-        message: "Please wait a moment before trying again.",
-      },
-      { status: 429 },
+  if (rate.disposition === "unavailable") {
+    // The required rate limiter couldn't run — fail closed rather than accept unlimited traffic.
+    log("unavailable", "rate-limit-unavailable");
+    return respond(
+      { ok: false, code: "rate-limit-unavailable", message: RATE_LIMIT_UNAVAILABLE_MESSAGE },
+      503,
+      { "Retry-After": String(rate.retryAfterSeconds) },
+    );
+  }
+  if (rate.disposition === "limited") {
+    log("rejected", "rate-limited");
+    return respond(
+      { ok: false, code: "rate-limited", message: "Please wait a moment before trying again." },
+      429,
+      { "Retry-After": String(rate.retryAfterSeconds) },
     );
   }
 
-  const turnstile = await verifyTurnstile(values.turnstileToken, ip);
-  if (!turnstile.success) {
-    return NextResponse.json(
+  const turnstile = await verifyTurnstile(values.turnstileToken, { expectedAction: "contact", ip });
+  if (turnstile.disposition === "unavailable") {
+    // The human check couldn't run (missing keys or Cloudflare unreachable) — fail closed, never deliver.
+    log("unavailable", turnstile.outcome);
+    return respond(
+      { ok: false, code: "security-unavailable", message: SECURITY_UNAVAILABLE_MESSAGE },
+      503,
+    );
+  }
+  if (turnstile.disposition !== "pass") {
+    log("rejected", turnstile.outcome);
+    return respond(
       {
         ok: false,
         code: "turnstile-failed",
         message: "We couldn't verify you're human. Please try again.",
       },
-      { status: 400 },
+      400,
     );
   }
 
   if (!deliveryEnabled("contact")) {
-    return NextResponse.json(
+    log("unavailable", "delivery-unavailable");
+    return respond(
       { ok: false, code: "delivery-unavailable", message: DELIVERY_UNAVAILABLE_MESSAGE },
-      { status: 503 },
+      503,
     );
   }
 
-  const delivery = await forwardToFormspree("contact", {
-    formName: "Contact",
-    subject: values.mainGoal ? `New contact enquiry: ${values.mainGoal}` : "New contact enquiry",
-    name: values.name,
-    email: values.email,
-    replyTo: values.email,
-    company: values.company ?? "",
-    website: values.website ?? "",
-    businessType: values.businessType ?? "",
-    currentStage: values.currentStage ?? "",
-    mainGoal: values.mainGoal ?? "",
-    message: values.message,
-  });
+  const delivery = await forwardToFormspree(
+    "contact",
+    {
+      formName: "Contact",
+      subject: values.mainGoal ? `New contact enquiry: ${values.mainGoal}` : "New contact enquiry",
+      name: values.name,
+      email: values.email,
+      replyTo: values.email,
+      company: values.company ?? "",
+      website: values.website ?? "",
+      businessType: values.businessType ?? "",
+      currentStage: values.currentStage ?? "",
+      mainGoal: values.mainGoal ?? "",
+      message: values.message,
+    },
+    { requestId },
+  );
 
   if (!delivery.delivered) {
-    return NextResponse.json(
+    return respond(
       {
         ok: false,
         code: "delivery-failed",
         message: `We couldn't send your message just now. Please email ${supportEmail} directly and we'll pick it up.`,
       },
-      { status: 502 },
+      502,
     );
   }
 
-  return NextResponse.json({ ok: true });
+  return respond({ ok: true });
 }

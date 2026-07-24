@@ -1,0 +1,2 @@
+/* /faq — layout only; surfaces come from PageHeader + SectionShell.
+   The final CTA uses the shared FinalCtaSection, so no page-local CTA layout is needed. */

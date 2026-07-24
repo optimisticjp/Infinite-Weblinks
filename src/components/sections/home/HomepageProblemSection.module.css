@@ -1,0 +1,37 @@
+/* HomepageProblemSection — body prose + three restrained point cards. V2 tokens only; no
+   theme-band, glow/glass/gradient, raw colour. */
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: var(--measure);
+  margin-bottom: var(--space-8);
+}
+.para {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-body);
+}
+
+.point {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  height: 100%;
+  padding: var(--space-6);
+}
+.pointTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+  overflow-wrap: anywhere;
+}
+.pointBody {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}

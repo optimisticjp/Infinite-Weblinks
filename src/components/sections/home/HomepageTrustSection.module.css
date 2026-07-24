@@ -1,0 +1,9 @@
+/* HomepageTrustSection composes OwnershipDetails + HonestExpectationsPanel; the only local rule is
+   the divider that separates the honest subsection from the ownership block on the homepage and
+   gives #honest its sticky-header clearance. V2 tokens only. */
+.honestDivider {
+  margin-top: var(--space-10);
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--hairline);
+  scroll-margin-top: calc(var(--header-h) + var(--space-4));
+}

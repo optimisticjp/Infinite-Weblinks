@@ -1,0 +1,73 @@
+/* CaseStudyCard — worked-example card. The Card shell owns the outlined surface, accent rail,
+   radius, ≤2px hover and focus ring; this module lays out the content. Colours come from theme
+   tokens and the Badge's own tone — no raw colours, no glow/glass, no artwork. */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  height: 100%;
+  padding: var(--space-6);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+/* Verified form only — a truthful, caller-supplied client / confidentiality label. */
+.client {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.title {
+  margin: var(--space-1) 0 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+}
+
+.forWho {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--card-accent);
+}
+
+.summary {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+
+.more {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: auto;
+  padding-top: var(--space-2);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--link);
+}
+.moreIcon {
+  width: 16px;
+  height: 16px;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .moreIcon {
+    transform: translateX(3px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .moreIcon {
+    transition: none;
+  }
+  .card:hover .moreIcon {
+    transform: none;
+  }
+}

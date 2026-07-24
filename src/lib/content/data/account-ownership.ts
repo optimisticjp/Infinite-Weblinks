@@ -1,9 +1,12 @@
 import type { AccountOwnership } from "@/lib/content/types";
 
 /**
- * "Your digital world, owned by you" (ref 13). The load-bearing ownership promise: we
- * build and connect everything in your name, with clear access and documentation, so you
- * are never locked in. Code-authoritative — a brand principle, not a claim to verify.
+ * "Your digital world, owned by you" (ref 13). The load-bearing ownership promise: we build and
+ * connect everything in your name, with clear access and documentation, so you aren't locked in.
+ * These are BUSINESS-POLICY COMMITMENTS that require owner confirmation before launch (see the public
+ * claims register + the release blockers) — NOT repo-verifiable facts, and not merely a "brand
+ * principle" that exempts them from review. Absolute adverbs ("at all times", "always") were softened
+ * to accurate non-absolute wording; the core proposition (built in your name, no lock-in) is retained.
  * "Agency" appears only as the thing we are NOT (brief: never use the word for ourselves).
  */
 export const accountOwnership: AccountOwnership = {
@@ -40,13 +43,13 @@ export const accountOwnership: AccountOwnership = {
     },
     {
       title: "Your data",
-      body: "Your customer information and analytics stay under your control at all times.",
+      body: "Your customer information and analytics stay under your control.",
       icon: "database",
       color: "var(--violet)",
     },
     {
       title: "Your future",
-      body: "Continue with us, bring the work in-house, or move on. The choice is always yours.",
+      body: "Continue with us, bring the work in-house, or move on. The choice is yours.",
       icon: "compass",
       color: "var(--orange)",
     },

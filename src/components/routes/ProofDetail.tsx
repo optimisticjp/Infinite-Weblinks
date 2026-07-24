@@ -1,14 +1,17 @@
-import { PageHero } from "@/components/routes/PageHero";
+import { PageHeader } from "@/components/routes/PageHeader";
+import { SectionShell } from "@/components/sections/SectionShell";
 import { Button } from "@/components/primitives/Button";
-import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
+import { FinalCtaSection } from "@/components/sections/FinalCtaSection";
 import styles from "./ProofDetail.module.css";
 
 /**
- * Shared renderer for a single proof record (case study / example). Only reached for
- * Verified / Ready-to-Publish records — the page components 404 anything else, so this
- * never displays placeholder proof. Renders the fields the app type actually carries
- * (title, an optional meta line, summary) plus the standard breadcrumb + CTA.
+ * ProofDetail — the shared V2 renderer for a single proof record (case study / example). Only ever
+ * reached for a Verified / Ready-to-Publish record — the page components 404 everything else, so this
+ * never displays placeholder proof. It renders exactly the fields the app type carries (title, an
+ * optional meta line, summary) with honest framing, and nothing invented. Light-first: a PageHeader
+ * (its Breadcrumbs emits the single Home → collection → title BreadcrumbList), a restrained light
+ * content surface, and the reserved-night FinalCtaSection. No cosmic hero, theme-band, glow, Review or
+ * AggregateRating schema.
  */
 export function ProofDetail({
   collectionName,
@@ -27,35 +30,37 @@ export function ProofDetail({
 }) {
   return (
     <>
-      <JsonLd
-        data={breadcrumbJsonLd([
-          { name: "Home", path: "/" },
+      <PageHeader
+        id="proof-hero"
+        surface="light"
+        breadcrumbs={[
           { name: collectionName, path: collectionPath },
           { name: title, path },
-        ])}
-      />
-
-      <PageHero
+        ]}
         eyebrow="Proof"
         title={title}
-        intro={summary}
-        breadcrumbs={[{ name: collectionName, path: collectionPath }, { name: title }]}
+        lead={summary}
         actions={
-          <Button href="/growth-plan" variant="primary">
+          <Button href="/growth-plan" variant="signature" size="lg">
             Build my growth plan
           </Button>
         }
       />
 
-      <section className="theme-band iw-section" aria-labelledby="proof-body-heading">
-        <div className="iw-container">
-          <h2 id="proof-body-heading" className="iw-visually-hidden">
-            {title} details
-          </h2>
-          {meta && <p className={styles.meta}>{meta}</p>}
+      <SectionShell surface="light" id="proof-body" ariaLabel={`${title} details`} spacing="tight">
+        <div className={styles.body}>
+          {meta ? <p className={styles.meta}>{meta}</p> : null}
           <p className={styles.prose}>{summary}</p>
         </div>
-      </section>
+      </SectionShell>
+
+      <FinalCtaSection
+        id="get-started"
+        title="Want a plan like this for your business?"
+        lead="Tell us where you are and what you want to achieve, and we'll map what to build first and what to connect next."
+        primary={{ href: "/growth-plan", label: "Build my growth plan" }}
+        secondary={{ href: "/contact", label: "Talk it through" }}
+      />
     </>
   );
 }

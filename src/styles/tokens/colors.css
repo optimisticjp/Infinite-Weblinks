@@ -1,11 +1,12 @@
-/* Colours — Infinite Weblinks
-   A "living connected digital universe": deep navy/near-black lit by electric violet,
-   hot pink, orange, cyan, lime and blue.
-   Rebuilt cleanly from the approved handoff, WITH the two accessibility fixes from the
-   planning review baked in:
-     - R-A11Y-1 (CHK-A12): primary CTA gradient uses DARK ink text, not white.
-     - R-A11Y-2 (CHK-A13): section-scoped text colours (on-dark / on-band / on-statement)
-       instead of one global default that fails on the bright editorial band. */
+/* Colours — Infinite Weblinks (LEGACY BASE PALETTE — compatibility source only).
+   The retired dark/cosmic "Constellation" palette below is NOT the document design. Since the
+   Phase 2S convergence the document default is V2 light via `body.theme-light` (see tokens/v2.css),
+   and `theme-night` is the single explicitly-scoped reserved dark surface. This file survives only
+   as the compatibility source for the individual legacy tokens that still have PROVEN live consumers
+   — chiefly the `--domain-*` wayfinding hues, the `theme-band` light class (EditorialStatement +
+   ProcessStepsSection), and the base `--ink-*` / `--text-*` / gradient tokens the Button + a few
+   primitives still read. It defines no document-wide default. (The two baked-in a11y fixes remain:
+   the CTA gradient uses dark ink, and text colour is section-scoped, never one global default.) */
 
 :root {
   /* ---- Core neutral scale (navy-black, faintly violet) ---- */
@@ -52,15 +53,11 @@
   --lime-soft: rgba(52, 211, 153, 0.14);
   --blue-soft: rgba(59, 130, 246, 0.14);
 
-  /* ---- Signature gradients ---- */
+  /* ---- Signature gradients (legacy — retained only where a live component still consumes them:
+     --grad-brand / --grad-cta on the Button. The unused violet-pink / cyan-blue / lime / banner /
+     spectrum / text gradients were removed at Phase 2S/3A convergence). ---- */
   --grad-brand: linear-gradient(120deg, #7c3aed 0%, #f5197e 52%, #ff7a18 100%);
   --grad-cta: linear-gradient(90deg, #f5197e 0%, #ff7a18 100%);
-  --grad-violet-pink: linear-gradient(120deg, #8b3bff 0%, #f5197e 100%);
-  --grad-cyan-blue: linear-gradient(120deg, #22d3ee 0%, #3b82f6 100%);
-  --grad-lime: linear-gradient(120deg, #34d399 0%, #22d3ee 100%);
-  --grad-banner: linear-gradient(100deg, #6d28d9 0%, #f5197e 55%, #ff7a18 100%);
-  --grad-text: linear-gradient(100deg, #ff2e93 0%, #ff7a18 100%); /* on dark: 5.8–7.8:1 */
-  --grad-spectrum: linear-gradient(90deg, #a855f7, #f5197e, #ff7a18, #facc15, #34d399, #22d3ee, #3b82f6);
 
   /* ---- Borders & lines ---- */
   --border-1: rgba(255, 255, 255, 0.08);
@@ -75,12 +72,10 @@
 
   /* ---- Domain colour-coding (hero nodes / illustrated scenes) ---- */
   --domain-website: var(--blue); /* Website or Store */
-  --domain-search: var(--violet); /* Search & Advertising */
   --domain-social: var(--pink); /* Social & Content */
   --domain-customer: var(--orange); /* Customer Tools */
   --domain-analytics: var(--cyan); /* Analytics */
   --domain-automation: var(--violet-bright); /* Automation & AI */
-  --domain-ecom: var(--lime); /* commerce / customer relationships */
 
   /* ---- Global page defaults (dark) ---- */
   --bg-page: var(--ink-950);
@@ -105,15 +100,6 @@
      (White would fail: 2.6:1 at the orange end.) */
   --cta-text: var(--ink-950);
 
-  /* ---- Brighter daylight band (redesign) ----
-     The reference cream/light sections (starting-point selector, the "digital world"
-     band, the light growth journey) read as near-white daylight, airier than the
-     editorial band. A separate, brighter surface — still glow-free by rule (daylight
-     is what makes the dark sections read as dark). */
-  --band-bright: #f7f6fc; /* near-white, faint violet undertone */
-  --band-bright-raised: #ffffff;
-  --band-ink-3: #4a4566; /* tertiary ink on the bright band (~8.4:1) */
-
   /* ---- Connection lines & orbit strokes (constellations, journeys) ----
      The recurring "everything connects" motif is drawn with tinted strokes, not glows.
      On dark they are faint white; on daylight they are faint ink. */
@@ -123,29 +109,16 @@
   --conn-line-dark: rgba(196, 190, 220, 0.28);
   --conn-line-band: rgba(74, 69, 102, 0.28);
 
-  /* Full-spectrum stroke for a connected rail/path (matches --grad-spectrum hues). */
+  /* Full-spectrum stroke for a connected rail/path (JourneyTimeline). */
   --grad-path: linear-gradient(90deg, #a855f7, #f5197e, #ff7a18, #34d399, #22d3ee, #3b82f6);
 }
 
 /* ============================================================
-   SECTION THEMES — set on a section wrapper; override the
-   semantic tokens so nested components render correct contrast.
+   SECTION THEME — the one retained legacy light band. `.theme-dark` and
+   `.theme-band-bright` (+ their exclusive --band-bright* tokens) were proven dead
+   and removed at Phase 3A; `.theme-band` remains, consumed by EditorialStatement
+   (homepage problem) and ProcessStepsSection (/how-it-works).
    ============================================================ */
-
-.theme-dark {
-  --surface: var(--ink-950);
-  --surface-raised: var(--ink-800);
-  --surface-hover: rgba(255, 255, 255, 0.1); /* white wash on dark */
-  --text-heading: var(--text-1);
-  --text-body: var(--text-2);
-  --text-muted: var(--text-3);
-  --hairline: var(--border-1);
-  --hairline-strong: var(--border-2);
-  --link: var(--violet-bright);
-  --link-hover: var(--pink-bright);
-  background-color: var(--surface);
-  color: var(--text-body);
-}
 
 /* Bright editorial band — dark text on cream (all pass ≥ 7:1). Accents are for
    non-text decoration only on this surface. */
@@ -185,19 +158,3 @@
   color: var(--text-body);
 }
 
-/* Bold full-colour statement — white text on a deep violet→pink field (avoids the
-   bright-orange end for text). Reserved for statement bands; large text preferred. */
-.theme-statement {
-  --surface: var(--violet-deep);
-  --surface-raised: rgba(255, 255, 255, 0.12);
-  --surface-hover: rgba(255, 255, 255, 0.16); /* white wash on the violet banner */
-  --text-heading: #ffffff;
-  --text-body: rgba(255, 255, 255, 0.94);
-  --text-muted: rgba(255, 255, 255, 0.82);
-  --hairline: rgba(255, 255, 255, 0.24);
-  --hairline-strong: rgba(255, 255, 255, 0.4);
-  --link: #ffffff;
-  --link-hover: #ffe9f4;
-  background-image: var(--grad-violet-pink);
-  color: var(--text-body);
-}

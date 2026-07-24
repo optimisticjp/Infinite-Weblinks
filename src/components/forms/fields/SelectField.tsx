@@ -1,8 +1,9 @@
 "use client";
 
 import { ChevronDown, type LucideIcon } from "lucide-react";
-import { FormField } from "@/components/forms/FormField";
+import { FormField, type FieldAppearance } from "@/components/forms/FormField";
 import controlStyles from "@/components/forms/FormField.module.css";
+import v2Control from "@/components/forms/FormFieldV2.module.css";
 import styles from "./Field.module.css";
 
 export interface SelectOption {
@@ -23,6 +24,8 @@ export interface SelectFieldProps {
   required?: boolean;
   /** Leading Lucide glyph (decorative). */
   icon?: LucideIcon;
+  /** V2 vs legacy control appearance (default legacy — existing callers are unchanged). */
+  appearance?: FieldAppearance;
   className?: string;
 }
 
@@ -43,18 +46,20 @@ export function SelectField({
   error,
   required,
   icon: Icon,
+  appearance = "legacy",
   className,
 }: SelectFieldProps) {
   const isPlaceholder = value === "";
+  const control = appearance === "v2" ? v2Control.control : controlStyles.control;
   return (
-    <FormField id={id} label={label} hint={hint} error={error} required={required} className={className}>
+    <FormField id={id} label={label} hint={hint} error={error} required={required} appearance={appearance} className={className}>
       {(controlProps) => (
         <span className={styles.wrap}>
           {Icon ? <Icon className={styles.icon} size={18} aria-hidden="true" /> : null}
           <select
             {...controlProps}
             className={[
-              controlStyles.control,
+              control,
               styles.select,
               Icon ? styles.hasIcon : "",
               isPlaceholder ? styles.placeholder : "",

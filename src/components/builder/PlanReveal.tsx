@@ -1,58 +1,64 @@
+import type { CSSProperties } from "react";
 import { Rocket, GitBranch, Clock, Wrench, Target, HeartHandshake, Check } from "lucide-react";
-import { NodeOrb } from "@/components/primitives/NodeOrb";
-import { ConnectorPath } from "@/components/viz/ConnectorPath";
+import { IconTile } from "@/components/primitives/IconTile";
+import { domainInk } from "@/lib/design/domainColor";
 import type { GrowthPlanResult } from "@/lib/growth-plan/types";
 import styles from "./PlanReveal.module.css";
 
-type Phase = { key: "startHere" | "connectNext" | "addLater"; eyebrow: string; title: string; hue: string; icon: typeof Rocket };
+type Phase = {
+  key: "startHere" | "connectNext" | "addLater";
+  eyebrow: string;
+  title: string;
+  /** Wayfinding tone (legacy token) mapped to an accessible V2 ink. */
+  tone: string;
+  icon: typeof Rocket;
+};
 
 const PHASES: Phase[] = [
-  { key: "startHere", eyebrow: "Do this first", title: "Start here", hue: "var(--domain-strategy)", icon: Rocket },
-  { key: "connectNext", eyebrow: "Then connect", title: "Connect next", hue: "var(--domain-discover)", icon: GitBranch },
-  { key: "addLater", eyebrow: "Later", title: "Add later", hue: "var(--domain-operate)", icon: Clock },
+  { key: "startHere", eyebrow: "Do this first", title: "Start here", tone: "var(--domain-strategy)", icon: Rocket },
+  { key: "connectNext", eyebrow: "Then connect", title: "Connect next", tone: "var(--domain-discover)", icon: GitBranch },
+  { key: "addLater", eyebrow: "Later", title: "Add later", tone: "var(--domain-operate)", icon: Clock },
 ];
 
 /**
- * PlanReveal — presents the deterministic Growth Plan recommendation: the recommended
- * starting point, a connected roadmap in three phases, what the work involves, the tools
- * that fit, the outcomes it's built to produce, and an honest "how we'd help" note. Pure
- * presentation; the email capture lives in the builder. Never renders the internal rule id,
- * and never promises a number or a date.
+ * PlanReveal — presents the deterministic Growth Plan recommendation on the V2 light-first system:
+ * the recommended starting point, a connected roadmap in phases, what the work involves, the tools
+ * that fit, what the plan is designed to help you build, and an honest "how we'd help" note. Pure
+ * presentation on flat V2 cards — no NodeOrb, ConnectorPath, gradient word or featured-phase glow.
+ * The wayfinding tones are mapped through the domain bridge to accessible V2 ink. It never renders
+ * the internal rule id, and never promises a number or a date. The email capture lives in the
+ * builder. Server-safe and understandable with CSS disabled.
  */
 export function PlanReveal({ result }: { result: GrowthPlanResult }) {
   return (
     <div className={styles.wrap} data-testid="growth-plan-result">
       <header className={styles.head}>
         <p className={styles.eyebrow}>Your growth plan</p>
-        <h2 className={styles.title}>
-          Here&apos;s where we&apos;d <span className="iw-gradient-word">start</span>.
-        </h2>
+        <h2 className={styles.title}>Here&apos;s where we&apos;d start.</h2>
         <p className={styles.intro}>
-          A guided first read of your answers. It&apos;s a sensible starting point built from the
-          same growth journey we use with everyone, not a guarantee. Talk it through with us any
-          time.
+          A guided first read of your answers. Your recommendations are mapped from a reviewed
+          framework we use across many businesses — which stages you see depends on what you told
+          us, and not every business needs every stage. It&apos;s a sensible starting point, not a
+          guarantee. Talk it through with us any time.
         </p>
       </header>
-
-      <ConnectorPath className={styles.roadmapConn} dots={2} />
 
       <ol className={styles.roadmap}>
         {PHASES.map((phase) => {
           const items = result[phase.key];
           if (!items || items.length === 0) return null;
           const PhaseIcon = phase.icon;
+          const ink = domainInk(phase.tone);
           return (
             <li
               key={phase.key}
-              className={[styles.phase, phase.key === "startHere" ? styles.featured : ""]
-                .filter(Boolean)
-                .join(" ")}
-              style={{ ["--phase-hue" as string]: phase.hue }}
+              className={styles.phase}
+              style={{ ["--phase-ink" as string]: ink } as CSSProperties}
             >
               <div className={styles.phaseHead}>
-                <NodeOrb hue={phase.hue} size={44} emphasis={phase.key === "startHere" ? "bright" : "soft"}>
+                <IconTile color={ink} size="sm">
                   <PhaseIcon aria-hidden="true" />
-                </NodeOrb>
+                </IconTile>
                 <div>
                   <p className={styles.phaseEyebrow}>{phase.eyebrow}</p>
                   <h3 className={styles.phaseTitle}>{phase.title}</h3>
@@ -76,9 +82,9 @@ export function PlanReveal({ result }: { result: GrowthPlanResult }) {
       <div className={styles.detailGrid}>
         <section className={styles.detail} aria-labelledby="plan-involves">
           <div className={styles.detailHead}>
-            <NodeOrb hue="var(--domain-convert)" size={38}>
+            <IconTile color={domainInk("var(--domain-convert)")} size="sm">
               <Wrench aria-hidden="true" />
-            </NodeOrb>
+            </IconTile>
             <h3 id="plan-involves" className={styles.detailTitle}>
               What this involves
             </h3>
@@ -95,9 +101,9 @@ export function PlanReveal({ result }: { result: GrowthPlanResult }) {
         {result.exampleTools.length > 0 ? (
           <section className={styles.detail} aria-labelledby="plan-tools">
             <div className={styles.detailHead}>
-              <NodeOrb hue="var(--domain-build)" size={38}>
+              <IconTile color={domainInk("var(--domain-build)")} size="sm">
                 <Target aria-hidden="true" />
-              </NodeOrb>
+              </IconTile>
               <h3 id="plan-tools" className={styles.detailTitle}>
                 Tools that fit your setup
               </h3>
@@ -109,6 +115,9 @@ export function PlanReveal({ result }: { result: GrowthPlanResult }) {
                 </li>
               ))}
             </ul>
+            <p className={styles.toolsNote}>
+              Example tools are illustrative. No partnership or endorsement is implied.
+            </p>
           </section>
         ) : null}
       </div>
@@ -116,14 +125,14 @@ export function PlanReveal({ result }: { result: GrowthPlanResult }) {
       {result.expectedOutcomes.length > 0 ? (
         <section className={styles.outcomes} aria-labelledby="plan-outcomes">
           <h3 id="plan-outcomes" className={styles.detailTitle}>
-            What you&apos;d end up with
+            What this plan is designed to help you build
           </h3>
           <ul className={styles.outcomeList}>
             {result.expectedOutcomes.map((o) => (
               <li key={o} className={styles.outcome}>
-                <NodeOrb hue="var(--domain-retain)" size={30}>
+                <IconTile color="var(--v2-success)" size="sm">
                   <Check aria-hidden="true" strokeWidth={2.5} />
-                </NodeOrb>
+                </IconTile>
                 {o}
               </li>
             ))}
@@ -132,9 +141,9 @@ export function PlanReveal({ result }: { result: GrowthPlanResult }) {
       ) : null}
 
       <div className={styles.howWeHelp}>
-        <NodeOrb hue="var(--domain-strategy)" size={44} emphasis="bright">
+        <IconTile color={domainInk("var(--domain-strategy)")} size="md">
           <HeartHandshake aria-hidden="true" />
-        </NodeOrb>
+        </IconTile>
         <div>
           <p className={styles.howTitle}>How we&apos;d help</p>
           <p className={styles.howBody}>{result.howWeHelp}</p>

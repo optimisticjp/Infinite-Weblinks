@@ -1,0 +1,99 @@
+/* GrowthJourneyList — a calm vertical reading sequence of eight stage panels. V2 tokens only; the
+   per-stage ink comes from `--stage-ink` (a mapped V2 domain ink). No horizontal scroller, no
+   carousel, no animated connector, no fixed height, no glow/glass/gradient. Each panel carries its
+   own scroll-margin so a deep link to its stage id clears the sticky header. */
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+@media (min-width: 60rem) {
+  .list {
+    gap: var(--space-5);
+  }
+}
+
+.stage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-6);
+  border-radius: var(--v2-radius-lg);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--v2-shadow-sm);
+  /* Deep-link clearance for the sticky header (in addition to the global scroll-padding). */
+  scroll-margin-top: calc(var(--header-h) + var(--space-4));
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+/* Compact "Stage N" wayfinding label (the stage's real journey position). */
+.marker {
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--stage-ink);
+}
+
+.name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+  overflow-wrap: anywhere;
+}
+
+.summary {
+  margin: 0;
+  font-size: var(--fs-body);
+  color: var(--text-body);
+}
+.whatHappens {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+/* Intended outcome — clearly labelled as the kind of result, never a guarantee. */
+.outcome {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--hairline);
+}
+.outcomeLabel {
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--stage-ink);
+}
+.outcomeText {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text-heading);
+  overflow-wrap: anywhere;
+}
+
+/* Two-column reading on very wide screens, while any single panel still holds its full text. */
+@media (min-width: 75rem) {
+  .list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

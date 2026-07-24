@@ -23,6 +23,12 @@
   flex: none;
   filter: drop-shadow(0 2px 10px rgba(168, 85, 247, 0.28));
 }
+/* V2 chrome: drop the coloured bloom — the mark keeps its multicolour gradient, flat. */
+:global(.theme-light) .mark,
+:global(.theme-light-alt) .mark,
+:global(.theme-night) .mark {
+  filter: none;
+}
 
 .wordmark {
   font-family: var(--font-display);

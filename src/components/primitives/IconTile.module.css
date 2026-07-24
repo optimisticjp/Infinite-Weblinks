@@ -33,3 +33,35 @@
 .tile:hover {
   transform: translateY(-2px) scale(1.04);
 }
+
+/* ============================================================
+   V2 flat treatment — ACTIVE ONLY inside .theme-light / -alt / .theme-night.
+   No bloom, no inner glow, no glossy orb; a flat tinted tile + accessible ink glyph.
+   Legacy surfaces keep the glowing tile above.
+   ============================================================ */
+:global(.theme-light) .tile,
+:global(.theme-light-alt) .tile,
+:global(.theme-night) .tile {
+  border-radius: var(--v2-radius-md);
+}
+:global(.theme-light) .outline,
+:global(.theme-light-alt) .outline,
+:global(.theme-night) .outline {
+  background: color-mix(in srgb, var(--tile-color) 14%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--tile-color) 26%, transparent);
+  color: var(--tile-color);
+  box-shadow: none;
+}
+:global(.theme-light) .filled,
+:global(.theme-light-alt) .filled,
+:global(.theme-night) .filled {
+  background: var(--tile-color);
+  color: var(--v2-on-brand); /* white glyph on the solid domain ink */
+  box-shadow: none;
+}
+/* Decorative tiles don't lift on their own in V2 (the card owns hover). */
+:global(.theme-light) .tile:hover,
+:global(.theme-light-alt) .tile:hover,
+:global(.theme-night) .tile:hover {
+  transform: none;
+}

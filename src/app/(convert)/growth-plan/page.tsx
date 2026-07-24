@@ -1,30 +1,25 @@
 import type { Metadata } from "next";
-import {
-  ArrowDown,
-  MapPin,
-  GitBranch,
-  Boxes,
-  Wrench,
-  ListChecks,
-  Users,
-  Check,
-  type LucideIcon,
-} from "lucide-react";
-import { CosmicBackground } from "@/components/viz/CosmicBackground";
-import { ConnectorPath } from "@/components/viz/ConnectorPath";
-import { InView } from "@/components/viz/InView";
-import { InfinityMark } from "@/components/brand/InfinityMark";
-import { NodeOrb } from "@/components/primitives/NodeOrb";
-import { StatCard, ChartCard } from "@/components/viz/FloatingCards";
+import { ArrowDown } from "lucide-react";
+import { PageHeader } from "@/components/routes/PageHeader";
+import { Button } from "@/components/primitives/Button";
+import { SectionShell } from "@/components/sections/SectionShell";
+import { CardGrid } from "@/components/primitives/CardGrid";
 import { PlanBuilder } from "@/components/builder/PlanBuilder";
+import { PlanIncludeCard } from "@/components/cards/PlanIncludeCard";
+import { FinalCtaSection } from "@/components/sections/FinalCtaSection";
 import { canonical } from "@/lib/seo/metadata";
 import { getBusinessTypes, getGoals } from "@/lib/content";
+import { growthPlanHeroTrustPoints, growthPlanIncludes } from "@/lib/content/data/growth-plan";
 import styles from "./growth-plan.module.css";
 
 /**
- * /growth-plan — the Growth Plan Builder, the site's primary conversion tool. `noindex,
- * follow` per the SEO spec: the tool is kept out of the index but link equity flows through
- * it, and a self-canonical consolidates any tracking-param variants onto the clean URL.
+ * /growth-plan — the Growth Plan Builder, the site's primary conversion tool, on the V2 light-first
+ * system. `noindex, follow` (the tool is kept out of the index but link equity flows through it) and a
+ * self-canonical consolidate tracking-param variants onto the clean URL. PageHeader (a
+ * server-rendered H1, a likely LCP candidate — not a measured LCP result)
+ * → the builder on a light SectionShell → what a plan can include → the single reserved dark final
+ * CTA. No cosmic hero/starfield, ConnectorPath, InView, FloatingCards, InfinityMark, NodeOrb, glass or
+ * fake chart. The builder is the existing Client Component (unchanged behaviour). Server Component.
  */
 export const metadata: Metadata = {
   title: "Build my growth plan",
@@ -34,122 +29,62 @@ export const metadata: Metadata = {
   alternates: { canonical: canonical("/growth-plan") },
 };
 
-/** What the plan will contain (shown in the hero preview card). */
-const PREVIEW: string[] = [
-  "A recommended starting point",
-  "A connected roadmap in phases",
-  "The services and ways we can deliver them",
-  "The right tools for your setup",
-  "An honest note on how we'd help",
-];
-
-const INCLUDES: { icon: LucideIcon; title: string; body: string; hue: string }[] = [
-  { icon: MapPin, title: "A starting point", body: "The stage that fits you now, and why it's the sensible place to begin.", hue: "var(--domain-strategy)" },
-  { icon: GitBranch, title: "A connected roadmap", body: "What to do first, what to connect next, and what can wait, in order.", hue: "var(--domain-discover)" },
-  { icon: Boxes, title: "Relevant services", body: "The services that move you forward, and the delivery model options for each.", hue: "var(--domain-convert)" },
-  { icon: Wrench, title: "The right tools", body: "Real tools that fit your setup, chosen to work together, never a random list.", hue: "var(--domain-build)" },
-  { icon: ListChecks, title: "Priorities for later", body: "What to add once the first steps are working, so effort compounds.", hue: "var(--domain-operate)" },
-  { icon: Users, title: "How we'd help", body: "A plain note on where we'd do the work and where you'd keep control.", hue: "var(--domain-retain)" },
-];
-
 export default async function GrowthPlanPage() {
   const [businessTypes, goals] = await Promise.all([getBusinessTypes(), getGoals()]);
 
   return (
     <>
-      {/* ============ Hero ============ */}
-      <section className={`theme-cosmic iw-section ${styles.hero}`} aria-labelledby="gp-heading">
-        <CosmicBackground horizon />
-        <div className={`iw-container iw-container--wide ${styles.heroInner}`}>
-          <div className={styles.heroCopy}>
-            <p className={styles.eyebrow}>Build your plan</p>
-            <h1 id="gp-heading" className={styles.heading}>
-              Build your growth plan, one <span className="iw-gradient-word">connected</span> step at a
-              time.
-            </h1>
-            <p className={styles.subhead}>
-              Answer a few short questions and get a clear, honest starting plan. What to do first,
-              what connects next, and the tools that fit. No account needed, and the plan is yours to
-              keep.
-            </p>
-            <ul className={styles.heroPoints}>
-              {["Takes a couple of minutes", "No sign-up, no cost", "Honest advice, not a sales pitch"].map(
-                (point, i) => (
-                  <li key={point} className={styles.heroPoint}>
-                    <NodeOrb
-                      hue={["var(--domain-strategy)", "var(--domain-discover)", "var(--domain-retain)"][i]}
-                      size={28}
-                    >
-                      <Check aria-hidden="true" strokeWidth={2.5} />
-                    </NodeOrb>
-                    {point}
-                  </li>
-                ),
-              )}
-            </ul>
-            <a href="#builder" className={styles.heroJump}>
+      <PageHeader
+        id="growth-plan-hero"
+        surface="light"
+        breadcrumbs={[{ name: "Growth plan" }]}
+        eyebrow="Build your plan"
+        title="Build your growth plan, one connected step at a time."
+        lead="Answer a few short questions and get a clear, honest starting plan: what to do first, what connects next, and the tools that fit. No account needed — your plan appears on screen."
+        actions={
+          <>
+            <Button href="#builder" size="lg" iconRight={<ArrowDown size={18} aria-hidden="true" />}>
               Start with the first question
-              <ArrowDown size={18} aria-hidden="true" />
-            </a>
-          </div>
+            </Button>
+            <Button href="/how-it-works" variant="secondary" size="lg">
+              See how it works
+            </Button>
+          </>
+        }
+        trustNote={growthPlanHeroTrustPoints.join(" · ")}
+      />
 
-          <div className={styles.heroVisual} aria-hidden="true">
-            <ConnectorPath className={styles.heroTrail} dots={2} d="M0 20 C 30 20, 40 6, 70 6 S 100 6, 100 6" />
-            <div className={styles.previewCard}>
-              <div className={styles.previewHead}>
-                <InfinityMark size={44} luminous />
-                <span className={styles.previewTitle}>Your growth plan</span>
-              </div>
-              <ul className={styles.previewList}>
-                {PREVIEW.map((item, i) => (
-                  <li key={item} className={styles.previewItem} style={{ ["--i" as string]: `${i}` }}>
-                    <span className={styles.previewCheck}>
-                      <Check size={12} strokeWidth={3} aria-hidden="true" />
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <InView className={styles.floatLayer} ariaHidden>
-              <StatCard label="Repeat customers" value="Growing" hue="var(--domain-retain)" className={styles.floatA} />
-              <ChartCard label="What's working" hue="var(--domain-discover)" className={styles.floatB} />
-            </InView>
-          </div>
+      {/* ============ The builder ============ */}
+      <SectionShell surface="alt" id="builder" ariaLabel="Growth plan builder" spacing="tight">
+        <div className={styles.builderPanel}>
+          <PlanBuilder businessTypes={businessTypes} goals={goals} />
         </div>
-      </section>
-
-      {/* ============ The builder (light breather panel) ============ */}
-      <section id="builder" className={`theme-dark ${styles.builderSection}`} aria-label="Growth plan builder">
-        <div className="iw-container iw-container--wide">
-          <div className={`theme-band-bright ${styles.panel}`}>
-            <PlanBuilder businessTypes={businessTypes} goals={goals} />
-          </div>
-        </div>
-      </section>
+      </SectionShell>
 
       {/* ============ What your plan can include ============ */}
-      <section className="theme-cosmic iw-section iw-section--tight" aria-labelledby="gp-includes">
-        <div className="iw-container iw-container--wide">
-          <header className={styles.includesHead}>
-            <p className={styles.eyebrow}>What you get</p>
-            <h2 id="gp-includes" className={styles.includesTitle}>
-              What your plan can include
-            </h2>
-          </header>
-          <ul className={styles.includesGrid}>
-            {INCLUDES.map(({ icon: Icon, title, body, hue }) => (
-              <li key={title} className={styles.includeCard} style={{ ["--inc-hue" as string]: hue }}>
-                <NodeOrb hue={hue} size={44}>
-                  <Icon aria-hidden="true" />
-                </NodeOrb>
-                <h3 className={styles.includeTitle}>{title}</h3>
-                <p className={styles.includeBody}>{body}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+      <SectionShell
+        surface="light"
+        id="what-your-plan-includes"
+        eyebrow="What you get"
+        title="What your plan can include"
+        lead="The exact recommendation depends on your answers, so not every plan contains all of these — but this is the shape of what you'll see."
+        align="start"
+        spacing="tight"
+      >
+        <CardGrid layout="equal" aria-label="What your plan can include">
+          {growthPlanIncludes.map((item) => (
+            <PlanIncludeCard key={item.title} title={item.title} body={item.body} icon={item.icon} tone={item.tone} />
+          ))}
+        </CardGrid>
+      </SectionShell>
+
+      <FinalCtaSection
+        id="get-started"
+        title="Ready to find your first step?"
+        lead="Answer the guided questions and see a practical starting plan on screen."
+        primary={{ href: "#builder", label: "Build my growth plan" }}
+        secondary={{ href: "/contact", label: "Talk it through" }}
+      />
     </>
   );
 }

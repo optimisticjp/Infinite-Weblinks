@@ -1,15 +1,16 @@
-/* Recommendation prose on the cosmic reading surface. */
-.prose {
-  margin: 0 0 var(--space-5);
-  color: var(--text-body);
-  font-size: var(--fs-lead);
-  line-height: 1.7;
-  max-width: 66ch;
+/* /starting-points/[slug] — V2 route styling. The page is composed from shared V2 components
+   (PageHeader, SectionShell, JourneyStageCard, Callout, ServiceCard, CardGrid, FinalCtaSection); only
+   the recommendation block's local layout lives here. V2 tokens only — no legacy domain or
+   base-palette tokens, no glow/glass/gradient, no backdrop-filter, no raw colour, no fixed viewport
+   heights, no cosmic surface. */
+.recommendation {
+  display: grid;
+  gap: var(--space-4);
+  max-width: var(--measure);
 }
 .reassure {
   margin: 0;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
   color: var(--text-muted);
-  font-size: var(--fs-body);
-  line-height: 1.6;
-  max-width: 66ch;
 }

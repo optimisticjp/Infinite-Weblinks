@@ -177,28 +177,44 @@ export const faqQuery = `*[_type == "faq" && ${GATE}] | order(order asc, questio
   category
 }`;
 
-/* ------------------------------------------------------------------ proof (placeholder-gated) */
+/* ------------------------------------------------------------------ proof (double-gated)
+ * Proof is gated TWICE: the shared status GATE, PLUS `proofVerification.approvedForPublication == true`
+ * at the source so an unapproved document is never even returned. The full publication check
+ * (`isPublishableProof`: consent + identity + claims + approval + a non-empty evidence reference) is
+ * re-applied by the getter, so the same gate governs seed and live modes. The projected `verification`
+ * object is what that check reads. */
+const PROOF_GATE = `${GATE} && proofVerification.approvedForPublication == true`;
+const proofVerification = `"verification": proofVerification{
+    "consentConfirmed": consentConfirmed == true,
+    "identityApproved": identityApproved == true,
+    "claimsVerified": claimsVerified == true,
+    "approvedForPublication": approvedForPublication == true,
+    "evidenceReference": coalesce(evidenceReference, "")
+  }`;
 
-export const caseStudyQuery = `*[_type == "caseStudy" && ${GATE}]{
+export const caseStudyQuery = `*[_type == "caseStudy" && ${PROOF_GATE}]{
   "status": contentStatus.status,
   "slug": slug.current,
   title,
   client,
-  summary
+  summary,
+  ${proofVerification}
 }`;
 
-export const testimonialQuery = `*[_type == "testimonial" && ${GATE}]{
+export const testimonialQuery = `*[_type == "testimonial" && ${PROOF_GATE}]{
   "status": contentStatus.status,
   quote,
   attribution,
-  rating
+  rating,
+  ${proofVerification}
 }`;
 
-export const exampleQuery = `*[_type == "example" && ${GATE}]{
+export const exampleQuery = `*[_type == "example" && ${PROOF_GATE}]{
   "status": contentStatus.status,
   "slug": slug.current,
   title,
-  summary
+  summary,
+  ${proofVerification}
 }`;
 
 /* ------------------------------------------------------------------ mappers

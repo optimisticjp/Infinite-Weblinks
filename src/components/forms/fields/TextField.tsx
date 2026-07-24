@@ -2,8 +2,9 @@
 
 import type { HTMLInputTypeAttribute } from "react";
 import type { LucideIcon } from "lucide-react";
-import { FormField } from "@/components/forms/FormField";
+import { FormField, type FieldAppearance } from "@/components/forms/FormField";
 import controlStyles from "@/components/forms/FormField.module.css";
+import v2Control from "@/components/forms/FormFieldV2.module.css";
 import styles from "./Field.module.css";
 
 export interface TextFieldProps {
@@ -20,6 +21,8 @@ export interface TextFieldProps {
   inputMode?: "text" | "email" | "url" | "tel" | "numeric";
   /** Leading Lucide glyph (decorative). */
   icon?: LucideIcon;
+  /** V2 vs legacy control appearance (default legacy — existing callers are unchanged). */
+  appearance?: FieldAppearance;
   className?: string;
 }
 
@@ -41,10 +44,12 @@ export function TextField({
   autoComplete,
   inputMode,
   icon: Icon,
+  appearance = "legacy",
   className,
 }: TextFieldProps) {
+  const control = appearance === "v2" ? v2Control.control : controlStyles.control;
   return (
-    <FormField id={id} label={label} hint={hint} error={error} required={required} className={className}>
+    <FormField id={id} label={label} hint={hint} error={error} required={required} appearance={appearance} className={className}>
       {(controlProps) => (
         <span className={styles.wrap}>
           {Icon ? <Icon className={styles.icon} size={18} aria-hidden="true" /> : null}
@@ -54,7 +59,7 @@ export function TextField({
             inputMode={inputMode}
             placeholder={placeholder}
             autoComplete={autoComplete}
-            className={[controlStyles.control, Icon ? styles.hasIcon : ""].filter(Boolean).join(" ")}
+            className={[control, Icon ? styles.hasIcon : ""].filter(Boolean).join(" ")}
             value={value}
             onChange={(e) => onChange(e.target.value)}
           />

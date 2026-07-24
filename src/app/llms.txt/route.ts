@@ -49,7 +49,7 @@ export async function GET() {
     "",
     "## Getting started",
     "",
-    "Build a free digital growth plan at /growth-plan, or email support@infiniteweblinks.com. There is no obligation, and the plan is yours to keep either way.",
+    "Build a free digital growth plan at /growth-plan, or email support@infiniteweblinks.com. No sign-up is required, and your plan appears on screen right away. There is no obligation.",
     "",
     "## Honesty note",
     "",

@@ -1,0 +1,48 @@
+/* DeliveryModelsExplainerSection (V2) — the SectionShell and cards own most styling; this module
+   lays out the ownership block below the four cards. V2 tokens only: no theme-band-bright, no
+   glow/glass/gradient, no raw colour. */
+.ownership {
+  margin-top: var(--space-8);
+  padding: var(--space-6);
+  border-radius: var(--v2-radius-lg);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--v2-shadow-sm);
+}
+.ownershipLead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+}
+
+.assurances {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+@media (min-width: 40rem) {
+  .assurances {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.assurance {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+.assuranceIcon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: var(--v2-brand-strong);
+}

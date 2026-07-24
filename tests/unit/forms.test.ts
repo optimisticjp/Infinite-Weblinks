@@ -178,7 +178,7 @@ describe("growthPlanSchema", () => {
   });
 });
 
-describe("verifyTurnstile", () => {
+describe("verifyTurnstile (Phase 3A — fail-closed, typed, action + hostname pinned)", () => {
   const originalFetch = global.fetch;
 
   beforeEach(() => {
@@ -187,42 +187,208 @@ describe("verifyTurnstile", () => {
   afterEach(() => {
     global.fetch = originalFetch;
     vi.unstubAllEnvs();
+    vi.useRealTimers();
     vi.resetModules();
   });
 
-  it("skips verification (success, marked skipped) when Turnstile isn't configured", async () => {
+  it("fails CLOSED as 'missing-config' (unavailable) when keys are absent and no bypass is set", async () => {
+    // Default test env: no FORMS_ALLOW_INSECURE_BYPASS ⇒ the not-configured state is NOT trusted.
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "");
-    const { verifyTurnstile } = await import("@/lib/forms/turnstile");
+    vi.stubEnv("FORMS_ALLOW_INSECURE_BYPASS", "");
     const fetchSpy = vi.fn();
     global.fetch = fetchSpy as unknown as typeof fetch;
 
-    const result = await verifyTurnstile("any-token");
+    const { verifyTurnstile } = await import("@/lib/forms/turnstile");
+    const result = await verifyTurnstile("any-token", { expectedAction: "contact" });
 
-    expect(result).toEqual({ success: true, skipped: true });
-    expect(fetchSpy).not.toHaveBeenCalled(); // no network in tests
+    expect(result.ok).toBe(false);
+    expect(result.outcome).toBe("missing-config");
+    expect(result.disposition).toBe("unavailable");
+    expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  it("verifies a token successfully when configured (fetch mocked)", async () => {
+  it("bypasses ONLY when explicitly opted in (dev/test) — outcome 'dev-bypass', still no network", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "");
+    vi.stubEnv("FORMS_ALLOW_INSECURE_BYPASS", "true");
+    const fetchSpy = vi.fn();
+    global.fetch = fetchSpy as unknown as typeof fetch;
+
+    const { verifyTurnstile } = await import("@/lib/forms/turnstile");
+    const result = await verifyTurnstile(undefined, { expectedAction: "contact" });
+
+    expect(result.ok).toBe(true);
+    expect(result.outcome).toBe("dev-bypass");
+    expect(result.disposition).toBe("pass");
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("verifies a token when configured and the action matches (fetch mocked)", async () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
-      json: async () => ({ success: true }),
+      json: async () => ({ success: true, action: "contact", hostname: "infiniteweblinks.com" }),
     });
     global.fetch = fetchMock as unknown as typeof fetch;
 
     const { verifyTurnstile } = await import("@/lib/forms/turnstile");
-    const result = await verifyTurnstile("good-token", "1.2.3.4");
+    const result = await verifyTurnstile("good-token", {
+      expectedAction: "contact",
+      ip: "1.2.3.4",
+    });
 
-    expect(result).toEqual({ success: true, errorCodes: undefined });
+    expect(result.ok).toBe(true);
+    expect(result.outcome).toBe("verified");
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect(url).toContain("challenges.cloudflare.com/turnstile/v0/siteverify");
     expect(init.method).toBe("POST");
+    // The visitor IP is forwarded as remoteip.
+    expect((init.body as URLSearchParams).get("remoteip")).toBe("1.2.3.4");
   });
 
-  it("fails closed when Cloudflare siteverify rejects the token", async () => {
+  it("rejects a token minted for a DIFFERENT action (replay across forms) as human-failed", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true, action: "growth-plan" }),
+    }) as unknown as typeof fetch;
+
+    const { verifyTurnstile } = await import("@/lib/forms/turnstile");
+    const result = await verifyTurnstile("token", { expectedAction: "contact" });
+
+    expect(result.ok).toBe(false);
+    expect(result.outcome).toBe("action-mismatch");
+    expect(result.disposition).toBe("human-failed");
+  });
+
+  // Strict action checking (Phase 3B §A1): a verified token MUST carry a non-empty action string that
+  // exactly matches this form. A missing / blank / non-string action is a malformed upstream response
+  // (our widget always sets an action) → fail closed as unavailable.
+  for (const [label, action] of [
+    ["absent", undefined],
+    ["an empty string", ""],
+    ["a non-string", 123],
+  ] as const) {
+    it(`fails as 'action-missing' (unavailable) when the returned action is ${label}`, async () => {
+      vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
+      vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: true, ...(action === undefined ? {} : { action }) }),
+      }) as unknown as typeof fetch;
+
+      const { verifyTurnstile } = await import("@/lib/forms/turnstile");
+      const result = await verifyTurnstile("token", { expectedAction: "contact" });
+
+      expect(result.ok).toBe(false);
+      expect(result.outcome).toBe("action-missing");
+      expect(result.disposition).toBe("unavailable");
+    });
+  }
+
+  it("verifies when the returned action exactly matches the expected form action", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true, action: "growth-plan" }),
+    }) as unknown as typeof fetch;
+
+    const { verifyTurnstile } = await import("@/lib/forms/turnstile");
+    const result = await verifyTurnstile("token", { expectedAction: "growth-plan" });
+
+    expect(result.ok).toBe(true);
+    expect(result.outcome).toBe("verified");
+  });
+
+  it("rejects a token solved on a hostname we don't allow when hostname enforcement is on", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://infiniteweblinks.com");
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true, action: "contact", hostname: "evil.example" }),
+    }) as unknown as typeof fetch;
+
+    const { verifyTurnstile } = await import("@/lib/forms/turnstile");
+    const result = await verifyTurnstile("token", { expectedAction: "contact" });
+
+    expect(result.ok).toBe(false);
+    expect(result.outcome).toBe("hostname-mismatch");
+    expect(result.disposition).toBe("human-failed");
+  });
+
+  // Strict hostname checking (Phase 3B §A2): with enforcement active, a missing / blank / non-string
+  // hostname is malformed → unavailable (fail closed), NOT a silent pass.
+  for (const [label, hostname] of [
+    ["absent", undefined],
+    ["an empty string", ""],
+    ["a non-string", 42],
+  ] as const) {
+    it(`fails as 'hostname-missing' (unavailable) when enforcement is on and the hostname is ${label}`, async () => {
+      vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
+      vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
+      vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://infiniteweblinks.com");
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          success: true,
+          action: "contact",
+          ...(hostname === undefined ? {} : { hostname }),
+        }),
+      }) as unknown as typeof fetch;
+
+      const { verifyTurnstile } = await import("@/lib/forms/turnstile");
+      const result = await verifyTurnstile("token", { expectedAction: "contact" });
+
+      expect(result.ok).toBe(false);
+      expect(result.outcome).toBe("hostname-missing");
+      expect(result.disposition).toBe("unavailable");
+    });
+  }
+
+  it("verifies when the returned hostname is the allowed canonical host", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://infiniteweblinks.com");
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true, action: "contact", hostname: "infiniteweblinks.com" }),
+    }) as unknown as typeof fetch;
+
+    const { verifyTurnstile } = await import("@/lib/forms/turnstile");
+    const result = await verifyTurnstile("token", { expectedAction: "contact" });
+
+    expect(result.ok).toBe(true);
+    expect(result.outcome).toBe("verified");
+  });
+
+  it("verifies when an allowed preview hostname is configured via TURNSTILE_ALLOWED_HOSTNAMES", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://infiniteweblinks.com");
+    vi.stubEnv("TURNSTILE_ALLOWED_HOSTNAMES", "preview.infiniteweblinks.com");
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        success: true,
+        action: "contact",
+        hostname: "preview.infiniteweblinks.com",
+      }),
+    }) as unknown as typeof fetch;
+
+    const { verifyTurnstile } = await import("@/lib/forms/turnstile");
+    const result = await verifyTurnstile("token", { expectedAction: "contact" });
+
+    expect(result.ok).toBe(true);
+    expect(result.outcome).toBe("verified");
+  });
+
+  it("fails as 'invalid-token' (human-failed) when Cloudflare rejects the token", async () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
     global.fetch = vi.fn().mockResolvedValue({
@@ -231,34 +397,95 @@ describe("verifyTurnstile", () => {
     }) as unknown as typeof fetch;
 
     const { verifyTurnstile } = await import("@/lib/forms/turnstile");
-    const result = await verifyTurnstile("bad-token");
+    const result = await verifyTurnstile("bad-token", { expectedAction: "contact" });
 
-    expect(result.success).toBe(false);
+    expect(result.ok).toBe(false);
+    expect(result.outcome).toBe("invalid-token");
+    expect(result.disposition).toBe("human-failed");
+    expect(result.errorCodes).toContain("invalid-input-response");
   });
 
-  it("fails closed on a network error rather than trusting the client", async () => {
-    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
-    vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
-    global.fetch = vi.fn().mockRejectedValue(new Error("network down")) as unknown as typeof fetch;
-
-    const { verifyTurnstile } = await import("@/lib/forms/turnstile");
-    const result = await verifyTurnstile("token");
-
-    expect(result.success).toBe(false);
-    expect(result.errorCodes).toContain("network-error");
-  });
-
-  it("fails closed when no token is supplied but Turnstile IS configured", async () => {
+  it("fails as 'missing-token' (human-failed) when configured but no token is supplied", async () => {
     vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
     vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
     const fetchSpy = vi.fn();
     global.fetch = fetchSpy as unknown as typeof fetch;
 
     const { verifyTurnstile } = await import("@/lib/forms/turnstile");
-    const result = await verifyTurnstile(undefined);
+    const result = await verifyTurnstile(undefined, { expectedAction: "contact" });
 
-    expect(result.success).toBe(false);
+    expect(result.ok).toBe(false);
+    expect(result.outcome).toBe("missing-token");
+    expect(result.disposition).toBe("human-failed");
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("fails as 'http-failure' (unavailable) on a non-2xx siteverify response", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
+    global.fetch = vi.fn().mockResolvedValue({ ok: false, status: 502 }) as unknown as typeof fetch;
+
+    const { verifyTurnstile } = await import("@/lib/forms/turnstile");
+    const result = await verifyTurnstile("token", { expectedAction: "contact" });
+
+    expect(result.ok).toBe(false);
+    expect(result.outcome).toBe("http-failure");
+    expect(result.disposition).toBe("unavailable");
+    expect(result.errorCodes).toContain("http-502");
+  });
+
+  it("fails as 'network' (unavailable) when the request throws before a response", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
+    global.fetch = vi.fn().mockRejectedValue(new Error("network down")) as unknown as typeof fetch;
+
+    const { verifyTurnstile } = await import("@/lib/forms/turnstile");
+    const result = await verifyTurnstile("token", { expectedAction: "contact" });
+
+    expect(result.ok).toBe(false);
+    expect(result.outcome).toBe("network");
+    expect(result.disposition).toBe("unavailable");
+  });
+
+  it("fails as 'malformed' (unavailable) when siteverify returns an unexpected body", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ unexpected: "shape" }),
+    }) as unknown as typeof fetch;
+
+    const { verifyTurnstile } = await import("@/lib/forms/turnstile");
+    const result = await verifyTurnstile("token", { expectedAction: "contact" });
+
+    expect(result.ok).toBe(false);
+    expect(result.outcome).toBe("malformed");
+    expect(result.disposition).toBe("unavailable");
+  });
+
+  it("fails CLOSED as 'timeout' (unavailable) when siteverify exceeds the bounded timeout", async () => {
+    vi.stubEnv("NEXT_PUBLIC_TURNSTILE_SITE_KEY", "site-key");
+    vi.stubEnv("TURNSTILE_SECRET_KEY", "secret-key");
+    vi.useFakeTimers();
+    // A fetch that never resolves on its own — it only settles when our AbortController fires.
+    global.fetch = vi.fn(
+      (_url: string, init?: RequestInit) =>
+        new Promise<Response>((_resolve, reject) => {
+          init?.signal?.addEventListener("abort", () =>
+            reject(new DOMException("The operation was aborted.", "AbortError")),
+          );
+        }),
+    ) as unknown as typeof fetch;
+
+    const { verifyTurnstile } = await import("@/lib/forms/turnstile");
+    const { TURNSTILE_TIMEOUT_MS } = await import("@/lib/forms/config.server");
+    const pending = verifyTurnstile("token", { expectedAction: "contact" });
+    await vi.advanceTimersByTimeAsync(TURNSTILE_TIMEOUT_MS + 10);
+    const result = await pending;
+
+    expect(result.ok).toBe(false);
+    expect(result.outcome).toBe("timeout");
+    expect(result.disposition).toBe("unavailable");
   });
 });
 
@@ -275,20 +502,21 @@ describe("forwardToFormspree", () => {
   });
 
   it("reports not-configured (never a false positive) when no Formspree id is set", async () => {
-    vi.stubEnv("NEXT_PUBLIC_FORMSPREE_CONTACT_ID", "");
-    vi.stubEnv("NEXT_PUBLIC_FORMSPREE_GROWTH_PLAN_ID", "");
+    vi.stubEnv("FORMSPREE_CONTACT_ID", "");
+    vi.stubEnv("FORMSPREE_GROWTH_PLAN_ID", "");
     const fetchSpy = vi.fn();
     global.fetch = fetchSpy as unknown as typeof fetch;
 
     const { forwardToFormspree } = await import("@/lib/forms/formspree");
     const result = await forwardToFormspree("contact", { name: "A", email: "a@example.com" });
 
-    expect(result).toEqual({ delivered: false, reason: "not-configured" });
+    expect(result.delivered).toBe(false);
+    expect(result.outcome).toBe("not-configured");
     expect(fetchSpy).not.toHaveBeenCalled();
   });
 
-  it("delivers successfully when configured and Formspree accepts the payload", async () => {
-    vi.stubEnv("NEXT_PUBLIC_FORMSPREE_CONTACT_ID", "abcd1234");
+  it("delivers successfully (with a duration) when configured and Formspree accepts the payload", async () => {
+    vi.stubEnv("FORMSPREE_CONTACT_ID", "abcd1234");
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) });
     global.fetch = fetchMock as unknown as typeof fetch;
 
@@ -299,36 +527,67 @@ describe("forwardToFormspree", () => {
       message: "hi",
     });
 
-    expect(result).toEqual({ delivered: true });
-    expect(fetchMock).toHaveBeenCalledWith(
-      "https://formspree.io/f/abcd1234",
-      expect.objectContaining({ method: "POST" }),
-    );
+    expect(result.delivered).toBe(true);
+    expect(result.outcome).toBe("delivered");
+    expect(typeof result.durationMs).toBe("number");
+    expect(fetchMock).toHaveBeenCalledTimes(1); // exactly one attempt — never a blind retry
+    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit];
+    expect(url).toBe("https://formspree.io/f/abcd1234");
+    expect(init.method).toBe("POST");
+    expect(init.signal).toBeDefined(); // bounded by an AbortController
   });
 
-  it("reports failure when Formspree responds with a non-2xx status", async () => {
-    vi.stubEnv("NEXT_PUBLIC_FORMSPREE_CONTACT_ID", "abcd1234");
+  it("reports an http-error (with status) when Formspree responds with a non-2xx status", async () => {
+    vi.stubEnv("FORMSPREE_CONTACT_ID", "abcd1234");
     global.fetch = vi.fn().mockResolvedValue({ ok: false, status: 500 }) as unknown as typeof fetch;
 
     const { forwardToFormspree } = await import("@/lib/forms/formspree");
     const result = await forwardToFormspree("contact", { name: "A", email: "a@example.com" });
 
     expect(result.delivered).toBe(false);
+    expect(result.outcome).toBe("http-error");
+    expect(result.status).toBe(500);
     expect(result.reason).toContain("500");
   });
 
-  it("reports failure on a network error rather than claiming delivery", async () => {
-    vi.stubEnv("NEXT_PUBLIC_FORMSPREE_CONTACT_ID", "abcd1234");
+  it("reports a network-error rather than claiming delivery", async () => {
+    vi.stubEnv("FORMSPREE_CONTACT_ID", "abcd1234");
     global.fetch = vi.fn().mockRejectedValue(new Error("down")) as unknown as typeof fetch;
 
     const { forwardToFormspree } = await import("@/lib/forms/formspree");
     const result = await forwardToFormspree("contact", { name: "A", email: "a@example.com" });
 
     expect(result.delivered).toBe(false);
+    expect(result.outcome).toBe("network-error");
+  });
+
+  it("times out after FORMSPREE_TIMEOUT_MS with a single attempt (no retry)", async () => {
+    vi.stubEnv("FORMSPREE_CONTACT_ID", "abcd1234");
+    vi.useFakeTimers();
+    const fetchMock = vi.fn(
+      (_url: string, init?: RequestInit) =>
+        new Promise<Response>((_resolve, reject) => {
+          init?.signal?.addEventListener("abort", () =>
+            reject(new DOMException("The operation was aborted.", "AbortError")),
+          );
+        }),
+    );
+    global.fetch = fetchMock as unknown as typeof fetch;
+
+    const { forwardToFormspree } = await import("@/lib/forms/formspree");
+    const { FORMSPREE_TIMEOUT_MS } = await import("@/lib/forms/config.server");
+    const pending = forwardToFormspree("contact", { name: "A", email: "a@example.com" });
+    await vi.advanceTimersByTimeAsync(FORMSPREE_TIMEOUT_MS + 10);
+    const result = await pending;
+
+    expect(result.delivered).toBe(false);
+    expect(result.outcome).toBe("timeout");
+    expect(fetchMock).toHaveBeenCalledTimes(1); // one attempt only
+    vi.useRealTimers();
   });
 
   it("rejects header injection in an email-like field before ever calling fetch", async () => {
-    vi.stubEnv("NEXT_PUBLIC_FORMSPREE_CONTACT_ID", "abcd1234");
+    vi.stubEnv("FORMSPREE_CONTACT_ID", "abcd1234");
     const fetchMock = vi.fn();
     global.fetch = fetchMock as unknown as typeof fetch;
 
@@ -339,6 +598,7 @@ describe("forwardToFormspree", () => {
     });
 
     expect(result.delivered).toBe(false);
+    expect(result.outcome).toBe("invalid-field");
     expect(result.reason).toBe("invalid-field");
     expect(fetchMock).not.toHaveBeenCalled();
   });

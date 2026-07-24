@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
-import { CosmicPageHero } from "@/components/routes/CosmicPageHero";
+import { PageHeader } from "@/components/routes/PageHeader";
 import { SectionShell } from "@/components/sections/SectionShell";
+import { FinalCtaSection } from "@/components/sections/FinalCtaSection";
 import { BentoGrid } from "@/components/primitives/BentoGrid";
 import { BentoCard } from "@/components/primitives/BentoCard";
-import { GlowButton } from "@/components/primitives/GlowButton";
-import { NodeOrb } from "@/components/primitives/NodeOrb";
+import { Card } from "@/components/primitives/Card";
+import { IconTile } from "@/components/primitives/IconTile";
 import { Icon } from "@/components/primitives/Icon";
+import { Button } from "@/components/primitives/Button";
 import { Badge } from "@/components/primitives/Badge";
-import { FinalCtaBannerSection } from "@/components/sections/FinalCtaBannerSection";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getLearnArticles } from "@/lib/content";
+import styles from "./resources.module.css";
 
 export const metadata: Metadata = pageMetadata({
   title: "Resources",
@@ -21,50 +23,58 @@ export const metadata: Metadata = pageMetadata({
   path: "/resources",
 });
 
-/** The resource areas this hub points into (all real, existing routes). */
+/** The resource areas this hub points into (all real, existing routes). V2 domain inks. */
 const AREAS = [
   {
     href: "/learn",
     title: "Guides & articles",
     description: "Plain-English explainers on how online growth actually works, one step at a time.",
     icon: "book-open",
-    color: "var(--domain-strategy)",
+    color: "var(--v2-domain-strategy-ink)",
   },
   {
     href: "/how-it-works",
     title: "How everything connects",
     description: "The 8-stage growth journey and the systems that run across all of it.",
     icon: "git-branch",
-    color: "var(--domain-discover)",
+    color: "var(--v2-domain-discover-ink)",
   },
   {
     href: "/roadmaps",
     title: "Business roadmaps",
     description: "Sequenced plans for different kinds of business, what to do first, and why.",
     icon: "workflow",
-    color: "var(--domain-operate)",
+    color: "var(--v2-domain-operate-ink)",
   },
   {
     href: "/tools",
     title: "Tool universe",
     description: "The categories of tools we help you choose and connect, set up in your name.",
     icon: "layers",
-    color: "var(--domain-build)",
+    color: "var(--v2-domain-build-ink)",
   },
   {
     href: "/pricing",
     title: "How pricing works",
     description: "Why there is no fixed price list, what shapes a quote, and how you get a written price.",
     icon: "credit-card",
-    color: "var(--domain-convert)",
+    color: "var(--v2-domain-convert-ink)",
   },
   {
     href: "/faq",
     title: "FAQ",
     description: "Straight answers to the questions we hear most, with no jargon.",
     icon: "help-circle",
-    color: "var(--domain-retain)",
+    color: "var(--v2-domain-retain-ink)",
   },
+] as const;
+
+/** Three resource types previewed in the header aside — supports the message; no new
+    destinations, links or metrics (they mirror the real areas listed below). */
+const PREVIEW = [
+  { title: "Guides & articles", icon: "book-open", color: "var(--v2-domain-strategy-ink)" },
+  { title: "Business roadmaps", icon: "workflow", color: "var(--v2-domain-operate-ink)" },
+  { title: "Tool universe", icon: "layers", color: "var(--v2-domain-build-ink)" },
 ] as const;
 
 export default async function ResourcesHubPage() {
@@ -80,37 +90,41 @@ export default async function ResourcesHubPage() {
         ])}
       />
 
-      <CosmicPageHero
+      <PageHeader
         id="resources-hero"
         breadcrumbs={[{ name: "Resources" }]}
         eyebrow="Resources"
-        hue="var(--domain-discover)"
-        title={
-          <>
-            Understand your options before you <span className="iw-gradient-word">spend a thing</span>
-          </>
-        }
+        accent="var(--v2-domain-discover-ink)"
+        title="Understand your options before you spend a thing"
         lead="We'd rather you made an informed decision than a fast one. Start with a guide, follow a roadmap, explore the tools, or see how pricing works, all in plain English."
         actions={
           <>
-            <GlowButton href="/growth-plan" size="lg" iconRight={<ArrowRight size={18} aria-hidden="true" />}>
+            <Button href="/growth-plan" iconRight={<ArrowRight size={16} aria-hidden="true" />}>
               Build my growth plan
-            </GlowButton>
-            <GlowButton href="/learn" variant="ghost" size="lg">
+            </Button>
+            <Button href="/learn" variant="secondary">
               Browse the guides
-            </GlowButton>
+            </Button>
           </>
         }
         aside={
-          <span aria-hidden="true">
-            <NodeOrb hue="var(--domain-discover)" size={128} emphasis="bright">
-              <Icon name="compass" />
-            </NodeOrb>
-          </span>
+          <ul className={styles.preview}>
+            {PREVIEW.map((p) => (
+              <li key={p.title}>
+                <Card variant="tinted" accent={p.color} className={styles.previewCard}>
+                  <IconTile color={p.color} size="sm">
+                    <Icon name={p.icon} />
+                  </IconTile>
+                  <span className={styles.previewTitle}>{p.title}</span>
+                </Card>
+              </li>
+            ))}
+          </ul>
         }
       />
 
       <SectionShell
+        surface="alt"
         id="resource-areas"
         eyebrow="Where to start"
         title="Six ways in, all in plain English"
@@ -134,6 +148,7 @@ export default async function ResourcesHubPage() {
 
       {latest.length > 0 && (
         <SectionShell
+          surface="light"
           id="latest-guides"
           eyebrow="Latest guides"
           title="Fresh from the blog"
@@ -145,14 +160,14 @@ export default async function ResourcesHubPage() {
               <BentoCard
                 key={article.slug}
                 href={`/learn/${article.slug}`}
-                hue="var(--domain-strategy)"
+                hue="var(--v2-domain-strategy-ink)"
                 icon="book-open"
                 title={article.title}
                 blurb={article.excerpt}
                 variant={i === 0 ? "featured" : "medium"}
                 badge={
                   article.readMinutes ? (
-                    <Badge color="var(--domain-strategy)">{article.readMinutes} min read</Badge>
+                    <Badge tone="neutral">{article.readMinutes} min read</Badge>
                   ) : undefined
                 }
               />
@@ -161,7 +176,14 @@ export default async function ResourcesHubPage() {
         </SectionShell>
       )}
 
-      <FinalCtaBannerSection anchorId="get-started" />
+      {/* Restrained final CTA — shared V2 night band, no cosmic decoration. */}
+      <FinalCtaSection
+        id="get-started"
+        title="Ready to make an informed decision?"
+        lead="Build a plan around your goals, or talk it through with us first — no obligation."
+        primary={{ href: "/growth-plan", label: "Build my growth plan" }}
+        secondary={{ href: "/contact", label: "Talk to us" }}
+      />
     </>
   );
 }

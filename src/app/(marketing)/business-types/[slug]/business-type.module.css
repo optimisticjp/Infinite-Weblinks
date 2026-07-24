@@ -1,0 +1,6 @@
+/* Business-type detail — page-specific layout on V2 tokens only (no legacy/domain/base-palette
+   tokens, no glow/glass/gradient, no raw colour). The suggested roadmap is a single card, so it
+   is held to a comfortable reading width rather than stretching the whole band. */
+.roadmapWrap {
+  max-width: 40rem;
+}

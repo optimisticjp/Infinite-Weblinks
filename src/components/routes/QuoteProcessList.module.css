@@ -1,0 +1,52 @@
+/* QuoteProcessList — the ordered path to a written quote. V2 tokens only; a restrained neutral panel
+   per step. No glow/glass/gradient, no fixed height, no horizontal scroller, no animation. */
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+@media (min-width: 48rem) {
+  .list {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5);
+  }
+}
+.step {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+  padding: var(--space-5);
+  border: 1px solid var(--hairline);
+  border-radius: var(--v2-radius-lg);
+  background: var(--surface-raised);
+}
+/* Compact, decorative step number — the <ol> carries the real order. Neutral, never a giant node. */
+.index {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-bold);
+  line-height: 1;
+  letter-spacing: var(--ls-mono);
+  color: var(--text-heading);
+}
+.content {
+  min-width: 0;
+}
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
+  color: var(--text-heading);
+  overflow-wrap: anywhere;
+}
+.blurb {
+  margin: var(--space-2) 0 0;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-body);
+}

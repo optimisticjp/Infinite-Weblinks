@@ -1,55 +1,79 @@
-import { Fragment } from "react";
+import type { CSSProperties } from "react";
 import Link from "next/link";
-import { ArrowRight, MessageSquare, ArrowUpRight, Check } from "lucide-react";
-import { Breadcrumbs } from "@/components/primitives/Breadcrumbs";
-import { NodeOrb } from "@/components/primitives/NodeOrb";
-import { GlowButton } from "@/components/primitives/GlowButton";
-import { BentoGrid } from "@/components/primitives/BentoGrid";
-import { BentoCard } from "@/components/primitives/BentoCard";
-import { Badge, DELIVERY_COLOR } from "@/components/primitives/Badge";
+import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
+import { PageHeader } from "@/components/routes/PageHeader";
+import { Button } from "@/components/primitives/Button";
+import { SectionShell } from "@/components/sections/SectionShell";
+import { CardGrid } from "@/components/primitives/CardGrid";
+import { Card } from "@/components/primitives/Card";
+import { Callout } from "@/components/primitives/Callout";
+import { IconTile } from "@/components/primitives/IconTile";
 import { Icon } from "@/components/primitives/Icon";
-import { CosmicBackground } from "@/components/viz/CosmicBackground";
-import { ConnectorPath } from "@/components/viz/ConnectorPath";
-import { StageMarker } from "@/components/viz/StageMarker";
-import { ScrollThread } from "@/components/viz/ScrollThread";
-import { MessageCard } from "@/components/viz/FloatingCards";
+import { LinkChip } from "@/components/primitives/LinkChip";
+import { RelationshipCard } from "@/components/cards/RelationshipCard";
+import { DomainCard } from "@/components/cards/DomainCard";
+import { ServiceOfferingCard } from "@/components/cards/ServiceOfferingCard";
+import { ServiceConnectionList } from "@/components/routes/ServiceConnectionList";
+import { FinalCtaSection } from "@/components/sections/FinalCtaSection";
+import { domainInk } from "@/lib/design/domainColor";
 import type { DomainConfig } from "@/lib/services/domains";
-import type { DeliveryModel, GrowthStage, Service, ServiceCategory } from "@/lib/content/types";
+import type { GrowthStage, Service, ServiceCategory } from "@/lib/content/types";
 import styles from "./ServiceDomainTemplate.module.css";
+
+/** Resolved related goal, de-duplicated and in source-first order (from the category route). */
+export type RelatedGoal = { slug: string; title: string; outcome: string };
 
 interface ServiceDomainTemplateProps {
   config: DomainConfig;
   category: ServiceCategory;
+  /** This category's services, in source order. */
   services: Service[];
-  deliveryModels: DeliveryModel[];
-  stages: GrowthStage[];
+  /** The resolved growth stage this domain is most closely connected to (config.stageSlug). */
+  activeStage: GrowthStage;
+  /** The resolved next service category (config.next.slug). */
+  nextCategory: ServiceCategory;
+  /** The de-duplicated goals these services help with, source-first. */
+  relatedGoals: RelatedGoal[];
 }
 
+const JUMP = [
+  { href: "#domain-outcomes", label: "Why it matters" },
+  { href: "#domain-catalog", label: "Services included" },
+  { href: "#domain-connects", label: "How it connects" },
+  { href: "#domain-forwho", label: "When this helps" },
+  { href: "#domain-next", label: "What comes next" },
+];
+
 /**
- * ServiceDomainTemplate — the reusable Constellation page for one service domain. Everything
- * is driven by a DomainConfig plus the live content: one hue recolours the whole page, the
- * full service list is grouped into bento clusters (never a flat grid), each card shows its
- * delivery model, and the page opens with "where this sits" and closes with "what's next".
- * Adding another domain is a config entry; nothing here is Strategy-specific.
+ * ServiceDomainTemplate — the reusable V2 light-first page for one service area. PageHeader (server
+ * H1 = the category name, LCP text) → a wrapping page-jump nav → why it matters → the full service
+ * catalog (clusters of anchored ServiceOfferingCards, every service once) → how it connects → the
+ * related goals → who it's for → what comes next → the single reserved dark final CTA. Every field
+ * is driven by the DomainConfig + live content (serviceCopy precedence preserved); the config hue
+ * only tints wayfinding. No ScrollThread, CosmicBackground/starfield, NodeOrb, GlowButton, Bento,
+ * ConnectorPath, StageMarker, MessageCard, DELIVERY_COLOR, fake plan state or cosmic surfaces.
+ * Server Component.
  */
 export function ServiceDomainTemplate({
   config,
   category,
   services,
-  deliveryModels,
-  stages,
+  activeStage,
+  nextCategory,
+  relatedGoals,
 }: ServiceDomainTemplateProps) {
-  const hue = config.hue;
-  const deliveryByKey = new Map(deliveryModels.map((d) => [d.key, d] as const));
+  const ink = domainInk(config.hue);
   const serviceBySlug = new Map(services.map((s) => [s.slug, s] as const));
 
-  // Build the clusters, then sweep any service not placed into a "more in this domain" group,
-  // so a config can never silently drop a service from the full list.
+  // Build the clusters, then sweep any service not placed into a stable "More in this domain"
+  // group, so a config can never silently drop a service from the full list.
   const placed = new Set(config.clusters.flatMap((c) => c.serviceSlugs));
   const leftover = services.filter((s) => !placed.has(s.slug));
   const clusters = [
     ...config.clusters.map((c) => ({
-      ...c,
+      key: c.key,
+      heading: c.heading,
+      intro: c.intro,
       items: c.serviceSlugs.map((slug) => serviceBySlug.get(slug)).filter((s): s is Service => Boolean(s)),
     })),
     ...(leftover.length > 0
@@ -57,255 +81,194 @@ export function ServiceDomainTemplate({
       : []),
   ].filter((c) => c.items.length > 0);
 
-  function copyFor(service: Service) {
-    return config.serviceCopy?.[service.slug] ?? service.plainDescription;
-  }
-
-  function deliveryBadge(service: Service) {
-    const delivery = deliveryByKey.get(service.deliveryModel);
-    if (!delivery) return null;
-    return (
-      <Badge color={DELIVERY_COLOR[delivery.key]} variant="soft">
-        <span className="iw-visually-hidden">Delivery model: </span>
-        {delivery.name}
-      </Badge>
-    );
-  }
-
-  function serviceCard(service: Service, variant: "featured" | "medium") {
-    return (
-      <BentoCard
-        key={service.slug}
-        id={service.slug}
-        variant={variant}
-        hue={hue}
-        icon={category.icon}
-        title={service.name}
-        blurb={copyFor(service)}
-        badge={deliveryBadge(service)}
-      />
-    );
-  }
+  const copyFor = (service: Service) => config.serviceCopy?.[service.slug] ?? service.plainDescription;
 
   return (
     <>
-      <ScrollThread hue={hue} />
+      <PageHeader
+        id="domain-hero"
+        surface="light"
+        breadcrumbs={[{ name: "Services", path: "/services" }, { name: category.name }]}
+        eyebrow="Service area"
+        accent={ink}
+        title={category.name}
+        lead={config.definition}
+        actions={
+          <>
+            <Button href="/growth-plan" size="lg" iconRight={<ArrowRight size={18} aria-hidden="true" />}>
+              Build my growth plan
+            </Button>
+            <Button href="/contact" variant="secondary" size="lg">
+              Talk it through
+            </Button>
+          </>
+        }
+        trustNote={
+          <>
+            Most closely connected to the{" "}
+            <Link href={`/how-it-works#${config.stageSlug}`} className={styles.stageLink}>
+              {activeStage.name}
+            </Link>{" "}
+            stage.
+          </>
+        }
+      />
 
-      {/* ============ Hero ============ */}
-      <section className={`theme-cosmic iw-section ${styles.hero}`} aria-labelledby="domain-heading">
-        <CosmicBackground horizon />
-        <div className={`iw-container iw-container--wide ${styles.heroInner}`}>
-          <div className={styles.heroCopy}>
-            <Breadcrumbs trail={[{ name: "Services", path: "/services" }, { name: category.name }]} />
-            <p className={styles.eyebrow} style={{ ["--hue" as string]: hue }}>
-              Service domain
-            </p>
-            <div className={styles.heroTitleRow}>
-              <NodeOrb hue={hue} size={64} emphasis="bright" className={styles.heroOrb}>
-                <Icon name={category.icon} />
-              </NodeOrb>
-              <h1 id="domain-heading" className={styles.heading}>
-                {category.name}
-              </h1>
-            </div>
-            <p className={styles.definition}>{config.definition}</p>
-            <div className={styles.heroCtas}>
-              <GlowButton href="/growth-plan" size="lg" iconRight={<ArrowRight size={18} aria-hidden="true" />}>
-                Build my growth plan
-              </GlowButton>
-              <GlowButton href="/contact" variant="ghost" size="lg">
-                Talk to us
-              </GlowButton>
-            </div>
-            <StageMarker stages={stages} activeSlug={config.stageSlug} hue={hue} className={styles.marker} />
-          </div>
-
-          <div className={styles.heroVisual} aria-hidden="true">
-            <span className={styles.heroBigOrb} style={{ ["--hue" as string]: hue }}>
-              <NodeOrb hue={hue} size={132} emphasis="bright">
-                <Icon name={category.icon} />
-              </NodeOrb>
-            </span>
-            <MessageCard
-              title="Plan mapped"
-              body="A clear first step, in order"
-              hue={hue}
-              className={styles.heroFloat}
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* ============ What you get (light breather) ============ */}
-      <section className={`theme-band-bright iw-section ${styles.outcomes}`} aria-labelledby="domain-outcomes">
+      <div className={`theme-light ${styles.jumpBand}`}>
         <div className="iw-container iw-container--wide">
-          <header className={styles.sectionHead}>
-            <p className={styles.eyebrow} style={{ ["--hue" as string]: hue }}>
-              Why it matters
-            </p>
-            <h2 id="domain-outcomes" className={styles.sectionTitle}>
-              What you get from this
-            </h2>
-          </header>
-          <ul className={styles.outcomeGrid}>
-            {config.outcomes.map((o) => (
-              <li key={o.title} className={styles.outcomeCard} style={{ ["--hue" as string]: hue }}>
-                <NodeOrb hue={hue} size={44}>
-                  <Icon name={o.icon} />
-                </NodeOrb>
-                <h3 className={styles.outcomeTitle}>{o.title}</h3>
-                <p className={styles.outcomeBody}>{o.body}</p>
-              </li>
+          <nav aria-label="Service area sections" className={styles.jumpNav}>
+            {JUMP.map((j) => (
+              <LinkChip key={j.href} href={j.href}>
+                {j.label}
+              </LinkChip>
             ))}
-          </ul>
+          </nav>
         </div>
-      </section>
+      </div>
+
+      {/* ============ Why it matters ============ */}
+      <SectionShell
+        surface="alt"
+        id="domain-outcomes"
+        eyebrow="Why it matters"
+        title="What you get from this"
+        align="start"
+      >
+        <CardGrid layout="equal" aria-label="What you get">
+          {config.outcomes.map((o) => (
+            <Card
+              key={o.title}
+              as="article"
+              variant="outlined"
+              accent={ink}
+              className={styles.outcome}
+              style={{ ["--card-accent" as string]: ink } as CSSProperties}
+            >
+              <IconTile color={ink} size="md">
+                <Icon name={o.icon} />
+              </IconTile>
+              <h3 className={styles.outcomeTitle}>{o.title}</h3>
+              <p className={styles.outcomeBody}>{o.body}</p>
+            </Card>
+          ))}
+        </CardGrid>
+      </SectionShell>
 
       {/* ============ The full catalog ============ */}
-      <section className={`theme-cosmic iw-section ${styles.catalog}`} aria-labelledby="domain-catalog">
-        <CosmicBackground />
-        <div className={`iw-container iw-container--wide ${styles.catalogInner}`}>
-          <header className={styles.sectionHead}>
-            <p className={styles.eyebrow} style={{ ["--hue" as string]: hue }}>
-              The full picture
-            </p>
-            <h2 id="domain-catalog" className={styles.sectionTitle}>
-              Everything in {category.name}
-            </h2>
-            <p className={styles.sectionLead}>
-              The complete list, grouped so it&apos;s easy to follow. Every service shows how
-              we&apos;d deliver it, so you always know who does the work.
-            </p>
-          </header>
+      <SectionShell
+        surface="light"
+        id="domain-catalog"
+        eyebrow="The full picture"
+        title={`Everything in ${category.name}`}
+        lead="The complete list, grouped so it's easy to follow. Every service shows how we'd deliver it, so you always know who does the work."
+        align="start"
+      >
+        <Callout tone="information" className={styles.toolsNote}>
+          Example tools are illustrative. No partnership or endorsement is implied.
+        </Callout>
 
-          <div className={styles.clusters}>
-            {clusters.map((cluster) => {
-              const [first, ...rest] = cluster.items;
-              return (
-                <div key={cluster.key} className={styles.cluster}>
-                  <div className={styles.clusterHead}>
-                    <h3 className={styles.clusterHeading}>{cluster.heading}</h3>
-                    <p className={styles.clusterIntro}>{cluster.intro}</p>
-                  </div>
-                  {cluster.items.length === 1 ? (
-                    <ul className={styles.soloWrap}>{serviceCard(first, "featured")}</ul>
-                  ) : (
-                    <BentoGrid>
-                      {serviceCard(first, "featured")}
-                      {rest.map((s) => serviceCard(s, "medium"))}
-                    </BentoGrid>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+        <div className={styles.clusters}>
+          {clusters.map((cluster) => (
+            <div key={cluster.key} className={styles.cluster}>
+              <h3 className={styles.clusterHeading}>{cluster.heading}</h3>
+              <p className={styles.clusterIntro}>{cluster.intro}</p>
+              <CardGrid layout="equal" aria-label={cluster.heading}>
+                {cluster.items.map((service) => (
+                  <ServiceOfferingCard
+                    key={service.slug}
+                    slug={service.slug}
+                    title={service.name}
+                    summary={copyFor(service)}
+                    deliveryModel={service.deliveryModel}
+                    whatYouGet={service.whatYouGet}
+                    exampleTools={service.exampleTools}
+                    categoryIcon={category.icon}
+                    categoryTone={config.hue}
+                  />
+                ))}
+              </CardGrid>
+            </div>
+          ))}
         </div>
-      </section>
+      </SectionShell>
 
       {/* ============ How this connects ============ */}
-      <section className={`theme-cosmic iw-section ${styles.connects}`} aria-labelledby="domain-connects">
-        <div className="iw-container iw-container--wide">
-          <header className={styles.sectionHead}>
-            <p className={styles.eyebrow} style={{ ["--hue" as string]: hue }}>
-              How this connects
-            </p>
-            <h2 id="domain-connects" className={styles.sectionTitle}>
-              A plan feeds everything after it
-            </h2>
-            <p className={styles.sectionLead}>
-              This is what a service list never shows. The work here points the rest of your growth
-              in the right direction.
-            </p>
-          </header>
+      <SectionShell
+        surface="alt"
+        id="domain-connects"
+        eyebrow="How this connects"
+        title="A plan feeds everything after it"
+        lead="This is what a service list never shows. The work here points the rest of your growth in the right direction."
+        align="start"
+      >
+        <ServiceConnectionList
+          categoryTitle={category.name}
+          categoryDescription={config.definition}
+          categoryIcon={category.icon}
+          categoryTone={config.hue}
+          connectsTo={config.connectsTo}
+        />
+      </SectionShell>
 
-          <ol className={styles.flow}>
-            <li className={styles.flowStart} style={{ ["--hue" as string]: hue }}>
-              <NodeOrb hue={hue} size={52} emphasis="bright">
-                <Icon name={category.icon} />
-              </NodeOrb>
-              <span className={styles.flowStartLabel}>{category.name}</span>
-            </li>
-            {config.connectsTo.map((c) => (
-              <Fragment key={c.label}>
-                <li className={styles.flowConn} aria-hidden="true">
-                  <ConnectorPath className={styles.flowConnPath} from={hue} via={c.hue} to={c.hue} dots={1} d="M0 12 H100" />
-                </li>
-                <li className={styles.flowNode} style={{ ["--hue" as string]: c.hue }}>
-                  <NodeOrb hue={c.hue} size={40}>
-                    <Icon name={c.icon} />
-                  </NodeOrb>
-                  <span className={styles.flowNodeText}>
-                    <span className={styles.flowNodeLabel}>{c.label}</span>
-                    <span className={styles.flowNodeBody}>{c.body}</span>
-                  </span>
-                </li>
-              </Fragment>
+      {/* ============ Related goals ============ */}
+      {relatedGoals.length > 0 ? (
+        <SectionShell surface="light" id="domain-goals" ariaLabel="Goals these services help with" align="start">
+          <RelationshipCard title="Goals these services help with" icon={<Icon name="target" />} tone={config.hue}>
+            {relatedGoals.map((g) => (
+              <LinkChip key={g.slug} href={`/goals/${g.slug}`} tone={config.hue} aria-label={`${g.title}: ${g.outcome}`}>
+                {g.title}
+              </LinkChip>
             ))}
-          </ol>
-        </div>
-      </section>
+          </RelationshipCard>
+        </SectionShell>
+      ) : null}
 
       {/* ============ Who it's for ============ */}
-      <section className={`theme-cosmic iw-section iw-section--tight ${styles.forWho}`} aria-labelledby="domain-forwho">
-        <div className={`iw-container iw-container--wide ${styles.forWhoInner}`}>
-          <div className={styles.forWhoText}>
-            <p className={styles.eyebrow} style={{ ["--hue" as string]: hue }}>
-              Who it&apos;s for
-            </p>
-            <h2 id="domain-forwho" className={styles.sectionTitle}>
-              When this is the priority
-            </h2>
-            <p className={styles.sectionLead}>{config.forWho}</p>
-          </div>
-          <ul className={styles.whenList}>
-            {config.when.map((w) => (
-              <li key={w} className={styles.whenItem} style={{ ["--hue" as string]: hue }}>
-                <span className={styles.whenIcon} aria-hidden="true">
-                  <Check size={15} strokeWidth={2.5} />
-                </span>
-                {w}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+      <SectionShell
+        surface="alt"
+        id="domain-forwho"
+        eyebrow="Who it's for"
+        title="When this is the priority"
+        lead={config.forWho}
+        align="start"
+      >
+        <ul className={styles.whenList}>
+          {config.when.map((w) => (
+            <li key={w} className={styles.whenItem}>
+              <span className={styles.whenIcon} aria-hidden="true">
+                <Check size={15} strokeWidth={2.5} />
+              </span>
+              <span>{w}</span>
+            </li>
+          ))}
+        </ul>
+      </SectionShell>
 
-      {/* ============ Next step + next domain ============ */}
-      <section className={`theme-cosmic iw-section ${styles.next}`} aria-labelledby="domain-next">
-        <CosmicBackground horizon />
-        <div className={`iw-container iw-container--wide ${styles.nextInner}`}>
-          <div className={styles.nextCta}>
-            <p className={styles.eyebrow} style={{ ["--hue" as string]: hue }}>
-              Your next step
-            </p>
-            <h2 id="domain-next" className={styles.nextTitle}>
-              Not sure which of these you need first?
-            </h2>
-            <p className={styles.nextBody}>
-              That&apos;s what the plan is for. Answer a few questions and we&apos;ll map the
-              smallest next step for your situation, then the ones that follow.
-            </p>
-            <div className={styles.nextActions}>
-              <GlowButton href="/growth-plan" size="lg" iconRight={<ArrowRight size={18} aria-hidden="true" />}>
-                Build my growth plan
-              </GlowButton>
-              <Link href="/services" className={styles.viewAll}>
-                <MessageSquare size={16} aria-hidden="true" />
-                View all services
-              </Link>
-            </div>
-          </div>
-
-          <Link href={`/services/${config.next.slug}`} className={styles.nextDomain} style={{ ["--hue" as string]: config.next.hue }}>
-            <span className={styles.nextDomainKey}>Next in the journey</span>
-            <span className={styles.nextDomainName}>{config.next.name}</span>
-            <span className={styles.nextDomainGo}>
-              Continue the journey
-              <ArrowUpRight size={16} aria-hidden="true" />
-            </span>
-          </Link>
+      {/* ============ What comes next ============ */}
+      <SectionShell surface="light" id="domain-next" eyebrow="Your next step" title="What comes next" align="start">
+        <div className={styles.nextWrap}>
+          <DomainCard
+            title={config.next.name}
+            description={nextCategory.intro}
+            href={`/services/${config.next.slug}`}
+            icon={nextCategory.icon}
+            tone={config.next.hue}
+            eyebrow="Next in the journey"
+            className={styles.nextCard}
+          />
+          <Button href="/services" variant="secondary" iconRight={<ArrowUpRight size={16} aria-hidden="true" />}>
+            View all service areas
+          </Button>
         </div>
-      </section>
+      </SectionShell>
+
+      <FinalCtaSection
+        id="get-started"
+        title="Not sure which of these you need first?"
+        lead="That's what the plan is for. Answer a few questions and we'll map the smallest next step for your situation, then the ones that follow."
+        primary={{ href: "/growth-plan", label: "Build my growth plan" }}
+        secondary={{ href: "/services", label: "View all service areas" }}
+      />
     </>
   );
 }

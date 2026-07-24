@@ -1,0 +1,46 @@
+/* CardGrid — semantic list layout for the content-card system. Token-driven gaps and
+   breakpoints; no masonry, no fixed row heights (cards stretch to their row). */
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+.cell,
+.featuredCell {
+  min-width: 0;
+  display: flex; /* let the card stretch to the full cell height */
+}
+.cell > *,
+.featuredCell > * {
+  width: 100%;
+}
+
+/* ---- equal: uniform 1 / 2 / 3 columns, equal heights ---- */
+@media (min-width: 40rem) {
+  .equal {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-6);
+  }
+}
+@media (min-width: 60rem) {
+  .equal {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
+  }
+}
+
+/* ---- editorial: 1 column mobile → 2 columns tablet/desktop ---- */
+@media (min-width: 48rem) {
+  .editorial {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-6);
+  }
+  /* An explicitly-featured item spans both columns (never inferred from position). */
+  .editorial .featuredCell {
+    grid-column: 1 / -1;
+  }
+}

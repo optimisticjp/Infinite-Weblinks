@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { PageHero } from "@/components/routes/PageHero";
-import { HubGrid, HubGridItem } from "@/components/routes/HubGrid";
-import { IndexCard } from "@/components/routes/IndexCard";
+import { ExamplesIndex } from "@/components/routes/ExamplesIndex";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { breadcrumbJsonLd, itemListJsonLd } from "@/lib/seo/jsonld";
+import { itemListJsonLd } from "@/lib/seo/jsonld";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { getExamples } from "@/lib/content";
 
@@ -21,44 +19,15 @@ export default async function ExamplesIndexPage() {
 
   return (
     <>
-      <JsonLd
-        data={breadcrumbJsonLd([
-          { name: "Home", path: "/" },
-          { name: "Examples", path: "/examples" },
-        ])}
-      />
+      {/* The single Home → Examples BreadcrumbList is emitted by the PageHeader's Breadcrumbs
+          (inside ExamplesIndex); the page adds only the ItemList of the published examples. */}
       <JsonLd
         data={itemListJsonLd(
           "Examples",
           examples.map((e) => ({ name: e.title, path: `/examples/${e.slug}` })),
         )}
       />
-
-      <PageHero
-        eyebrow="Proof"
-        title="Examples"
-        intro="A look at the kind of work we do and the outcomes it's built to produce."
-        breadcrumbs={[{ name: "Examples" }]}
-      />
-
-      <section className="theme-band iw-section" aria-labelledby="ex-index-heading">
-        <div className="iw-container">
-          <h2 id="ex-index-heading" className="iw-visually-hidden">
-            All examples
-          </h2>
-          <HubGrid>
-            {examples.map((ex) => (
-              <HubGridItem key={ex.slug}>
-                <IndexCard
-                  href={`/examples/${ex.slug}`}
-                  title={ex.title}
-                  description={ex.summary}
-                />
-              </HubGridItem>
-            ))}
-          </HubGrid>
-        </div>
-      </section>
+      <ExamplesIndex examples={examples} />
     </>
   );
 }

@@ -1,0 +1,57 @@
+/* ServiceConnectionList — a vertical ordered list of a service area and what it feeds into. V2
+   tokens only; no ConnectorPath, no horizontal scroll, no animation. The left rail is a neutral
+   CSS-only directional cue; the ordered list is the source of truth. */
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  border-radius: var(--v2-radius-lg);
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  border-left: 3px solid var(--conn-ink);
+}
+.current {
+  background: var(--surface);
+  box-shadow: var(--v2-shadow-sm);
+}
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.marker {
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--conn-ink);
+}
+.label {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
+  font-size: var(--fs-h4);
+  color: var(--text-heading);
+}
+.hereTag {
+  font-family: var(--font-label);
+  font-size: var(--fs-eyebrow);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--ls-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.body {
+  margin: 0;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-body);
+  color: var(--text-body);
+}

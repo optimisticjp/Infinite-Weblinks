@@ -1,3 +1,8 @@
+/* PlanReveal — V2 light-first styling for the deterministic Growth Plan recommendation. Flat V2 cards
+   on paper; per-phase wayfinding accent comes in via `--phase-ink` (an accessible V2 domain ink set by
+   the component through the domain bridge). V2 tokens only — no legacy domain or base-palette tokens,
+   no --grad-* / --glow-* / --glass-*, no gradient word, no NodeOrb glow, no featured-phase bloom, no
+   backdrop-filter, no raw colour, no --hairline-strong, no fixed viewport heights. */
 .wrap {
   display: grid;
   gap: var(--space-8);
@@ -15,26 +20,21 @@
   font-weight: var(--fw-bold);
   letter-spacing: var(--ls-eyebrow);
   text-transform: uppercase;
-  background: var(--grad-constellation);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  width: fit-content;
+  color: var(--v2-brand-strong);
 }
 .title {
   margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
   font-size: var(--fs-h2);
+  line-height: var(--lh-heading);
   color: var(--text-heading);
 }
 .intro {
   margin: 0;
   font-size: var(--fs-lead);
+  line-height: var(--lh-body);
   color: var(--text-body);
-}
-
-.roadmapConn {
-  --conn-h: 26px;
-  max-width: 100%;
 }
 
 /* ---- Roadmap phases ---- */
@@ -56,16 +56,11 @@
   gap: var(--space-4);
   align-content: start;
   padding: var(--space-6);
-  border-radius: var(--radius-lg);
-  background:
-    radial-gradient(90% 70% at 0% 0%, color-mix(in srgb, var(--phase-hue) 12%, transparent), transparent 62%),
-    var(--surface-raised);
+  border-radius: var(--v2-radius-lg);
+  background: var(--surface-raised);
   border: 1px solid var(--hairline);
-  border-top: 3px solid var(--phase-hue);
-}
-.featured {
-  box-shadow: 0 0 40px -22px var(--phase-hue);
-  border-color: color-mix(in srgb, var(--phase-hue) 34%, var(--hairline));
+  border-top: 3px solid var(--phase-ink);
+  box-shadow: var(--v2-shadow-sm);
 }
 .phaseHead {
   display: flex;
@@ -79,13 +74,14 @@
   font-weight: var(--fw-semibold);
   letter-spacing: var(--ls-eyebrow);
   text-transform: uppercase;
-  /* Mix the hue toward the heading ink so small text keeps AA contrast on light OR dark:
-     the ink is dark on the light plan surface and near-white on cosmic surfaces. */
-  color: color-mix(in srgb, var(--phase-hue) 42%, var(--text-heading));
+  color: var(--phase-ink);
 }
 .phaseTitle {
   margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
   font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
   color: var(--text-heading);
 }
 .phaseList {
@@ -99,6 +95,7 @@
   position: relative;
   padding-left: var(--space-5);
   font-size: var(--fs-sm);
+  line-height: var(--lh-body);
   color: var(--text-body);
 }
 .phaseItem::before {
@@ -108,8 +105,8 @@
   top: 0.55em;
   width: 7px;
   height: 7px;
-  border-radius: var(--radius-pill);
-  background: var(--phase-hue);
+  border-radius: var(--v2-radius-pill);
+  background: var(--phase-ink);
 }
 .recommended {
   display: block;
@@ -119,7 +116,7 @@
   font-weight: var(--fw-bold);
   letter-spacing: var(--ls-eyebrow);
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--phase-hue) 48%, var(--text-heading));
+  color: var(--phase-ink);
 }
 
 /* ---- Detail (capabilities + tools) ---- */
@@ -144,7 +141,10 @@
 }
 .detailTitle {
   margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--v2-fw-heading);
   font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
   color: var(--text-heading);
 }
 .chips {
@@ -157,17 +157,22 @@
 }
 .chip {
   padding: 6px 12px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--hairline-strong);
-  background: color-mix(in srgb, var(--domain-convert) 8%, var(--surface-raised));
+  border-radius: var(--v2-radius-pill);
+  border: 1px solid var(--hairline);
+  background: var(--surface);
   font-size: var(--fs-sm);
   color: var(--text-body);
 }
 .chipTool {
-  background: color-mix(in srgb, var(--domain-build) 8%, var(--surface-raised));
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
   letter-spacing: var(--ls-mono);
+}
+.toolsNote {
+  margin: 0;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
 }
 
 /* ---- Outcomes ---- */
@@ -175,9 +180,9 @@
   display: grid;
   gap: var(--space-4);
   padding: var(--space-6);
-  border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--domain-retain) 8%, var(--surface-raised));
-  border: 1px solid color-mix(in srgb, var(--domain-retain) 26%, var(--hairline));
+  border-radius: var(--v2-radius-lg);
+  background: var(--v2-success-tint);
+  border: 1px solid var(--hairline);
 }
 .outcomeList {
   list-style: none;
@@ -192,6 +197,7 @@
   align-items: center;
   gap: var(--space-3);
   font-size: var(--fs-body);
+  line-height: var(--lh-body);
   color: var(--text-heading);
 }
 
@@ -199,22 +205,25 @@
 .howWeHelp {
   display: grid;
   grid-template-columns: auto 1fr;
+  align-items: center;
   gap: var(--space-4);
   padding: var(--space-6);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--hairline-strong);
-  background: var(--surface-raised);
+  border-radius: var(--v2-radius-lg);
+  border: 1px solid var(--hairline);
+  background: var(--surface);
 }
 .howTitle {
   margin: 0 0 var(--space-1);
   font-family: var(--font-display);
-  font-weight: var(--fw-bold);
+  font-weight: var(--v2-fw-heading);
   font-size: var(--fs-h4);
+  line-height: var(--lh-heading);
   color: var(--text-heading);
 }
 .howBody {
   margin: 0;
   font-size: var(--fs-sm);
+  line-height: var(--lh-body);
   color: var(--text-body);
   max-width: 68ch;
 }

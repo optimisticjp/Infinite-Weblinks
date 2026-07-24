@@ -12,15 +12,16 @@ import {
   Send,
   ShieldCheck,
   ArrowUpRight,
+  Check,
 } from "lucide-react";
-import { GlowButton } from "@/components/primitives/GlowButton";
-import { InfinityMark } from "@/components/brand/InfinityMark";
+import { Button } from "@/components/primitives/Button";
+import { IconTile } from "@/components/primitives/IconTile";
 import { TextField } from "@/components/forms/fields/TextField";
 import { SelectField, type SelectOption } from "@/components/forms/fields/SelectField";
 import { TextAreaField } from "@/components/forms/fields/TextAreaField";
 import { TurnstileField } from "@/components/forms/Turnstile";
 import { contactSchema } from "@/lib/validation/forms";
-import { supportEmail } from "@/lib/forms/config";
+import { supportEmail } from "@/lib/forms/config.public";
 import styles from "./ContactForm.module.css";
 
 export interface ContactFormProps {
@@ -165,7 +166,14 @@ export function ContactForm({
       if (data.ok) {
         setStatus("success");
         setStatusMessage(null);
-      } else if (data.code === "delivery-unavailable" || data.code === "delivery-failed") {
+      } else if (
+        data.code === "delivery-unavailable" ||
+        data.code === "delivery-failed" ||
+        data.code === "security-unavailable" ||
+        data.code === "rate-limit-unavailable"
+      ) {
+        // A truthful "try again / email us" notice — delivery isn't set up, upstream failed, or a
+        // fail-closed security/rate-limit check couldn't run. Never presented as success.
         setStatus("delivery-unavailable");
         setStatusMessage(
           data.message ??
@@ -195,35 +203,10 @@ export function ContactForm({
     return (
       <div className={[styles.wrap, className].filter(Boolean).join(" ")}>
         <div ref={statusRef} tabIndex={-1} role="status" className={styles.success}>
-          <span className={styles.successVisual} aria-hidden="true">
-            <svg className={styles.successConnector} viewBox="0 0 120 40" fill="none">
-              <path
-                className={styles.successLine}
-                d="M6 20 H54"
-                stroke="url(#contactSuccessGrad)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                pathLength={1}
-              />
-              <path
-                className={styles.successLine}
-                d="M66 20 H114"
-                stroke="url(#contactSuccessGrad)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                pathLength={1}
-              />
-              <defs>
-                <linearGradient id="contactSuccessGrad" x1="0" y1="0" x2="120" y2="0">
-                  <stop offset="0" stopColor="#8b3bff" />
-                  <stop offset="0.55" stopColor="#f5197e" />
-                  <stop offset="1" stopColor="#ff7a18" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <span className={styles.successMark}>
-              <InfinityMark size={72} luminous />
-            </span>
+          <span className={styles.successVisual}>
+            <IconTile color="var(--v2-success)" size="lg">
+              <Check />
+            </IconTile>
           </span>
           <h3 className={styles.successTitle}>Thanks, your message is on its way.</h3>
           <p className={styles.successBody}>
@@ -307,12 +290,17 @@ export function ContactForm({
       ) : null}
 
       <p className={styles.requiredNote}>
-        Fields marked <span className={styles.req} aria-hidden="true">*</span> are required.
+        Fields marked{" "}
+        <span className={styles.req} aria-hidden="true">
+          *
+        </span>{" "}
+        are required.
       </p>
 
       <div className={styles.grid}>
         <TextField
           id="contact-name"
+          appearance="v2"
           label="Your name"
           required
           icon={User}
@@ -324,6 +312,7 @@ export function ContactForm({
         />
         <TextField
           id="contact-email"
+          appearance="v2"
           label="Email"
           type="email"
           inputMode="email"
@@ -337,6 +326,7 @@ export function ContactForm({
         />
         <TextField
           id="contact-company"
+          appearance="v2"
           label="Business name"
           hint="Optional"
           icon={Briefcase}
@@ -348,6 +338,7 @@ export function ContactForm({
         />
         <TextField
           id="contact-website"
+          appearance="v2"
           label="Website"
           type="url"
           inputMode="url"
@@ -361,6 +352,7 @@ export function ContactForm({
         />
         <SelectField
           id="contact-business-type"
+          appearance="v2"
           label="Business type"
           hint="Optional, helps us reply in context"
           icon={Briefcase}
@@ -371,6 +363,7 @@ export function ContactForm({
         />
         <SelectField
           id="contact-current-stage"
+          appearance="v2"
           label="Where you are now"
           hint="Optional"
           icon={TrendingUp}
@@ -381,6 +374,7 @@ export function ContactForm({
         />
         <SelectField
           id="contact-main-goal"
+          appearance="v2"
           label="Your main goal"
           hint="Optional, the outcome that matters most right now"
           icon={Target}
@@ -392,6 +386,7 @@ export function ContactForm({
         />
         <TextAreaField
           id="contact-message"
+          appearance="v2"
           label="Your message"
           required
           hint="Where your business is now, and what you'd like to achieve. Up to 1000 characters."
@@ -404,25 +399,28 @@ export function ContactForm({
         />
       </div>
 
-      <TurnstileField onToken={setTurnstileToken} onSkipped={() => setTurnstileSkipped(true)} />
+      <TurnstileField
+        action="contact"
+        onToken={setTurnstileToken}
+        onSkipped={() => setTurnstileSkipped(true)}
+      />
       {turnstileSkipped ? (
         <p className={styles.hintNote}>
-          Human verification isn&apos;t active in this preview. Your submission is still checked
-          server-side.
+          Human verification is currently unavailable. If the form can&apos;t be sent, please email{" "}
+          <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
         </p>
       ) : null}
 
       <div className={styles.actions}>
-        <GlowButton
+        <Button
           type="submit"
           size="lg"
-          block
+          loading={status === "submitting"}
           iconLeft={<Send size={18} aria-hidden="true" />}
-          aria-busy={status === "submitting"}
-          disabled={status === "submitting"}
+          className={styles.submit}
         >
           {status === "submitting" ? "Sending…" : "Send my goals"}
-        </GlowButton>
+        </Button>
         <p className={styles.reassure}>
           <ShieldCheck size={15} aria-hidden="true" className={styles.reassureIcon} />
           We&apos;ll reply by email. No obligation.

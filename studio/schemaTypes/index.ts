@@ -2,6 +2,7 @@ import type {SchemaTypeDefinition} from 'sanity'
 
 // Shared objects
 import {contentStatus} from './objects/contentStatus'
+import {proofVerification} from './objects/proofVerification'
 import {seo} from './objects/seo'
 import {cta} from './objects/cta'
 import {mediaImage} from './objects/mediaImage'
@@ -77,6 +78,7 @@ import {growthPlanRuleSet} from './documents/growthPlanRuleSet'
 export const schemaTypes: SchemaTypeDefinition[] = [
   // Objects
   contentStatus,
+  proofVerification,
   seo,
   cta,
   mediaImage,

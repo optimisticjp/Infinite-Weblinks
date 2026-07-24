@@ -1,15 +1,16 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { InfinityMark } from "@/components/brand/InfinityMark";
-import { CosmicBackground } from "@/components/viz/CosmicBackground";
 import styles from "./StatusScreen.module.css";
 
 /**
- * StatusScreen — the shared on-brand full-screen message for the 404 and error pages. It
- * renders its own <main> (both are shown outside the marketing chrome) on the cosmic surface,
- * with the InfinityMark over a connector that breaks and then reconnects (a one-shot animation
- * that is reduced-motion safe: the resting/reduced state is the fully-connected line). A code,
- * an honest message, primary actions, and a row of helpful links back into the site.
+ * StatusScreen — the shared V2 message surface for the 404 and error pages. Both render outside the
+ * marketing chrome, so this owns its own `<main id="main">` (the root skip link targets `#main`) on a
+ * calm light surface: a restrained, non-luminous brand mark, a small code label, one H1, an honest
+ * message, the caller's primary/secondary actions (V2 Buttons), and a row of helpful links back into
+ * the site. No cosmic background, starfield, globe, node-orb, glow or reconnect animation — nothing
+ * motion-gated, so it is identical with or without a motion preference. The panel stays compact even
+ * though the chrome-less `<main>` fills the viewport; it must never read as a full-screen scene.
  */
 export function StatusScreen({
   code,
@@ -25,17 +26,9 @@ export function StatusScreen({
   links: { label: string; href: string }[];
 }) {
   return (
-    <main className={`theme-cosmic ${styles.wrap}`}>
-      <CosmicBackground />
+    <main id="main" className={`theme-light ${styles.wrap}`}>
       <div className={styles.inner}>
-        <div className={styles.mark} aria-hidden="true">
-          <InfinityMark size={72} luminous />
-          {/* The connector: a track with a lit path that has a gap, closing to reconnect. */}
-          <svg className={styles.connector} viewBox="0 0 200 24" fill="none" preserveAspectRatio="none">
-            <path className={styles.connTrack} d="M4 12 H196" strokeWidth="2" strokeLinecap="round" />
-            <path className={styles.connLit} d="M4 12 H196" strokeWidth="2" strokeLinecap="round" pathLength={1} />
-          </svg>
-        </div>
+        <InfinityMark size={56} glow={false} className={styles.mark} />
 
         <p className={styles.code}>{code}</p>
         <h1 className={styles.title}>{title}</h1>

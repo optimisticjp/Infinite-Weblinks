@@ -172,6 +172,12 @@
   font-size: var(--fs-sm);
   color: var(--text-muted);
 }
+/* Inline mailto link inside the muted note: inherit the text colour and underline so it is
+   distinguishable without relying on colour (axe link-in-text-block). */
+.skipNote a {
+  color: inherit;
+  text-decoration: underline;
+}
 
 .emailActions {
   display: grid;

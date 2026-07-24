@@ -125,6 +125,12 @@
   font-size: var(--fs-sm);
   color: var(--text-muted);
 }
+/* Inline mailto link inside the muted note: inherit the text colour and underline so it is
+   distinguishable without relying on colour (axe link-in-text-block). */
+.hintNote a {
+  color: inherit;
+  text-decoration: underline;
+}
 
 /* Visible key for the "*" convention (required-ness is also conveyed via the native required attr). */
 .requiredNote {

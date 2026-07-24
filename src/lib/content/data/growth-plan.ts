@@ -24,7 +24,7 @@ export type PlanIncludeItem = {
 
 /** Three approved hero reassurances (feed the PageHeader trust note). */
 export const growthPlanHeroTrustPoints: string[] = [
-  "Takes a couple of minutes",
+  "Takes a few minutes",
   "No sign-up, no cost",
   "Honest advice, not a sales pitch",
 ];

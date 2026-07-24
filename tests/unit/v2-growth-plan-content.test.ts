@@ -16,7 +16,7 @@ import { hasIcon } from "@/components/primitives/Icon";
 describe("hero trust points", () => {
   it("are the three approved reassurances in source order", () => {
     expect(growthPlanHeroTrustPoints).toEqual([
-      "Takes a couple of minutes",
+      "Takes a few minutes",
       "No sign-up, no cost",
       "Honest advice, not a sales pitch",
     ]);
@@ -32,12 +32,42 @@ describe("retired preview list", () => {
 describe("what the plan can include", () => {
   it("has the six approved items, in source order, with exact titles/bodies", () => {
     expect(growthPlanIncludes).toEqual([
-      { title: "A starting point", body: "The stage that fits you now, and why it's the sensible place to begin.", icon: "compass", tone: "var(--domain-strategy)" },
-      { title: "A connected roadmap", body: "What to do first, what to connect next, and what can wait, in order.", icon: "git-branch", tone: "var(--domain-discover)" },
-      { title: "Relevant services", body: "The services that move you forward, and the delivery model options for each.", icon: "layers", tone: "var(--domain-convert)" },
-      { title: "The right tools", body: "Real tools that fit your setup, chosen to work together, never a random list.", icon: "wrench", tone: "var(--domain-build)" },
-      { title: "Priorities for later", body: "What to add once the first steps are working, so effort compounds.", icon: "gauge", tone: "var(--domain-operate)" },
-      { title: "How we'd help", body: "A plain note on where we'd do the work and where you'd keep control.", icon: "users", tone: "var(--domain-retain)" },
+      {
+        title: "A starting point",
+        body: "The stage that fits you now, and why it's the sensible place to begin.",
+        icon: "compass",
+        tone: "var(--domain-strategy)",
+      },
+      {
+        title: "A connected roadmap",
+        body: "What to do first, what to connect next, and what can wait, in order.",
+        icon: "git-branch",
+        tone: "var(--domain-discover)",
+      },
+      {
+        title: "Relevant services",
+        body: "The services that move you forward, and the delivery model options for each.",
+        icon: "layers",
+        tone: "var(--domain-convert)",
+      },
+      {
+        title: "The right tools",
+        body: "Real tools that fit your setup, chosen to work together, never a random list.",
+        icon: "wrench",
+        tone: "var(--domain-build)",
+      },
+      {
+        title: "Priorities for later",
+        body: "What to add once the first steps are working, so effort compounds.",
+        icon: "gauge",
+        tone: "var(--domain-operate)",
+      },
+      {
+        title: "How we'd help",
+        body: "A plain note on where we'd do the work and where you'd keep control.",
+        icon: "users",
+        tone: "var(--domain-retain)",
+      },
     ]);
   });
 
@@ -56,6 +86,8 @@ describe("no invented figure or unsupported claim", () => {
   ].join(" ");
 
   it("makes no price, rating, guarantee, persistence, download or email-copy claim", () => {
-    expect(allText).not.toMatch(/[£$€]\s?\d|guarantee|\bsaved\b|\bdownload\b|yours to keep|emailed to you|sent to your email|★|\brated\b/i);
+    expect(allText).not.toMatch(
+      /[£$€]\s?\d|guarantee|\bsaved\b|\bdownload\b|yours to keep|emailed to you|sent to your email|★|\brated\b/i,
+    );
   });
 });

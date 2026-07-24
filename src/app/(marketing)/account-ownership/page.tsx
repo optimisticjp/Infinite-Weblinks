@@ -47,7 +47,11 @@ export default async function AccountOwnershipPage() {
         lead="We set up and connect your website, tools and data as your business, not ours. You get clear access and documented ownership, so the whole system stays yours, whatever you decide next."
         actions={
           <>
-            <Button href="/growth-plan" size="lg" iconRight={<ArrowRight size={18} aria-hidden="true" />}>
+            <Button
+              href="/growth-plan"
+              size="lg"
+              iconRight={<ArrowRight size={18} aria-hidden="true" />}
+            >
               Build my growth plan
             </Button>
             <Button href="/how-it-works" variant="secondary" size="lg">
@@ -68,10 +72,14 @@ export default async function AccountOwnershipPage() {
       >
         <OwnershipDetails data={ownership} />
 
-        <Callout tone="information" title="Why documented ownership matters" className={styles.note}>
+        <Callout
+          tone="information"
+          title="Why documented ownership matters"
+          className={styles.note}
+        >
           Documented access and ownership matter most when a supplier changes. Because everything is
           set up in your name, you can continue with Infinite Weblinks, bring the work in-house, or
-          move on. The choice is always yours.
+          move on. The choice is yours.
         </Callout>
       </SectionShell>
 

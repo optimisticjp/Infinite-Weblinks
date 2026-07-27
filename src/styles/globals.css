@@ -11,3 +11,8 @@
    dark is the reserved, explicitly-scoped .theme-night section. The remaining colors.css/effects.css/
    constellation.css tokens are only those with live consumers (proven-dead ones were removed in 2S). */
 @import "./tokens/v2.css";
+/* V3 foundation ("Instrument") — the CURRENT system. Dark-first, product-led.
+   Imported LAST so its semantic values win over the V2 light mapping. V2 is retained
+   because V3 reuses its token NAMES and its primitives are still referenced.
+   See docs/design/v3-design-spec.md. */
+@import "./tokens/v3.css";

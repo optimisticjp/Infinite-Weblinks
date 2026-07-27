@@ -1,0 +1,254 @@
+/* ============================================================
+   V3 FOUNDATION TOKENS — "Instrument"  (Raycast / Attio register)
+   Supersedes the V2 light-first surface decision. See docs/design/v3-design-spec.md.
+
+   WHY THIS EXISTS
+   ---------------
+   V2 ("Clear Systems") converged on a light-first site with dark reserved for a
+   single signature section. V3 inverts that: the whole document is dark, and the
+   site is carried by rendered product interfaces (the growth plan, the roadmap,
+   the troubleshooter) rather than by decorative graphics.
+
+   V3 does NOT fork the semantic contract. Components keep reading the same names
+   V2 gave them (--surface, --text-heading, --hairline, --shadow-*, --ring, and the
+   --v2-domain-* wayfinding hues). This file only supplies different VALUES for
+   them. That is why a site-wide inversion needs no component edits.
+
+   CONTRAST
+   --------
+   Every pair below was measured (WCAG 2.2 AA: body text >= 4.5:1, large/UI/
+   non-text >= 3:1). Measured minima are noted inline. The weakest text pair in
+   the system is --v3-brand-text on --v3-ink-850 at 4.98:1.
+
+   DO NOT
+   ------
+   - No colour glows. Elevation is neutral shadow plus a hairline top highlight.
+   - No decorative full-bleed gradients. The signature gradient stays CTA-only.
+   - No pure black (#000). The canvas is #08080A so panels can sit above it.
+   ============================================================ */
+
+:root {
+  /* ---- Ink scale: the dark surface stack ----
+     Neutral with a very slight cool cast. Deliberately NOT indigo/navy: a blue-black
+     canvas plus violet accents reads as generic AI-template. Neutral reads as tooling. */
+  --v3-ink-950: #08080a; /* page canvas */
+  --v3-ink-900: #0d0d10; /* raised: cards, panels */
+  --v3-ink-850: #131317; /* raised-2: panel bodies, nested fills */
+  --v3-ink-800: #1a1a20; /* inputs, tiles, chips */
+  --v3-ink-750: #21212a; /* hover / pressed on a raised surface */
+
+  /* ---- Text on the dark stack (measured against #08080a … #1a1a20) ---- */
+  --v3-on-strong: #f3f3f6; /* headings — 18.07:1 canvas / 15.64:1 input */
+  --v3-on-body: #b9b9c6; /* body — 10.31:1 canvas / 8.92:1 input */
+  --v3-on-muted: #9a9aa8; /* secondary, captions — 7.21:1 canvas / 6.24:1 input */
+  --v3-on-faint: #6e6e7c; /* DECORATIVE / disabled only — 3.99:1. Never body copy. */
+
+  /* ---- Lines ----
+     -hairline is decorative separation. -strong is a functional control edge and
+     clears 3:1 as a non-text boundary. */
+  --v3-line: rgba(255, 255, 255, 0.075);
+  --v3-line-2: rgba(255, 255, 255, 0.13);
+  --v3-line-strong: rgba(255, 255, 255, 0.24);
+
+  /* ---- Brand ----
+     Two values, because one colour cannot do both jobs on dark: -text is lifted for
+     legibility as link/accent text, -fill stays the saturated CTA surface. */
+  --v3-brand-text: #8b6bff; /* links, accent text/icons — 5.38:1 canvas, 4.98:1 on ink-850 */
+  --v3-brand-fill: #6b4eff; /* CTA fill — white on it measures 5.05:1 */
+  --v3-brand-hover: #7a5fff;
+  --v3-brand-tint: rgba(107, 78, 255, 0.14); /* selected / active soft fill */
+  --v3-brand-edge: rgba(107, 78, 255, 0.42);
+
+  /* ---- Domain wayfinding, brightened for a dark surface ----
+     Same seven worlds and the same token NAMES as V2, so every existing consumer
+     (domainColor.ts, deliveryModel.ts, IconTile, Badge, BentoCard, the header and
+     footer) re-themes with no edit. The V2 values were inks built for white paper
+     and fail badly here; these were re-measured. Worst case 6.36:1 as text. */
+  --v3-domain-strategy: #a78bfa; /* 7.35:1 canvas */
+  --v3-domain-build: #6fa8ff; /* 8.31:1 */
+  --v3-domain-discover: #2dd4c4; /* 10.79:1 */
+  --v3-domain-convert: #ff6fa3; /* 7.68:1 */
+  --v3-domain-operate: #ffa05c; /* 9.94:1 */
+  --v3-domain-retain: #4fda8b; /* 11.18:1 */
+  --v3-domain-ai: #f5cc57; /* 13.01:1 */
+
+  /* ---- Status, matched to the domain hue family ---- */
+  --v3-success: #4fda8b;
+  --v3-warning: #ffa05c;
+  --v3-danger: #ff6f7d;
+  --v3-info: #6fa8ff;
+
+  /* ---- Elevation ----
+     Layered neutral shadow. On dark, a shadow alone reads as nothing, so every
+     raised surface also gets --v3-edge-top: a 1px light hairline along its top edge.
+     That pairing is what produces the "real interface" feel; it is not decoration. */
+  --v3-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --v3-shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --v3-shadow-md: 0 8px 24px -6px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.4);
+  --v3-shadow-lg: 0 32px 64px -20px rgba(0, 0, 0, 0.85), 0 12px 28px -10px rgba(0, 0, 0, 0.6);
+  --v3-shadow-panel: 0 40px 80px -24px rgba(0, 0, 0, 0.9), 0 16px 32px -12px rgba(0, 0, 0, 0.65);
+  --v3-edge-top: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+
+  /* ---- Grain ----
+     Large flat dark fields band on 8-bit displays. A ~3% noise overlay removes it.
+     Applied once on the body pseudo-element, never per component. */
+  --v3-grain-opacity: 0.028;
+
+  /* ---- Focus ring — brand, with a surface-coloured gap so it detaches ---- */
+  --v3-ring: 0 0 0 2px var(--surface), 0 0 0 4px var(--v3-brand-text);
+
+  /* ---- Typography ----
+     Display weight goes back up from V2's restrained 700. On dark, type needs more
+     mass to hold the same optical weight it had on paper. Tracking tightens to match. */
+  --v3-fw-display: 800;
+  --v3-fw-heading: 700;
+  --v3-fs-display: clamp(2.375rem, 4.6vw, 3.75rem);
+  --v3-tracking-display: -0.045em;
+  --v3-tracking-heading: -0.035em;
+
+  /* ---- Long-form reading ----
+     Dark backgrounds make long prose harder to track. Reading surfaces lift one step
+     off the canvas and the measure narrows slightly. Used by the learn/guide routes. */
+  --v3-read-surface: var(--v3-ink-900);
+  --v3-read-measure: 68ch;
+}
+
+/* ============================================================
+   V3 THEME CLASSES
+   Same semantic token names V2 defined, different values. Any component already
+   reading --surface / --text-heading / --hairline re-themes automatically.
+   ============================================================ */
+
+/* Deep — the V3 default canvas. Carried by <body>. */
+.theme-deep,
+.theme-deep-alt,
+.theme-night {
+  color-scheme: dark;
+
+  --surface-hover: rgba(255, 255, 255, 0.055);
+  --text-heading: var(--v3-on-strong);
+  --text-body: var(--v3-on-body);
+  --text-muted: var(--v3-on-muted);
+  --text-faint: var(--v3-on-faint);
+
+  --hairline: var(--v3-line);
+  --hairline-2: var(--v3-line-2);
+  --hairline-strong: var(--v3-line-strong);
+
+  --link: var(--v3-brand-text);
+  --link-hover: #b9a3ff;
+  --cta-text: #ffffff;
+
+  --shadow-sm: var(--v3-shadow-sm);
+  --shadow-md: var(--v3-shadow-md);
+  --shadow-lg: var(--v3-shadow-lg);
+  --shadow-card: var(--v3-shadow-md);
+  --shadow-panel: var(--v3-shadow-panel);
+  --edge-top: var(--v3-edge-top);
+
+  --ring: var(--v3-ring);
+  --brand: var(--v3-brand-text);
+  --brand-strong: var(--v3-brand-hover);
+  --brand-fill: var(--v3-brand-fill);
+  --brand-tint: var(--v3-brand-tint);
+  --brand-edge: var(--v3-brand-edge);
+
+  /* Domain hue remap — this is what re-themes every wayfinding consumer.
+     ink / tint / line keep their V2 role split: ink is text+icon, tint is a soft
+     fill, line is the accent rail. On dark, tint becomes a low-alpha wash of the
+     hue itself rather than a pale pastel. */
+  --v2-domain-strategy-ink: var(--v3-domain-strategy);
+  --v2-domain-strategy-line: var(--v3-domain-strategy);
+  --v2-domain-strategy-tint: rgba(167, 139, 250, 0.14);
+  --v2-domain-build-ink: var(--v3-domain-build);
+  --v2-domain-build-line: var(--v3-domain-build);
+  --v2-domain-build-tint: rgba(111, 168, 255, 0.14);
+  --v2-domain-discover-ink: var(--v3-domain-discover);
+  --v2-domain-discover-line: var(--v3-domain-discover);
+  --v2-domain-discover-tint: rgba(45, 212, 196, 0.14);
+  --v2-domain-convert-ink: var(--v3-domain-convert);
+  --v2-domain-convert-line: var(--v3-domain-convert);
+  --v2-domain-convert-tint: rgba(255, 111, 163, 0.14);
+  --v2-domain-operate-ink: var(--v3-domain-operate);
+  --v2-domain-operate-line: var(--v3-domain-operate);
+  --v2-domain-operate-tint: rgba(255, 160, 92, 0.14);
+  --v2-domain-retain-ink: var(--v3-domain-retain);
+  --v2-domain-retain-line: var(--v3-domain-retain);
+  --v2-domain-retain-tint: rgba(79, 218, 139, 0.14);
+  --v2-domain-ai-ink: var(--v3-domain-ai);
+  --v2-domain-ai-line: var(--v3-domain-ai);
+  --v2-domain-ai-tint: rgba(245, 204, 87, 0.14);
+
+  /* Status remap, same reason */
+  --v2-success: var(--v3-success);
+  --v2-success-tint: rgba(79, 218, 139, 0.14);
+  --v2-warning: var(--v3-warning);
+  --v2-warning-tint: rgba(255, 160, 92, 0.14);
+  --v2-danger: var(--v3-danger);
+  --v2-danger-tint: rgba(255, 111, 125, 0.14);
+  --v2-info: var(--v3-info);
+  --v2-info-tint: rgba(111, 168, 255, 0.14);
+
+  /* V2 brand primitives remapped so any component still reading them stays legible */
+  --v2-brand: var(--v3-brand-text);
+  --v2-brand-strong: var(--v3-brand-hover);
+  --v2-brand-tint: var(--v3-brand-tint);
+  --v2-line: var(--v3-line);
+  --v2-line-strong: var(--v3-line-strong);
+
+  background-color: var(--surface);
+  color: var(--text-body);
+}
+
+/* Canvas level */
+.theme-deep {
+  --surface: var(--v3-ink-950);
+  --surface-raised: var(--v3-ink-900);
+  --surface-raised-2: var(--v3-ink-850);
+  --surface-input: var(--v3-ink-800);
+}
+
+/* Alternating band — one step up, so a card on it still reads as raised. */
+.theme-deep-alt {
+  --surface: var(--v3-ink-900);
+  --surface-raised: var(--v3-ink-850);
+  --surface-raised-2: var(--v3-ink-800);
+  --surface-input: var(--v3-ink-800);
+}
+
+/* Night — retained so the existing FinalCtaSection consumer keeps working.
+   In V3 it is the deepest surface, used for the closing CTA moment. */
+.theme-night {
+  --surface: var(--v3-ink-950);
+  --surface-raised: var(--v3-ink-850);
+  --surface-raised-2: var(--v3-ink-800);
+  --surface-input: var(--v3-ink-800);
+}
+
+/* Grain — applied once, on the document only. Large flat dark fields band on 8-bit
+   displays; ~3% noise removes it. pointer-events:none so it never intercepts input,
+   and it sits below all content. Not repeated per component. */
+body.theme-deep::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: var(--v3-grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Heading weight + tracking on V3 surfaces */
+.theme-deep :is(h1, h2, h3, h4),
+.theme-deep-alt :is(h1, h2, h3, h4),
+.theme-night :is(h1, h2, h3, h4) {
+  font-weight: var(--v3-fw-heading);
+  letter-spacing: var(--v3-tracking-heading);
+}
+
+/* Long-form reading surfaces lift off the canvas and narrow the measure. */
+.theme-deep .v3-prose,
+.theme-deep-alt .v3-prose,
+.theme-night .v3-prose {
+  max-width: var(--v3-read-measure);
+}

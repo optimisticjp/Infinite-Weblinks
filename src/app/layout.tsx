@@ -52,22 +52,22 @@ export const metadata: Metadata = {
     : {}),
 };
 
-// V2 convergence (Phase 2S): the document root is light-first. The paper theme-colour matches the
-// V2 base canvas, and colorScheme is light so form controls, scrollbars and the overscroll canvas
-// render light. Reserved dark sections (the single theme-night FinalCtaSection) stay explicitly
-// scoped and re-declare color-scheme: dark within their own bounds.
+// V3 convergence ("Instrument"): the document root is dark-first. The theme-colour matches the V3
+// base canvas (--v3-ink-950) so the browser chrome, overscroll canvas, scrollbars and native form
+// controls all agree with the page instead of flashing white on load. V2's light classes remain
+// defined for any surface that opts back into paper; nothing does so by default.
 export const viewport: Viewport = {
-  themeColor: "#ffffff",
-  colorScheme: "light",
+  themeColor: "#08080a",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en-GB" className={`${sora.variable} ${jakarta.variable} ${mono.variable}`}>
-      {/* theme-light on <body> adopts the final V2 light semantic mapping for the whole document
+      {/* theme-deep on <body> adopts the V3 dark semantic mapping for the whole document
           (surface/ink/hairline/shadow/ring/link/brand) without duplicating the token map — night
           sections override it locally. The body background propagates to the overscroll canvas. */}
-      <body className="theme-light">
+      <body className="theme-deep">
         <BrandSprite />
         <a className="iw-skip-link" href="#main">
           Skip to main content

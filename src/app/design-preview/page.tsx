@@ -446,7 +446,7 @@ export default async function DesignPreviewPage() {
           <p className={styles.subTitle}>Tones (md)</p>
           <div className={styles.tileRow}>
             <div className={styles.tileCell}>
-              <IconTile color="var(--v2-ink-muted)">
+              <IconTile color="var(--text-muted)">
                 <Icon name="folder" />
               </IconTile>
               <span className={styles.tileCaption}>neutral</span>

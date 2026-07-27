@@ -6,7 +6,11 @@ import { describe, it, expect } from "vitest";
  * Phase 2I §A regressions for the three Phase 2H corrections:
  *  1. the Phase 2H report records FOUR new components, not five;
  *  2. no goal-detail route claims every business follows the same journey/sequence;
- *  3. GoalPath's marker uses a semantic paper token, never a raw named colour.
+ *  3. GoalPath's marker uses a semantic surface token, never a raw named colour.
+ *
+ * (3) was updated for the V3 "Instrument" dark flip: the marker tint now mixes against the semantic
+ * --surface-raised (re-themed by .theme-deep), not the V2 light-paper primitive --v2-paper. The
+ * intent the check guards — a semantic surface token, never a raw white/black keyword — is unchanged.
  */
 
 const read = (rel: string) => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), "utf8");
@@ -43,8 +47,8 @@ describe("goal-detail journey copy is truthful", () => {
 describe("GoalPath marker uses a semantic token, not a raw named colour", () => {
   const css = read("../../src/components/routes/GoalPath.module.css").replace(/\/\*[\s\S]*?\*\//g, "");
 
-  it("mixes the marker tint against var(--v2-paper), never the raw white keyword", () => {
-    expect(css).toMatch(/color-mix\(in srgb, var\(--path-ink\) 8%, var\(--v2-paper\)\)/);
+  it("mixes the marker tint against var(--surface-raised), never the raw white keyword", () => {
+    expect(css).toMatch(/color-mix\(in srgb, var\(--path-ink\) 8%, var\(--surface-raised\)\)/);
     expect(css).not.toMatch(/(?<![\w-])(white|black)(?![\w-])/i);
   });
 });

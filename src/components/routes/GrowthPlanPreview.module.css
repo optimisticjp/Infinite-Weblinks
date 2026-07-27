@@ -55,7 +55,7 @@
 }
 .ctxIcon {
   display: inline-flex;
-  color: var(--v2-ink-muted);
+  color: var(--text-muted);
 }
 .ctxIcon > svg {
   width: 15px;

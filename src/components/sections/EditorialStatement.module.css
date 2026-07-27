@@ -71,7 +71,7 @@
   inset: 0;
   z-index: 3;
 }
-/* A white logo tile (ref 18): full-colour brand mark on a clean daylight chip, glow-free. */
+/* A raised logo tile: full-colour brand mark on a clean chip (--surface-raised), glow-free. */
 .chip {
   position: absolute;
   left: var(--x);

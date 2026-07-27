@@ -62,7 +62,7 @@ export function HomepageHeroSection({ hero }: { hero: HeroContent }) {
 }
 
 /**
- * Works-with rail — real, locally-stored full-colour brand logos on light tiles, with the existing
+ * Works-with rail — real, locally-stored full-colour brand logos on raised tiles, with the existing
  * neutral label and a visible non-endorsement clarification. No marquee, auto-scroll or logo
  * animation; the list has an accessible name and each logo carries its brand name.
  */

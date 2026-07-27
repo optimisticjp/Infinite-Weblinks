@@ -40,7 +40,7 @@
   flex: none;
   border-radius: var(--v2-radius-pill);
   border: 1.5px solid var(--hairline);
-  color: var(--v2-paper);
+  color: var(--cta-text);
 }
 .done .marker {
   background: var(--v2-success);

@@ -36,7 +36,7 @@
   width: 40px;
   height: 40px;
   border-radius: var(--v2-radius-pill);
-  background: color-mix(in srgb, var(--v2-brand-strong) 12%, var(--v2-paper));
+  background: color-mix(in srgb, var(--v2-brand-strong) 12%, var(--surface-raised));
   border: 1px solid color-mix(in srgb, var(--v2-brand-strong) 30%, transparent);
   color: var(--v2-brand-strong);
   font-family: var(--font-mono);

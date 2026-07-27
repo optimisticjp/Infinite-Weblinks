@@ -12,6 +12,12 @@ released under the **CC0 1.0 Universal** public-domain dedication. They are the 
 official marks — **not redrawn, approximated or invented**. Each file has the brand's
 official primary colour baked onto the root `<svg>` (brand colours are public facts).
 
+**Dark-surface exception — TikTok.** TikTok's official mark colour is `#000000`, which is
+invisible on the V3 dark canvas (~1.05:1 on the page background). Its file is baked with a
+**white** mark instead. The shape is TikTok's official, un-redrawn mark; only the fill is
+lightened — which is TikTok's own standard treatment on dark backgrounds. This is set per-logo
+in `scripts/fetch-brand-logos.mjs`, so regeneration preserves it.
+
 ## Files
 
 `shopify`, `wordpress`, `google`, `meta`, `mailchimp`, `hubspot`, `instagram`, `tiktok`,

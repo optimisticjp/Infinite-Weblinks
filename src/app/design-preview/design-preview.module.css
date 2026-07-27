@@ -13,7 +13,7 @@
 .banner {
   background: var(--v2-warning-tint);
   border-bottom: 1px solid color-mix(in srgb, var(--v2-warning) 34%, transparent);
-  color: var(--v2-ink-body);
+  color: var(--text-body);
   padding: var(--space-3) var(--gutter);
   font-size: var(--fs-sm);
   display: flex;
@@ -367,5 +367,5 @@
   height: 48px;
   border-radius: var(--v2-radius-md);
   border: 1px solid var(--hairline);
-  background: var(--v2-paper);
+  background: var(--surface-raised);
 }

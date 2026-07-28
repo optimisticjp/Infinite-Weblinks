@@ -11,6 +11,7 @@ import { FilterChip } from "@/components/primitives/FilterChip";
 import { IconTile } from "@/components/primitives/IconTile";
 import { Card } from "@/components/primitives/Card";
 import { CardGrid } from "@/components/primitives/CardGrid";
+import { Panel } from "@/components/primitives/Panel";
 import { BentoGrid } from "@/components/primitives/BentoGrid";
 import { BentoCard } from "@/components/primitives/BentoCard";
 import { Callout } from "@/components/primitives/Callout";
@@ -533,6 +534,32 @@ export default async function DesignPreviewPage() {
               <span className={styles.cardTitle}>Night</span>
               <span className={styles.cardBody}>Self-contained dark card for a signature moment.</span>
             </Card>
+          </div>
+        </section>
+
+        {/* 11b · Panel — V3 product surface. Shown on a theme-deep swatch (its intended dark canvas),
+            since the rest of this gallery is still the V2 light system until the Phase 4 rollout. */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Panel — V3 product surface (theme-deep)</h2>
+          <div className={`theme-deep ${styles.surfacePanel}`}>
+            <div className={styles.gridWide}>
+              <Panel padded>
+                <span className={styles.cardTitle}>Padded panel</span>
+                <span className={styles.cardBody}>
+                  Raised surface, 1px hairline, the --edge-top top highlight and --shadow-panel. On
+                  dark the highlight — not the shadow — is what makes it read as a real interface.
+                </span>
+              </Panel>
+              <Panel>
+                <div style={{ padding: "var(--space-5)" }}>
+                  <span className={styles.cardTitle}>Framed panel (flush)</span>
+                  <span className={styles.cardBody}>
+                    No inner padding by default, so a product panel (plan / roadmap / troubleshooter)
+                    owns its head / body / foot regions. This copy sits in a region that pads itself.
+                  </span>
+                </div>
+              </Panel>
+            </div>
           </div>
         </section>
 

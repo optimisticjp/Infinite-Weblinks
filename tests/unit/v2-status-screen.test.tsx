@@ -29,11 +29,11 @@ describe("StatusScreen — rendered contract", () => {
       />,
     );
 
-  it("renders one <main id='main'> on the light surface with a single H1", () => {
+  it("renders one <main id='main'> on the dark surface with a single H1", () => {
     const { container } = renderIt();
     const main = container.querySelector("main#main");
     expect(main, "main#main").not.toBeNull();
-    expect(main).toHaveClass("theme-light");
+    expect(main).toHaveClass("theme-deep");
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
     expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("We couldn't find that page");
     expect(screen.getByText("404")).toBeVisible();
@@ -61,9 +61,9 @@ describe("StatusScreen — source contract", () => {
   // Strip comments so the banned-construct check sees code, not the descriptive doc comment (which
   // legitimately says "non-luminous", "no cosmic background", etc.).
   const code = src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
-  it("is V2: id='main', theme-light, restrained non-luminous mark, no cosmic/glow/animation", () => {
+  it("is V3: id='main', theme-deep, restrained non-luminous mark, no cosmic/glow/animation", () => {
     expect(src).toContain('id="main"');
-    expect(src).toContain("theme-light");
+    expect(src).toContain("theme-deep");
     expect(src).toMatch(/InfinityMark[^/]*glow=\{false\}/);
     for (const banned of ["CosmicBackground", "theme-cosmic", "GlowButton", "luminous", "connector"]) {
       expect(code, `no ${banned}`).not.toContain(banned);

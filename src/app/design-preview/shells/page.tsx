@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 export default function ShellsPreviewPage() {
   return (
-    <main className={`theme-light ${layout.wrap}`}>
+    <main className={`theme-deep ${layout.wrap}`}>
       <div className={layout.banner}>
         <span className={layout.bannerTag}>Internal · noindex</span>
         <span>

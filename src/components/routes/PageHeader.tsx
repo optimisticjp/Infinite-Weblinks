@@ -4,9 +4,12 @@ import styles from "./PageHeader.module.css";
 
 type Surface = "light" | "alt" | "night";
 
+// V2 tone name → V3 theme class. Names are kept (used across many page headers) but now resolve to
+// the DARK surfaces under the V3 flip: `light` is the deep base canvas, `alt` the alternating deep
+// band, `night` the deepest signature surface (already dark). A `light` header is DARK.
 const SURFACE_CLASS: Record<Surface, string> = {
-  light: "theme-light",
-  alt: "theme-light-alt",
+  light: "theme-deep",
+  alt: "theme-deep-alt",
   night: "theme-night",
 };
 
@@ -26,7 +29,8 @@ interface PageHeaderProps {
   /** Optional visual (product mockup, card group, restrained diagram). Decorative; the caller
    *  makes it aria-hidden where appropriate. On mobile it renders AFTER the copy + CTA. */
   aside?: ReactNode;
-  /** V2 surface. Light by default; night is a rare reserved variant. */
+  /** Surface tone (V2 names, now V3-dark). `light` (default) → deep base canvas; `night` → the
+   *  deepest signature surface. Every value renders dark under V3. */
   surface?: Surface;
   /** The one restrained accent (eyebrow colour). Defaults to the theme link colour, which is
    *  always accessible; pass an accent only if it clears AA on the chosen surface. */

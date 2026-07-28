@@ -182,7 +182,7 @@ export default async function DesignPreviewPage() {
   )[0];
 
   return (
-    <main id="main" className={`theme-light ${styles.wrap}`}>
+    <main id="main" className={`theme-deep ${styles.wrap}`}>
       <div className={styles.banner}>
         <span className={styles.bannerTag}>Internal · noindex</span>
         <span>

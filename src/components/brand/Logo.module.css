@@ -26,7 +26,9 @@
 /* V2 chrome: drop the coloured bloom — the mark keeps its multicolour gradient, flat. */
 :global(.theme-light) .mark,
 :global(.theme-light-alt) .mark,
-:global(.theme-night) .mark {
+:global(.theme-night) .mark,
+:global(.theme-deep) .mark,
+:global(.theme-deep-alt) .mark {
   filter: none;
 }
 

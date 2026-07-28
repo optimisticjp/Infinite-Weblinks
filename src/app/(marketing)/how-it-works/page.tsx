@@ -60,7 +60,7 @@ export default async function HowItWorksPage() {
       />
 
       {/* Compact page-jump nav — links between the four sections, not tabs or a filter. */}
-      <div className={`theme-light ${styles.jumpNavBand}`}>
+      <div className={`theme-deep ${styles.jumpNavBand}`}>
         <div className="iw-container iw-container--wide">
           <nav aria-label="How it works sections" className={styles.jumpNav}>
             <LinkChip href="#growth-journey">Growth journey</LinkChip>

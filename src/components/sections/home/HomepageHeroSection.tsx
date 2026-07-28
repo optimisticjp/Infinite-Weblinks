@@ -16,7 +16,7 @@ import styles from "./HomepageHeroSection.module.css";
  */
 export function HomepageHeroSection({ hero }: { hero: HeroContent }) {
   return (
-    <section className={`theme-light ${styles.hero}`} aria-labelledby="hero-heading">
+    <section className={`theme-deep ${styles.hero}`} aria-labelledby="hero-heading">
       <div className={`iw-container iw-container--wide ${styles.grid}`}>
         <div className={styles.copy}>
           <p className={styles.eyebrow}>{hero.eyebrow}</p>

@@ -107,7 +107,7 @@ export function MobileNav({
     <div className={styles.overlay}>
       <div
         id="mobile-nav"
-        className={`theme-light ${styles.dialog}`}
+        className={`theme-deep ${styles.dialog}`}
         ref={dialogRef}
         role="dialog"
         aria-modal="true"

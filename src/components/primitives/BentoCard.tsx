@@ -33,8 +33,8 @@ type BentoCardProps = {
  * the whole tile is one link with a corner arrow (a single tab stop, named by its heading);
  * without `href` it is an informational tile (and can carry an `id` anchor).
  *
- * Icon rendering: on legacy surfaces the glossy NodeOrb is shown (unchanged). On V2 surfaces
- * (.theme-light / -alt / .theme-night) the NodeOrb is hidden by CSS and a FLAT tinted tile is
+ * Icon rendering: on un-themed legacy surfaces the glossy NodeOrb is shown (unchanged). On the
+ * themed surfaces (.theme-light / -alt / .theme-night / .theme-deep / .theme-deep-alt) the NodeOrb is hidden by CSS and a FLAT tinted tile is
  * shown instead — so the V2 rendering carries no visible NodeOrb, and no glow/starfield. For
  * V2 use, pass an accessible domain ink as `hue` (e.g. "var(--v2-domain-strategy-ink)").
  * Legacy hover lifts with a coloured glow; V2 hover is a ≤2px neutral lift; reduced motion

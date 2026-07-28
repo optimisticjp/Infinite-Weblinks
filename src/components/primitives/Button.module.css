@@ -176,14 +176,18 @@
 }
 
 /* ============================================================
-   V2 overrides — ACTIVE ONLY inside .theme-light / .theme-light-alt / .theme-night.
-   Legacy surfaces (theme-dark/band/cosmic and the raw page) are untouched above.
-   Rules use semantic + --v2-* tokens, so one triple-scoped rule adapts to all three
-   V2 surfaces. Higher specificity (theme class + variant) beats the legacy rules.
+   V2/V3 overrides — ACTIVE inside the themed surfaces .theme-light / .theme-light-alt /
+   .theme-night / .theme-deep / .theme-deep-alt (V2 light + V3 dark). The un-themed base is
+   the retired Constellation styling, so a surface MUST carry one of these classes — which,
+   post the V3 flip, every SectionShell/PageHeader now does. Rules use semantic + --v2-*
+   tokens, so one scoped rule adapts to all five surfaces; the theme class + variant
+   specificity beats the legacy base rules.
    ============================================================ */
 :global(.theme-light) .btn,
 :global(.theme-light-alt) .btn,
-:global(.theme-night) .btn {
+:global(.theme-night) .btn,
+:global(.theme-deep) .btn,
+:global(.theme-deep-alt) .btn {
   border-radius: var(--v2-radius-sm); /* rounded-rect, not pill */
   font-weight: var(--fw-semibold);
   /* At large text sizes / 200% zoom, let long labels wrap and never exceed the container
@@ -196,24 +200,32 @@
 /* V2 pointer targets — larger than the legacy sizes (legacy sm stays 40px off V2 surfaces). */
 :global(.theme-light) .sm,
 :global(.theme-light-alt) .sm,
-:global(.theme-night) .sm {
+:global(.theme-night) .sm,
+:global(.theme-deep) .sm,
+:global(.theme-deep-alt) .sm {
   min-height: 44px;
 }
 :global(.theme-light) .md,
 :global(.theme-light-alt) .md,
-:global(.theme-night) .md {
+:global(.theme-night) .md,
+:global(.theme-deep) .md,
+:global(.theme-deep-alt) .md {
   min-height: 46px;
 }
 :global(.theme-light) .lg,
 :global(.theme-light-alt) .lg,
-:global(.theme-night) .lg {
+:global(.theme-night) .lg,
+:global(.theme-deep) .lg,
+:global(.theme-deep-alt) .lg {
   min-height: 52px;
 }
 
 /* primary → solid brand fill, neutral shadow, no glow, no moving gradient */
 :global(.theme-light) .primary,
 :global(.theme-light-alt) .primary,
-:global(.theme-night) .primary {
+:global(.theme-night) .primary,
+:global(.theme-deep) .primary,
+:global(.theme-deep-alt) .primary {
   background-image: none;
   background-color: var(--v2-brand);
   color: var(--v2-on-brand);
@@ -221,23 +233,31 @@
 }
 :global(.theme-light) .primary:hover:not(:disabled),
 :global(.theme-light-alt) .primary:hover:not(:disabled),
-:global(.theme-night) .primary:hover:not(:disabled) {
+:global(.theme-night) .primary:hover:not(:disabled),
+:global(.theme-deep) .primary:hover:not(:disabled),
+:global(.theme-deep-alt) .primary:hover:not(:disabled) {
   background-color: var(--v2-brand-strong);
   box-shadow: var(--v2-shadow-md);
 }
 :global(.theme-light) .primary:focus-visible,
 :global(.theme-light-alt) .primary:focus-visible,
 :global(.theme-night) .primary:focus-visible,
+:global(.theme-deep) .primary:focus-visible,
+:global(.theme-deep-alt) .primary:focus-visible,
 :global(.theme-light) .brand:focus-visible,
 :global(.theme-light-alt) .brand:focus-visible,
-:global(.theme-night) .brand:focus-visible {
+:global(.theme-night) .brand:focus-visible,
+:global(.theme-deep) .brand:focus-visible,
+:global(.theme-deep-alt) .brand:focus-visible {
   box-shadow: var(--ring); /* ring only — drop the legacy neon glow */
 }
 
 /* secondary → functional border, restrained neutral hover (not the violet border-glow) */
 :global(.theme-light) .secondary:hover:not(:disabled),
 :global(.theme-light-alt) .secondary:hover:not(:disabled),
-:global(.theme-night) .secondary:hover:not(:disabled) {
+:global(.theme-night) .secondary:hover:not(:disabled),
+:global(.theme-deep) .secondary:hover:not(:disabled),
+:global(.theme-deep-alt) .secondary:hover:not(:disabled) {
   border-color: var(--v2-line-strong);
   background: var(--surface-hover);
 }
@@ -245,19 +265,25 @@
 /* ghost → no resting fill, subtle hover surface, no shadow/glow */
 :global(.theme-light) .ghost,
 :global(.theme-light-alt) .ghost,
-:global(.theme-night) .ghost {
+:global(.theme-night) .ghost,
+:global(.theme-deep) .ghost,
+:global(.theme-deep-alt) .ghost {
   background: transparent;
 }
 :global(.theme-light) .ghost:hover:not(:disabled),
 :global(.theme-light-alt) .ghost:hover:not(:disabled),
-:global(.theme-night) .ghost:hover:not(:disabled) {
+:global(.theme-night) .ghost:hover:not(:disabled),
+:global(.theme-deep) .ghost:hover:not(:disabled),
+:global(.theme-deep-alt) .ghost:hover:not(:disabled) {
   background: var(--surface-hover);
 }
 
 /* text → unmistakable link treatment (underline) */
 :global(.theme-light) .text,
 :global(.theme-light-alt) .text,
-:global(.theme-night) .text {
+:global(.theme-night) .text,
+:global(.theme-deep) .text,
+:global(.theme-deep-alt) .text {
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-thickness: 1.5px;
@@ -270,28 +296,40 @@
 :global(.theme-light) .md:hover:not(:disabled),
 :global(.theme-light-alt) .md:hover:not(:disabled),
 :global(.theme-night) .md:hover:not(:disabled),
+:global(.theme-deep) .md:hover:not(:disabled),
+:global(.theme-deep-alt) .md:hover:not(:disabled),
 :global(.theme-light) .lg:hover:not(:disabled),
 :global(.theme-light-alt) .lg:hover:not(:disabled),
-:global(.theme-night) .lg:hover:not(:disabled) {
+:global(.theme-night) .lg:hover:not(:disabled),
+:global(.theme-deep) .lg:hover:not(:disabled),
+:global(.theme-deep-alt) .lg:hover:not(:disabled) {
   transform: none;
 }
 :global(.theme-light) .btn:hover:not(:disabled) .iconRight,
 :global(.theme-light-alt) .btn:hover:not(:disabled) .iconRight,
-:global(.theme-night) .btn:hover:not(:disabled) .iconRight {
+:global(.theme-night) .btn:hover:not(:disabled) .iconRight,
+:global(.theme-deep) .btn:hover:not(:disabled) .iconRight,
+:global(.theme-deep-alt) .btn:hover:not(:disabled) .iconRight {
   transform: none;
 }
 @media (hover: hover) and (pointer: fine) {
   :global(.theme-light) .md:hover:not(:disabled),
   :global(.theme-light-alt) .md:hover:not(:disabled),
   :global(.theme-night) .md:hover:not(:disabled),
+  :global(.theme-deep) .md:hover:not(:disabled),
+  :global(.theme-deep-alt) .md:hover:not(:disabled),
   :global(.theme-light) .lg:hover:not(:disabled),
   :global(.theme-light-alt) .lg:hover:not(:disabled),
-  :global(.theme-night) .lg:hover:not(:disabled) {
+  :global(.theme-night) .lg:hover:not(:disabled),
+  :global(.theme-deep) .lg:hover:not(:disabled),
+  :global(.theme-deep-alt) .lg:hover:not(:disabled) {
     transform: translateY(-2px);
   }
   :global(.theme-light) .btn:hover:not(:disabled) .iconRight,
   :global(.theme-light-alt) .btn:hover:not(:disabled) .iconRight,
-  :global(.theme-night) .btn:hover:not(:disabled) .iconRight {
+  :global(.theme-night) .btn:hover:not(:disabled) .iconRight,
+  :global(.theme-deep) .btn:hover:not(:disabled) .iconRight,
+  :global(.theme-deep-alt) .btn:hover:not(:disabled) .iconRight {
     transform: translateX(3px);
   }
 }
@@ -300,14 +338,20 @@
   :global(.theme-light) .md:hover:not(:disabled),
   :global(.theme-light-alt) .md:hover:not(:disabled),
   :global(.theme-night) .md:hover:not(:disabled),
+  :global(.theme-deep) .md:hover:not(:disabled),
+  :global(.theme-deep-alt) .md:hover:not(:disabled),
   :global(.theme-light) .lg:hover:not(:disabled),
   :global(.theme-light-alt) .lg:hover:not(:disabled),
-  :global(.theme-night) .lg:hover:not(:disabled) {
+  :global(.theme-night) .lg:hover:not(:disabled),
+  :global(.theme-deep) .lg:hover:not(:disabled),
+  :global(.theme-deep-alt) .lg:hover:not(:disabled) {
     transform: none;
   }
   :global(.theme-light) .btn:hover:not(:disabled) .iconRight,
   :global(.theme-light-alt) .btn:hover:not(:disabled) .iconRight,
-  :global(.theme-night) .btn:hover:not(:disabled) .iconRight {
+  :global(.theme-night) .btn:hover:not(:disabled) .iconRight,
+  :global(.theme-deep) .btn:hover:not(:disabled) .iconRight,
+  :global(.theme-deep-alt) .btn:hover:not(:disabled) .iconRight {
     transform: none;
   }
 }

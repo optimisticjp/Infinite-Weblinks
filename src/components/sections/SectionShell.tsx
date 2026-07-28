@@ -2,15 +2,20 @@ import { useId, type ReactNode } from "react";
 import styles from "./SectionShell.module.css";
 
 /**
- * Section surface (V2, converged). `light` (default) / `alt` (alternating band) / `night` (the
- * reserved dark signature section). No cosmic layer, no gradient eyebrow — the legacy Constellation
- * surface was removed at Phase 2S convergence once every consumer had migrated.
+ * Section surface. The tone NAMES are kept from V2 (they are used at 90+ call sites, so renaming
+ * ripples too far — see the map note), but under the V3 "Instrument" flip they now resolve to the
+ * DARK surfaces. So, spelled out to defuse the misleading names: a `light` section is DARK.
+ *   `light` → theme-deep (the base deep canvas · default)
+ *   `alt`   → theme-deep-alt (the alternating deep band)
+ *   `night` → theme-night (the deepest signature surface · already dark, unchanged)
  */
 type Surface = "light" | "alt" | "night";
 
+// V2 tone name → V3 theme class. `light`/`alt` moved from theme-light/-alt to the dark equivalents
+// (this is the change that actually makes the site render dark); `night` was already dark.
 const SURFACE_THEME: Record<Surface, string> = {
-  light: "theme-light",
-  alt: "theme-light-alt",
+  light: "theme-deep",
+  alt: "theme-deep-alt",
   night: "theme-night",
 };
 
@@ -30,7 +35,8 @@ type SectionShellProps = {
   labelledBy?: string;
   /** Accessible name for a headingless section (used only when no title/labelledBy is set). */
   ariaLabel?: string;
-  /** V2 surface. Defaults to `light`. */
+  /** Surface tone. Names are V2 heritage but resolve to V3 dark surfaces — `light` (default) is the
+   *  deep base canvas, `alt` the alternating deep band, `night` the deepest signature surface. */
   surface?: Surface;
   /** Header alignment. */
   align?: "center" | "start";

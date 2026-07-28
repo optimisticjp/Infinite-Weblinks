@@ -26,7 +26,7 @@ export function StatusScreen({
   links: { label: string; href: string }[];
 }) {
   return (
-    <main id="main" className={`theme-light ${styles.wrap}`}>
+    <main id="main" className={`theme-deep ${styles.wrap}`}>
       <div className={styles.inner}>
         <InfinityMark size={56} glow={false} className={styles.mark} />
 

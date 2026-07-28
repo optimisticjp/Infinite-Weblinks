@@ -19,7 +19,7 @@ export function SiteFooter({ footer }: { footer: FooterContent }) {
   const year = new Date().getFullYear();
 
   return (
-    <footer className={`theme-light ${styles.footer}`}>
+    <footer className={`theme-deep ${styles.footer}`}>
       <div className={`iw-container iw-container--wide ${styles.inner}`}>
         <div className={styles.brand}>
           <Logo href="/" size={30} className={styles.logo} />

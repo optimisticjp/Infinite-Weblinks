@@ -182,39 +182,54 @@
 }
 
 /* ============================================================
-   V2 rendering — ACTIVE ONLY inside .theme-light / -alt / .theme-night.
-   Flat light tile (no radial hue wash, no glow), one accent rail, ≤2px neutral hover.
-   The NodeOrb is hidden and replaced by the flat .iconV2. Legacy surfaces are untouched.
+   V2/V3 rendering — ACTIVE inside .theme-light / -alt / .theme-night / .theme-deep /
+   .theme-deep-alt (V2 light + V3 dark). Flat tile (no radial hue wash, no glow), one accent
+   rail, ≤2px neutral hover. The NodeOrb is hidden and replaced by the flat .iconV2. Only an
+   un-themed surface keeps the legacy rendering. (On the dark surfaces the eyebrow/index/arrow
+   use --bento-hue directly: V3 remaps the domain inks bright, so the night-only remap below is
+   NOT extended to theme-deep — dark surfaces keep the wayfinding colour.)
    ============================================================ */
 :global(.theme-light) .orbLegacy,
 :global(.theme-light-alt) .orbLegacy,
-:global(.theme-night) .orbLegacy {
+:global(.theme-night) .orbLegacy,
+:global(.theme-deep) .orbLegacy,
+:global(.theme-deep-alt) .orbLegacy {
   display: none;
 }
 :global(.theme-light) .iconV2,
 :global(.theme-light-alt) .iconV2,
-:global(.theme-night) .iconV2 {
+:global(.theme-night) .iconV2,
+:global(.theme-deep) .iconV2,
+:global(.theme-deep-alt) .iconV2 {
   display: inline-grid;
 }
 :global(.theme-light) .card,
 :global(.theme-light-alt) .card,
-:global(.theme-night) .card {
+:global(.theme-night) .card,
+:global(.theme-deep) .card,
+:global(.theme-deep-alt) .card {
   background: var(--surface-raised); /* drop the radial hue wash */
   box-shadow: var(--v2-shadow-sm);
 }
 :global(.theme-light) .eyebrow,
 :global(.theme-light-alt) .eyebrow,
-:global(.theme-night) .eyebrow {
+:global(.theme-night) .eyebrow,
+:global(.theme-deep) .eyebrow,
+:global(.theme-deep-alt) .eyebrow {
   color: var(--bento-hue); /* accessible domain ink on V2 surfaces */
 }
 :global(.theme-light) .index,
 :global(.theme-light-alt) .index,
-:global(.theme-night) .index {
+:global(.theme-night) .index,
+:global(.theme-deep) .index,
+:global(.theme-deep-alt) .index {
   color: var(--bento-hue);
 }
 :global(.theme-light) .arrow,
 :global(.theme-light-alt) .arrow,
-:global(.theme-night) .arrow {
+:global(.theme-night) .arrow,
+:global(.theme-deep) .arrow,
+:global(.theme-deep-alt) .arrow {
   background: color-mix(in srgb, var(--bento-hue) 12%, var(--surface));
   border: 1px solid var(--hairline-strong);
   color: var(--bento-hue);
@@ -222,7 +237,9 @@
 @media (hover: hover) and (pointer: fine) {
   :global(.theme-light) .card:hover,
   :global(.theme-light-alt) .card:hover,
-  :global(.theme-night) .card:hover {
+  :global(.theme-night) .card:hover,
+  :global(.theme-deep) .card:hover,
+  :global(.theme-deep-alt) .card:hover {
     transform: translateY(-2px);
     border-color: color-mix(in srgb, var(--bento-hue) 40%, transparent);
     box-shadow: var(--v2-shadow-card-hover);
@@ -231,7 +248,9 @@
 @media (prefers-reduced-motion: reduce) {
   :global(.theme-light) .card:hover,
   :global(.theme-light-alt) .card:hover,
-  :global(.theme-night) .card:hover {
+  :global(.theme-night) .card:hover,
+  :global(.theme-deep) .card:hover,
+  :global(.theme-deep-alt) .card:hover {
     transform: none;
   }
 }

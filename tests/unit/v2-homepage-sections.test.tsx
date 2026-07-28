@@ -133,10 +133,10 @@ describe("HomepageHeroSection — server hero from seed HeroContent", () => {
     hero.platforms.forEach((p, i) => expect(logos[i]).toHaveAttribute("alt", p.name));
   });
 
-  it("uses a light surface with a solid accent span (no gradient H1) and no canvas", async () => {
+  it("uses a dark surface with a solid accent span (no gradient H1) and no canvas", async () => {
     const { hero } = await getHomepageOpening();
     const { container } = render(<HomepageHeroSection hero={hero} />);
-    expect(container.querySelector("section")).toHaveClass("theme-light");
+    expect(container.querySelector("section")).toHaveClass("theme-deep");
     expect(container.querySelector("canvas")).toBeNull();
     // The accent is a plain <span> inside the H1, not a gradient-text node.
     const h1 = screen.getByRole("heading", { level: 1 });

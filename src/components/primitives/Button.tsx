@@ -43,7 +43,7 @@ function classes(variant: Variant, size: Size, loading: boolean, className?: str
 /**
  * Button / CTA. Renders a Next <Link> when `href` is set, otherwise a <button>.
  *
- * V2 (inside .theme-light / .theme-light-alt / .theme-night): primary is a solid brand fill
+ * On the themed surfaces (.theme-light / -alt / .theme-night / .theme-deep / .theme-deep-alt): primary is a solid brand fill
  * with a neutral shadow (no glow, no moving gradient); signature is the single two-colour
  * brand gradient (verified white contrast) reserved for top-level CTAs; secondary/ghost/text
  * are restrained. Legacy surfaces keep the existing gradient CTA appearance unchanged.

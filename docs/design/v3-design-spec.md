@@ -73,6 +73,41 @@ are unreadable on dark. Because every consumer reads them as `var(--v2-domain-X-
 than raw hex, the `.theme-deep` class remaps them to re-measured bright values and every
 wayfinding consumer re-themes for free.
 
+### 3.1 The AI domain: teal → gold (a measured separation fix)
+
+The V3 domain hues are:
+
+| Domain | V2 ink (paper) | V3 hue (dark) |
+|---|---|---|
+| strategy | `#6d28d9` | `#a78bfa` |
+| build | `#1d4ed8` | `#6fa8ff` |
+| discover | `#0e7490` | `#2dd4c4` |
+| convert | `#be185d` | `#ff6fa3` |
+| operate | `#c2410c` | `#ffa05c` |
+| retain | `#127a39` | `#4fda8b` |
+| **ai** | **`#0f766e` (teal)** | **`#f5cc57` (gold)** |
+
+Re-measuring the domain hues for dark, the **AI domain moved from teal (`#0f766e`) to gold
+(`#f5cc57`)**. That hue shift was **unintentional** when `v3.css` was written — but the
+measurement says keep it, because it fixes a real wayfinding weakness in the V2 palette:
+
+- In **V2**, `ai` (`#0f766e`) and `discover` (`#0e7490`) were **both teal**, and they were the
+  **closest pair in the whole palette** at **ΔE 23.1** (CIE Lab, ΔE76). At the sizes these hues
+  actually render — 7px legend dots and 2.5px accent rails — a ΔE of 23 is not reliably
+  distinguishable, so two different service worlds read as the same colour.
+- In **V3**, moving `ai` to gold removes that collision. The **minimum pairwise separation across
+  all 21 pairs rises to ΔE 28.8** (now `strategy`/`build`), and `discover`/`ai` are no longer
+  anywhere near the floor. Gold also fits the "signal / automation" reading of the AI world and
+  sits apart from the six cooler/warmer worlds.
+
+This is a **deliberate decision recorded after the fact**, not a colour nobody checked. The
+separation floor is enforced by [`tests/unit/v3-domain-separation.test.ts`](../../tests/unit/v3-domain-separation.test.ts),
+which parses the seven `--v3-domain-*` values from `v3.css`, converts them to CIE Lab, and fails
+if any of the 21 pairs drops below **ΔE 25** — above V3's real floor (28.8) and above the V2
+confusable pair (23.1), so it would have caught the old teal/teal collision and will catch any
+future edit that reintroduces one. Like the WCAG contrast in `v2-contrast.test.ts`, perceptual
+separation here is a **functional requirement, not aesthetics**.
+
 ## 4. Guardrails
 
 - **No colour glows.** Elevation is neutral shadow (`--v3-shadow-*`, all black-based) plus a

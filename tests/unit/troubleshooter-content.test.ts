@@ -41,9 +41,13 @@ describe("problems", () => {
   it("maps every problem colour through the domain bridge to a design token, never a raw colour", () => {
     for (const p of problems) {
       expect(p.color, `${p.slug} colour is a token`).toMatch(/^var\(--/);
-      // A recognised domain colour resolves to its --v2-domain-* ink; a deliberately non-domain
-      // colour (the prioritisation problem's --yellow, which maps to no domain) resolves to the
-      // semantic neutral fallback. Either way the bridge returns a var(--…) token, never raw hex/rgb.
+      // Six problems carry a service-world colour and resolve to that domain's --v2-domain-* ink.
+      // "unsure-priority" is the one cross-cutting problem — it is about prioritising across the
+      // whole journey (→ the discovery-plan stage), not a single service world — so it deliberately
+      // uses a non-domain tone (--yellow) that maps to no domain and resolves to the semantic
+      // neutral fallback. That neutral resolution is intentional and semantic (not an AI problem):
+      // do NOT map --yellow to the ai domain to "fix" it, even though V3's ai hue is now gold.
+      // Either way the bridge returns a var(--…) token, never raw hex/rgb.
       const ink = domainInk(p.color);
       expect(ink, `${p.slug} → ${ink}`).toMatch(/^var\(--/);
       expect(ink, `${p.slug} ink is not a raw colour`).not.toMatch(/#[0-9a-f]{3,8}|rgba?\(/i);

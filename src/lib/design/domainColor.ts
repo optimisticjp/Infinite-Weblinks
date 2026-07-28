@@ -12,9 +12,9 @@
  * datasets are re-authored with V2 tokens directly, this bridge can be deleted.
  *
  * Pure and server-safe: a token string in, a token string out. No DOM, no computed style, no
- * raw colour values (raw hex/rgb inputs are not recognised and fall back; it only ever returns
- * `var(--v2-*)` tokens). Unknown or absent input returns a safe neutral ink/tint that is AA on
- * every V2 surface.
+ * raw colour values (raw hex/rgb inputs are not recognised and fall back). A recognised domain
+ * resolves to a `var(--v2-domain-*)` token; unknown or absent input returns a semantic neutral
+ * ink/tint (`--text-muted` / `--surface-raised`) that is AA on the active theme's surface.
  */
 
 export type DomainKey =
@@ -48,9 +48,10 @@ const V2_DOMAIN_TINT: Record<DomainKey, string> = {
   ai: "var(--v2-domain-ai-tint)",
 };
 
-/** Safe neutral fallbacks — AA on white and on the paper-2/3 tints. */
-export const V2_INK_FALLBACK = "var(--v2-ink-muted)";
-export const V2_TINT_FALLBACK = "var(--v2-paper-2)";
+/** Safe neutral fallbacks. Semantic tokens (not the V2 light primitives), so they are correct
+ *  under both the V2 light and the V3 dark mapping — theme-agnostic, never a raw light value. */
+export const NEUTRAL_INK_FALLBACK = "var(--text-muted)";
+export const NEUTRAL_TINT_FALLBACK = "var(--surface-raised)";
 
 const DOMAIN_KEYS: DomainKey[] = ["strategy", "build", "discover", "convert", "operate", "retain", "ai"];
 
@@ -107,11 +108,11 @@ export function domainKeyFromToken(token: string | null | undefined): DomainKey 
 /** The accessible V2 ink token for a legacy wayfinding token (safe neutral fallback otherwise). */
 export function domainInk(token: string | null | undefined): string {
   const key = domainKeyFromToken(token);
-  return key ? V2_DOMAIN_INK[key] : V2_INK_FALLBACK;
+  return key ? V2_DOMAIN_INK[key] : NEUTRAL_INK_FALLBACK;
 }
 
 /** The soft V2 tint token for a legacy wayfinding token (safe neutral fallback otherwise). */
 export function domainTint(token: string | null | undefined): string {
   const key = domainKeyFromToken(token);
-  return key ? V2_DOMAIN_TINT[key] : V2_TINT_FALLBACK;
+  return key ? V2_DOMAIN_TINT[key] : NEUTRAL_TINT_FALLBACK;
 }

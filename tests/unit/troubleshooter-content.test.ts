@@ -38,10 +38,15 @@ describe("problems", () => {
     }
   });
 
-  it("maps every problem colour through the domain bridge to a V2 ink token", () => {
+  it("maps every problem colour through the domain bridge to a design token, never a raw colour", () => {
     for (const p of problems) {
       expect(p.color, `${p.slug} colour is a token`).toMatch(/^var\(--/);
-      expect(domainInk(p.color), `${p.slug} maps to a V2 ink`).toMatch(/^var\(--v2-/);
+      // A recognised domain colour resolves to its --v2-domain-* ink; a deliberately non-domain
+      // colour (the prioritisation problem's --yellow, which maps to no domain) resolves to the
+      // semantic neutral fallback. Either way the bridge returns a var(--…) token, never raw hex/rgb.
+      const ink = domainInk(p.color);
+      expect(ink, `${p.slug} → ${ink}`).toMatch(/^var\(--/);
+      expect(ink, `${p.slug} ink is not a raw colour`).not.toMatch(/#[0-9a-f]{3,8}|rgba?\(/i);
     }
   });
 

@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
-import { Rocket, GitBranch, Clock, Wrench, Target, HeartHandshake, Check } from "lucide-react";
+import { Sparkles, Rocket, GitBranch, Clock, Wrench, Target, HeartHandshake, Check } from "lucide-react";
 import { IconTile } from "@/components/primitives/IconTile";
+import { Panel } from "@/components/primitives/Panel";
 import { domainInk } from "@/lib/design/domainColor";
 import type { GrowthPlanResult } from "@/lib/growth-plan/types";
 import styles from "./PlanReveal.module.css";
@@ -31,17 +32,26 @@ const PHASES: Phase[] = [
  */
 export function PlanReveal({ result }: { result: GrowthPlanResult }) {
   return (
-    <div className={styles.wrap} data-testid="growth-plan-result">
-      <header className={styles.head}>
-        <p className={styles.eyebrow}>Your growth plan</p>
-        <h2 className={styles.title}>Here&apos;s where we&apos;d start.</h2>
-        <p className={styles.intro}>
-          A guided first read of your answers. Your recommendations are mapped from a reviewed
-          framework we use across many businesses — which stages you see depends on what you told
-          us, and not every business needs every stage. It&apos;s a sensible starting point, not a
-          guarantee. Talk it through with us any time.
-        </p>
-      </header>
+    <Panel padded>
+      <div className={styles.wrap} data-testid="growth-plan-result">
+        <header className={styles.head}>
+          <div className={styles.headRow}>
+            <IconTile color="var(--v2-brand-strong)" size="sm">
+              <Sparkles aria-hidden="true" />
+            </IconTile>
+            <div className={styles.headText}>
+              <p className={styles.eyebrow}>Your growth plan</p>
+              <h2 className={styles.title}>Here&apos;s where we&apos;d start.</h2>
+            </div>
+            <span className={styles.tag}>Ready</span>
+          </div>
+          <p className={styles.intro}>
+            A guided first read of your answers. Your recommendations are mapped from a reviewed
+            framework we use across many businesses — which stages you see depends on what you told
+            us, and not every business needs every stage. It&apos;s a sensible starting point, not a
+            guarantee. Talk it through with us any time.
+          </p>
+        </header>
 
       <ol className={styles.roadmap}>
         {PHASES.map((phase) => {
@@ -150,5 +160,6 @@ export function PlanReveal({ result }: { result: GrowthPlanResult }) {
         </div>
       </div>
     </div>
+    </Panel>
   );
 }

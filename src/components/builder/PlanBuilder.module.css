@@ -1,8 +1,8 @@
-/* PlanBuilder — V2 light-first styling for the Growth Plan Builder. The route panel (growth-plan.module.css)
-   owns the raised surface around this; here we lay out the four-step form, the progress rail and the plan
-   screen's review-request panel. V2 tokens only — no legacy domain or base-palette tokens (no --orange,
-   --domain-*, --danger, --hairline-strong), no glow, glass or gradient, no backdrop-filter, no raw colour,
-   no sticky sidebar, no fixed viewport heights. */
+/* PlanBuilder — layout for the Growth Plan Builder on the V3 dark surfaces. The step content sits in
+   the V3 Panel primitive (the "step surface"); this file lays out the four-step form, the progress
+   rail and the plan screen's review-request card. Semantic / --v2 tokens only — no legacy domain or
+   base-palette tokens, no glow, glass or gradient, no backdrop-filter, no raw colour, no sticky
+   sidebar, no fixed viewport heights. */
 .builder {
   display: grid;
   gap: var(--space-8);
@@ -87,13 +87,18 @@
 .planRegion {
   outline: none;
 }
+/* The review-request card — a raised, panel-like surface (the Panel primitive's edge-top highlight +
+   elevation) but WITHOUT overflow:hidden, so the form fields' focus rings are never clipped. */
 .emailCard {
   display: grid;
   gap: var(--space-5);
   padding: var(--space-8);
-  border-radius: var(--v2-radius-lg);
-  background: var(--v2-brand-tint);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
   border: 1px solid var(--hairline);
+  box-shadow:
+    var(--edge-top, 0 0 0 transparent),
+    var(--shadow-panel, var(--shadow-card));
 }
 
 .honeypotWrap {
@@ -140,7 +145,7 @@
   color: var(--text-muted);
 }
 .requiredNote .req {
-  color: var(--v2-brand-strong);
+  color: var(--v2-brand);
   font-weight: var(--fw-bold);
 }
 
@@ -245,7 +250,7 @@
   gap: var(--space-1);
   font-size: var(--fs-sm);
   font-weight: var(--fw-semibold);
-  color: var(--v2-brand-strong);
+  color: var(--v2-brand);
   background: none;
   border: none;
   padding: 0;

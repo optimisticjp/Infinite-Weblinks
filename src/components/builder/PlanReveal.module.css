@@ -1,17 +1,25 @@
-/* PlanReveal — V2 light-first styling for the deterministic Growth Plan recommendation. Flat V2 cards
-   on paper; per-phase wayfinding accent comes in via `--phase-ink` (an accessible V2 domain ink set by
-   the component through the domain bridge). V2 tokens only — no legacy domain or base-palette tokens,
-   no --grad-* / --glow-* / --glass-*, no gradient word, no NodeOrb glow, no featured-phase bloom, no
-   backdrop-filter, no raw colour, no --hairline-strong, no fixed viewport heights. */
+/* PlanReveal — the deterministic Growth Plan result, rendered in the V3 PlanPanel visual language:
+   a Panel surface (added by the component) carrying the PlanPanel's step cards (a left accent rail +
+   a tint of the phase's wayfinding ink over the nested-fill surface) and chips (the input surface).
+   The per-phase accent arrives as an accessible domain ink in `--phase-ink`. Semantic / --v2 tokens
+   only — no legacy domain or base-palette tokens, no glow/glass/gradient, no raw colour. */
 .wrap {
   display: grid;
-  gap: var(--space-8);
+  gap: var(--space-6);
 }
 
+/* ---- Head (panel head row: icon + eyebrow/title + a Ready tag) ---- */
 .head {
   display: grid;
+  gap: var(--space-4);
+}
+.headRow {
+  display: flex;
+  align-items: center;
   gap: var(--space-3);
-  max-width: 60ch;
+}
+.headText {
+  min-width: 0;
 }
 .eyebrow {
   margin: 0;
@@ -20,30 +28,46 @@
   font-weight: var(--fw-bold);
   letter-spacing: var(--ls-eyebrow);
   text-transform: uppercase;
-  color: var(--v2-brand-strong);
+  /* brand-TEXT hue: clears AA as small text on the raised panel (the deeper brand-hover is only 4.0:1). */
+  color: var(--v2-brand);
 }
 .title {
-  margin: 0;
+  margin: var(--space-1) 0 0;
   font-family: var(--font-display);
   font-weight: var(--v2-fw-heading);
-  font-size: var(--fs-h2);
+  font-size: var(--fs-h3);
   line-height: var(--lh-heading);
   color: var(--text-heading);
 }
+.tag {
+  margin-left: auto;
+  align-self: flex-start;
+  flex: none;
+  padding: 3px var(--space-3);
+  border-radius: var(--radius-xs);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v2-success);
+  background: color-mix(in srgb, var(--v2-success) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--v2-success) 30%, transparent);
+}
 .intro {
   margin: 0;
-  font-size: var(--fs-lead);
+  max-width: 68ch;
+  font-size: var(--fs-body);
   line-height: var(--lh-body);
   color: var(--text-body);
 }
 
-/* ---- Roadmap phases ---- */
+/* ---- Roadmap phases → PlanPanel step cards (tinted nested fill + left accent rail) ---- */
 .roadmap {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: var(--space-5);
+  gap: var(--space-4);
 }
 @media (min-width: 900px) {
   .roadmap {
@@ -52,15 +76,22 @@
   }
 }
 .phase {
+  position: relative;
   display: grid;
   gap: var(--space-4);
   align-content: start;
-  padding: var(--space-6);
-  border-radius: var(--v2-radius-lg);
-  background: var(--surface-raised);
+  padding: var(--space-5);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--phase-ink) 7%, var(--surface-raised-2, var(--surface-raised)));
   border: 1px solid var(--hairline);
-  border-top: 3px solid var(--phase-ink);
-  box-shadow: var(--v2-shadow-sm);
+  overflow: hidden;
+}
+.phase::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 2.5px;
+  background: var(--phase-ink);
 }
 .phaseHead {
   display: flex;
@@ -105,7 +136,7 @@
   top: 0.55em;
   width: 7px;
   height: 7px;
-  border-radius: var(--v2-radius-pill);
+  border-radius: var(--radius-pill);
   background: var(--phase-ink);
 }
 .recommended {
@@ -119,7 +150,7 @@
   color: var(--phase-ink);
 }
 
-/* ---- Detail (capabilities + tools) ---- */
+/* ---- Detail (capabilities + tools) — headed chip groups on the panel ---- */
 .detailGrid {
   display: grid;
   gap: var(--space-6);
@@ -157,9 +188,9 @@
 }
 .chip {
   padding: 6px 12px;
-  border-radius: var(--v2-radius-pill);
+  border-radius: var(--radius-sm);
   border: 1px solid var(--hairline);
-  background: var(--surface);
+  background: var(--surface-input);
   font-size: var(--fs-sm);
   color: var(--text-body);
 }
@@ -179,10 +210,10 @@
 .outcomes {
   display: grid;
   gap: var(--space-4);
-  padding: var(--space-6);
-  border-radius: var(--v2-radius-lg);
+  padding: var(--space-5);
+  border-radius: var(--radius-md);
   background: var(--v2-success-tint);
-  border: 1px solid var(--hairline);
+  border: 1px solid color-mix(in srgb, var(--v2-success) 22%, transparent);
 }
 .outcomeList {
   list-style: none;
@@ -201,16 +232,16 @@
   color: var(--text-heading);
 }
 
-/* ---- How we help ---- */
+/* ---- How we help — a nested-fill note card ---- */
 .howWeHelp {
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center;
   gap: var(--space-4);
-  padding: var(--space-6);
-  border-radius: var(--v2-radius-lg);
+  padding: var(--space-5);
+  border-radius: var(--radius-md);
   border: 1px solid var(--hairline);
-  background: var(--surface);
+  background: var(--surface-input);
 }
 .howTitle {
   margin: 0 0 var(--space-1);

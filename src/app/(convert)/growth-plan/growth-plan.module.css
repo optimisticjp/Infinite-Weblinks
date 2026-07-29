@@ -1,17 +1,7 @@
-/* /growth-plan — V2 route styling. The page is composed from shared V2 components (PageHeader,
-   SectionShell, PlanBuilder, PlanIncludeCard, FinalCtaSection); only the builder's raised panel lives
-   here. V2 tokens only — no legacy domain or base-palette tokens, no glow, glass or gradient, no
-   backdrop-filter, no raw colour, no fixed viewport heights, no cosmic surface, no fake chart/metric,
-   no sticky sidebar. */
+/* /growth-plan — route styling. The page is composed from shared components (PageHeader,
+   SectionShell, PlanBuilder, PlanIncludeCard, FinalCtaSection). The builder now owns its own V3
+   Panel surfaces (the step Panel and the result PlanPanel), so this wrapper is layout-transparent —
+   the builder's panels sit directly on the section band. Semantic / --v2 tokens only. */
 .builderPanel {
-  padding: var(--space-6);
-  background: var(--surface-raised);
-  border: 1px solid var(--hairline);
-  border-radius: var(--v2-radius-lg);
-  box-shadow: var(--v2-shadow-sm);
-}
-@media (min-width: 48rem) {
-  .builderPanel {
-    padding: var(--space-8);
-  }
+  display: contents;
 }

@@ -3,9 +3,12 @@ import { fileURLToPath } from "node:url";
 import { describe, it, expect } from "vitest";
 
 /**
- * Phase 2K homepage-safety guard. The homepage is now the V2 light-first spine. This test locks the
+ * V3 "Instrument" homepage-safety guard. The homepage is the dark-first V3 spine: a split hero whose
+ * right column is the reused PlanPanel, a goal-router DataTable, and the sticky Growth Roadmap, with
+ * the problem / delivery / trust / learning / final-CTA sections kept and restyled. The eight spine
+ * sections keep their component names and order — only their internals changed — so this locks the
  * migrated source so a future edit cannot quietly re-introduce the cosmic engine, a page-wide 8-stage
- * router, a services constellation, fabricated proof, or the legacy homepage sections — and so the
+ * router, a services constellation, fabricated proof, or the legacy homepage sections, and so the
  * server contract (canonical, JSON-LD, seed opening) is preserved.
  */
 const homepage = readFileSync(
@@ -13,8 +16,8 @@ const homepage = readFileSync(
   "utf8",
 );
 
-describe("homepage renders the V2 light-first spine", () => {
-  it("imports the eight V2 spine sections in order", () => {
+describe("homepage renders the V3 dark-first spine", () => {
+  it("imports the eight spine sections in order", () => {
     const spine = [
       "HomepageHeroSection",
       "HomepageProblemSection",

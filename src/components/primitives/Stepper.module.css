@@ -53,7 +53,7 @@
 .done .node {
   background: var(--v2-brand);
   border-color: var(--v2-brand);
-  color: var(--v2-paper);
+  color: var(--cta-text);
 }
 .current .node {
   border-color: var(--v2-brand);

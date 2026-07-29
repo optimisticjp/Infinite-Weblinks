@@ -68,7 +68,7 @@ export default async function GoalsPage() {
       />
 
       {/* Compact hub-jump nav — links between the three facets, not an interactive filter. */}
-      <div className={`theme-light ${styles.hubNavBand}`}>
+      <div className={`theme-deep ${styles.hubNavBand}`}>
         <div className="iw-container iw-container--wide">
           <nav aria-label="Choose how to start" className={styles.hubNav}>
             <LinkChip href="#by-goal">Start with a goal</LinkChip>

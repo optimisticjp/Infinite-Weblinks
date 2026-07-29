@@ -5,8 +5,8 @@
   position: fixed;
   inset: 0;
   z-index: 200;
-  /* Neutral scrim behind the drawer. */
-  background: color-mix(in srgb, var(--v2-ink-strong) 45%, transparent);
+  /* Neutral scrim behind the drawer — the base canvas at 45%, so it dims without a colour cast. */
+  background: color-mix(in srgb, var(--surface) 45%, transparent);
   animation: scrimIn var(--dur-base) var(--ease-out);
 }
 @keyframes scrimIn {

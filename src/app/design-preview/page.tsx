@@ -11,6 +11,13 @@ import { FilterChip } from "@/components/primitives/FilterChip";
 import { IconTile } from "@/components/primitives/IconTile";
 import { Card } from "@/components/primitives/Card";
 import { CardGrid } from "@/components/primitives/CardGrid";
+import { Panel } from "@/components/primitives/Panel";
+import { FloatingCard } from "@/components/primitives/FloatingCard";
+import { DataTable, type DataTableRow, type DataTableFilter } from "@/components/primitives/DataTable";
+import { PlanPanel } from "@/components/routes/PlanPanel";
+import { StickyRoadmap } from "@/components/routes/StickyRoadmap";
+import { goals } from "@/lib/content/data/goals";
+import { domainKeyFromToken } from "@/lib/design/domainColor";
 import { BentoGrid } from "@/components/primitives/BentoGrid";
 import { BentoCard } from "@/components/primitives/BentoCard";
 import { Callout } from "@/components/primitives/Callout";
@@ -143,6 +150,32 @@ const PLAN_REVEAL_PREVIEW: GrowthPlanResult = resolve(
   growthPlanRuleSet,
 );
 
+// DataTable demo wired to the REAL goals dataset (never hard-coded), so the table stays correct as
+// goals change. Each goal's wayfinding colour becomes the row's leading dot and its domain filter key.
+const GOAL_DOMAIN_LABEL: Record<string, string> = {
+  strategy: "Strategy",
+  build: "Build",
+  discover: "Discover",
+  convert: "Convert",
+  operate: "Operate",
+  retain: "Retain",
+  ai: "AI & Automation",
+};
+const GOAL_ROWS: DataTableRow[] = goals.map((g) => {
+  const domain = domainKeyFromToken(g.color);
+  return {
+    id: g.slug,
+    label: g.title,
+    tone: g.color,
+    cells: [g.outcome],
+    href: `/goals/${g.slug}`,
+    filterKeys: domain ? [domain] : [],
+  };
+});
+const GOAL_FILTERS: DataTableFilter[] = [...new Set(GOAL_ROWS.flatMap((r) => r.filterKeys ?? []))].map(
+  (key) => ({ id: key, label: GOAL_DOMAIN_LABEL[key] ?? key, tone: `var(--v2-domain-${key}-ink)` }),
+);
+
 export default async function DesignPreviewPage() {
   const { hero, editorial } = await getHomepageOpening();
   const ownership = await getAccountOwnership();
@@ -181,7 +214,7 @@ export default async function DesignPreviewPage() {
   )[0];
 
   return (
-    <main id="main" className={`theme-light ${styles.wrap}`}>
+    <main id="main" className={`theme-deep ${styles.wrap}`}>
       <div className={styles.banner}>
         <span className={styles.bannerTag}>Internal · noindex</span>
         <span>
@@ -446,7 +479,7 @@ export default async function DesignPreviewPage() {
           <p className={styles.subTitle}>Tones (md)</p>
           <div className={styles.tileRow}>
             <div className={styles.tileCell}>
-              <IconTile color="var(--v2-ink-muted)">
+              <IconTile color="var(--text-muted)">
                 <Icon name="folder" />
               </IconTile>
               <span className={styles.tileCaption}>neutral</span>
@@ -533,6 +566,98 @@ export default async function DesignPreviewPage() {
               <span className={styles.cardTitle}>Night</span>
               <span className={styles.cardBody}>Self-contained dark card for a signature moment.</span>
             </Card>
+          </div>
+        </section>
+
+        {/* 11b · Panel — V3 product surface. Shown on a theme-deep swatch (its intended dark canvas),
+            since the rest of this gallery is still the V2 light system until the Phase 4 rollout. */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Panel — V3 product surface (theme-deep)</h2>
+          <div className={`theme-deep ${styles.surfacePanel}`}>
+            <div className={styles.gridWide}>
+              <Panel padded>
+                <span className={styles.cardTitle}>Padded panel</span>
+                <span className={styles.cardBody}>
+                  Raised surface, 1px hairline, the --edge-top top highlight and --shadow-panel. On
+                  dark the highlight — not the shadow — is what makes it read as a real interface.
+                </span>
+              </Panel>
+              <Panel>
+                <div style={{ padding: "var(--space-5)" }}>
+                  <span className={styles.cardTitle}>Framed panel (flush)</span>
+                  <span className={styles.cardBody}>
+                    No inner padding by default, so a product panel (plan / roadmap / troubleshooter)
+                    owns its head / body / foot regions. This copy sits in a region that pads itself.
+                  </span>
+                </div>
+              </Panel>
+            </div>
+          </div>
+        </section>
+
+        {/* 11c · FloatingCard — layered depth over a Panel */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>FloatingCard — layered depth (theme-deep)</h2>
+          <div className={`theme-deep ${styles.surfacePanel}`}>
+            <div
+              style={{
+                position: "relative",
+                maxWidth: "360px",
+                margin: "0 auto",
+                padding: "var(--space-8) var(--space-6)",
+              }}
+            >
+              <Panel padded>
+                <span className={styles.cardTitle}>Your growth plan</span>
+                <span className={styles.cardBody}>
+                  The Panel is the primary surface; FloatingCards overlap it at a higher depth (a
+                  lighter surface + deeper shadow), the layered-depth cue.
+                </span>
+              </Panel>
+              <FloatingCard
+                style={{ position: "absolute", left: "calc(-1 * var(--space-4))", bottom: "var(--space-6)", width: "140px" }}
+              >
+                <span className={styles.cardBody}>Enquiries / mo</span>
+              </FloatingCard>
+              <FloatingCard
+                style={{ position: "absolute", right: "calc(-1 * var(--space-3))", top: "var(--space-3)", width: "132px" }}
+              >
+                <span className={styles.cardBody}>5 / 7 worlds</span>
+              </FloatingCard>
+            </div>
+          </div>
+        </section>
+
+        {/* 11d · DataTable — filterable, wired to the goals dataset */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>DataTable — filterable, wired to goals data (theme-deep)</h2>
+          <div className="theme-deep" style={{ background: "var(--surface)", padding: "var(--space-6)", borderRadius: "var(--radius-lg)" }}>
+            <DataTable
+              rows={GOAL_ROWS}
+              filters={GOAL_FILTERS}
+              columns={["Goal", "Intended outcome"]}
+              ariaLabel="Goals"
+              countNoun={{ singular: "goal", plural: "goals" }}
+            />
+          </div>
+        </section>
+
+        {/* 11e · PlanPanel — real Growth Plan engine output on a product surface */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Plan panel — real engine output (theme-deep)</h2>
+          <div
+            className={`theme-deep ${styles.surfacePanel}`}
+            style={{ paddingBlock: "var(--space-12)", paddingInline: "var(--space-10)" }}
+          >
+            <PlanPanel />
+          </div>
+        </section>
+
+        {/* 11f · StickyRoadmap — real roadmap data; the node panel pins while the stages scroll */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Sticky roadmap — real roadmap data (theme-deep)</h2>
+          <div className={`theme-deep ${styles.surfacePanel}`}>
+            <StickyRoadmap />
           </div>
         </section>
 
@@ -1260,12 +1385,15 @@ export default async function DesignPreviewPage() {
           <p className={styles.subTitle}>HomepageProblemSection — the editorial verbatim, three static point cards</p>
           <HomepageProblemSection data={editorial} />
 
-          <p className={styles.subTitle}>HomepageGoalRouterSection — every goal into the plan builder (id=goals)</p>
+          <p className={styles.subTitle}>
+            HomepageGoalRouterSection — every goal as a DataTable row into the plan builder, with
+            service-world (growth-stage) filter chips (id=goals)
+          </p>
           <HomepageGoalRouterSection />
 
           <p className={styles.subTitle}>
-            HomepageConnectedSystemSection — the connected flow + three onward bridge cards
-            (id=how-it-connects, growth-journey / customer-journey / services)
+            HomepageConnectedSystemSection — the sticky Growth Roadmap (id=how-it-connects): the node
+            panel pins while the stage text scrolls and the active stage lights up
           </p>
           <HomepageConnectedSystemSection />
 

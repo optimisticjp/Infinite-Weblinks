@@ -18,8 +18,8 @@ function slugify(heading: string): string {
  * Content is status-gated, code-authoritative seed data; if a page isn't renderable it 404s
  * rather than showing an empty shell.
  *
- * These are deliberately a QUIET reading surface: the V2 "Clear Systems" light band
- * (`.theme-light`, no starfield, globe or decorative wash), a comfortable measure, and a
+ * These are deliberately a QUIET reading surface: the V3 deep reading band
+ * (`.theme-deep`, no starfield, globe or decorative wash), a comfortable measure, and a
  * clear heading hierarchy, so long legal copy stays legible. On longer pages a sticky table
  * of contents rides alongside the text. The `reviewNote` is surfaced as a visible editorial
  * notice so the draft wording is never mistaken for finalised legal terms.
@@ -34,7 +34,7 @@ export async function LegalPageView({ slug }: { slug: string }) {
   const showToc = toc.length >= 4;
 
   return (
-    <section className={`theme-light iw-section ${styles.page}`} aria-labelledby="legal-heading">
+    <section className={`theme-deep iw-section ${styles.page}`} aria-labelledby="legal-heading">
       <div className={`iw-container ${styles.container}`}>
         <header className={styles.header}>
           <Breadcrumbs trail={[{ name: page.title }]} />

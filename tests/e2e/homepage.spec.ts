@@ -7,19 +7,20 @@ import {
 } from "./helpers/layout";
 
 /**
- * Phase 2K — the V2 light-first homepage. Server-rendered spine, no cosmic engine, every homepage
- * fragment preserved on real visible content, and no fabricated proof.
+ * The V3 "Instrument" dark-first homepage. Server-rendered spine, no cosmic engine, every homepage
+ * fragment preserved on real visible content, and no fabricated proof. The hero is split (copy +
+ * CTAs alongside the reused PlanPanel), the goal router is a DataTable, and the connected section is
+ * the sticky Growth Roadmap.
  */
 
 // Section-level fragments (SectionShell <section id>).
 const SECTION_IDS = ["goals", "how-it-connects", "ways-of-working", "ownership", "learn", "get-started"];
-// Every homepage fragment that must resolve (sections + bridge cards + the honest subsection).
+// Every homepage fragment that must resolve (the section ids + the honest subsection). The old
+// growth-journey / customer-journey / services bridge-card fragments were retired with the
+// connected-system bridges when that section became the sticky roadmap.
 const ALL_FRAGMENTS = [
   "goals",
-  "growth-journey",
   "how-it-connects",
-  "customer-journey",
-  "services",
   "ways-of-working",
   "ownership",
   "honest",
@@ -33,18 +34,21 @@ async function idCount(page: Page, id: string) {
 }
 
 test.describe("homepage — V2 hero and content", () => {
-  test("renders the server hero H1, both CTAs, reassurance, areas and the works-with rail", async ({ page }) => {
+  test("renders the server hero H1, both CTAs, the reassurance line, the PlanPanel and the rail", async ({ page }) => {
     await page.goto("/");
     await expect(page).toHaveTitle(/Infinite Weblinks/);
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
     await expect(page.locator("h1")).toContainText("grow your business online");
     await expect(page.getByRole("link", { name: "Build my growth plan" }).first()).toBeVisible();
     await expect(page.getByRole("link", { name: "See how it all works" }).first()).toBeVisible();
-    await expect(page.getByText("Start from where you are. We will help you understand what comes next.")).toBeVisible();
-    await expect(page.getByText("Connected across")).toBeVisible();
-    for (const area of ["Website", "Marketing", "Customer Tools", "Automation", "Analytics"]) {
-      await expect(page.getByText(area, { exact: true }).first()).toBeVisible();
+    // The reassurance line = the approved growth-plan trust points (from the content layer).
+    for (const point of ["Takes a few minutes", "No sign-up, no cost", "Honest advice, not a sales pitch"]) {
+      await expect(page.getByText(point).first()).toBeVisible();
     }
+    // The reused PlanPanel is the hero's right column.
+    await expect(page.getByRole("heading", { name: "Your growth plan" })).toBeVisible();
+    // The retired slogan and "connected across" areas block are gone.
+    await expect(page.getByText("Connected across")).toHaveCount(0);
     await expect(page.getByText("Works with the tools your business already uses.")).toBeVisible();
     await expect(page.getByText("Examples only. No partnership or endorsement implied.")).toBeVisible();
     await expect(page.getByText(/official partner|our clients/i)).toHaveCount(0);
@@ -143,15 +147,16 @@ test.describe("homepage — without JavaScript (server output is complete)", () 
     // All ten goal destinations.
     expect(await page.locator('section#goals a[href^="/growth-plan?goal="]').count()).toBe(10);
 
-    // The five connected-system nodes.
-    for (const node of ["Get discovered", "Your website", "Analytics", "Email and SMS", "Repeat customers"]) {
-      await expect(page.getByText(node, { exact: true }).first()).toBeVisible();
+    // The sticky Growth Roadmap renders from the server: its name and every stage block heading.
+    await expect(page.getByRole("heading", { name: "Ecommerce Brand Roadmap" })).toBeVisible();
+    for (const phase of [
+      "Build the foundation",
+      "Bring in and convert traffic",
+      "Operate and retain",
+      "Scale with data and automation",
+    ]) {
+      await expect(page.getByRole("heading", { name: phase })).toBeVisible();
     }
-
-    // The three bridge destinations.
-    await expect(page.locator('a#growth-journey[href="/how-it-works#growth-journey"]')).toHaveCount(1);
-    await expect(page.locator('a#customer-journey[href="/connected-growth"]')).toHaveCount(1);
-    await expect(page.locator('a#services[href="/services"]')).toHaveCount(1);
 
     // The four delivery models (with no delivery-* fragment target on the homepage).
     for (const model of ["We Do the Work", "We Bring In an Expert", "We Run It End to End", "You Run It After"]) {
@@ -194,16 +199,27 @@ test.describe("homepage — V2 spine and fragments", () => {
       expect(await idCount(page, id), `#${id} exactly once`).toBe(1);
       await expect(page.locator(`[id="${id}"]`)).toBeVisible();
     }
-    // The bridge cards carry three of the fragments on whole-card links to the full pages.
-    await expect(page.locator('a#growth-journey[href="/how-it-works#growth-journey"]')).toHaveCount(1);
-    await expect(page.locator('a#customer-journey[href="/connected-growth"]')).toHaveCount(1);
-    await expect(page.locator('a#services[href="/services"]')).toHaveCount(1);
   });
 
   test("the goal router links every goal into the plan builder", async ({ page }) => {
     await page.goto("/");
     const links = page.locator('section#goals a[href^="/growth-plan?goal="]');
     expect(await links.count()).toBe(10);
+  });
+
+  test("the goal router filters goals by service-world (growth-stage) chips", async ({ page }) => {
+    await page.goto("/");
+    const goalsSection = page.locator("section#goals");
+    const rows = goalsSection.locator('a[href^="/growth-plan?goal="]');
+    await expect(rows).toHaveCount(10);
+    // Choosing a world chip narrows the visible rows to the goals in that stage.
+    await goalsSection.getByRole("button", { name: "Get Discovered" }).click();
+    const narrowed = await rows.count();
+    expect(narrowed).toBeGreaterThan(0);
+    expect(narrowed).toBeLessThan(10);
+    // "All" restores the full set.
+    await goalsSection.getByRole("button", { name: "All" }).click();
+    await expect(rows).toHaveCount(10);
   });
 
   test("no cosmic engine, gradient text, legacy bands or extra dark sections", async ({ page }) => {

@@ -41,13 +41,16 @@
 }
 .brand {
   background: var(--v2-brand-tint);
-  color: var(--v2-brand-strong);
+  color: var(--v2-brand);
   border: 1px solid color-mix(in srgb, var(--v2-brand) 24%, transparent);
 }
 .domain {
-  /* 8% tint keeps every domain ink ≥ 4.6:1 as small badge text (14% dropped
-     operate/discover/retain below 4.5 — measured; do not darken). */
-  background: color-mix(in srgb, var(--badge-color) 8%, white);
+  /* The 8% tint keeps every domain ink well clear of AA as small badge text. Mixing over the
+     theme's own --surface (not a literal light value) makes the pill theme-aware: a light chip with
+     the dark V2 ink on the retired light surfaces, and a dark chip with the bright V3 domain ink on
+     the deep surfaces — legible either way (a literal `white` base left a near-white chip under the
+     dark theme, so the bright ink measured only 2.5:1). */
+  background: color-mix(in srgb, var(--badge-color) 8%, var(--surface));
   color: var(--badge-color);
   border: 1px solid color-mix(in srgb, var(--badge-color) 32%, transparent);
 }

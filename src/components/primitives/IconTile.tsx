@@ -18,9 +18,9 @@ const NAMED: Record<NamedSize, number> = { sm: 40, md: 48, lg: 56 };
  * IconTile — the recurring colour-coded tile wrapping a single glyph. Decorative by default
  * (aria-hidden); colour is never the sole carrier of meaning (the parent supplies the label).
  *
- * On V2 surfaces (.theme-light / -alt / .theme-night) it renders FLAT — a tinted background
- * with an accessible ink glyph, no bloom/glow/gloss. On legacy surfaces the existing glowing
- * treatment is unchanged.
+ * On the themed surfaces (.theme-light / -alt / .theme-night / .theme-deep / .theme-deep-alt) it
+ * renders FLAT — a tinted background with an accessible ink glyph, no bloom/glow/gloss. Only an
+ * un-themed (legacy) surface keeps the glowing treatment.
  */
 export function IconTile({
   children,

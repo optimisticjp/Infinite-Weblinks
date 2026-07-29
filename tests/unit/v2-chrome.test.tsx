@@ -78,12 +78,12 @@ const FOOTER: FooterContent = {
   social: [{ platform: "Facebook" }],
 };
 
-describe("SiteHeader (V2 light chrome)", () => {
-  it("renders the light theme surface (never a dark/cosmic class)", () => {
+describe("SiteHeader (V3 dark chrome)", () => {
+  it("renders the V3 dark theme surface (never the legacy theme-dark/cosmic class)", () => {
     pathState.current = "/resources";
     const { container } = render(<SiteHeader nav={NAV} />);
     const header = container.querySelector("header")!;
-    expect(header.className).toContain("theme-light");
+    expect(header.className).toContain("theme-deep");
     expect(header.className).not.toMatch(/theme-(dark|cosmic)/);
   });
 
@@ -165,14 +165,14 @@ describe("SiteHeader adaptive fit probes (non-interactive)", () => {
   });
 });
 
-describe("MobileNav (V2 light drawer)", () => {
-  it("is a labelled modal dialog with id mobile-nav, on the light surface", () => {
+describe("MobileNav (V3 dark drawer)", () => {
+  it("is a labelled modal dialog with id mobile-nav, on the dark surface", () => {
     pathState.current = "/";
     const { container } = render(<MobileNav nav={NAV} open onClose={() => {}} />);
     const dialog = screen.getByRole("dialog", { name: "Site menu" });
     expect(dialog).toHaveAttribute("aria-modal", "true");
     expect(dialog).toHaveAttribute("id", "mobile-nav");
-    expect(dialog.className).toContain("theme-light");
+    expect(dialog.className).toContain("theme-deep");
     expect(within(container).getByRole("button", { name: "Close menu" })).toBeInTheDocument();
   });
 
@@ -206,11 +206,11 @@ describe("MobileNav (V2 light drawer)", () => {
   });
 });
 
-describe("SiteFooter (V2 light chrome)", () => {
-  it("is a light footer with a named footer nav, email, and legal links", () => {
+describe("SiteFooter (V3 dark chrome)", () => {
+  it("is a dark footer with a named footer nav, email, and legal links", () => {
     const { container } = render(<SiteFooter footer={FOOTER} />);
     const footer = container.querySelector("footer")!;
-    expect(footer.className).toContain("theme-light");
+    expect(footer.className).toContain("theme-deep");
     expect(footer.className).not.toMatch(/theme-(dark|cosmic)/);
     expect(screen.getByRole("navigation", { name: "Footer" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /support@infiniteweblinks\.com/ })).toHaveAttribute(

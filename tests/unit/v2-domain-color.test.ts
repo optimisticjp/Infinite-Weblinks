@@ -3,8 +3,8 @@ import {
   domainInk,
   domainTint,
   domainKeyFromToken,
-  V2_INK_FALLBACK,
-  V2_TINT_FALLBACK,
+  NEUTRAL_INK_FALLBACK,
+  NEUTRAL_TINT_FALLBACK,
   type DomainKey,
 } from "@/lib/design/domainColor";
 
@@ -37,24 +37,31 @@ describe("domainColor bridge", () => {
   });
 
   it("returns the safe neutral fallback for unknown or absent input", () => {
-    expect(domainInk(undefined)).toBe(V2_INK_FALLBACK);
-    expect(domainInk(null)).toBe(V2_INK_FALLBACK);
-    expect(domainInk("")).toBe(V2_INK_FALLBACK);
-    expect(domainInk("var(--not-a-token)")).toBe(V2_INK_FALLBACK);
-    expect(domainTint("var(--not-a-token)")).toBe(V2_TINT_FALLBACK);
+    expect(domainInk(undefined)).toBe(NEUTRAL_INK_FALLBACK);
+    expect(domainInk(null)).toBe(NEUTRAL_INK_FALLBACK);
+    expect(domainInk("")).toBe(NEUTRAL_INK_FALLBACK);
+    expect(domainInk("var(--not-a-token)")).toBe(NEUTRAL_INK_FALLBACK);
+    expect(domainTint("var(--not-a-token)")).toBe(NEUTRAL_TINT_FALLBACK);
     expect(domainKeyFromToken("var(--whatever)")).toBeNull();
   });
 
-  it("only ever returns var(--v2-*) tokens — never a raw colour value", () => {
-    const outputs = [
+  it("only ever returns a var(--…) token — never a raw colour value", () => {
+    // Domain-mapped outputs are always --v2-domain-* wayfinding tokens; the fallbacks are the
+    // semantic neutral tokens (theme-agnostic). Neither path ever returns a raw hex/rgb value.
+    const mapped = [
       ...DOMAINS.map((k) => domainInk(`var(--domain-${k})`)),
       ...DOMAINS.map((k) => domainTint(`var(--domain-${k})`)),
       domainInk("var(--lime)"),
-      domainInk("nonsense"),
-      domainTint("nonsense"),
     ];
-    for (const value of outputs) {
-      expect(value).toMatch(/^var\(--v2-[a-z0-9-]+\)$/);
+    const fallbacks = [domainInk("nonsense"), domainTint("nonsense")];
+
+    for (const value of mapped) {
+      expect(value).toMatch(/^var\(--v2-domain-[a-z]+-(?:ink|tint)\)$/);
+    }
+    expect(fallbacks).toEqual([NEUTRAL_INK_FALLBACK, NEUTRAL_TINT_FALLBACK]);
+
+    for (const value of [...mapped, ...fallbacks]) {
+      expect(value).toMatch(/^var\(--[a-z0-9-]+\)$/);
       expect(value).not.toMatch(/#[0-9a-f]{3,8}/i);
       expect(value).not.toMatch(/rgba?\(/i);
     }
@@ -89,8 +96,8 @@ describe("domainColor bridge", () => {
   it("still rejects raw colour values (fallback), never treating them as a domain", () => {
     for (const raw of ["#6d28d9", "#fff", "rgb(109,40,217)", "rgba(0,0,0,0.5)"]) {
       expect(domainKeyFromToken(raw)).toBeNull();
-      expect(domainInk(raw)).toBe(V2_INK_FALLBACK);
-      expect(domainTint(raw)).toBe(V2_TINT_FALLBACK);
+      expect(domainInk(raw)).toBe(NEUTRAL_INK_FALLBACK);
+      expect(domainTint(raw)).toBe(NEUTRAL_TINT_FALLBACK);
     }
   });
 });

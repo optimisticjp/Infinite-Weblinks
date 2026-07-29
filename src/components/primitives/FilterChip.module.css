@@ -32,7 +32,7 @@
 .selected {
   background: var(--v2-brand-tint);
   border-color: var(--v2-brand);
-  color: var(--v2-brand-strong);
+  color: var(--v2-brand);
 }
 /* The check occupies a fixed slot so selecting doesn't shift the label. */
 .check {

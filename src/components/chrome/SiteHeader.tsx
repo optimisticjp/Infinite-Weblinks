@@ -334,7 +334,7 @@ export function SiteHeader({ nav }: { nav: SiteNav }) {
   return (
     <>
       <header
-        className={`theme-light ${styles.header} ${scrolled ? styles.scrolled : ""}`}
+        className={`theme-deep ${styles.header} ${scrolled ? styles.scrolled : ""}`}
         data-mode={mode ?? undefined}
         data-secondary={mode == null ? undefined : showSecondary ? "true" : "false"}
       >

@@ -44,10 +44,10 @@ describe("PageHeader", () => {
     expect(screen.getByTestId("aside")).toBeInTheDocument();
   });
 
-  it("maps surface to the right V2 theme class and never uses a cosmic surface", () => {
+  it("maps surface to the right V3 theme class and never uses a cosmic surface", () => {
     for (const [surface, cls] of [
-      ["light", "theme-light"],
-      ["alt", "theme-light-alt"],
+      ["light", "theme-deep"],
+      ["alt", "theme-deep-alt"],
       ["night", "theme-night"],
     ] as const) {
       const { container, unmount } = render(<PageHeader surface={surface} title="T" />);
@@ -58,25 +58,25 @@ describe("PageHeader", () => {
     }
   });
 
-  it("defaults to the light surface", () => {
+  it("defaults to the dark surface", () => {
     const { container } = render(<PageHeader title="T" />);
-    expect(container.querySelector("section")!.className).toContain("theme-light");
+    expect(container.querySelector("section")!.className).toContain("theme-deep");
   });
 });
 
 describe("SectionShell", () => {
-  it("defaults to the V2 light surface (the legacy cosmic surface was removed in Phase 2S)", () => {
+  it("defaults to the V3 dark surface (the legacy cosmic surface was removed in Phase 2S)", () => {
     const { container } = render(<SectionShell title="Default">child</SectionShell>);
     const section = container.querySelector("section")!;
-    expect(section.className).toContain("theme-light");
+    expect(section.className).toContain("theme-deep");
     expect(section.className).not.toContain("theme-cosmic");
     expect(screen.getByText("child")).toBeInTheDocument();
   });
 
   it("maps explicit surfaces to the right theme class and never a cosmic surface", () => {
     for (const [surface, cls] of [
-      ["light", "theme-light"],
-      ["alt", "theme-light-alt"],
+      ["light", "theme-deep"],
+      ["alt", "theme-deep-alt"],
       ["night", "theme-night"],
     ] as const) {
       const { container, unmount } = render(

@@ -40,7 +40,7 @@
   flex: none;
   border-radius: var(--v2-radius-pill);
   border: 1.5px solid var(--hairline);
-  color: var(--v2-paper);
+  color: var(--cta-text);
 }
 .done .marker {
   background: var(--v2-success);
@@ -69,7 +69,9 @@
   color: var(--v2-success);
 }
 .current .status {
-  color: var(--v2-brand-strong);
+  /* brand-TEXT hue (--v2-brand), not the deeper brand-hover: as small text on the raised card
+     surface the hover hue (#7a5fff) only makes 4.0:1, while brand-text clears AA. */
+  color: var(--v2-brand);
 }
 
 .note {

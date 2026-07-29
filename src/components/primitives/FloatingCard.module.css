@@ -1,0 +1,17 @@
+/* FloatingCard — see FloatingCard.tsx. A small card at a HIGHER depth than the Panel it overlaps:
+   a lighter surface (--surface-raised-2, a step up from Panel's --surface-raised), a stronger
+   hairline, the --edge-top highlight and a deep shadow. On dark, lighter + a bigger shadow reads as
+   closer, which is what sells the layered depth. --surface-raised-2 / --hairline-2 are V3 tokens, so
+   they fall back to the Panel-level surface/hairline off a V3 surface; the box-shadow fallbacks keep
+   the property valid there too. Positioning is the caller's (place it absolutely over a relative
+   Panel). */
+.floatingCard {
+  position: relative;
+  background: var(--surface-raised-2, var(--surface-raised));
+  border: 1px solid var(--hairline-2, var(--hairline));
+  border-radius: var(--radius-md);
+  box-shadow:
+    var(--edge-top, 0 0 0 transparent),
+    var(--shadow-lg, var(--shadow-card));
+  padding: var(--space-3) var(--space-4);
+}

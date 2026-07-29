@@ -49,7 +49,7 @@
 
 /* ---- Tones (soft tint + accessible ink; the icon reinforces the meaning) ---- */
 .neutral {
-  --callout-tint: var(--v2-paper-2);
+  --callout-tint: var(--surface-raised);
   --callout-line: var(--hairline-strong);
   --callout-ink: var(--text-muted);
 }

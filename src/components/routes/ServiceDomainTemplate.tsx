@@ -114,7 +114,7 @@ export function ServiceDomainTemplate({
         }
       />
 
-      <div className={`theme-light ${styles.jumpBand}`}>
+      <div className={`theme-deep ${styles.jumpBand}`}>
         <div className="iw-container iw-container--wide">
           <nav aria-label="Service area sections" className={styles.jumpNav}>
             {JUMP.map((j) => (

@@ -86,7 +86,7 @@ export default async function PricingPage() {
         trustNote="A clear written quote before any work starts."
       />
 
-      <div className={`theme-light ${styles.jumpBand}`}>
+      <div className={`theme-deep ${styles.jumpBand}`}>
         <div className="iw-container iw-container--wide">
           <nav aria-label="Pricing sections" className={styles.jumpNav}>
             {JUMP.map((j) => (

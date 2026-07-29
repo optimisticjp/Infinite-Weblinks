@@ -19,13 +19,15 @@ export const metadata: Metadata = {
 };
 
 /**
- * Homepage — the V2 light-first spine: hero (with the works-with rail) → the digital-world problem
- * → start with your goal → one connected system (with the growth-journey / customer-journey /
- * services bridges) → ways of working → ownership and honest expectations → learn → the single
- * reserved dark final CTA. Every section is a server component (no HeroUniverse, canvas or
- * animation loop); the hero H1 is server-rendered text. Each homepage fragment lives on real,
- * visible content. The heavy legacy homepage sections stay in the codebase (used by their other
- * routes and the registry) — the homepage simply no longer renders them.
+ * Homepage — the V3 "Instrument" dark-first spine: a split hero (copy + CTAs alongside the reused
+ * PlanPanel, plus the works-with rail) → the digital-world problem → start with your goal (a
+ * goal-router DataTable with service-world filter chips) → the sticky Growth Roadmap → ways of
+ * working → ownership and honest expectations → learn → the single reserved deepest final CTA. The
+ * three replaced sections keep their component names and the information architecture; the rest are
+ * kept and restyled onto the deep surface. Every section is a server component (no cosmic engine,
+ * canvas or animation loop); the hero H1 is server-rendered text and the LCP element. Interaction
+ * (the DataTable filter, the roadmap active-stage sync, the plan-panel reveal) lives in thin client
+ * wrappers inside those sections, so this page never needs a client boundary.
  */
 export default async function HomePage() {
   const { hero, editorial } = await getHomepageOpening();

@@ -101,20 +101,25 @@
 }
 
 /* ============================================================
-   V2 interactive hover — ACTIVE ONLY inside .theme-light / -alt / .theme-night.
+   V2/V3 interactive hover — ACTIVE inside .theme-light / -alt / .theme-night / .theme-deep /
+   .theme-deep-alt (V2 light + V3 dark; the un-themed base keeps the legacy glow below).
    Soft neutral lift (≤ 2px), neutral shadow (no coloured glow), with focus-within parity.
    Legacy interactive glow above is untouched.
    ============================================================ */
 :global(.theme-light) .interactive:focus-within,
 :global(.theme-light-alt) .interactive:focus-within,
-:global(.theme-night) .interactive:focus-within {
+:global(.theme-night) .interactive:focus-within,
+:global(.theme-deep) .interactive:focus-within,
+:global(.theme-deep-alt) .interactive:focus-within {
   border-color: var(--hairline-strong);
   box-shadow: var(--v2-shadow-card-hover);
 }
 @media (hover: hover) and (pointer: fine) {
   :global(.theme-light) .interactive:hover,
   :global(.theme-light-alt) .interactive:hover,
-  :global(.theme-night) .interactive:hover {
+  :global(.theme-night) .interactive:hover,
+  :global(.theme-deep) .interactive:hover,
+  :global(.theme-deep-alt) .interactive:hover {
     transform: translateY(-2px);
     border-color: var(--hairline-strong);
     box-shadow: var(--v2-shadow-card-hover);
@@ -123,7 +128,9 @@
 @media (prefers-reduced-motion: reduce) {
   :global(.theme-light) .interactive:hover,
   :global(.theme-light-alt) .interactive:hover,
-  :global(.theme-night) .interactive:hover {
+  :global(.theme-night) .interactive:hover,
+  :global(.theme-deep) .interactive:hover,
+  :global(.theme-deep-alt) .interactive:hover {
     transform: none;
   }
 }

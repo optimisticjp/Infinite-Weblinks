@@ -1,0 +1,240 @@
+/* PlanPanel — see PlanPanel.tsx. A compact product-surface rendering of the real Growth Plan
+   output, plus two overlapping FloatingCards. The reveal is driven by <RevealOnView> toggling
+   data-animate / data-revealed on .stage; the CSS below owns the motion AND its reduced-motion
+   static state. Semantic tokens only. */
+
+.stage {
+  position: relative;
+  width: 100%;
+  /* Grows to fill the hero's larger right column (and the standalone preview); still capped so the
+     floating cards stay inside the viewport and the panel doesn't sprawl on very wide screens. */
+  max-width: 620px;
+  margin-inline: auto;
+}
+
+.panel {
+  /* Panel supplies the surface (raised + hairline + edge-top + shadow); we only lay out inside it. */
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Head ---- */
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--hairline);
+}
+.title {
+  margin: 0;
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-semibold);
+  color: var(--text-heading);
+}
+.tag {
+  margin-left: auto;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-xs);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--v2-success);
+  background: color-mix(in srgb, var(--v2-success) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--v2-success) 30%, transparent);
+}
+
+/* ---- Body ---- */
+.body {
+  padding: var(--space-5);
+}
+.builtFrom {
+  margin: 0 0 var(--space-3);
+  font-size: var(--fs-eyebrow, 0.72rem);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.context {
+  list-style: none;
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--surface-input);
+  border: 1px solid var(--hairline);
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+.chipDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--chip-ink, var(--text-muted));
+}
+
+/* ---- Steps (the real roadmap phases) ---- */
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.step {
+  position: relative;
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  padding-left: var(--space-4);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--step-ink) 7%, var(--surface-raised-2, var(--surface-raised)));
+  border: 1px solid var(--hairline);
+  overflow: hidden;
+}
+/* The accent rail — the one bit of the phase's wayfinding colour. */
+.step::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 2.5px;
+  background: var(--step-ink);
+}
+.stepBody {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.stepWhen {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold, 700);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--step-ink);
+}
+.stepName {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-semibold);
+  color: var(--text-heading);
+}
+.stepItems {
+  list-style: none;
+  margin: var(--space-1) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.stepItem {
+  font-size: var(--fs-sm);
+  color: var(--text-body);
+}
+.recommended {
+  display: inline-block;
+  margin-right: var(--space-2);
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-xs);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  color: var(--step-ink);
+  background: color-mix(in srgb, var(--step-ink) 14%, transparent);
+}
+
+/* ---- Foot ---- */
+.foot {
+  margin: 0;
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--hairline);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+/* ---- Floating cards (facts derived from the plan) ---- */
+.floatA,
+.floatB {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 150px;
+}
+.floatA {
+  left: calc(-1 * var(--space-5));
+  bottom: var(--space-8);
+}
+.floatB {
+  right: calc(-1 * var(--space-4));
+  top: var(--space-4);
+}
+.floatLabel {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.floatValue {
+  font-family: var(--font-display);
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-bold, 700);
+  letter-spacing: -0.02em;
+  color: var(--text-heading);
+}
+.floatCap {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+
+/* On narrow screens the floats inset so they overlap the panel WITHOUT overflowing the viewport. */
+@media (max-width: 560px) {
+  .floatA {
+    left: var(--space-2);
+    bottom: var(--space-4);
+  }
+  .floatB {
+    right: var(--space-2);
+    top: var(--space-2);
+  }
+}
+
+/* ============================================================
+   Reveal — RevealOnView toggles [data-animate] then [data-revealed] on .stage.
+   Default (no JS): .revealItem is fully visible. With JS: hidden, then cascaded in.
+   ============================================================ */
+.revealItem {
+  transition-delay: calc(var(--reveal-order, 0) * 55ms);
+}
+.stage[data-animate] .revealItem {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.5s var(--ease-out),
+    transform 0.5s var(--ease-out);
+  transition-delay: calc(var(--reveal-order, 0) * 55ms);
+}
+.stage[data-animate][data-revealed] .revealItem {
+  opacity: 1;
+  transform: none;
+}
+/* Complete static state — visible, no motion, regardless of the data attributes. */
+@media (prefers-reduced-motion: reduce) {
+  .stage[data-animate] .revealItem,
+  .stage[data-animate][data-revealed] .revealItem {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

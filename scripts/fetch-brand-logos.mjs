@@ -29,7 +29,11 @@ const LOGOS = [
   ["mailchimp", "FFE01B", "Mailchimp"],
   ["hubspot", "FF7A59", "HubSpot"],
   ["instagram", "E4405F", "Instagram"],
-  ["tiktok", "000000", "TikTok"],
+  // TikTok's official mark colour is #000000, which is invisible on the V3 dark canvas
+  // (~1.05:1 on --v3-ink-950). We bake a white mark instead — the shape is TikTok's official,
+  // un-redrawn mark; only the fill is lightened, which is TikTok's own standard treatment on
+  // dark backgrounds. See public/brand-logos/README.md.
+  ["tiktok", "FFFFFF", "TikTok"],
   ["linkedin", "0A66C2", "LinkedIn"],
   ["youtube", "FF0000", "YouTube"],
 ];

@@ -35,18 +35,22 @@
 }
 
 /* ============================================================
-   V2 flat treatment — ACTIVE ONLY inside .theme-light / -alt / .theme-night.
-   No bloom, no inner glow, no glossy orb; a flat tinted tile + accessible ink glyph.
-   Legacy surfaces keep the glowing tile above.
+   V2/V3 flat treatment — ACTIVE inside .theme-light / -alt / .theme-night / .theme-deep /
+   .theme-deep-alt (V2 light + V3 dark). No bloom, no inner glow, no glossy orb; a flat tinted
+   tile + accessible ink glyph. Only an un-themed surface keeps the glowing tile above.
    ============================================================ */
 :global(.theme-light) .tile,
 :global(.theme-light-alt) .tile,
-:global(.theme-night) .tile {
+:global(.theme-night) .tile,
+:global(.theme-deep) .tile,
+:global(.theme-deep-alt) .tile {
   border-radius: var(--v2-radius-md);
 }
 :global(.theme-light) .outline,
 :global(.theme-light-alt) .outline,
-:global(.theme-night) .outline {
+:global(.theme-night) .outline,
+:global(.theme-deep) .outline,
+:global(.theme-deep-alt) .outline {
   background: color-mix(in srgb, var(--tile-color) 14%, var(--surface));
   border: 1px solid color-mix(in srgb, var(--tile-color) 26%, transparent);
   color: var(--tile-color);
@@ -54,7 +58,9 @@
 }
 :global(.theme-light) .filled,
 :global(.theme-light-alt) .filled,
-:global(.theme-night) .filled {
+:global(.theme-night) .filled,
+:global(.theme-deep) .filled,
+:global(.theme-deep-alt) .filled {
   background: var(--tile-color);
   color: var(--v2-on-brand); /* white glyph on the solid domain ink */
   box-shadow: none;
@@ -62,6 +68,8 @@
 /* Decorative tiles don't lift on their own in V2 (the card owns hover). */
 :global(.theme-light) .tile:hover,
 :global(.theme-light-alt) .tile:hover,
-:global(.theme-night) .tile:hover {
+:global(.theme-night) .tile:hover,
+:global(.theme-deep) .tile:hover,
+:global(.theme-deep-alt) .tile:hover {
   transform: none;
 }

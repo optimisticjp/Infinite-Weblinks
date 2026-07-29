@@ -44,7 +44,9 @@
   padding: var(--space-4) var(--space-5);
   padding-right: var(--space-8);
   border-radius: var(--v2-radius-md);
-  background: var(--v2-paper);
+  /* The input surface, so these selectable cards stand out as a distinct nested level on the step
+     Panel (which is the raised surface) — the PlanPanel's layered look. */
+  background: var(--surface-input);
   border: 1.5px solid var(--hairline);
   cursor: pointer;
   transition:
@@ -61,7 +63,7 @@
 }
 .checked {
   border-color: var(--opt-ink);
-  background: color-mix(in srgb, var(--opt-ink) 8%, var(--v2-paper));
+  background: color-mix(in srgb, var(--opt-ink) 12%, var(--surface-input));
 }
 
 /* The real radio, visually hidden but focusable. The focus ring frames the whole option card. */
@@ -105,7 +107,7 @@
 .checked .check {
   background: var(--opt-ink);
   border-color: var(--opt-ink);
-  color: var(--v2-paper);
+  color: var(--cta-text);
 }
 
 .icon {

@@ -93,7 +93,7 @@ export default async function LearnArticlePage({
           trustNote={<ArticleMetaLine readMinutes={article.readMinutes} publishedAt={article.publishedAt} />}
         />
 
-        <section className={`theme-light iw-section ${styles.reading}`} aria-label="Article">
+        <section className={`theme-deep iw-section ${styles.reading}`} aria-label="Article">
           <div className={`iw-container ${styles.narrow}`}>
             <div className={styles.prose}>
               {article.body.map((para, i) => (

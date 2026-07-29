@@ -2,7 +2,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { render, screen, cleanup, within } from "@testing-library/react";
+import { render, screen, cleanup, within, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
 import { GrowthPlanPreview } from "@/components/routes/GrowthPlanPreview";
 import { HomepageHeroSection } from "@/components/sections/home/HomepageHeroSection";
@@ -12,8 +12,10 @@ import { HomepageConnectedSystemSection } from "@/components/sections/home/Homep
 import { HomepageTrustSection } from "@/components/sections/home/HomepageTrustSection";
 import { HomepageLearningSection } from "@/components/sections/home/HomepageLearningSection";
 import { DeliveryModelsExplainerSection } from "@/components/sections/DeliveryModelsExplainerSection";
-import { getHomepageOpening, getGoals, getLearnArticles, getAccountOwnership } from "@/lib/content";
+import { getHomepageOpening, getGoals, getStages, getLearnArticles, getAccountOwnership } from "@/lib/content";
 import { honestExpectationsWont, honestExpectationsPromise } from "@/lib/content/data/honest-expectations";
+import { growthPlanHeroTrustPoints } from "@/lib/content/data/growth-plan";
+import { roadmaps } from "@/lib/content/data/roadmaps";
 
 /**
  * Phase 2K — the V2 homepage spine components. These render from the real seed getters (no Sanity
@@ -95,7 +97,7 @@ describe("GrowthPlanPreview — truthful static structure", () => {
 
 // ------------------------------------------------------------------ HomepageHeroSection
 
-describe("HomepageHeroSection — server hero from seed HeroContent", () => {
+describe("HomepageHeroSection — V3 split hero (copy + PlanPanel) from seed HeroContent", () => {
   it("renders exactly one H1 with the complete headline in original word order", async () => {
     const { hero } = await getHomepageOpening();
     render(<HomepageHeroSection hero={hero} />);
@@ -105,21 +107,40 @@ describe("HomepageHeroSection — server hero from seed HeroContent", () => {
     expect(h1.textContent).toBe(expected);
   });
 
-  it("renders the eyebrow, slogan, support, reassurance, both CTAs and all five areas", async () => {
+  it("renders the eyebrow, support, both CTAs and the growth-plan reassurance line (from content)", async () => {
     const { hero } = await getHomepageOpening();
     render(<HomepageHeroSection hero={hero} />);
     expect(screen.getByText(hero.eyebrow)).toBeVisible();
-    expect(screen.getByText(hero.slogan)).toBeVisible();
     expect(screen.getByText(hero.support)).toBeVisible();
-    expect(screen.getByText(hero.reassurance)).toBeVisible();
     expect(screen.getByRole("link", { name: hero.primaryCta.label })).toHaveAttribute("href", hero.primaryCta.route);
     expect(screen.getByRole("link", { name: hero.secondaryCta.label })).toHaveAttribute(
       "href",
       hero.secondaryCta.route,
     );
-    for (const area of hero.areas) {
-      expect(screen.getByText(area.label)).toBeVisible();
+    // The reassurance line is the approved growth-plan trust points, read from the content layer.
+    for (const point of growthPlanHeroTrustPoints) {
+      expect(screen.getByText(point)).toBeVisible();
     }
+  });
+
+  it("drops the retired slogan and 'connected across' areas block", async () => {
+    const { hero } = await getHomepageOpening();
+    render(<HomepageHeroSection hero={hero} />);
+    expect(screen.queryByText(hero.slogan)).toBeNull();
+    expect(screen.queryByText("Connected across")).toBeNull();
+  });
+
+  it("reuses the server-rendered PlanPanel, with the copy + CTAs FIRST in source order (mobile)", async () => {
+    const { hero } = await getHomepageOpening();
+    const { container } = render(<HomepageHeroSection hero={hero} />);
+    // The reused PlanPanel mockup renders its own head + derived floating cards.
+    expect(screen.getByRole("heading", { name: "Your growth plan" })).toBeInTheDocument();
+    expect(screen.getByText("First step")).toBeInTheDocument();
+    // Source order: the H1 and the primary CTA precede the plan panel, so on a stacked mobile
+    // layout the primary action sits ABOVE the tall panel rather than below it.
+    const html = container.innerHTML;
+    expect(html.indexOf("hero-heading")).toBeLessThan(html.indexOf("Your growth plan"));
+    expect(html.indexOf(hero.primaryCta.label)).toBeLessThan(html.indexOf("Your growth plan"));
   });
 
   it("renders the works-with rail with the neutral label, clarification and every brand logo", async () => {
@@ -133,10 +154,10 @@ describe("HomepageHeroSection — server hero from seed HeroContent", () => {
     hero.platforms.forEach((p, i) => expect(logos[i]).toHaveAttribute("alt", p.name));
   });
 
-  it("uses a light surface with a solid accent span (no gradient H1) and no canvas", async () => {
+  it("uses a dark surface with a solid accent span (no gradient H1) and no canvas", async () => {
     const { hero } = await getHomepageOpening();
     const { container } = render(<HomepageHeroSection hero={hero} />);
-    expect(container.querySelector("section")).toHaveClass("theme-light");
+    expect(container.querySelector("section")).toHaveClass("theme-deep");
     expect(container.querySelector("canvas")).toBeNull();
     // The accent is a plain <span> inside the H1, not a gradient-text node.
     const h1 = screen.getByRole("heading", { level: 1 });
@@ -144,14 +165,6 @@ describe("HomepageHeroSection — server hero from seed HeroContent", () => {
     const css = read("../../src/components/sections/home/HomepageHeroSection.module.css");
     expect(css).not.toMatch(/-webkit-background-clip|background-clip:\s*text/);
     expect(css).not.toMatch(/min-height:\s*(100vh|100dvh)/);
-  });
-
-  it("renders the static GrowthPlanPreview alongside the copy (copy first in the DOM)", async () => {
-    const { hero } = await getHomepageOpening();
-    const { container } = render(<HomepageHeroSection hero={hero} />);
-    expect(screen.getByRole("group", { name: /preview: how your growth plan is organised/i })).toBeInTheDocument();
-    const html = container.innerHTML;
-    expect(html.indexOf("hero-heading")).toBeLessThan(html.indexOf("how your growth plan is organised"));
   });
 });
 
@@ -192,14 +205,36 @@ describe("HomepageProblemSection — editorial verbatim on an alt surface", () =
 
 // ------------------------------------------------------------------ HomepageGoalRouterSection
 
-describe("HomepageGoalRouterSection — every goal into the plan builder", () => {
-  it("renders id=goals and one plan-builder link per goal in source order", async () => {
+describe("HomepageGoalRouterSection — every goal as a DataTable row into the plan builder", () => {
+  it("renders id=goals and one plan-builder row-link per goal in source order", async () => {
     const goals = await getGoals();
     const { container } = render(await HomepageGoalRouterSection());
     expect(container.querySelector("section#goals")).not.toBeNull();
     const goalLinks = [...container.querySelectorAll('a[href^="/growth-plan?goal="]')];
     expect(goalLinks).toHaveLength(goals.length);
     goalLinks.forEach((a, i) => expect(a).toHaveAttribute("href", `/growth-plan?goal=${goals[i].slug}`));
+  });
+
+  it("renders service-world filter chips for each growth stage the goals span (plus All)", async () => {
+    const [goals, stages] = await Promise.all([getGoals(), getStages()]);
+    render(await HomepageGoalRouterSection());
+    const usedSlugs = new Set(goals.flatMap((g) => g.stageSlugs));
+    const usedStages = stages.filter((s) => usedSlugs.has(s.slug));
+    expect(usedStages.length).toBeGreaterThan(1);
+    expect(screen.getByRole("button", { name: "All" })).toBeInTheDocument();
+    for (const stage of usedStages) {
+      expect(screen.getByRole("button", { name: stage.name })).toBeInTheDocument();
+    }
+  });
+
+  it("narrows the visible rows to the goals in a world when its chip is chosen", async () => {
+    const [goals, stages] = await Promise.all([getGoals(), getStages()]);
+    const usedSlugs = new Set(goals.flatMap((g) => g.stageSlugs));
+    const firstStage = stages.find((s) => usedSlugs.has(s.slug))!;
+    const expected = goals.filter((g) => g.stageSlugs.includes(firstStage.slug)).length;
+    const { container } = render(await HomepageGoalRouterSection());
+    fireEvent.click(screen.getByRole("button", { name: firstStage.name }));
+    expect(container.querySelectorAll('a[href^="/growth-plan?goal="]')).toHaveLength(expected);
   });
 
   it("offers the not-sure catch-all (/growth-plan) and browse-all (/goals), no featured goal", async () => {
@@ -212,21 +247,26 @@ describe("HomepageGoalRouterSection — every goal into the plan builder", () =>
 
 // ------------------------------------------------------------------ HomepageConnectedSystemSection
 
-describe("HomepageConnectedSystemSection — one system + three onward bridges", () => {
-  it("renders id=how-it-connects, a CTA to /how-it-works and the three fragment bridge cards", () => {
+describe("HomepageConnectedSystemSection — the sticky Growth Roadmap", () => {
+  const ROADMAP = roadmaps.find((r) => r.slug === "ecommerce") ?? roadmaps[0];
+
+  it("renders id=how-it-connects wrapping the real roadmap (name + a node/block per phase)", () => {
     const { container } = render(<HomepageConnectedSystemSection />);
     expect(container.querySelector("section#how-it-connects")).not.toBeNull();
-    expect(container.querySelector('a[href="/how-it-works"]')).not.toBeNull();
-    expect(container.querySelector('a#growth-journey[href="/how-it-works#growth-journey"]')).not.toBeNull();
-    expect(container.querySelector('a#customer-journey[href="/connected-growth"]')).not.toBeNull();
-    expect(container.querySelector('a#services[href="/services"]')).not.toBeNull();
+    expect(screen.getByRole("heading", { name: ROADMAP.name })).toBeInTheDocument();
+    expect(container.querySelectorAll("[data-roadmap-node]")).toHaveLength(ROADMAP.phases.length);
+    expect(container.querySelectorAll("[data-roadmap-block]")).toHaveLength(ROADMAP.phases.length);
   });
 
-  it("does not render a fake phone strip or a services constellation", () => {
+  it("drops the old five-part flow, onward bridge cards, phone strip and constellation", () => {
     const { container } = render(<HomepageConnectedSystemSection />);
+    // The retired homepage fragment bridges are gone.
+    expect(container.querySelector('a#growth-journey')).toBeNull();
+    expect(container.querySelector('a[href="/connected-growth"]')).toBeNull();
     expect(container.querySelector('[class*="PhoneFrame"], [class*="Constellation"]')).toBeNull();
     const src = readCode("../../src/components/sections/home/HomepageConnectedSystemSection.tsx");
-    expect(src).not.toMatch(/PhoneFrame|ServicesConstellation|GrowthJourneyList|StageTimeline/);
+    expect(src).toMatch(/StickyRoadmap/);
+    expect(src).not.toMatch(/ConnectedSystemFlow|PhoneFrame|ServicesConstellation|GrowthJourneyList|StageTimeline/);
   });
 });
 

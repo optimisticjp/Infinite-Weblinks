@@ -16,6 +16,7 @@ import { Stepper } from "@/components/primitives/Stepper";
 import { ProgressChecklist, type ChecklistItem } from "@/components/primitives/ProgressChecklist";
 import { OptionCards, type CardOption } from "@/components/primitives/OptionCards";
 import { Button } from "@/components/primitives/Button";
+import { Panel } from "@/components/primitives/Panel";
 import { IconTile } from "@/components/primitives/IconTile";
 import { TextField } from "@/components/forms/fields/TextField";
 import { TextAreaField } from "@/components/forms/fields/TextAreaField";
@@ -493,7 +494,7 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
       />
 
       <div className={styles.columns}>
-        <div className={styles.main}>
+        <Panel padded className={styles.main}>
           <div className={styles.stepHead}>
             {/* The visible counter is aria-hidden because its text is folded into the heading
                 below, so focus landing on the heading announces "Step N of M: <title>" once. */}
@@ -588,7 +589,7 @@ export function PlanBuilder({ businessTypes, goals }: PlanBuilderProps) {
               {meta.next}
             </Button>
           </div>
-        </div>
+        </Panel>
 
         <ProgressChecklist
           className={styles.sidebar}

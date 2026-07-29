@@ -1,0 +1,23 @@
+/* Panel — the V3 product-surface frame. See Panel.tsx.
+   Its character is the pairing of a 1px hairline border with the --edge-top inset highlight along
+   the top edge: on dark, that light edge is what reads as a real interface; --shadow-panel alone
+   does not. Semantic tokens only, so it re-themes with the surrounding theme.
+   --edge-top / --shadow-panel are V3 (.theme-deep) tokens; the fallbacks keep box-shadow valid on
+   any surface a Panel might sit on (off a V3 surface the highlight is an invisible shadow and the
+   elevation falls back to the always-defined --shadow-card). */
+.panel {
+  position: relative;
+  background: var(--surface-raised);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    var(--edge-top, 0 0 0 transparent),
+    var(--shadow-panel, var(--shadow-card));
+  overflow: hidden;
+  color: inherit;
+}
+
+/* Optional inner padding — ≥ --radius-lg (20px) so content clears the rounded corner. */
+.padded {
+  padding: var(--space-6);
+}

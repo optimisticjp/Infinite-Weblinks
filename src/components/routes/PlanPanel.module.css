@@ -6,7 +6,9 @@
 .stage {
   position: relative;
   width: 100%;
-  max-width: 460px;
+  /* Grows to fill the hero's larger right column (and the standalone preview); still capped so the
+     floating cards stay inside the viewport and the panel doesn't sprawl on very wide screens. */
+  max-width: 620px;
   margin-inline: auto;
 }
 

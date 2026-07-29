@@ -9,7 +9,8 @@
   gap: var(--space-8);
 }
 .intro {
-  max-width: 60ch;
+  max-width: 46ch;
+  margin: 0 0 var(--space-8);
 }
 .eyebrow {
   margin: 0 0 var(--space-2);
@@ -35,10 +36,14 @@
   gap: clamp(var(--space-6), 4vw, var(--space-16));
   align-items: start; /* content-height columns, so the panel can stick within the tall grid cell */
 }
+/* The left column stretches to the full grid-row height so the heading can sit at the top and the
+   panel below it still has a tall containing block to pin within. */
 .panelCol {
+  align-self: stretch;
+}
+.sticky {
   position: sticky;
   top: var(--space-8);
-  align-self: start;
 }
 
 /* ---- Node panel ---- */
@@ -176,7 +181,9 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  min-height: clamp(300px, 58vh, 520px);
+  /* Enough height for one stage to own the viewport centre (drives the sync) without the tall
+     right column dwarfing the pinned panel and leaving the left column mostly empty. */
+  min-height: clamp(200px, 38vh, 340px);
   padding-block: var(--space-8);
   border-top: 1px solid var(--hairline);
 }
@@ -209,7 +216,7 @@
     grid-template-columns: 1fr;
     gap: var(--space-8);
   }
-  .panelCol {
+  .sticky {
     position: static;
     top: auto;
   }

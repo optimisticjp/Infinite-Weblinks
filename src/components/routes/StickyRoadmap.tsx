@@ -39,42 +39,45 @@ const PHASES = ROADMAP.phases.map((phase, index) => {
 export function StickyRoadmap() {
   return (
     <div className={styles.section}>
-      <header className={styles.intro}>
-        <p className={styles.eyebrow}>How it works</p>
-        <h2 className={styles.name}>{ROADMAP.name}</h2>
-        <p className={styles.lead}>{ROADMAP.intro}</p>
-      </header>
-
       <RoadmapSync className={styles.roadmap}>
+        {/* Left column: the section heading fills the top, then the node panel PINS below it — so
+            the column is no longer mostly-empty beside the tall stage list. */}
         <div className={styles.panelCol}>
-          <Panel className={styles.panel}>
-            <div className={styles.panelHead}>
-              <IconTile color="var(--v2-brand-strong)" size="sm">
-                <Route aria-hidden="true" />
-              </IconTile>
-              <h3 className={styles.panelTitle}>Connected roadmap</h3>
-              <span className={styles.panelTag}>{PHASES.length} stages</span>
-            </div>
-            <ol className={styles.nodes}>
-              {PHASES.map((p) => (
-                <li
-                  key={p.index}
-                  className={styles.node}
-                  data-roadmap-node={p.index}
-                  style={{ ["--node-ink" as string]: p.ink } as CSSProperties}
-                >
-                  <span className={styles.nodeRail} aria-hidden="true">
-                    <span className={styles.nodeDot} />
-                  </span>
-                  <span className={styles.nodeBody}>
-                    <span className={styles.nodeName}>{p.stageName}</span>
-                    <span className={styles.nodeDesc}>{p.title}</span>
-                  </span>
-                  <span className={styles.nodeStage}>Stage {p.index + 1}</span>
-                </li>
-              ))}
-            </ol>
-          </Panel>
+          <header className={styles.intro}>
+            <p className={styles.eyebrow}>How it works</p>
+            <h2 className={styles.name}>{ROADMAP.name}</h2>
+            <p className={styles.lead}>{ROADMAP.intro}</p>
+          </header>
+          <div className={styles.sticky}>
+            <Panel className={styles.panel}>
+              <div className={styles.panelHead}>
+                <IconTile color="var(--v2-brand-strong)" size="sm">
+                  <Route aria-hidden="true" />
+                </IconTile>
+                <h3 className={styles.panelTitle}>Connected roadmap</h3>
+                <span className={styles.panelTag}>{PHASES.length} stages</span>
+              </div>
+              <ol className={styles.nodes}>
+                {PHASES.map((p) => (
+                  <li
+                    key={p.index}
+                    className={styles.node}
+                    data-roadmap-node={p.index}
+                    style={{ ["--node-ink" as string]: p.ink } as CSSProperties}
+                  >
+                    <span className={styles.nodeRail} aria-hidden="true">
+                      <span className={styles.nodeDot} />
+                    </span>
+                    <span className={styles.nodeBody}>
+                      <span className={styles.nodeName}>{p.stageName}</span>
+                      <span className={styles.nodeDesc}>{p.title}</span>
+                    </span>
+                    <span className={styles.nodeStage}>Stage {p.index + 1}</span>
+                  </li>
+                ))}
+              </ol>
+            </Panel>
+          </div>
         </div>
 
         <ol className={styles.blocks}>

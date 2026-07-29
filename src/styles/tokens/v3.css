@@ -17,8 +17,9 @@
    CONTRAST
    --------
    Every pair below was measured (WCAG 2.2 AA: body text >= 4.5:1, large/UI/
-   non-text >= 3:1). Measured minima are noted inline. The weakest text pair in
-   the system is --v3-brand-text on --v3-ink-850 at 4.98:1.
+   non-text >= 3:1) across the surface stack #08080A … #24242E. Measured minima are
+   noted inline. The weakest text pair in the system is --v3-brand-text on
+   --v3-ink-850 at 4.60:1 (links only sit up to the panel-body level, not on inputs).
 
    DO NOT
    ------
@@ -32,10 +33,11 @@
      Neutral with a very slight cool cast. Deliberately NOT indigo/navy: a blue-black
      canvas plus violet accents reads as generic AI-template. Neutral reads as tooling. */
   --v3-ink-950: #08080a; /* page canvas */
-  --v3-ink-900: #0d0d10; /* raised: cards, panels */
-  --v3-ink-850: #131317; /* raised-2: panel bodies, nested fills */
-  --v3-ink-800: #1a1a20; /* inputs, tiles, chips */
-  --v3-ink-750: #21212a; /* hover / pressed on a raised surface */
+  --v3-ink-900: #14141a; /* raised: cards, panels · ALSO the alternating band surface (wide gap
+                            from the canvas so alternating sections read as distinct, not one strip) */
+  --v3-ink-850: #1b1b22; /* raised-2: panel bodies, nested fills · alt-band cards */
+  --v3-ink-800: #24242e; /* inputs, tiles, chips */
+  --v3-ink-750: #2f2f3b; /* hover / pressed on a raised surface */
 
   /* ---- Text on the dark stack (measured against #08080a … #1a1a20) ---- */
   --v3-on-strong: #f3f3f6; /* headings — 18.07:1 canvas / 15.64:1 input */
@@ -53,7 +55,7 @@
   /* ---- Brand ----
      Two values, because one colour cannot do both jobs on dark: -text is lifted for
      legibility as link/accent text, -fill stays the saturated CTA surface. */
-  --v3-brand-text: #8b6bff; /* links, accent text/icons — 5.38:1 canvas, 4.98:1 on ink-850 */
+  --v3-brand-text: #8b6bff; /* links, accent text/icons — 5.38:1 canvas, 4.60:1 on ink-850 */
   --v3-brand-fill: #6b4eff; /* CTA fill — white on it measures 5.05:1 */
   /* DANGER: #7a5fff measures only 4.28:1 against white — BELOW the 4.5 text bar (it clears the
      3:1 non-text bar). NEVER put it behind white / light TEXT; it may only back a non-text graphic

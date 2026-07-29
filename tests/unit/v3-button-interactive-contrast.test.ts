@@ -122,15 +122,17 @@ const STATE = {
 
 const AA = 4.5;
 const NON_TEXT = 3;
-// The surface levels a button realistically sits on (section bands + raised cards / panel bodies),
-// darkest → lightest. Light-text and link states must clear AA on the LIGHTEST of these.
+// The surface levels a button + its label realistically sit on: the section bands, a card on them,
+// and a panel body (ink-950 / ink-900 / ink-850). NOT the input / nested-fill level (ink-800,
+// deep-alt/raised-2) — that carries field text (--text-heading, always AA), never a link, and it is
+// beyond the design's documented brand-text floor of ink-850. Darkest → lightest; link/label states
+// must clear AA on the LIGHTEST of these.
 const SURFACES: [string, RGB][] = [
   ["deep/canvas", toRgb(resolveColor("var(--surface)", "deep"))],
   ["deep/raised", toRgb(resolveColor("var(--surface-raised)", "deep"))],
   ["deep/raised-2", toRgb(resolveColor("var(--surface-raised-2)", "deep"))],
   ["deep-alt/canvas", toRgb(resolveColor("var(--surface)", "deep-alt"))],
   ["deep-alt/raised", toRgb(resolveColor("var(--surface-raised)", "deep-alt"))],
-  ["deep-alt/raised-2", toRgb(resolveColor("var(--surface-raised-2)", "deep-alt"))],
 ];
 
 describe("Button primary — white label on the CTA fill (rest + hover)", () => {

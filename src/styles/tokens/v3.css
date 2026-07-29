@@ -35,6 +35,10 @@
   --v3-ink-950: #08080a; /* page canvas */
   --v3-ink-900: #14141a; /* raised: cards, panels · ALSO the alternating band surface (wide gap
                             from the canvas so alternating sections read as distinct, not one strip) */
+  /* CONTRAST FLOOR: this surface is the limit for --v3-brand-text (#8b6bff), which measures 4.60:1
+     as text here — the weakest AA text pair in the system. Do NOT lift #1b1b22 any lighter: a
+     higher value drops brand-text below the 4.5:1 AA threshold. Guarded by
+     tests/unit/v3-surface-contrast.test.ts. */
   --v3-ink-850: #1b1b22; /* raised-2: panel bodies, nested fills · alt-band cards */
   --v3-ink-800: #24242e; /* inputs, tiles, chips */
   --v3-ink-750: #2f2f3b; /* hover / pressed on a raised surface */

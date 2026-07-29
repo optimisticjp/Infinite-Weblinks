@@ -273,7 +273,23 @@ describe("--v3-brand-hover (#7a5fff) — the fragile brand-hover value, everywhe
     expect(c).toBeLessThan(AA);
   });
 
-  it("as accent TEXT / icon colour it clears AA on the deep canvas it is designed to sit on", () => {
-    expect(contrast(hexToRgb(BRAND_HOVER), toRgb(resolveColor("var(--surface)", "deep")))).toBeGreaterThanOrEqual(AA);
+  it("FAILS as text on the raised / band surfaces — 4.0:1 on --v3-ink-850, below AA (failure mode 2)", () => {
+    const onPanel = contrast(hexToRgb(BRAND_HOVER), toRgb(resolveColor("var(--v3-ink-850)")));
+    expect(onPanel).toBeLessThan(AA);
+    expect(Math.round(onPanel * 10) / 10).toBe(4.0);
+    // Likewise sub-AA on the alternating band; it clears 4.5:1 only on the darkest canvas.
+    expect(contrast(hexToRgb(BRAND_HOVER), toRgb(resolveColor("var(--v3-ink-900)")))).toBeLessThan(AA);
+  });
+
+  it("is NEVER a text `color:` value in any module CSS — non-text graphics only", () => {
+    // axe only evaluates rendered states, so #7a5fff-as-text hidden behind a click (a selected chip,
+    // a completed step, an opened panel) is never caught. Forbid it as a foreground statically: it
+    // fails 4.5:1 on every surface content realistically sits on (only the darkest canvas passes, and
+    // a component's surface can't be known here), so brand foreground must use --v3-brand-text
+    // (--v2-brand). Matches the standalone `color:` property only (never background-/border-/-color),
+    // and covers raw hex, color-mix and every alias.
+    const FG = new RegExp(`(?:^|[^-\\w])color\\s*:\\s*[^;{}]*(?:${HOVER_TOKENS}|#7a5fff)`, "i");
+    const offenders = MODULE_CSS.filter((f) => FG.test(stripComments(readFile(f)))).map((f) => f.slice(SRC.length + 1));
+    expect(offenders).toEqual([]);
   });
 });

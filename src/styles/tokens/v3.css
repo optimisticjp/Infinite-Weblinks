@@ -61,10 +61,14 @@
      legibility as link/accent text, -fill stays the saturated CTA surface. */
   --v3-brand-text: #8b6bff; /* links, accent text/icons — 5.38:1 canvas, 4.60:1 on ink-850 */
   --v3-brand-fill: #6b4eff; /* CTA fill — white on it measures 5.05:1 */
-  /* DANGER: #7a5fff measures only 4.28:1 against white — BELOW the 4.5 text bar (it clears the
-     3:1 non-text bar). NEVER put it behind white / light TEXT; it may only back a non-text graphic
-     (as IconButton's icon-only hover does with a white glyph). It exists as accent text/icon colour
-     via --v2-brand-strong. Guarded in tests/unit/v3-button-interactive-contrast.test.ts. */
+  /* DANGER — NON-TEXT GRAPHICS ONLY. #7a5fff fails WCAG AA text contrast two ways:
+       1. as a BACKGROUND behind white / light TEXT it measures 4.28:1 — it may only back a NON-TEXT
+          graphic (e.g. IconButton's icon-only hover with a white glyph);
+       2. as TEXT itself it measures only 4.0:1 on the raised --v3-ink-850 surface (and 4.28:1 on the
+          alternating band) — it clears 4.5:1 only on the darkest canvas, so it is never safe as text.
+     Use it ONLY to fill or stroke a non-text graphic (>= 3:1). For any brand FOREGROUND — accent
+     text OR icon glyphs — use --v3-brand-text (#8b6bff). Both modes are guarded in
+     tests/unit/v3-button-interactive-contrast.test.ts. */
   --v3-brand-hover: #7a5fff;
   --v3-brand-tint: rgba(107, 78, 255, 0.14); /* selected / active soft fill */
   --v3-brand-edge: rgba(107, 78, 255, 0.42);

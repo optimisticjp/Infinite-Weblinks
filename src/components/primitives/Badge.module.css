@@ -41,7 +41,7 @@
 }
 .brand {
   background: var(--v2-brand-tint);
-  color: var(--v2-brand-strong);
+  color: var(--v2-brand);
   border: 1px solid color-mix(in srgb, var(--v2-brand) 24%, transparent);
 }
 .domain {

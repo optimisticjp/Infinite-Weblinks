@@ -38,7 +38,7 @@ textarea.control {
 
 /* Required-field marker on a V2 label (the legacy marker uses a base-palette pink). */
 .required {
-  color: var(--v2-brand-strong);
+  color: var(--v2-brand);
 }
 
 /* Inline field error text — the accessible V2 danger ink (the legacy --danger is a low-contrast

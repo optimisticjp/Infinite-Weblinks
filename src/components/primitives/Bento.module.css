@@ -259,7 +259,12 @@
    surfaces, so on night it must not be used as visible text/icon. Re-map every visible
    element (eyebrow, index, icon tile, arrow, accent rail) to the accessible night accent
    token. The domain hue survives only as non-text decoration. Declared after the general
-   V2 block so it wins on `.theme-night`. */
+   V2 block so it wins on `.theme-night`.
+   INTENTIONALLY night-exclusive — deliberately NOT extended to .theme-deep / .theme-deep-alt
+   (unlike the step-1 triples). Under V3 the domain inks are already remapped bright (v3.css), so
+   on the dark surfaces the general block above renders the real per-domain wayfinding hue;
+   forcing --v2-link-night here would flatten all seven worlds to one accent. This is the single
+   documented exception — the night-exclusive-block audit should end here. */
 :global(.theme-night) .eyebrow,
 :global(.theme-night) .index {
   color: var(--v2-link-night);

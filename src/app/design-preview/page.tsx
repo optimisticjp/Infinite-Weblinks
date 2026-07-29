@@ -12,6 +12,10 @@ import { IconTile } from "@/components/primitives/IconTile";
 import { Card } from "@/components/primitives/Card";
 import { CardGrid } from "@/components/primitives/CardGrid";
 import { Panel } from "@/components/primitives/Panel";
+import { FloatingCard } from "@/components/primitives/FloatingCard";
+import { DataTable, type DataTableRow, type DataTableFilter } from "@/components/primitives/DataTable";
+import { goals } from "@/lib/content/data/goals";
+import { domainKeyFromToken } from "@/lib/design/domainColor";
 import { BentoGrid } from "@/components/primitives/BentoGrid";
 import { BentoCard } from "@/components/primitives/BentoCard";
 import { Callout } from "@/components/primitives/Callout";
@@ -142,6 +146,32 @@ const STATUSES = [
 const PLAN_REVEAL_PREVIEW: GrowthPlanResult = resolve(
   { businessType: "ecommerce", mainGoal: "launch-professional-store", existingSetup: "Nothing built yet" },
   growthPlanRuleSet,
+);
+
+// DataTable demo wired to the REAL goals dataset (never hard-coded), so the table stays correct as
+// goals change. Each goal's wayfinding colour becomes the row's leading dot and its domain filter key.
+const GOAL_DOMAIN_LABEL: Record<string, string> = {
+  strategy: "Strategy",
+  build: "Build",
+  discover: "Discover",
+  convert: "Convert",
+  operate: "Operate",
+  retain: "Retain",
+  ai: "AI & Automation",
+};
+const GOAL_ROWS: DataTableRow[] = goals.map((g) => {
+  const domain = domainKeyFromToken(g.color);
+  return {
+    id: g.slug,
+    label: g.title,
+    tone: g.color,
+    cells: [g.outcome],
+    href: `/goals/${g.slug}`,
+    filterKeys: domain ? [domain] : [],
+  };
+});
+const GOAL_FILTERS: DataTableFilter[] = [...new Set(GOAL_ROWS.flatMap((r) => r.filterKeys ?? []))].map(
+  (key) => ({ id: key, label: GOAL_DOMAIN_LABEL[key] ?? key, tone: `var(--v2-domain-${key}-ink)` }),
 );
 
 export default async function DesignPreviewPage() {
@@ -560,6 +590,53 @@ export default async function DesignPreviewPage() {
                 </div>
               </Panel>
             </div>
+          </div>
+        </section>
+
+        {/* 11c · FloatingCard — layered depth over a Panel */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>FloatingCard — layered depth (theme-deep)</h2>
+          <div className={`theme-deep ${styles.surfacePanel}`}>
+            <div
+              style={{
+                position: "relative",
+                maxWidth: "360px",
+                margin: "0 auto",
+                padding: "var(--space-8) var(--space-6)",
+              }}
+            >
+              <Panel padded>
+                <span className={styles.cardTitle}>Your growth plan</span>
+                <span className={styles.cardBody}>
+                  The Panel is the primary surface; FloatingCards overlap it at a higher depth (a
+                  lighter surface + deeper shadow), the layered-depth cue.
+                </span>
+              </Panel>
+              <FloatingCard
+                style={{ position: "absolute", left: "calc(-1 * var(--space-4))", bottom: "var(--space-6)", width: "140px" }}
+              >
+                <span className={styles.cardBody}>Enquiries / mo</span>
+              </FloatingCard>
+              <FloatingCard
+                style={{ position: "absolute", right: "calc(-1 * var(--space-3))", top: "var(--space-3)", width: "132px" }}
+              >
+                <span className={styles.cardBody}>5 / 7 worlds</span>
+              </FloatingCard>
+            </div>
+          </div>
+        </section>
+
+        {/* 11d · DataTable — filterable, wired to the goals dataset */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>DataTable — filterable, wired to goals data (theme-deep)</h2>
+          <div className="theme-deep" style={{ background: "var(--surface)", padding: "var(--space-6)", borderRadius: "var(--radius-lg)" }}>
+            <DataTable
+              rows={GOAL_ROWS}
+              filters={GOAL_FILTERS}
+              columns={["Goal", "Intended outcome"]}
+              ariaLabel="Goals"
+              countNoun={{ singular: "goal", plural: "goals" }}
+            />
           </div>
         </section>
 

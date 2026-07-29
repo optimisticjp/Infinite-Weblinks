@@ -1,0 +1,239 @@
+/* StickyRoadmap — see StickyRoadmap.tsx. Desktop: a two-column grid where the node panel PINS with
+   position: sticky while the stage blocks scroll past; the active node (data-active, toggled by
+   RoadmapSync) lights up. Mobile (<960px): a single column with the panel static above the stages.
+   Semantic tokens only. */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+.intro {
+  max-width: 60ch;
+}
+.eyebrow {
+  margin: 0 0 var(--space-2);
+  font-size: var(--fs-eyebrow, 0.72rem);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+.name {
+  margin: 0 0 var(--space-3);
+  color: var(--text-heading);
+}
+.lead {
+  margin: 0;
+  color: var(--text-body);
+}
+
+/* ---- The sticky grid ---- */
+.roadmap {
+  display: grid;
+  grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+  gap: clamp(var(--space-6), 4vw, var(--space-16));
+  align-items: start; /* content-height columns, so the panel can stick within the tall grid cell */
+}
+.panelCol {
+  position: sticky;
+  top: var(--space-8);
+  align-self: start;
+}
+
+/* ---- Node panel ---- */
+.panelHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--hairline);
+}
+.panelTitle {
+  margin: 0;
+  font-size: var(--fs-h4);
+  font-weight: var(--fw-semibold);
+  color: var(--text-heading);
+}
+.panelTag {
+  margin-left: auto;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-xs);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brand);
+  background: var(--brand-tint, color-mix(in srgb, var(--brand) 14%, transparent));
+  border: 1px solid var(--brand-edge, color-mix(in srgb, var(--brand) 34%, transparent));
+}
+
+.nodes {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-3);
+}
+.node {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  transition:
+    background var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out);
+}
+.node[data-active] {
+  background: var(--surface-raised-2, var(--surface-raised));
+  border-color: var(--hairline-2, var(--hairline));
+}
+
+/* Connector rail + dot */
+.nodeRail {
+  position: relative;
+  flex: none;
+  width: 22px;
+  display: flex;
+  justify-content: center;
+}
+.nodeDot {
+  width: 11px;
+  height: 11px;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: var(--surface-input);
+  border: 2px solid var(--hairline-strong);
+  z-index: 1;
+  transition:
+    background var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) var(--ease-out);
+}
+.nodeRail::after {
+  content: "";
+  position: absolute;
+  top: 18px;
+  bottom: calc(-1 * var(--space-3) - 4px);
+  left: 50%;
+  width: 1.5px;
+  transform: translateX(-50%);
+  background: var(--hairline);
+}
+.node:last-child .nodeRail::after {
+  display: none;
+}
+.node[data-active] .nodeDot {
+  background: var(--node-ink);
+  border-color: var(--node-ink);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--node-ink) 20%, transparent);
+}
+
+.nodeBody {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.nodeName {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-semibold);
+  color: var(--text-muted);
+  transition: color var(--dur-base) var(--ease-out);
+}
+.node[data-active] .nodeName {
+  color: var(--text-heading);
+}
+.nodeDesc {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+.nodeStage {
+  flex: none;
+  align-self: flex-start;
+  margin-top: 2px;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+  transition: color var(--dur-base) var(--ease-out);
+}
+.node[data-active] .nodeStage {
+  color: var(--node-ink);
+}
+
+/* ---- Scrolling stage blocks ---- */
+.blocks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: clamp(300px, 58vh, 520px);
+  padding-block: var(--space-8);
+  border-top: 1px solid var(--hairline);
+}
+.block:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.blockKicker {
+  margin: 0 0 var(--space-3);
+  font-size: var(--fs-eyebrow, 0.72rem);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--block-ink);
+}
+.blockTitle {
+  margin: 0 0 var(--space-3);
+  color: var(--text-heading);
+}
+.blockBody {
+  margin: 0;
+  max-width: 54ch;
+  font-size: var(--fs-lead);
+  color: var(--text-body);
+}
+
+/* ---- Mobile: do not pin. The panel is a static element above the stages. ---- */
+@media (max-width: 960px) {
+  .roadmap {
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+  }
+  .panelCol {
+    position: static;
+    top: auto;
+  }
+  .block {
+    min-height: 0;
+  }
+}
+
+/* ---- Reduced motion: no scroll-driven progression, so show every stage active at once. ---- */
+@media (prefers-reduced-motion: reduce) {
+  .node,
+  .node * {
+    transition: none;
+  }
+  .node {
+    background: var(--surface-raised-2, var(--surface-raised));
+    border-color: var(--hairline-2, var(--hairline));
+  }
+  .nodeDot {
+    background: var(--node-ink);
+    border-color: var(--node-ink);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--node-ink) 20%, transparent);
+  }
+  .nodeName {
+    color: var(--text-heading);
+  }
+  .nodeStage {
+    color: var(--node-ink);
+  }
+}

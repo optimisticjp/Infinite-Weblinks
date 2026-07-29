@@ -15,6 +15,7 @@ import { Panel } from "@/components/primitives/Panel";
 import { FloatingCard } from "@/components/primitives/FloatingCard";
 import { DataTable, type DataTableRow, type DataTableFilter } from "@/components/primitives/DataTable";
 import { PlanPanel } from "@/components/routes/PlanPanel";
+import { StickyRoadmap } from "@/components/routes/StickyRoadmap";
 import { goals } from "@/lib/content/data/goals";
 import { domainKeyFromToken } from "@/lib/design/domainColor";
 import { BentoGrid } from "@/components/primitives/BentoGrid";
@@ -649,6 +650,14 @@ export default async function DesignPreviewPage() {
             style={{ paddingBlock: "var(--space-12)", paddingInline: "var(--space-10)" }}
           >
             <PlanPanel />
+          </div>
+        </section>
+
+        {/* 11f · StickyRoadmap — real roadmap data; the node panel pins while the stages scroll */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Sticky roadmap — real roadmap data (theme-deep)</h2>
+          <div className={`theme-deep ${styles.surfacePanel}`}>
+            <StickyRoadmap />
           </div>
         </section>
 

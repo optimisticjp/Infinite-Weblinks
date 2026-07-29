@@ -55,6 +55,10 @@
      legibility as link/accent text, -fill stays the saturated CTA surface. */
   --v3-brand-text: #8b6bff; /* links, accent text/icons — 5.38:1 canvas, 4.98:1 on ink-850 */
   --v3-brand-fill: #6b4eff; /* CTA fill — white on it measures 5.05:1 */
+  /* DANGER: #7a5fff measures only 4.28:1 against white — BELOW the 4.5 text bar (it clears the
+     3:1 non-text bar). NEVER put it behind white / light TEXT; it may only back a non-text graphic
+     (as IconButton's icon-only hover does with a white glyph). It exists as accent text/icon colour
+     via --v2-brand-strong. Guarded in tests/unit/v3-button-interactive-contrast.test.ts. */
   --v3-brand-hover: #7a5fff;
   --v3-brand-tint: rgba(107, 78, 255, 0.14); /* selected / active soft fill */
   --v3-brand-edge: rgba(107, 78, 255, 0.42);
@@ -148,7 +152,8 @@
 
   --ring: var(--v3-ring);
   --brand: var(--v3-brand-text);
-  --brand-strong: var(--v3-brand-hover);
+  /* --brand-strong removed — it had zero consumers, and its value #7a5fff fails white text
+     (see the DANGER note on --v3-brand-hover). The one live brand-hover consumer is --v2-brand-strong. */
   --brand-fill: var(--v3-brand-fill);
   --brand-tint: var(--v3-brand-tint);
   --brand-edge: var(--v3-brand-edge);

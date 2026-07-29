@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, it, expect } from "vitest";
 
@@ -18,7 +18,10 @@ import { describe, it, expect } from "vitest";
  * disabled is WCAG-exempt (1.4.3 excludes inactive components) so it is documented, not gated.
  */
 
-const read = (rel: string) => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), "utf8");
+/** Strip CSS block comments so declaration/selector parsing never trips on documentation prose
+ *  (e.g. a comment that mentions a `--token:` while explaining why it was removed). */
+const stripComments = (s: string) => s.replace(/\/\*[\s\S]*?\*\//g, "");
+const read = (rel: string) => stripComments(readFileSync(fileURLToPath(new URL(rel, import.meta.url)), "utf8"));
 const v3 = read("../../src/styles/tokens/v3.css");
 const v2 = read("../../src/styles/tokens/v2.css");
 const btn = read("../../src/components/primitives/Button.module.css");
@@ -216,5 +219,59 @@ describe("Button disabled — WCAG-exempt, but still visibly de-emphasised", () 
     const o = parseFloat(STATE.disabledOpacity);
     expect(o).toBeGreaterThan(0);
     expect(o).toBeLessThan(1);
+  });
+});
+
+// ---------------------------------------------------------------- the #7a5fff brand-hover value,
+// wherever it is used — not just in Button. axe only sees resting states, so a fill painted with
+// this value behind a hover/pressed icon (or, worse, behind text) can hide. It measures 4.28:1
+// against white: fine behind a NON-TEXT icon (>= 3:1), a failure behind light TEXT (< 4.5:1).
+const SRC = fileURLToPath(new URL("../../src", import.meta.url));
+const readFile = (p: string) => readFileSync(p, "utf8");
+function walk(dir: string): string[] {
+  const out: string[] = [];
+  for (const entry of readdirSync(dir)) {
+    const p = `${dir}/${entry}`;
+    if (statSync(p).isDirectory()) out.push(...walk(p));
+    else if (p.endsWith(".module.css")) out.push(p);
+  }
+  return out;
+}
+const MODULE_CSS = walk(SRC);
+const BRAND_HOVER = "#7a5fff"; // --v3-brand-hover, aliased by --v2-brand-strong (and the deleted --brand-strong)
+// The three token names that resolve to #7a5fff on the V3 surfaces.
+const HOVER_TOKENS = "(?:--v2-brand-strong|--v3-brand-hover|--brand-strong)";
+
+describe("--v3-brand-hover (#7a5fff) — the fragile brand-hover value, everywhere it is used", () => {
+  it("the live alias --v2-brand-strong resolves to #7a5fff on the deep surfaces", () => {
+    expect(resolveColor("var(--v2-brand-strong)").toLowerCase()).toBe(BRAND_HOVER);
+  });
+
+  it("measures 4.28:1 vs white — below the 4.5 text bar, at/above the 3 non-text bar", () => {
+    const c = contrast(WHITE, hexToRgb(BRAND_HOVER));
+    expect(c).toBeLessThan(AA); // must never back light TEXT
+    expect(c).toBeGreaterThanOrEqual(NON_TEXT); // may back a non-text graphic
+  });
+
+  it("the dead --brand-strong alias was removed from v3.css (comments aside)", () => {
+    expect(v3).not.toMatch(/--brand-strong\s*:/); // `v3` is comment-stripped
+  });
+
+  it("is painted as a SOLID background in exactly one place: IconButton's icon-only hover", () => {
+    const re = new RegExp(`background(?:-color)?\\s*:\\s*var\\(\\s*${HOVER_TOKENS}\\s*\\)`);
+    const fills = MODULE_CSS.filter((f) => re.test(stripComments(readFile(f)))).map((f) => f.slice(SRC.length + 1));
+    expect(fills).toEqual(["components/primitives/IconButton.module.css"]);
+  });
+
+  it("the white glyph on that hover fill is a non-text icon — clears 3:1 but NOT 4.5 (so never text)", () => {
+    // IconButton paints color: var(--v2-on-brand) (white) — an SVG glyph, not a text label.
+    const glyph = toRgb(resolveColor("var(--v2-on-brand)"));
+    const c = contrast(glyph, hexToRgb(BRAND_HOVER));
+    expect(c).toBeGreaterThanOrEqual(NON_TEXT);
+    expect(c).toBeLessThan(AA);
+  });
+
+  it("as accent TEXT / icon colour it clears AA on the deep canvas it is designed to sit on", () => {
+    expect(contrast(hexToRgb(BRAND_HOVER), toRgb(resolveColor("var(--surface)", "deep")))).toBeGreaterThanOrEqual(AA);
   });
 });

@@ -14,6 +14,7 @@ import { CardGrid } from "@/components/primitives/CardGrid";
 import { Panel } from "@/components/primitives/Panel";
 import { FloatingCard } from "@/components/primitives/FloatingCard";
 import { DataTable, type DataTableRow, type DataTableFilter } from "@/components/primitives/DataTable";
+import { PlanPanel } from "@/components/routes/PlanPanel";
 import { goals } from "@/lib/content/data/goals";
 import { domainKeyFromToken } from "@/lib/design/domainColor";
 import { BentoGrid } from "@/components/primitives/BentoGrid";
@@ -637,6 +638,17 @@ export default async function DesignPreviewPage() {
               ariaLabel="Goals"
               countNoun={{ singular: "goal", plural: "goals" }}
             />
+          </div>
+        </section>
+
+        {/* 11e · PlanPanel — real Growth Plan engine output on a product surface */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionTitle}>Plan panel — real engine output (theme-deep)</h2>
+          <div
+            className={`theme-deep ${styles.surfacePanel}`}
+            style={{ paddingBlock: "var(--space-12)", paddingInline: "var(--space-10)" }}
+          >
+            <PlanPanel />
           </div>
         </section>
 

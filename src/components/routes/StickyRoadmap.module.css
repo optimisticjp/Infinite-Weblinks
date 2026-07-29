@@ -64,7 +64,10 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--brand);
-  background: var(--brand-tint, color-mix(in srgb, var(--brand) 14%, transparent));
+  /* Opaque tint over the (darker) canvas surface, not a low-alpha wash over the raised panel:
+     on the deep-alt band the wash left the brand text at only 4.44:1; compositing over --surface
+     keeps the pill dark enough for the brand ink to clear AA. */
+  background: color-mix(in srgb, var(--brand) 14%, var(--surface));
   border: 1px solid var(--brand-edge, color-mix(in srgb, var(--brand) 34%, transparent));
 }
 

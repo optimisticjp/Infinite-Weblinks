@@ -220,14 +220,18 @@
   min-height: 52px;
 }
 
-/* primary → solid brand fill, neutral shadow, no glow, no moving gradient */
+/* primary → solid brand fill, neutral shadow, no glow, no moving gradient.
+   The fill is the dedicated CTA-fill token (--brand-fill): on dark it is the saturated #6b4eff,
+   which carries white at 5.05:1, NOT the lifted brand-TEXT hue (#8b6bff → only 3.72:1 under white).
+   It falls back to --v2-brand on the retired light surfaces (where that value is the correct fill).
+   Hover keeps the same fill (feedback comes from the elevated shadow + lift), so white stays AA. */
 :global(.theme-light) .primary,
 :global(.theme-light-alt) .primary,
 :global(.theme-night) .primary,
 :global(.theme-deep) .primary,
 :global(.theme-deep-alt) .primary {
   background-image: none;
-  background-color: var(--v2-brand);
+  background-color: var(--brand-fill, var(--v2-brand));
   color: var(--v2-on-brand);
   box-shadow: var(--v2-shadow-sm);
 }
@@ -236,7 +240,7 @@
 :global(.theme-night) .primary:hover:not(:disabled),
 :global(.theme-deep) .primary:hover:not(:disabled),
 :global(.theme-deep-alt) .primary:hover:not(:disabled) {
-  background-color: var(--v2-brand-strong);
+  background-color: var(--brand-fill, var(--v2-brand-strong));
   box-shadow: var(--v2-shadow-md);
 }
 :global(.theme-light) .primary:focus-visible,

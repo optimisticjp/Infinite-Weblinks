@@ -1,6 +1,6 @@
-/* HomepageGoalRouterSection — the goal grid uses CardGrid/GoalCard; this module lays out the
-   "not sure which fits?" panel below it. V2 tokens only; no theme-band, glow/glass/gradient,
-   raw colour. */
+/* HomepageGoalRouterSection — the goals render as a DataTable (its own module); this file lays out
+   the "not sure which fits?" panel below it. Semantic / --v2 tokens only; no theme-band,
+   glow/glass/gradient, raw colour. */
 .notSure {
   display: flex;
   flex-wrap: wrap;

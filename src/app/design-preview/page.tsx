@@ -1385,12 +1385,15 @@ export default async function DesignPreviewPage() {
           <p className={styles.subTitle}>HomepageProblemSection — the editorial verbatim, three static point cards</p>
           <HomepageProblemSection data={editorial} />
 
-          <p className={styles.subTitle}>HomepageGoalRouterSection — every goal into the plan builder (id=goals)</p>
+          <p className={styles.subTitle}>
+            HomepageGoalRouterSection — every goal as a DataTable row into the plan builder, with
+            service-world (growth-stage) filter chips (id=goals)
+          </p>
           <HomepageGoalRouterSection />
 
           <p className={styles.subTitle}>
-            HomepageConnectedSystemSection — the connected flow + three onward bridge cards
-            (id=how-it-connects, growth-journey / customer-journey / services)
+            HomepageConnectedSystemSection — the sticky Growth Roadmap (id=how-it-connects): the node
+            panel pins while the stage text scrolls and the active stage lights up
           </p>
           <HomepageConnectedSystemSection />
 
